@@ -308,10 +308,13 @@ class RoboFile extends \Robo\Tasks {
    *
    * @example bin/robo prepare:containers
    *
+   * @param $user_uid Pass a UID to build the image with. Defaults to the UID of the user running `robo`
+   *
    * @option $full Build a new 'devshop/server:local' container image using 'Dockerfile' (FROM geerlingguy/docker-ubuntu1804-ansible). If used, --local option is enabled as well.
    *
    * @option $local Build a new 'devshop/server:local' container image using 'Dockerfile.fast' (FROM devshop/server:local).
    *
+   * @option os-version An OS "slug" for any of the geerlingguy/docker-*-ansible images: https://hub.docker.com/u/geerlingguy/
    *
    * using 'Dockerfile' tagged "local", then finish building from the 'devshop/server:local' image. If not used, image is built from 'devshop/server:latest'
    *
@@ -327,6 +330,8 @@ class RoboFile extends \Robo\Tasks {
     'local' => FALSE,
     'dockerfile' => 'Dockerfile.fast',
   ]) {
+
+    $this->yell('Building DevShop Container from: ' . $opts['os-version'], 40, 'blue');
 
     // Determine current UID.
     if (is_null($user_uid)) {
@@ -344,6 +349,7 @@ class RoboFile extends \Robo\Tasks {
     $docker_build_options['--build-arg'] = "AEGIR_USER_UID=$user_uid";
     $docker_build_options['--build-arg'] = "ANSIBLE_VERBOSITY=$this->ansibleVerbosity";
     $docker_build_options['--build-arg'] = "DEVSHOP_PLAYBOOK=$playbook";
+    $docker_build_options['--build-arg'] = "OS_VERSION={$opts['os-version']}";
 
     // If --full option is specified, build the base Dockerfile.
     if ($opts['full']) {
@@ -417,6 +423,7 @@ class RoboFile extends \Robo\Tasks {
    * @option $xdebug Set this option to launch with an xdebug container.
    * @option no-dev Use build-devmaster.make instead of the development makefile.
    * @option $build Run `robo prepare:containers` to rebuild the container first.
+   * @option os-version An OS "slug" for any of the geerlingguy/docker-*-ansible images: https://hub.docker.com/u/geerlingguy/
    */
   public function up($opts = [
     'follow' => 1,
@@ -433,7 +440,9 @@ class RoboFile extends \Robo\Tasks {
     'devshop-version' => '1.x',
     'build' => FALSE,
     'skip-source-prep' => FALSE,
-    'skip-install' => FALSE
+    'skip-install' => FALSE,
+    'os-version' => 'ubuntu1804',
+    'file' => 'Dockerfile',
   ]) {
 
     // Tell Provision power process to print output directly.
@@ -468,7 +477,7 @@ class RoboFile extends \Robo\Tasks {
       // $playbook = (!empty($opts['test']) || !empty($opts['test-upgrade']))? 'playbook.testing.yml': 'docker/playbook.server.yml';
       $playbook = 'docker/playbook.server.yml';
       $this->say("Preparing containers with playbook: $playbook");
-      $this->prepareContainers($opts['user-uid'], 'devshop.local.computer', $playbook);
+      $this->prepareContainers($opts['user-uid'], 'devshop.local.computer', $playbook, $opts);
     }
 
     if ($opts['mode'] == 'docker-compose') {

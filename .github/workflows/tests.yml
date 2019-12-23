@@ -39,6 +39,10 @@ jobs:
 
   build:
     name: Build DevShop
+    strategy:
+      matrix:
+        os_version:
+          - 'ubuntu1804'
     runs-on: ubuntu-18.04
     steps:
 
@@ -59,7 +63,7 @@ jobs:
       run: composer install --prefer-dist --no-progress --no-suggest
 
     - name: Create local DevShop Server Image
-      run: bin/robo prepare:containers --local -v
+      run: bin/robo prepare:containers --local -v  --os-version=${{ matrix.os_version }}
 
     - name: Prepare Docker Environment with GitHub Variables
       run: env | grep GITHUB_ > .ci.env

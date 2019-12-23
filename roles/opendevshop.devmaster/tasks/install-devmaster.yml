@@ -39,7 +39,7 @@
   tags: [install-devmaster]
 
 - name: Wait for MySQL Server to be ready.
-  command: mysql-wait
+  command: "{{ devshop_cli_bin_path }}/mysql-wait"
   tags: [install-devmaster]
 
 - name: Install Devmaster
