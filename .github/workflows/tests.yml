@@ -9,6 +9,7 @@ on:
   - cron: "10 * * * *"
 
 jobs:
+
   lint:
     name: Ansible Lint
     runs-on: ubuntu-18.04
