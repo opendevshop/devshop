@@ -10,6 +10,9 @@ ARG OS_VERSION="ubuntu1804"
 FROM geerlingguy/docker-${OS_VERSION}-ansible:latest
 LABEL maintainer="Jon Pugh"
 
+# Break Cache
+ENV OS_VERSION ${OS_VERSION:-"ubuntu1804"}
+
 # Prints out the OS version.
 RUN cat /etc/os-release 2>/dev/null || cat /etc/centos-release
 
@@ -52,4 +55,3 @@ RUN $ANSIBLE_BUILD_COMMAND --skip-tags install-devmaster
 EXPOSE 80 443 3306 8025
 WORKDIR /var/aegir
 ENTRYPOINT ["docker-entrypoint"]
-CMD ["/lib/systemd/systemd"]
