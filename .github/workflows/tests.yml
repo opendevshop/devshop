@@ -4,6 +4,7 @@ on:
  push:
    branches:
      - "*"
+     - "ops/*"
  schedule:
   - cron: "10 * * * *"
 jobs:
