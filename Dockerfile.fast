@@ -6,7 +6,6 @@ FROM $DEVSHOP_DOCKER_FROM_IMAGE
 ENV DEVSHOP_DOCKER_FROM_IMAGE ${DEVSHOP_DOCKER_FROM_IMAGE}
 
 # Prints out the OS version.
-RUN echo "DEVSHOP_DOCKER_FROM_IMAGE=$DEVSHOP_DOCKER_FROM_IMAGE" >>  /etc/os-release
 RUN cat /etc/os-release 2>/dev/null || cat /etc/centos-release
 
 LABEL maintainer="Jon Pugh"
@@ -35,6 +34,10 @@ RUN chmod 766 $DEVSHOP_TESTS_ASSETS_PATH
 
 # Remove existing devmaster codebase so it will rebuild.
 RUN rm -rf /var/aegir
+
+# Install roles inside Docker.
+RUN echo "Running: ansible-galaxy install --ignore-errors -r /usr/share/devshop/requirements.yml -p /usr/share/devshop/roles ..."
+RUN ansible-galaxy install --ignore-errors -r /usr/share/devshop/requirements.yml -p /usr/share/devshop/roles
 
 # Provision DevShop inside Docker.
 RUN echo "Running: $ANSIBLE_BUILD_COMMAND --skip-tags install-devmaster"
