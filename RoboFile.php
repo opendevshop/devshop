@@ -509,7 +509,7 @@ class RoboFile extends \Robo\Tasks {
       // container image.
       //
       // This command runs the `docker build` command, then `docker-compose up`
-      $cmd[] = "docker-compose up --build --detached";
+      $cmd[] = "docker-compose up --detached";
 
       // Run final playbook to install devshop.
       // Test commands must be run as application user.
