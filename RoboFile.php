@@ -315,6 +315,7 @@ class RoboFile extends \Robo\Tasks {
    * @option $local Build a new 'devshop/server:local' container image using 'Dockerfile.fast' (FROM devshop/server:local).
    *
    * @option os-version An OS "slug" for any of the geerlingguy/docker-*-ansible images: https://hub.docker.com/u/geerlingguy/
+   *   If used, it will override --from option.
    *
    * using 'Dockerfile' tagged "local", then finish building from the 'devshop/server:local' image. If not used, image is built from 'devshop/server:latest'
    *
@@ -326,60 +327,44 @@ class RoboFile extends \Robo\Tasks {
    *
    */
   public function prepareContainers($user_uid = NULL, $hostname = 'devshop.local.computer', $playbook = 'docker/playbook.server.yml', $opts = [
-    'full' => FALSE,
-    'local' => FALSE,
+    'tag' => 'devshop/server:local',
+    'from' => 'devshop/server:latest',
     'dockerfile' => 'Dockerfile.fast',
-    'os-version' => 'ubuntu1804',
+    'os-version' => null,
   ]) {
 
-    $this->yell('Building DevShop Container from: ' . $opts['os-version'], 40, 'blue');
+    $compose_env = array();
 
     // Determine current UID.
     if (is_null($user_uid)) {
-      $user_uid = trim(shell_exec('id -u'));
+      $compose_env['DEVSHOP_USER_UID'] = trim(shell_exec('id -u'));
     }
 
-    // Passing desired image and tag name to the Dockerfile FROM statement.
-    $image_from_name = 'devshop/server';
-    $image_from_tag = $opts['local']? 'local': 'latest';
-    $image_new_tag = 'devshop/server:local';
-
-    $docker_build_options = [];
-    $docker_build_options['--add-host']  = "{$hostname}:127.0.0.1";
-
-    $docker_build_options['--build-arg'] = "AEGIR_USER_UID=$user_uid";
-    $docker_build_options['--build-arg'] = "ANSIBLE_VERBOSITY=$this->ansibleVerbosity";
-    $docker_build_options['--build-arg'] = "DEVSHOP_PLAYBOOK=$playbook";
-    $docker_build_options['--build-arg'] = "OS_VERSION={$opts['os-version']}";
-
-    // If --full option is specified, build the base Dockerfile.
-    if ($opts['full']) {
-      if (!$this->taskDockerBuild()
-        ->option("--file Dockerfile")
-        ->tag($image_new_tag)
-        ->options($docker_build_options)
-        ->run()
-        ->wasSuccessful()) {
-        throw new RuntimeException('Docker Build Failed.');
-      }
-
-      // At this point we have a new devshop/server:local image.
-
+    // Set DEVSHOP_DOCKER_FROM_IMAGE. If os-version is set, generate the name.
+    // Otherwise just use --from default.
+    if ($opts['os-version']) {
+      $opts['from'] = "geerlingguy/docker-{$opts['os-version']}-ansible";
     }
 
-    // If --full is not set, rebuild the container FROM devshop/server:local.
-    elseif (!$this->taskDockerBuild()
-      ->option("--file ${opts['dockerfile']}")
-      ->tag($image_new_tag)
+    $this->yell('Building DevShop Container from: ' . $opts['from'], 40, 'blue');
 
-      // Hostname should match server_hostname in playbook.server.yml
-      ->options($docker_build_options)
-      ->option('--build-arg', "DEVSHOP_DOCKER_FROM_IMAGE_NAME=$image_from_name")
-      ->option('--build-arg', "DEVSHOP_DOCKER_FROM_IMAGE_TAG=$image_from_tag")
-      ->run()
-      ->wasSuccessful()) {
-      throw new RuntimeException('Docker Build Failed.');
-    }
+    // Set FROM using --from option.
+    $compose_env['DEVSHOP_DOCKER_FROM_IMAGE'] = $opts['from'];
+
+    // Pass `robo` verbosity to Ansible.
+    $compose_env['ANSIBLE_VERBOSITY'] = $this->ansibleVerbosity;
+
+    // Pass `robo --playbook` option to Dockerfile.
+    $compose_env['DEVSHOP_PLAYBOOK'] = $playbook;
+
+    $provision_io = new \ProvisionOps\Tools\Style($this->input(), $this->output());
+    $process = new \ProvisionOps\Tools\PowerProcess('docker-compose build', $provision_io);
+    $process->setEnv($compose_env);
+    $process->disableOutput();
+    $process->setTimeout(null);
+    $process->setTty(!empty($_SERVER['XDG_SESSION_TYPE']) && $_SERVER['XDG_SESSION_TYPE'] == 'tty');
+    $process->mustRun();
+
   }
 
   /**
@@ -508,24 +493,26 @@ class RoboFile extends \Robo\Tasks {
         }
       }
 
-
-//      $env = "-e TERM=xterm";
-//      $env .= !empty($_SERVER['BEHAT_PATH'])? " -e BEHAT_PATH={$_SERVER['BEHAT_PATH']}": '';
-//      $env .= !empty($_SERVER['GITHUB_TOKEN'])? " -e GITHUB_TOKEN={$_SERVER['GITHUB_TOKEN']}": '';
-
-      // Prepare test assets folder.
-      // $cmd[] = "sudo chmod 766 .github/test-assets";
-
-      // Launch all containers, detached
       $cmd[] = 'echo "Running docker-compose up with COMPOSE_FILE=$COMPOSE_FILE"... ';
-      $cmd[] = "docker-compose up -d";
-      $cmd[] = "sleep 3";
-      $cmd[] = "docker ps";
-      $cmd[] = "docker-compose exec -T devshop ls -la /var/aegir";
-      $cmd[] = "docker-compose exec -T devshop ls -la /usr/share/devshop/.github/test-assets";
+
+      // The --build option triggers the actions defined in Dockerfile.fast,
+      // which runs `ansible-playbook $DEVSHOP_PLAYBOOK_PATH`
+      //
+      // The default playbook (docker/playbook.server.yml) does NOT install
+      // hostmaster, by setting the variable devmaster_skip_upgrade=true.
+      //
+      // It is run in a second process after the container is built
+      // to match the behavior of using the `devshop/server` image on docker hub.
+      //
+      // Devmaster should be installed into running containers only, not in the
+      // container image.
+      //
+      // This command runs the `docker build` command, then `docker-compose up`
+      $cmd[] = "docker-compose up --build --detached";
 
       // Run final playbook to install devshop.
       // Test commands must be run as application user.
+      // The `--test` command is run in GitHub Actions.
       if ($opts['test']) {
         $cmd[]= "docker-compose exec -T devshop service supervisord stop";
         $cmd[]= "docker-compose exec -T devshop $this->devshopInstall";
@@ -533,6 +520,8 @@ class RoboFile extends \Robo\Tasks {
         $command = "/usr/share/devshop/tests/devshop-tests.sh";
         $cmd[]= "docker-compose exec -T --user $this->devshopUsername devshop $command";
       }
+      // @TODO: The `--test-upgrade` command is NOT YET run in GitHub Actions.
+      // The PR with the update hook can be used to finalize upgrade tests: https://github.com/opendevshop/devshop/pull/426
       elseif ($opts['test-upgrade']) {
         $cmd[]= "docker-compose exec -T devshop service supervisord stop";
         $cmd[]= "docker-compose exec -T devshop $this->devshopInstall";
@@ -542,6 +531,8 @@ class RoboFile extends \Robo\Tasks {
       }
       else {
 
+        // This is run if neither --test or --test-upgrade commands are run.
+        // We assume this means launch a development environment.
         if (!$opts['skip-install']) {
           $cmd[]= "docker-compose exec -T devshop $this->devshopInstall";
         }

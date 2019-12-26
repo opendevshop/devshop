@@ -3,10 +3,24 @@
 #
 # Only used in CI.  See https://github.com/opendevshop/devshop/actions
 
-version: '2'
+version: '2.1'
 services:
+  # @TODO: Remove this duplication by creating a docker-compose overrides yml file for automated testing that just makes the changes needed.
   devshop:
     image: devshop/server:local
+    build:
+      context: '.'
+      dockerfile: 'Dockerfile.fast'
+      args:
+      - DEVSHOP_DOCKER_FROM_IMAGE=${DEVSHOP_DOCKER_FROM_IMAGE:-"devshop/server:latest"}
+      - ANSIBLE_VERBOSITY=${ANSIBLE_VERBOSITY:-0}
+      - DEVSHOP_USER_UID=${DEVSHOP_USER_UID:-1000}
+
+      # @TODO: Cleanup playbooks: Local development, docker container, testing environment.
+      # Right now, all systems use the playbook.server.yml playbook.
+      # (docker hub, local development, github actions)
+      - DEVSHOP_PLAYBOOK=${DEVSHOP_PLAYBOOK:-docker/playbook.server.yml}
+
     ports:
       - 80:80
     hostname: devshop.local.computer
