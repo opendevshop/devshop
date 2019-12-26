@@ -55,16 +55,15 @@ class PowerProcess extends BaseProcess {
         $timer->start();
 
         $exit = parent::run(function ($type, $buffer) {
+          if (getenv('PROVISION_PROCESS_OUTPUT') == 'direct') {
+            echo $buffer;
+          }
+          else {
             $lines = explode("\n", $buffer);
             foreach ($lines as $line) {
-              if (getenv('PROVISION_PROCESS_OUTPUT') == 'direct') {
-                echo $line . PHP_EOL;
-                // @TODO: detect EOL and add only if needed.
-              }
-              else {
-                $this->io->outputBlock(trim($line), false, false);
-              }
+              $this->io->outputBlock(trim($line), false, false);
             }
+          }
         });
         $timer->stop();
         $this->duration = $timer->formatDuration($timer->elapsed());
