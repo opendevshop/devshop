@@ -40,6 +40,7 @@ ENV ANSIBLE_BUILD_COMMAND="ansible-playbook $DEVSHOP_PLAYBOOK_PATH \
 
 # Copy latest DevShop Core to /usr/share/devshop
 COPY ./ /usr/share/devshop
+RUN mkdir -p $DEVSHOP_TESTS_ASSETS_PATH
 RUN chmod 766 $DEVSHOP_TESTS_ASSETS_PATH
 
 RUN ansible --version

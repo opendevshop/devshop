@@ -25,7 +25,6 @@ ENV ANSIBLE_BUILD_COMMAND="ansible-playbook $DEVSHOP_PLAYBOOK_PATH \
 
 # Copy latest DevShop Core to /usr/share/devshop
 COPY ./ /usr/share/devshop
-RUN chmod 766 $DEVSHOP_TESTS_ASSETS_PATH
 
 # Remove existing devmaster codebase so it will rebuild.
 RUN rm -rf /var/aegir
@@ -34,3 +33,6 @@ RUN rm -rf /var/aegir
 RUN echo "Running: $ANSIBLE_BUILD_COMMAND --skip-tags install-devmaster"
 RUN $ANSIBLE_BUILD_COMMAND --skip-tags install-devmaster
 
+# @TODO: Remove ENV vars listed here once we confirm new devshop/server:latest works.
+RUN mkdir -p $DEVSHOP_TESTS_ASSETS_PATH
+RUN chmod 777 $DEVSHOP_TESTS_ASSETS_PATH
