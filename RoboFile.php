@@ -85,6 +85,10 @@ class RoboFile extends \Robo\Tasks {
         $this->ansible_verbosity = 0;
         break;
     }
+
+
+    // Tell Provision power process to print output directly.
+    putenv('PROVISION_PROCESS_OUTPUT=direct');
   }
 
 //
@@ -430,9 +434,6 @@ class RoboFile extends \Robo\Tasks {
     'os-version' => 'ubuntu1804',
     'file' => 'Dockerfile.fast',
   ]) {
-
-    // Tell Provision power process to print output directly.
-    putenv('PROVISION_PROCESS_OUTPUT=direct');
 
     // Check for tools
     $this->prepareHost();
