@@ -443,7 +443,7 @@ class RoboFile extends \Robo\Tasks {
     'skip-source-prep' => FALSE,
     'skip-install' => FALSE,
     'os-version' => 'ubuntu1804',
-    'file' => 'Dockerfile',
+    'file' => 'Dockerfile.fast',
   ]) {
 
     // Tell Provision power process to print output directly.
