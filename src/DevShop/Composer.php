@@ -62,12 +62,12 @@ class Composer {
     // In GitHub Actions, this is the branch created in the step "Create a branch for the splitsh"
     $current_ref = trim(shell_exec('git rev-parse --symbolic-full-name --abbrev-ref HEAD'));
 
-    // If the Actions run was triggered by a push, the branch will be named "refs/tags/TAG".
-    $is_tag = strpos($current_ref, 'refs/tags') === 0;
+    // If the Actions run was triggered by a push, the branch will be named "heads/refs/tags/TAG".
+    $is_tag = strpos($current_ref, 'heads/refs/tags') === 0;
 
     // If is a tag, current_ref contains the string "refs/tags" already.
     if ($is_tag) {
-      $bare_tag = str_replace('refs/tags/', '', $current_ref);
+      $bare_tag = str_replace('heads/refs/tags', '', $current_ref);
       $target_ref = $current_ref;
       $target_ref_devmaster = "refs/tags/7.x-$bare_tag";
     }
