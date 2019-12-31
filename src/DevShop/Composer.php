@@ -67,7 +67,7 @@ class Composer {
 
     // If is a tag, current_ref contains the string "refs/tags" already.
     if ($is_tag) {
-      $bare_tag = str_replace('heads/refs/tags', '', $current_ref);
+      $bare_tag = str_replace('heads/refs/tags/', '', $current_ref);
       $target_ref = str_replace('heads/', '', $current_ref);
       $target_ref_devmaster = "refs/tags/7.x-$bare_tag";
     }
