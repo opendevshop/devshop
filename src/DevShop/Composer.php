@@ -47,10 +47,10 @@ class Composer {
    * @var array The list of folders to split into sub repos.
    */
   const REPOS = array(
-      'devmaster' => 'https://$INPUT_GITHUB_TOKEN@github.com/opendevshop/devmaster.git',
-      'roles/opendevshop.apache' => 'https://$INPUT_GITHUB_TOKEN@github.com/opendevshop/ansible-role-apache.git',
-      'roles/opendevshop.devmaster' => 'https://$INPUT_GITHUB_TOKEN@github.com/opendevshop/ansible-role-devmaster.git',
-      'roles/opendevshop.users' => 'https://$INPUT_GITHUB_TOKEN@github.com/opendevshop/ansible-role-users.git'
+      'devmaster' => 'git@github.com:opendevshop/devmaster.git',
+      'roles/opendevshop.apache' => 'git@github.com:opendevshop/ansible-role-apache.git',
+      'roles/opendevshop.devmaster' => 'git@github.com:opendevshop/ansible-role-devmaster.git',
+      'roles/opendevshop.users' => 'git@github.com:opendevshop/ansible-role-users.git'
   );
 
   /**
