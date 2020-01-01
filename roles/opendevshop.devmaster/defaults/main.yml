@@ -34,6 +34,14 @@ mysql_root_password_update: false
 aegir_db_host: localhost
 aegir_client_name: admin
 aegir_logs_path: /var/log/aegir
+
+# These files are created if they don't exist.
+# Useful when using the Docker containers and customizing DEVSHOP_ENTRYPOINT_LOG_FILES
+aegir_log_files_touch:
+- "{{ aegir_logs_path }}/hosting-queue-runner.log"
+- "{{ aegir_logs_path }}/hostmaster.error.log"
+- "{{ aegir_logs_path }}/hostmaster.access.log"
+
 hosting_queue_runner_log_path: "{{ aegir_logs_path }}/hosting-queue-runner.log"
 
 drush_dl_method: wget
