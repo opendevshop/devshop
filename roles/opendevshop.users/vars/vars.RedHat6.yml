@@ -11,4 +11,4 @@ mysql_packages:
 
 devshop_prerequisite_packages:
   - openssh-clients
-  - pip
+  - python-pip
