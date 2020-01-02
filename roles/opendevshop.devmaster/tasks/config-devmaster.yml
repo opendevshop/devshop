@@ -1,5 +1,5 @@
 ---
-- name: Devmaster | Save GitHub Token
+- name: Devmaster | Save GitHub Token as Drupal variable.
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
@@ -9,14 +9,14 @@
   ignore_errors: true
   tags: [install-devmaster]
 
-- name: Devmaster | Run all outstanding tasks
+- name: Devmaster | Run all outstanding tasks.
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
   command: "{{ drush_bin_path }} @hostmaster hosting-tasks"
   tags: [install-devmaster]
 
-- name: DevShop.Support | Save License Key
+- name: DevShop.Support | Save License Key as Drupal variable.
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
@@ -32,14 +32,14 @@
   when: devshop_support_license_key != ""
   tags: [install-devmaster]
 
-- name: Ensure hosting-dispatch crontab is setup
+- name: Ensure hosting-dispatch crontab is set up.
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
   command: "{{ drush_bin_path }} @hostmaster hosting-setup -y"
   tags: [install-devmaster]
 
-- name: Save SSH key as variable
+- name: Save SSH key as Drupal variable.
   shell: "{{ drush_bin_path }} @hostmaster vset devshop_public_key \"$(cat ~/.ssh/id_rsa.pub)\" --yes"
   become: true
   become_user: aegir
@@ -60,14 +60,14 @@
   become_method: "{{ ansible_become_method_aegir }}"
   tags: [install-devmaster]
 
-- name: Set git user email
+- name: Set git user email.
   shell: "git config --global user.name {{ aegir_client_name }}"
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
   tags: [install-devmaster]
 
-- name: Set git config push.default simple
+- name: Set git config push.default simple.
   shell: "git config --global push.default simple"
   become: true
   become_user: "{{ aegir_user_name }}"
