@@ -1,6 +1,4 @@
 ---
-local_bin_path: /usr/bin
-composer_path: /usr/bin/composer
 apache_user: apache
 apache_vhosts_version: "2.2"
 apache_packages:
@@ -14,18 +12,8 @@ apache_packages:
 extra_packages:
   - git
   - patch
-  - python-pip
   - postfix
   - sendmail
   - cronie
   - openssl
   - mod_ssl
-
-mysql_packages:
-  - mysql57
-  - mysql57-server
-  - mysql57-libs
-  - MySQL-python27
-  - perl-DBD-MySQL
-
-php_mysql_package: php-mysqlnd

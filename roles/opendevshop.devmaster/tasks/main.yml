@@ -40,6 +40,8 @@
   shell: "git merge-base --is-ancestor {{ __devshop_version_installed.stdout | quote }} {{ devshop_version | quote }}"
   register: __devshop_is_version_ancestor
   ignore_errors: true
+  args:
+    chdir: "{{ devshop_cli_path }}"
   when:
     - __devshop_version_installed.failed == false
 
