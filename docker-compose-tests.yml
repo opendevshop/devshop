@@ -3,10 +3,20 @@
 #
 # Only used in CI.  See https://github.com/opendevshop/devshop/actions
 
-version: '2'
+version: '2.1'
 services:
+  # @TODO: Remove this duplication by creating a docker-compose overrides yml file for automated testing that just makes the changes needed.
   devshop:
     image: devshop/server:local
+    build:
+      context: '.'
+      dockerfile: 'Dockerfile.fast'
+      args:
+      - DEVSHOP_DOCKER_FROM_IMAGE
+      - ANSIBLE_VERBOSITY
+      - DEVSHOP_USER_UID
+      - DEVSHOP_PLAYBOOK
+
     ports:
       - 80:80
     hostname: devshop.local.computer
