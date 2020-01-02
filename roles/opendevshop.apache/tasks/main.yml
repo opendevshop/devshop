@@ -4,13 +4,6 @@
 - name: Include OS-specific variables.
   include_vars: "{{ ansible_os_family }}.yml"
 
-# This is copied from geerlingguy.php. It is run again here to ensure the
-# php_packages_extra variables from our roles are loaded.
-- name: DevShop | Define extra php_packages.
-  set_fact:
-    php_packages: "{{ php_packages | list + php_packages_extra | list }}"
-  when: php_packages_extra is defined
-
 - name: Include OS-specific tasks.
   include: "{{ ansible_os_family }}.yml"
 
