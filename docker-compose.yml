@@ -1,4 +1,4 @@
-version: '2'
+version: '2.1'
 
 # This compose file is just an example. Create your own to launch your own Aegir cluster
 
@@ -6,6 +6,14 @@ services:
 
   devshop:
     image: devshop/server:local
+    build:
+      context: '.'
+      dockerfile: 'Dockerfile.fast'
+      args:
+      - DEVSHOP_DOCKER_FROM_IMAGE
+      - ANSIBLE_VERBOSITY
+      - DEVSHOP_USER_UID
+      - DEVSHOP_PLAYBOOK
     ports:
       - "80:80"
       - "2222:22"
