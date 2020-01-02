@@ -12,6 +12,7 @@ apache_packages:
 extra_packages:
   - git
   - patch
+  - python-pip
   - postfix
   - sendmail
   - cronie
