@@ -45,7 +45,7 @@
 
 - name: Wait for MySQL Server to be ready.
   command: "{{ devshop_cli_bin_path }}/mysql-wait"
-  changed_when: "{{ devshop_cli_bin_path }}/mysql-wait"
+  changed_when: true
   tags: [install-devmaster]
 
 - name: Install Devmaster
