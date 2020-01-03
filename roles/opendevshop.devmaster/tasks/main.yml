@@ -31,7 +31,7 @@
   when: ansible_os_family == "RedHat"
 
 - name: Detect currently installed version of DevShop.
-  shell: "git describe --tags --exact-match 2> /dev/null || git symbolic-ref --quiet --short HEAD 2> /dev/null"
+  command: "{{devshop_cli_path}}/bin/branch-or-tag"
   register: __devshop_version_installed
   changed_when: true
   ignore_errors: true
