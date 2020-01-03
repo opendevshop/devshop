@@ -51,7 +51,7 @@
   become_method: "{{ ansible_become_method_aegir }}"
   command: "{{ devmaster_install_command }}"
   when:
-    - devmaster_site_uri == ""
+    - devmaster_site_uri == empty_string
   tags: [install-devmaster]
 
 - name: Devmaster Upgrade Command
@@ -62,7 +62,7 @@
 - name: "Upgrade Devmaster to {{ devshop_version }}"
   command: "{{ devmaster_upgrade_command }}"
   when:
-    - devmaster_site_uri != ""
+    - devmaster_site_uri != empty_string
     - not devmaster_skip_upgrade
   tags: [install-devmaster]
 

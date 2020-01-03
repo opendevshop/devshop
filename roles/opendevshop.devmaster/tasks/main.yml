@@ -2,7 +2,7 @@
 - name: Set Server Hostname
   hostname:
     name: "{{ server_hostname }}"
-  when: server_hostname != ''
+  when: server_hostname != empty_string
   ignore_errors: "{{ server_hostname_ignore_errors }}"
 
 - name: Include version specific variables for Debian OS Family
