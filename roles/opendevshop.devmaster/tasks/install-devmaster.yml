@@ -20,7 +20,8 @@
   ignore_errors: true
   tags: [install-devmaster]
 
-- set_fact:
+- name: Set devmaster_site_root and devmaster_site_uri variables
+  set_fact:
     devmaster_site_root: "{{ devmaster_site_root.stdout }}"
     devmaster_site_uri: "{{ devmaster_site_uri.stdout }}"
   tags: [install-devmaster]
