@@ -7,7 +7,7 @@ php_versions_available:
   - "7.1"
   - "7.2"
   - "7.3"
-  -
+
 php_packages_extra:
   - libapache2-mod-php7.1
   - libapache2-mod-php7.2
