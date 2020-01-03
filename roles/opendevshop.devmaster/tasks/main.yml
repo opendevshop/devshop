@@ -33,6 +33,7 @@
 - name: Detect currently installed version of DevShop.
   shell: "git describe --tags --exact-match 2> /dev/null || git symbolic-ref --quiet --short HEAD 2> /dev/null"
   register: __devshop_version_installed
+  changed_when: true
   ignore_errors: true
   args:
     chdir: "{{ devshop_cli_path }}"
@@ -40,6 +41,7 @@
 - name: "Detect if desired version {{ devshop_version }} is an ancestor of the installed version {{ __devshop_version_installed.stdout }}"
   command: "git merge-base --is-ancestor {{ __devshop_version_installed.stdout | quote }} {{ devshop_version | quote }}"
   register: __devshop_is_version_ancestor
+  changed_when: true
   ignore_errors: true
   args:
     chdir: "{{ devshop_cli_path }}"
@@ -96,18 +98,21 @@
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
+  changed_when: true
 
 - name: Check drush status
   command: "{{ drush_bin_path }} status"
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
+  changed_when: true
 
 - name: Clear drush caches
   command: "{{ drush_bin_path }} cache-clear drush"
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
+  changed_when: true
 
 - name: Create /var/aegir/.drush
   file:
@@ -121,12 +126,14 @@
   command: |
     {{ drush_bin_path }} dl {{ item.key }}-{{ item.value }} --destination={{ aegir_user_home }}/.drush/commands --package-handler={{ drush_dl_method }} -y
   with_dict: "{{ devshop_drush_packages }}"
+  changed_when: true
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
 
 - name: Setup Drush Bash Enhancements
   command: "{{ drush_bin_path }} init --yes"
+  changed_when: true
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
@@ -136,12 +143,14 @@
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
   command: "{{ devmaster_make_command }}"
+  changed_when: true
   args:
     creates: "{{ devshop_devmaster_path }}/index.php"
     chdir: "{{ devshop_cli_path }}"
 
 - name: Clear the drush cache.
   command: "{{ drush_bin_path }} cc drush"
+  changed_when: true
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
