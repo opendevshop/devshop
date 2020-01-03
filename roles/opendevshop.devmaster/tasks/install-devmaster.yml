@@ -1,7 +1,8 @@
 ---
 
 - name: Get Devmaster root
-  shell: '{{ drush_bin_path }} @hostmaster status --fields="root" --field-labels=0 2>/dev/null | tr "\n" " " | sed -e "s/^[[:space:]]*//g" -e "s/[[:space:]]*\$//g"'
+  shell: |
+    {{ drush_bin_path }} @hostmaster status --fields="root" --field-labels=0 2>/dev/null | tr "\n" " " | sed -e "s/^[[:space:]]*//g" -e "s/[[:space:]]*\$//g"
   register: devmaster_site_root
   become: true
   become_user: "{{ aegir_user_name }}"
@@ -10,7 +11,8 @@
   tags: [install-devmaster]
 
 - name: Get Devmaster URI
-  shell: '{{ drush_bin_path }} @hostmaster status --fields="uri" --field-labels=0 2>/dev/null | tr "\n" " " | sed -e "s/^[[:space:]]*//g" -e "s/[[:space:]]*\$//g"'
+  shell: |
+    {{ drush_bin_path }} @hostmaster status --fields="uri" --field-labels=0 2>/dev/null | tr "\n" " " | sed -e "s/^[[:space:]]*//g" -e "s/[[:space:]]*\$//g"
   register: devmaster_site_uri
   become: true
   become_user: "{{ aegir_user_name }}"

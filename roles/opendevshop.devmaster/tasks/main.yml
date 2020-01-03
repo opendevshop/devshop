@@ -115,7 +115,8 @@
     state: directory
 
 - name: Install required drush packages.
-  command: "{{ drush_bin_path }} dl {{ item.key }}-{{ item.value }} --destination={{ aegir_user_home }}/.drush/commands --package-handler={{ drush_dl_method }} -y"
+  command: |
+    {{ drush_bin_path }} dl {{ item.key }}-{{ item.value }} --destination={{ aegir_user_home }}/.drush/commands --package-handler={{ drush_dl_method }} -y
   with_dict: "{{ devshop_drush_packages }}"
   become: true
   become_user: "{{ aegir_user_name }}"
