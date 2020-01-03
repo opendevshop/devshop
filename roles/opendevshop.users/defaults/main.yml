@@ -25,6 +25,3 @@ ssh_known_hosts:
   - bitbucket.org
   - drupal.org
   - gitlab.com
-
-php_version: "7.1"
-php_default_version_debian: "{{ php_version }}"

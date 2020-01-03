@@ -7,6 +7,12 @@
 - name: geerlingguy.php
   version: 3.7.0
 
+- name: geerlingguy.php-versions
+  version: 4.0.2
+
+- name: geerlingguy.repo-remi
+  version: 1.2.0
+
 - name: geerlingguy.git
   version: 2.0.4
 
