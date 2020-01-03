@@ -3,21 +3,23 @@
 - name: Get Devmaster root
   shell: |
     {{ drush_bin_path }} @hostmaster status --fields="root" --field-labels=0 2>/dev/null | tr "\n" " " | sed -e "s/^[[:space:]]*//g" -e "s/[[:space:]]*\$//g"
-  register: devmaster_site_root
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
   ignore_errors: true
+  register: devmaster_site_root
+  changed_when: "devmaster_site_root.stdout != empty_string"
   tags: [install-devmaster]
 
 - name: Get Devmaster URI
   shell: |
     {{ drush_bin_path }} @hostmaster status --fields="uri" --field-labels=0 2>/dev/null | tr "\n" " " | sed -e "s/^[[:space:]]*//g" -e "s/[[:space:]]*\$//g"
-  register: devmaster_site_uri
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
   ignore_errors: true
+  register: devmaster_site_uri
+  changed_when: "devmaster_site_uri.stdout != empty_string"
   tags: [install-devmaster]
 
 - name: Set devmaster_site_root and devmaster_site_uri variables
@@ -43,6 +45,7 @@
 
 - name: Wait for MySQL Server to be ready.
   command: "{{ devshop_cli_bin_path }}/mysql-wait"
+  changed_when: "{{ devshop_cli_bin_path }}/mysql-wait"
   tags: [install-devmaster]
 
 - name: Install Devmaster
@@ -71,6 +74,8 @@
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
+  register: drush_cache_clear
+  changed_when: "drush_cache_clear.stdout != empty_string"
   tags: [install-devmaster]
 
 - name: restart supervisor
