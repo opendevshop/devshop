@@ -174,7 +174,7 @@
 
 - name: Create aegir's logs files
   file:
-    path: "{{ aegir_logs_path }}/{{ item }}"
+    path: "{{ item }}"
     owner: "{{ aegir_user_name }}"
     group: "{{ aegir_user_name }}"
     state: touch
