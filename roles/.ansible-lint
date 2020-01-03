@@ -1,5 +1,4 @@
 skip_list:
-  - '301'
   - '302'
   - '303'
 exclude_paths:
