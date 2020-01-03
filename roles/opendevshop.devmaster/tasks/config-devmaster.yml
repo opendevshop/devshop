@@ -66,6 +66,7 @@
     name: user.name
     scope: global
     value: aegir_client_name
+  become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
   tags: [install-devmaster]
@@ -75,6 +76,7 @@
     name: user.email
     scope: global
     value: devshop_devmaster_email
+  become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
   tags: [install-devmaster]
