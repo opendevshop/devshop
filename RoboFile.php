@@ -302,8 +302,8 @@ class RoboFile extends \Robo\Tasks {
    * Build a devshop/server container.
    *
    * By default, `robo prepare:containers` will build a new container image
-   * using the 'Dockerfile.fast' file. This file uses the 'latest' tag of the
-   * 'devshop/server' image on docker hub, which shortens build time.'
+   * using the 'Dockerfile' using FROM 'devshop/server:latest'. This shortens
+   * build times because the image was pre-built on docker hub.
    *
    * To force a new local build of the 'devshop/server' container image from
    * scratch, use the '--full' option.
@@ -314,27 +314,17 @@ class RoboFile extends \Robo\Tasks {
    *
    * @param $user_uid Pass a UID to build the image with. Defaults to the UID of the user running `robo`
    *
-   * @option $full Build a new 'devshop/server:local' container image using 'Dockerfile' (FROM geerlingguy/docker-ubuntu1804-ansible). If used, --local option is enabled as well.
-   *
-   * @option $local Build a new 'devshop/server:local' container image using 'Dockerfile.fast' (FROM devshop/server:local).
-   *
-   * @option os-version An OS "slug" for any of the geerlingguy/docker-*-ansible images: https://hub.docker.com/u/geerlingguy/
-   *   If used, it will override --from option.
-   *
-   * using 'Dockerfile' tagged "local", then finish building from the 'devshop/server:local' image. If not used, image is built from 'devshop/server:latest'
-   *
-   *
-   *   Command will fail if there is no 'docker/server:local' container image on
-   *   your system. Run 'robo p:c --full' to build a full local container first.
-   *
-   * Use the "--file" option to override the Dockerfile used. default: Dockerfile.fast
+   * @option $tag The string to tag the resulting container with.
+   * @option $from The image to use to build the docker image FROM.
+   * @option $dockerfile The dockerfile to use.
+   * @option $os-version An OS "slug" for any of the geerlingguy/docker-*-ansible images: https://hub.docker.com/u/geerlingguy/
    *
    */
   public function prepareContainers($user_uid = NULL, $hostname = 'devshop.local.computer', $playbook = 'docker/playbook.server.yml', $opts = [
-    'tag' => 'devshop/server:local',
-    'from' => 'devshop/server:latest',
-    'dockerfile' => 'Dockerfile.fast',
-    'os-version' => null,
+      'tag' => 'devshop/server:local',
+      'from' => 'devshop/server:latest',
+      'dockerfile' => 'Dockerfile',
+      'os-version' => null,
   ]) {
 
     $compose_env = array();
@@ -344,16 +334,19 @@ class RoboFile extends \Robo\Tasks {
       $compose_env['DEVSHOP_USER_UID'] = trim(shell_exec('id -u'));
     }
 
-    // Set DEVSHOP_DOCKER_FROM_IMAGE. If os-version is set, generate the name.
-    // Otherwise just use --from default.
-    if ($opts['os-version']) {
+    // Set FROM_IMAGE. If os-version is set, generate the name.
+    // If os-version is the default, set FROM to latest.
+    if ($opts['os-version'] == 'ubuntu1804') {
+      $opts['from'] = 'devshop/server:latest';
+    }
+    elseif ($opts['os-version']) {
       $opts['from'] = "geerlingguy/docker-{$opts['os-version']}-ansible";
     }
 
     $this->yell('Building DevShop Container from: ' . $opts['from'], 40, 'blue');
 
     // Set FROM using --from option.
-    $compose_env['DEVSHOP_DOCKER_FROM_IMAGE'] = $opts['from'];
+    $compose_env['FROM_IMAGE'] = $opts['from'];
 
     // Pass `robo` verbosity to Ansible.
     $compose_env['ANSIBLE_VERBOSITY'] = $this->ansibleVerbosity;
@@ -432,7 +425,7 @@ class RoboFile extends \Robo\Tasks {
     'skip-source-prep' => FALSE,
     'skip-install' => FALSE,
     'os-version' => 'ubuntu1804',
-    'file' => 'Dockerfile.fast',
+    'file' => 'Dockerfile',
   ]) {
 
     // Check for tools
@@ -496,7 +489,7 @@ class RoboFile extends \Robo\Tasks {
 
       $cmd[] = 'echo "Running docker-compose up with COMPOSE_FILE=$COMPOSE_FILE"... ';
 
-      // The --build option triggers the actions defined in Dockerfile.fast,
+      // The --build option triggers the actions defined in Dockerfile,
       // which runs `ansible-playbook $DEVSHOP_PLAYBOOK_PATH`
       //
       // The default playbook (docker/playbook.server.yml) does NOT install
