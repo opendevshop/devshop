@@ -345,8 +345,11 @@ class RoboFile extends \Robo\Tasks {
     }
 
     // Set DEVSHOP_DOCKER_FROM_IMAGE. If os-version is set, generate the name.
-    // Otherwise just use --from default.
-    if ($opts['os-version']) {
+    // If os-version is the default, set FROM to latest.
+    if ($opts['os-version'] == 'ubuntu1804') {
+      $opts['from'] = 'devshop/server:latest';
+    }
+    elseif ($opts['os-version']) {
       $opts['from'] = "geerlingguy/docker-{$opts['os-version']}-ansible";
     }
 
