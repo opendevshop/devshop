@@ -37,7 +37,7 @@
     chdir: "{{ devshop_cli_path }}"
 
 - name: "Detect if desired version {{ devshop_version }} is an ancestor of the installed version {{ __devshop_version_installed.stdout }}"
-  shell: "git merge-base --is-ancestor {{ __devshop_version_installed.stdout | quote }} {{ devshop_version | quote }}"
+  command: "git merge-base --is-ancestor {{ __devshop_version_installed.stdout | quote }} {{ devshop_version | quote }}"
   register: __devshop_is_version_ancestor
   ignore_errors: true
   args:

@@ -54,21 +54,21 @@
   tags: [install-devmaster]
 
 - name: Set git user name
-  shell: "git config --global user.email {{ devshop_devmaster_email }}"
+  command: "git config --global user.email {{ devshop_devmaster_email }}"
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
   tags: [install-devmaster]
 
 - name: Set git user email
-  shell: "git config --global user.name {{ aegir_client_name }}"
+  command: "git config --global user.name {{ aegir_client_name }}"
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
   tags: [install-devmaster]
 
 - name: Set git config push.default simple
-  shell: "git config --global push.default simple"
+  command: "git config --global push.default simple"
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
