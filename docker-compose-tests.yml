@@ -10,9 +10,9 @@ services:
     image: devshop/server:local
     build:
       context: '.'
-      dockerfile: 'Dockerfile.fast'
+      dockerfile: 'Dockerfile'
       args:
-      - DEVSHOP_DOCKER_FROM_IMAGE
+      - FROM_IMAGE
       - ANSIBLE_VERBOSITY
       - DEVSHOP_USER_UID
       - DEVSHOP_PLAYBOOK
