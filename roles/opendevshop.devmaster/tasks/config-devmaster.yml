@@ -80,10 +80,11 @@
   tags: [install-devmaster]
 
 - name: Set git config push.default simple
-  command: "git config --global push.default simple"
+  git_config:
+    name: push.default
+    scope: global
+    value: simple
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
-  register: devshop_ansible_command_output
-  changed_when: "devshop_ansible_command_output.stdout != empty_string"
   tags: [install-devmaster]
