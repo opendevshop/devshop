@@ -36,6 +36,13 @@ aegir_client_name: admin
 aegir_logs_path: /var/log/aegir
 hosting_queue_runner_log_path: "{{ aegir_logs_path }}/hosting-queue-runner.log"
 
+# These files are created if they don't exist.
+# Useful when using the Docker containers and customizing DEVSHOP_ENTRYPOINT_LOG_FILES
+aegir_log_files_touch:
+- "{{ hosting_queue_runner_log_path }}"
+- "{{ aegir_logs_path }}/hostmaster.error.log"
+- "{{ aegir_logs_path }}/hostmaster.access.log"
+
 drush_dl_method: wget
 
 devshop_drush_packages:
