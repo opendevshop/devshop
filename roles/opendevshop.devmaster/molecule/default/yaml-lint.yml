@@ -1,7 +1,9 @@
 ---
 extends: default
 rules:
-  line-length: disable
+  line-length:
+    max: 160
+    level: warning
 ignore: |
   geerlingguy.*
   molecule
