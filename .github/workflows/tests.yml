@@ -67,7 +67,7 @@ jobs:
       run: composer install --prefer-dist --no-progress --no-suggest
 
     - name: Create DevShop Server Image from ${{ matrix.os_version }}
-      run: bin/robo prepare:containers -v --os-version=${{ matrix.os_version }}
+      run: bin/robo prepare:containers -vv --os-version=${{ matrix.os_version }}
 
     - name: Prepare Docker Environment with GitHub Variables
       run: |
