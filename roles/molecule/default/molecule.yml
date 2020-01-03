@@ -27,8 +27,6 @@ provisioner:
     v: true
   lint:
     name: ansible-lint
-    # @TODO: This has very unpredictable behavior. It seems to ignore .ansible-lint file.
-    enabled: False
   playbooks:
     converge: ${MOLECULE_PLAYBOOK:-playbook.yml}
 scenario:

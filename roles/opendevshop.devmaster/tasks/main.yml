@@ -1,5 +1,6 @@
 ---
-- hostname:
+- name: Set Server Hostname
+  hostname:
     name: "{{ server_hostname }}"
   when: server_hostname != ''
   ignore_errors: "{{ server_hostname_ignore_errors }}"
@@ -37,13 +38,13 @@
     chdir: "{{ devshop_cli_path }}"
 
 - name: "Detect if desired version {{ devshop_version }} is an ancestor of the installed version {{ __devshop_version_installed.stdout }}"
-  shell: "git merge-base --is-ancestor {{ __devshop_version_installed.stdout | quote }} {{ devshop_version | quote }}"
+  command: "git merge-base --is-ancestor {{ __devshop_version_installed.stdout | quote }} {{ devshop_version | quote }}"
   register: __devshop_is_version_ancestor
   ignore_errors: true
   args:
     chdir: "{{ devshop_cli_path }}"
   when:
-    - __devshop_version_installed.failed == false
+    - not __devshop_version_installed.failed
 
 - name: "Stopping Upgrade: Specified devshop_version is not a descendant of {{ __devshop_version_installed.stdout }}"
   set_fact:
@@ -51,7 +52,7 @@
     devmaster_skip_upgrade: true
   when:
     # Only run when devshop is already installed and the ancestor check failed.
-    - __devshop_version_installed.failed == false
+    - not __devshop_version_installed.failed
     - __devshop_is_version_ancestor is defined
     - __devshop_is_version_ancestor.failed
 
@@ -60,7 +61,7 @@
     devshop_cli_upgrade_or_install: "Upgrade"
     devshop_version_installed: "{{ __devshop_version_installed.stdout }}"
   when:
-    - __devshop_version_installed.failed == false
+    - not __devshop_version_installed.failed
 
 - name: "Setting Variables for new DevShop install (Version {{ devshop_version }})"
   set_fact:
@@ -115,7 +116,8 @@
     state: directory
 
 - name: Install required drush packages.
-  command: "{{ drush_bin_path }} dl {{ item.key }}-{{ item.value }} --destination={{ aegir_user_home }}/.drush/commands --package-handler={{ drush_dl_method }} -y"
+  command: |
+    {{ drush_bin_path }} dl {{ item.key }}-{{ item.value }} --destination={{ aegir_user_home }}/.drush/commands --package-handler={{ drush_dl_method }} -y
   with_dict: "{{ devshop_drush_packages }}"
   become: true
   become_user: "{{ aegir_user_name }}"
