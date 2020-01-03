@@ -47,6 +47,9 @@ ENV ANSIBLE_VERBOSITY ${ANSIBLE_VERBOSITY:-0}
 ARG ANSIBLE_SKIP_TAGS=install-devmaster
 ENV ANSIBLE_SKIP_TAGS ${ANSIBLE_SKIP_TAGS:-install-devmaster}
 
+ARG DEVSHOP_REBUILD_HOME=1
+ENV DEVSHOP_REBUILD_HOME ${DEVSHOP_REBUILD_HOME:-1}
+
 ARG DEVSHOP_USER_UID=1000
 ENV DEVSHOP_USER_UID ${DEVSHOP_USER_UID:-1000}
 
@@ -69,6 +72,9 @@ COPY ./ /usr/share/devshop
 RUN chmod 766 $DEVSHOP_TESTS_ASSETS_PATH
 
 RUN ansible --version
+
+# Remove Home Directory if desired so that devshop code is reinstalled.
+RUN if [ $DEVSHOP_REBUILD_HOME ]; then rm -rf /var/aegir; fi
 
 # Install roles inside Docker.
 RUN echo "Running: ansible-galaxy install --ignore-errors -r /usr/share/devshop/requirements.yml -p /usr/share/devshop/roles ..."
