@@ -1,4 +1,5 @@
 ---
+empty_string: ""
 
 # Add hosting-queue-runner to supervisor programs.
 supervisor_programs:
