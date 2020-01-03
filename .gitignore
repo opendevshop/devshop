@@ -23,9 +23,10 @@ devmaster_id_rsa.pub
 # Config
 bin/*
 ~bin/devshop
+!bin/branch-or-tag
+!bin/docker-entrypoint
 !bin/hosting-queue-runner
 !bin/mysql-wait
-!bin/docker-entrypoint
 
 # Symfony code
 vendor
