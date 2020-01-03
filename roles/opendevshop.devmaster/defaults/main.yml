@@ -36,6 +36,13 @@ aegir_client_name: admin
 aegir_logs_path: /var/log/aegir
 hosting_queue_runner_log_path: "{{ aegir_logs_path }}/hosting-queue-runner.log"
 
+# These files are created if they don't exist.
+# Useful when using the Docker containers and customizing DEVSHOP_ENTRYPOINT_LOG_FILES
+aegir_log_files_touch:
+  - "{{ hosting_queue_runner_log_path }}"
+  - "{{ aegir_logs_path }}/hostmaster.error.log"
+  - "{{ aegir_logs_path }}/hostmaster.access.log"
+
 drush_dl_method: wget
 
 devshop_drush_packages:
@@ -71,7 +78,8 @@ devmaster_install_command: "{{ drush_bin_path }} hostmaster-install -y --strict=
                                 {{ devshop_working_copy }} \
 "
 
-devmaster_upgrade_command: "{{ devshop_cli_bin_path }}/devshop devmaster:upgrade {{ devshop_version }} --makefile={{ devshop_makefile }} -n --run-from-playbooks"
+devmaster_upgrade_command: |
+  {{ devshop_cli_bin_path }}/devshop devmaster:upgrade {{ devshop_version }} --makefile={{ devshop_makefile }} -n --run-from-playbooks
 
 devmaster_test_command: "{{ devshop_cli_path }}/tests/devshop-tests.sh"
 

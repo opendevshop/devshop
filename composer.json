@@ -22,7 +22,8 @@
         "psr-0": { "DevShop": "src/" }
     },
     "bin": [
-        "devshop"
+        "scripts/devshop",
+        "scripts/branch-or-tag"
     ],
     "config": {
         "bin-dir": "bin",
