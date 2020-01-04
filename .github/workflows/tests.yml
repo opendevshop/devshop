@@ -6,7 +6,7 @@ on:
    - cron: "10 * * * *"
 
 env:
-  ANSIBLE_VERBOSITY: 3
+  ANSIBLE_VERBOSITY: 2
 
 jobs:
 
