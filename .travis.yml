@@ -13,6 +13,7 @@ branches:
 
 env:
   global:
+    - ANSIBLE_VERBOSITY=3
     - DEVSHOP_VERSION=1.x
     - GITHUB_REF=$TRAVIS_PULL_REQUEST_BRANCH
     - GITHUB_HEAD_REF=$TRAVIS_PULL_REQUEST_BRANCH
@@ -68,13 +69,15 @@ before_install:
 
 install:
   # Prepare devshop CLI.
-  - composer install
+  - composer install --prefer-dist --no-progress --no-suggest
 
   # Prepare containers
   - |
-    bin/robo prepare:containers -v \
-      --os-version=${OS_VERSION} \
-      --ansible-extra-vars='php_version: ${PHP_VERSION}'
+    docker build . \
+    --build-arg OS_VERSION \
+    --build-arg ANSIBLE_EXTRA_VARS='php_version: ${PHP_VERSION}' \
+    --build-arg ANSIBLE_VERBOSITY \
+    --tag=devshop/server:local \
 
 script:
 
