@@ -5,7 +5,14 @@
 ---
 - hosts: all
   user: root
+  vars:
+    php_version: '7.2'
+    php_default_version_debian: '7.2'
+
   roles:
+    - role: geerlingguy.repo-remi
+      when: ansible_os_family == 'RedHat'
+
     - opendevshop.users
     - opendevshop.apache
     - geerlingguy.php-versions
@@ -13,5 +20,3 @@
     - geerlingguy.php-mysql
     - geerlingguy.composer
     - opendevshop.devmaster
-  vars:
-    php_version: "7.1"
