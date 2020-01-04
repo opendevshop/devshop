@@ -1,0 +1,47 @@
+---
+dependencies: []
+
+galaxy_info:
+  author: geerlingguy
+  description: Drush - command line shell for Drupal
+  company: "Midwestern Mac, LLC"
+  license: "license (BSD, MIT)"
+  min_ansible_version: 2.4
+  platforms:
+    - name: EL
+      versions:
+        - all
+    - name: GenericUNIX
+      versions:
+        - all
+    - name: Fedora
+      versions:
+        - all
+    - name: opensuse
+      versions:
+        - all
+    - name: GenericBSD
+      versions:
+        - all
+    - name: FreeBSD
+      versions:
+        - all
+    - name: Ubuntu
+      versions:
+        - all
+    - name: SLES
+      versions:
+        - all
+    - name: GenericLinux
+      versions:
+        - all
+    - name: Debian
+      versions:
+        - all
+  galaxy_tags:
+    - development
+    - web
+    - drush
+    - drupal
+    - command
+    - cli

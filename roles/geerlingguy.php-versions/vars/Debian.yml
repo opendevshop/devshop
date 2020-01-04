@@ -1,0 +1,43 @@
+---
+# Configure PHP paths and packages.
+__php_conf_paths:
+  - "/etc/php/{{ php_version }}/fpm"
+  - "/etc/php/{{ php_version }}/apache2"
+  - "/etc/php/{{ php_version }}/cli"
+__php_extension_conf_paths:
+  - "/etc/php/{{ php_version }}/fpm/conf.d"
+  - "/etc/php/{{ php_version }}/apache2/conf.d"
+  - "/etc/php/{{ php_version }}/cli/conf.d"
+__php_fpm_daemon: "php{{ php_version }}-fpm"
+__php_fpm_conf_path: "/etc/php/{{ php_version }}/fpm"
+__php_fpm_pool_conf_path: "{{ __php_fpm_conf_path }}/pool.d/www.conf"
+__php_mysql_package: "php{{ php_version }}-mysql"
+__php_redis_package: "php{{ php_version }}-redis"
+__php_memcached_package: "php{{ php_version }}-memcached"
+__php_pgsql_package: "php{{ php_version }}-pgsql"
+
+__php_tideways_module_path: "/usr/lib/php/{{ php_version }}/modules"
+__php_uploadprogress_module_path: "/usr/lib/php/{{ php_version }}/modules"
+__php_xdebug_module_path: "/usr/lib/php/{{ php_version }}/modules"
+__php_xhprof_module_path: "/usr/lib/php/{{ php_version }}/modules"
+
+__php_packages:
+  - "php{{ php_version }}"
+  - "php{{ php_version }}-apcu"
+  - "php{{ php_version }}-cli"
+  - "php{{ php_version }}-common"
+  - "php{{ php_version }}-curl"
+  - "php{{ php_version }}-dev"
+  - "php{{ php_version }}-fpm"
+  - "php{{ php_version }}-gd"
+  - "php{{ php_version }}-imap"
+  - "php{{ php_version }}-json"
+  - "php{{ php_version }}-mbstring"
+  - "php{{ php_version }}-opcache"
+  - "php{{ php_version }}-sqlite3"
+  - "php{{ php_version }}-xml"
+  - "php{{ php_version }}-yaml"
+
+php_versions_debian:
+  - php7.2-common
+  - php7.3-common

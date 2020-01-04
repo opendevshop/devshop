@@ -1,0 +1,40 @@
+---
+- hosts: all
+
+  vars:
+    github_users_absent:
+      - johndoe
+      - janedoe
+
+  pre_tasks:
+    - name: Update apt cache.
+      apt: update_cache=yes cache_valid_time=600
+      register: apt_cache_update
+      when: ansible_os_family == 'Debian'
+
+    - name: Set up github_users for Debian.
+      set_fact:
+        github_users:
+          - name: geerlingguy
+            groups: sudo
+          - fabpot
+      when: ansible_os_family == 'Debian'
+
+    - name: Set up github_users for RedHat.
+      set_fact:
+        github_users:
+          - name: geerlingguy
+            groups: wheel
+          - fabpot
+      when: ansible_os_family == 'RedHat'
+
+    - name: Add users to be removed on first run.
+      user:
+        name: "{{ item }}"
+        shell: /bin/bash
+        createhome: no
+      with_items: "{{ github_users_absent }}"
+      when: apt_cache_update.changed
+
+  roles:
+    - role_under_test
