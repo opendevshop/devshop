@@ -22,7 +22,7 @@ devmaster_id_rsa.pub
 
 # Config
 bin/*
-~bin/devshop
+!bin/devshop*
 !bin/branch-or-tag
 !bin/docker-entrypoint
 !bin/hosting-queue-runner
@@ -39,3 +39,5 @@ inventory
 
 # PHPStorm files
 .idea
+.github/workflows/test.yml
+docker-compose.testing.yml
