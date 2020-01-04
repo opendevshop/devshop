@@ -156,6 +156,8 @@ ENV ANSIBLE_BUILD_COMMAND="ansible-playbook $ANSIBLE_PLAYBOOK \
 RUN chmod 766 $DEVSHOP_TESTS_ASSETS_PATH
 
 # Provision with Ansible!
+RUN devshop-logo "Environment"
+RUN env
 RUN devshop-logo "$ANSIBLE_BUILD_COMMAND "
 
 RUN $ANSIBLE_BUILD_COMMAND
