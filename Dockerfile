@@ -1,44 +1,77 @@
-# DevShop Base Dockerfile
-# This Dockerfile contains global, OS-Agnostic settings.
-# The build argument can be used to build DevShop on a different OS.
 #
-# Without any build arguments, it will build from geerlingguy/docker-ubuntu1804-ansible
+# DevShop Super Dockerfile
 #
-#  Build Arguments:
-#     OS_VERSION.   Use to specify a geerlingguy/docker-*-ansible image.
-#     FROM_IMAGE.   Use to specify a full FROM image string.
+# This Dockerfile is designed to be built into any kind of container.
 #
-#     @TODO: Document the rest of the build args.
+# Without any build arguments, Docker will build from the standard `geerlingguy/docker-ubuntu1804-ansible`
+#  image, using the `docker/playbook.server.yml` Ansible playbook file.
+#
+# This is how the official devshop/server:latest image is built:
+#
+#    docker build .
+#
+# Useful Build Arguments:
+#
+#     OS_VERSION  (default: ubuntu1804)
+#       Use to specify a different Geerlingguy docker image to build from.
+#
+#       Available options: https://hub.docker.com/search?q=geerlingguy%2Fdocker-&type=image
+#
+#         ubuntu1904 ubuntu1804 ubuntu1604 ubuntu1404 ubuntu1204
+#         debian10 debian9 debian8
+#         centos8 centos7 centos6
+#         fedora31 fedora30 fedora29 fedora27 fedora24
+#         amazonlinux2
+#
+#     FROM_IMAGE "geerlingguy/docker-${OS_VERSION}-ansible:latest"
+#       Use to specify a full FROM image string. Useful for speeding up the
+#       build process. Use FROM_IMAGE=devshop/server to use a pre-configured
+#       image instead of building from scratch.
+#
+#     ANSIBLE_PLAYBOOK_COMMAND_OPTIONS
+#       Passed directly to the end of the `ansible-playbook` command.
+#
+#     ANSIBLE_PLAYBOOK
+#       The path to the ansible playbook file you want to run in the build.
+#       Relative to devshop repo root.
+#
+#     ANSIBLE_EXTRA_VARS
+#       Converted to EXTRA_VARS, which is consumed by the `ansible-playbook` command.
+#       Can be JSON or YML.
+#
+#     ANSIBLE_VERBOSITY
+#       The path to the ansible playbook file you want to run in the build. Relative to devshop repo root.
+#
+#     ANSIBLE_CONFIG
+#       The path to an alternate ansible.cfg file. Relative to devshop repo root.
 #
 #  Examples:
 #
 #    1. Build a DevShop Server image from the default image: geerlingguy/docker-ubuntu18-ansible
 #
-#      docker build .
+#        docker build .
 #
 #    2. Build image from geerlingguy/docker-centos7-ansible:
 #
-#      bin/robo up --os-version=centos7
-#        - or -
-#      docker build . --build-arg OS_VERSION=centos7
+#        docker build . --build-arg OS_VERSION=centos7
 #
-#    3. Build image from devshop/server:latest with ansible tags 'install-devmaster'
-#       This results in a faster build. Use --tags to only run the needed sections of the playbook.
+#    3. Rebuild image from `devshop/server:latest`, resulting in a faster build.
 #
-#      bin/robo up --from=devshop/server:latest --tags=install-devmaster
-#        - or -
-#      docker build . --build-arg FROM_IMAGE=devshop/server:latest --build-arg ANSIBLE_TAGS=install-devmaster
-#        - or -
-#      FROM_IMAGE=devshop/server:latest ANSIBLE_TAGS=install-devmaster docker build . --build-arg FROM_IMAGE --build-arg ANSIBLE_TAGS
+#        docker build . --build-arg FROM_IMAGE=devshop/server:latest
 #
-#    The last method shown demonstrates how to tell docker build to inherit ARGs from the environment.
-#    This is useful in CI systems like Travis, where you want to define FROM_IMAGE in an environment matrix.
+#    4. Pass environment variables to the docker container being built.
 #
-#    The strings listed in the ARG/ENV pairs are the default values. They are
-#    used in the default `devshop/server:latest` container on Docker Hub.
+#       FROM_IMAGE=devshop/server:latest \
+#       ANSIBLE_EXTRA_VARS="php_version: 7.4" \
+#          docker build . --build-arg FROM_IMAGE --build-arg ANSIBLE_EXTRA_VARS
 #
-#    @TODO: Link to more information in Documentation, once there is some.
+#      When you do not specify a value for a `--build-arg` option, it inherits the
+#      execution environment of the `docker build` command.
 #
+#      This is useful in CI systems like Travis, where you can define environment
+#      variables in a in a matrix.
+#
+#   @TODO: When the robo commands are a little more consisten, put the directions back here.
 
 # Set FROM to $FROM_IMAGE variable. This makes this Dockerfile basically universal. :)
 # If OS_VERSION is set without FROM_IMAGE, use the geerlingguy image.
@@ -65,7 +98,6 @@ RUN devshop-logo "Building Dockerfile from $FROM_IMAGE"
 
 RUN cat /etc/os-release 2>/dev/null || cat /etc/centos-release
 RUN ansible --version
-RUN ansible-playbook --help
 RUN set
 
 #
@@ -81,22 +113,21 @@ RUN set
 ARG BUILD_ARG_EXAMPLE="buildArgDefaultValue"
 ENV BUILD_ARG_EXAMPLE ${BUILD_ARG_EXAMPLE:-"buildArgDefaultValue"}
 
-ARG ANSIBLE_CONFIG="${DEVSHOP_PATH}/ansible.cfg"
-ENV ANSIBLE_CONFIG ${ANSIBLE_CONFIG:-"${DEVSHOP_PATH}/ansible.cfg"}
-
-ARG ANSIBLE_VERBOSITY=0
-ENV ANSIBLE_VERBOSITY ${ANSIBLE_VERBOSITY:-0}
-
-ARG ANSIBLE_PLAYBOOK="${DEVSHOP_PATH}/docker/playbook.server.yml"
-ENV ANSIBLE_PLAYBOOK ${ANSIBLE_PLAYBOOK:-"${DEVSHOP_PATH}/docker/playbook.server.yml"}
+ARG ANSIBLE_PLAYBOOK=docker/playbook.server.yml
+ENV ANSIBLE_PLAYBOOK "${DEVSHOP_PATH}/${ANSIBLE_PLAYBOOK:-docker/playbook.server.yml}"
 
 ARG ANSIBLE_PLAYBOOK_COMMAND_OPTIONS=""
 ENV ANSIBLE_PLAYBOOK_COMMAND_OPTIONS ${ANSIBLE_PLAYBOOK_COMMAND_OPTIONS:-""}
 
+# Convert build args into ENV vars that are used by ansible-playbook
+# Ansible playbook command line options.
+# See https://docs.ansible.com/ansible/latest/cli/ansible-playbook.html
 
+ARG ANSIBLE_CONFIG=ansible.cfg
+ENV ANSIBLE_CONFIG "${DEVSHOP_PATH}/${ANSIBLE_CONFIG:-ansible.cfg}"
 
-
-# Prepare Build Args that require alternate environment variable names, such as Ansible playbook command line options.
+ARG ANSIBLE_VERBOSITY=0
+ENV ANSIBLE_VERBOSITY ${ANSIBLE_VERBOSITY:-0}
 
 ARG ANSIBLE_TAGS=""
 ENV TAGS ${ANSIBLE_TAGS:-""}
