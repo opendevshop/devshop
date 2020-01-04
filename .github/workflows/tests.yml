@@ -44,6 +44,7 @@ jobs:
         php_version:
           - "7.2"
           - "7.3"
+          - "7.4"
         os_version:
           - 'ubuntu1804'
           # @TODO: Open a new PR for one OS at a time.
