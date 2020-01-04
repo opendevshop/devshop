@@ -1,3 +1,4 @@
+---
 #
 # Ansible Galaxy Roles
 #
@@ -6,8 +7,11 @@
 # For syntax documentation, see https://galaxy.ansible.com/docs/using/installing.html#installing-multiple-roles-from-a-file
 #
 # Tips:
-# - The `composer update` command will update the roles: `ansible-galaxy install -r requirements.yml --force`. Submit a pull request with the changes just like any other `composer update` call.
-# - Do not include version numbers, unless specifically needed. The `ansible-galaxy install` command will download the latest version by default.  Otherwise, you will have to manually check if the version shown here is the latest version.
+#
+# - The `composer update` command will update the roles! Nothing extra needed.
+# - Do not include version numbers, unless specifically needed. The
+#  `ansible-galaxy install` command will download the latest version by default.
+#   Otherwise, you will have to manually check if the version shown here is the latest version.
 #
 
 - name: geerlingguy.apache
