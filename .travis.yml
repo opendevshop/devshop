@@ -19,25 +19,14 @@ env:
     - SITE_HOSTS='dev.drup.devshop.travis dev.projectname.devshop.travis live.projectname.devshop.travis testenv.drpl8.devshop.travis dev.rootproject.devshop.local.computer devshop.local.computer'
 
   matrix:
-  # @TODO: 16.04 fails. Apache restart weirdness!
-  # - test='Install on Ubuntu 16.04 Apache'
-  #  COMMAND='bin/robo up --mode=install.sh --install-sh-image=geerlingguy/docker-ubuntu1604-ansible --test'
-  #  ALLOW_FAIL=true
+    - OS_VERSION: ubuntu1804
+      PHP_VERSION: 7.2
 
-  - test='Install on Ubuntu 18.04 Apache'
-    COMMAND='bin/robo up --mode=install.sh --install-sh-image=geerlingguy/docker-ubuntu1804-ansible --test'
-    ALLOW_FAIL=true
+    - OS_VERSION: ubuntu1804
+      PHP_VERSION: 7.3
 
-# Removing from TravisCI for now.
-#  - test="Upgrade"
-#    COMMAND="bin/robo up --build --test-upgrade"
-#    UPGRADE_FROM_VERSION="1.0.0-beta10"
-
-# @TODO: Docker install is failing because of some anomoly. I can't explain why devmaster install would fail here but
-# not in the other 2 jobs!
-# This should be removed anyway. It uses the Aegir dockerfiles. We can switch to our own Dockerfiles now that we have a monorepo.
-#  - test="Install"
-#    COMMAND="bin/robo up --test"
+    - OS_VERSION: ubuntu1804
+      PHP_VERSION: 7.4
 
 jobs:
   fast_finish: true
@@ -77,14 +66,19 @@ before_install:
   - docker --version
   - docker-compose --version
 
+install:
   # Prepare devshop CLI.
   - composer install
 
+  # Prepare containers
+  - bin/robo prepare:containers -v \
+      --os-version=${OS_VERSION} \
+      --ansible-extra-vars='php_version: ${PHP_VERSION}'
+
 script:
 
-  # Launch devshop including preparing the source code.
-  - echo "Running ${COMMAND} -n --disable-xdebug ..."
-  - ${COMMAND} -n --disable-xdebug
+  # Launch devshop server and run tests.
+  - bin/robo up --test --skip-source-prep -v
   
 notifications:
   slack: devshophq:pb05x3ZL3qumHs0RjqEXvYfA
