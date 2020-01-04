@@ -155,11 +155,6 @@ ENV ANSIBLE_BUILD_COMMAND="ansible-playbook $ANSIBLE_PLAYBOOK \
 
 RUN chmod 766 $DEVSHOP_TESTS_ASSETS_PATH
 
-# Install roles inside Docker.
-# @TODO: Add dependent roles into Git.
-RUN echo "Running: ansible-galaxy install --ignore-errors -r /usr/share/devshop/requirements.yml -p /usr/share/devshop/roles ..."
-RUN ansible-galaxy install --ignore-errors -r /usr/share/devshop/requirements.yml -p /usr/share/devshop/roles
-
 # Provision with Ansible!
 RUN devshop-logo "$ANSIBLE_BUILD_COMMAND "
 
