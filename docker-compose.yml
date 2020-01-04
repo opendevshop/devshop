@@ -11,10 +11,19 @@ services:
       dockerfile: 'Dockerfile'
       args:
       - FROM_IMAGE
+      - DEVSHOP_USER_UID
+
       - ANSIBLE_VERBOSITY
       - ANSIBLE_EXTRA_VARS
-      - DEVSHOP_USER_UID
-      - DEVSHOP_PLAYBOOK
+      - ANSIBLE_PLAYBOOK
+      - ANSIBLE_TAGS
+      - ANSIBLE_SKIP_TAGS
+      - ANSIBLE_PLAYBOOK_COMMAND_OPTIONS
+      - ANSIBLE_CONFIG
+
+      - DRUPAL_MAKEFILE
+      - DRUPAL_ROOT
+
     ports:
       - "80:80"
       - "2222:22"

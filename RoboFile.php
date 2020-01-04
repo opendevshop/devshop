@@ -346,7 +346,12 @@ class RoboFile extends \Robo\Tasks {
 
     $this->yell('Building DevShop Container from: ' . $opts['from'], 40, 'blue');
 
+    // @TODO: Document how  ENV vars in the process running `robo` are passed to
+    // the `docker-compose build` command, which, if they are listed in docker-compose.yml,
+    // will get passed into the containers.
+
     // Set FROM using --from option.
+    // @TODO: Tell users FROM _IMAGE env var doesn't work for prepare:containers?
     $compose_env['FROM_IMAGE'] = $opts['from'];
 
     // Pass `robo` verbosity to Ansible.
@@ -356,7 +361,7 @@ class RoboFile extends \Robo\Tasks {
     $compose_env['ANSIBLE_EXTRA_VARS'] = $opts['ansible-extra-vars'];
 
     // Pass `robo --playbook` option to Dockerfile.
-    $compose_env['DEVSHOP_PLAYBOOK'] = $playbook;
+    $compose_env['ANSIBLE_PLAYBOOK'] = $playbook;
 
     $provision_io = new \ProvisionOps\Tools\Style($this->input(), $this->output());
     $process = new \ProvisionOps\Tools\PowerProcess('docker-compose build', $provision_io);
