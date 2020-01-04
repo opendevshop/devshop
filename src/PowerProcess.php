@@ -6,7 +6,6 @@ use Psr\Log\LoggerAwareTrait;
 use Robo\Common\OutputAwareTrait;
 use Robo\Common\TimeKeeper;
 use Symfony\Component\Console\Output\Output;
-use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Process\Process as BaseProcess;
 
 class PowerProcess extends BaseProcess {
@@ -22,7 +21,7 @@ class PowerProcess extends BaseProcess {
     /**
      * @param $io Style
      */
-    public function setIo(SymfonyStyle $io) {
+    public function setIo(Style $io) {
         $this->io = $io;
     }
 
@@ -44,10 +43,20 @@ class PowerProcess extends BaseProcess {
 
 
     /**
-     * @param null $callback
-     * @return int
+     * Runs the process.
+     *
+     * @param callable|null $callback A PHP callback to run whenever there is some
+     *                                output available on STDOUT or STDERR
+     *
+     * @return int The exit status code
+     *
+     * @throws RuntimeException When process can't be launched
+     * @throws RuntimeException When process stopped after receiving signal
+     * @throws LogicException   In case a callback is provided and output has been disabled
+     *
+     * @final
      */
-    public function run($callback = null)
+    public function run(callable $callback = null, array $env = []): int
     {
         $this->io->write(" <comment>$</comment> {$this->getCommandLine()} <fg=black>Output:/path/to/file</>");
 
@@ -64,17 +73,22 @@ class PowerProcess extends BaseProcess {
               $this->io->outputBlock(trim($line), false, false);
             }
           }
-        });
+        }, $env);
+
         $timer->stop();
         $this->duration = $timer->formatDuration($timer->elapsed());
 
+        // @TODO: Optionally print something helpful but hideable here.
+        // $suffix = "<fg=black>Output: /path/to/file</>";
+        $suffix = '';
+
         if ($exit == 0) {
             $this->io->newLine();
-            $this->io->writeln(" <info>✔</info> {$this->successMessage} in {$this->duration} <fg=black>Output: /path/to/file</>");
+            $this->io->writeln(" <info>✔</info> {$this->successMessage} in {$this->duration} $suffix");
         }
         else {
             $this->io->newLine();
-            $this->io->writeln(" <fg=red>✘</> {$this->failureMessage} in {$this->duration} <fg=black>Output: /path/to/file</>");
+            $this->io->writeln(" <fg=red>✘</> {$this->failureMessage} in {$this->duration} {$suffix}");
         }
 
         return $exit;
