@@ -41,6 +41,9 @@ jobs:
     name: Build DevShop
     strategy:
       matrix:
+        php_version:
+          - "7.2"
+          - "7.3"
         os_version:
           - 'ubuntu1804'
           # @TODO: Open a new PR for one OS at a time.
@@ -67,7 +70,7 @@ jobs:
       run: composer install --prefer-dist --no-progress --no-suggest
 
     - name: Create DevShop Server Image FROM devshop/server:latest
-      run: bin/robo prepare:containers -v --os-version=${{ matrix.os_version }}
+      run: bin/robo prepare:containers -v --os-version=${{ matrix.os_version }} --ansible-extra-vars="php_version: ${{ matrix.php_version }}"
 
     - name: Prepare Docker Environment with GitHub Variables
       run: |
