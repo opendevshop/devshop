@@ -5,6 +5,9 @@ on:
  schedule:
    - cron: "10 * * * *"
 
+env:
+  ANSIBLE_VERBOSITY: 3
+
 jobs:
 
   lint:
@@ -71,8 +74,12 @@ jobs:
       run: composer install --prefer-dist --no-progress --no-suggest
 
     - name: Create DevShop Server Image FROM ${{ matrix.os_version }} with PHP ${{ matrix.php_version }}
-      run: "docker build . --build-arg OS_VERSION=${{ matrix.os_version }} --build-arg ANSIBLE_EXTRA_VARS='php_version: ${{ matrix.php_version }}' --tag=devshop/server:local"
-      #run: "bin/robo prepare:containers -v --os-version=${{ matrix.os_version }} --ansible-extra-vars='php_version: ${{ matrix.php_version }}'"
+      run: |
+        docker build . \
+          --build-arg OS_VERSION=${{ matrix.os_version }} \
+          --build-arg ANSIBLE_EXTRA_VARS='php_version: ${{ matrix.php_version }}' \
+          --build-arg ANSIBLE_VERBOSITY \
+          --tag=devshop/server:local \
 
     - name: Prepare Docker Environment with GitHub Variables
       run: |
