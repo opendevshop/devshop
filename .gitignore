@@ -32,5 +32,3 @@ inventory
 
 # PHPStorm files
 .idea
-.github/workflows/test.yml
-docker-compose.testing.yml
