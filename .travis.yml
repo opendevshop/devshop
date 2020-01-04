@@ -71,7 +71,8 @@ install:
   - composer install
 
   # Prepare containers
-  - bin/robo prepare:containers -v \
+  - |
+    bin/robo prepare:containers -v \
       --os-version=${OS_VERSION} \
       --ansible-extra-vars='php_version: ${PHP_VERSION}'
 
