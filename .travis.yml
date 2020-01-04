@@ -80,6 +80,10 @@ script:
 
   # Launch devshop server and run tests.
   - bin/robo up --test --skip-source-prep -v
-  
+
+
+after_failure:
+  - docker-compose logs
+
 notifications:
   slack: devshophq:pb05x3ZL3qumHs0RjqEXvYfA
