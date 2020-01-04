@@ -41,6 +41,10 @@ ENV ANSIBLE_PIPELINING=1
 ENV ANSIBLE_CONFIG="/usr/share/devshop/ansible.cfg"
 ENV PATH="/usr/share/devshop/bin:$PATH"
 
+# Set EXTRA_VARS for the ansible-playbook command.
+ARG ANSIBLE_EXTRA_VARS=""
+ENV EXTRA_VARS ${ANSIBLE_EXTRA_VARS:-""}
+
 ARG ANSIBLE_VERBOSITY=0
 ENV ANSIBLE_VERBOSITY ${ANSIBLE_VERBOSITY:-0}
 

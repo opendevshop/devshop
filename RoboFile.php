@@ -325,6 +325,7 @@ class RoboFile extends \Robo\Tasks {
       'from' => 'devshop/server:latest',
       'dockerfile' => 'Dockerfile',
       'os-version' => null,
+      'ansible-extra-vars' => ''
   ]) {
 
     $compose_env = array();
@@ -350,6 +351,9 @@ class RoboFile extends \Robo\Tasks {
 
     // Pass `robo` verbosity to Ansible.
     $compose_env['ANSIBLE_VERBOSITY'] = $this->ansibleVerbosity;
+
+    // Pass --ansible-extra-vars to ANSIBLE_EXTRA_VARS in the image.
+    $compose_env['ANSIBLE_EXTRA_VARS'] = $opts['ansible-extra-vars'];
 
     // Pass `robo --playbook` option to Dockerfile.
     $compose_env['DEVSHOP_PLAYBOOK'] = $playbook;

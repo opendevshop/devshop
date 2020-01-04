@@ -12,6 +12,7 @@ services:
       args:
       - FROM_IMAGE
       - ANSIBLE_VERBOSITY
+      - ANSIBLE_EXTRA_VARS
       - DEVSHOP_USER_UID
       - DEVSHOP_PLAYBOOK
     ports:
