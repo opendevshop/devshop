@@ -37,8 +37,8 @@
 #       Passed directly to the `ansible-playbook` command.
 #
 #     ANSIBLE_EXTRA_VARS
-#       Value is written to $ANSIBLE_EXTRA_VARS_FILE and used in the command
-#       `ansible-playbook --extra-vars=@$ANSIBLE_EXTRA_VARS_FILE`
+#       Value is written to a temporary file and used in the command
+#       `ansible-playbook --extra-vars=@tmpfile`
 #       Can be JSON or YML.
 #        Default: <none>
 #
@@ -169,10 +169,7 @@ ARG ANSIBLE_SKIP_TAGS="install-devmaster"
 ENV SKIP_TAGS ${ANSIBLE_SKIP_TAGS:-"install-devmaster"}
 
 ARG ANSIBLE_EXTRA_VARS=""
-ENV EXTRA_VARS ${ANSIBLE_EXTRA_VARS:-""}
-
-ARG ANSIBLE_EXTRA_VARS_FILE=".extra-vars-file"
-ENV ANSIBLE_EXTRA_VARS_FILE ${ANSIBLE_EXTRA_VARS_FILE:-".extra-vars-file"}
+ENV ANSIBLE_EXTRA_VARS ${ANSIBLE_EXTRA_VARS:-""}
 
 # @TODO: Figure out a better way to set ansible extra vars individually.
 ARG DEVSHOP_USER_UID=1000
@@ -184,7 +181,6 @@ ENV DEVSHOP_TESTS_ASSETS_PATH="${DEVSHOP_PATH}/.github/test-assets"
 ENV ANSIBLE_BUILD_COMMAND="ansible-playbook $ANSIBLE_PLAYBOOK \
 -e aegir_user_uid=$DEVSHOP_USER_UID \
 -e aegir_user_gid=$DEVSHOP_USER_UID \
---extra-vars="@.extra-vars-file" \
 --tags="$TAGS" \
 --skip-tags="$SKIP_TAGS" \
 $ANSIBLE_PLAYBOOK_COMMAND_OPTIONS \
@@ -196,26 +192,30 @@ EXPOSE 80 443 3306 8025
 WORKDIR /var/aegir
 ENTRYPOINT ["docker-entrypoint"]
 
-# Write final extra-vars file.
-RUN echo "$EXTRA_VARS" > $ANSIBLE_EXTRA_VARS_FILE
-
 # Pre-build Information
+# Write extra-vars.tmp if ANSIBLE_EXTRA_VARS is not empty.
 RUN \
   devshop-logo "Ansible Playbook Environment" && \
     env && \
-  devshop-logo "Ansible Playbook Extra Vars" && \
-    cat $ANSIBLE_EXTRA_VARS_FILE && \
-  devshop-logo "Running Ansible Playbook Command" && \
-    echo "$ANSIBLE_BUILD_COMMAND"
+  [ -z "$ANSIBLE_EXTRA_VARS" ] && echo "No Extra Vars" || \
+    devshop-logo "Ansible Playbook Extra Vars | extra-vars.tmp" && \
+    (echo "$ANSIBLE_EXTRA_VARS" > extra-vars.tmp) && \
+    cat extra-vars.tmp;
 
 # Provision with Ansible!
-RUN $ANSIBLE_BUILD_COMMAND
+# If extra-vars.tmp file exists, pass to --extra-vars.
+RUN \
+  echo "" && \
+  [ -f extra-vars.tmp ] && ANSIBLE_BUILD_COMMAND="$ANSIBLE_BUILD_COMMAND --extra-vars=@extra-vars.tmp"; \
+  devshop-logo "Running Ansible Playbook Command" && \
+  echo "$ANSIBLE_BUILD_COMMAND" && \
+    $ANSIBLE_BUILD_COMMAND
 
 RUN devshop-logo "Ansible Playbook Docker Build Complete!" && \
 echo "Playbook: $ANSIBLE_PLAYBOOK" && \
 echo "Tags: $TAGS" && \
 echo "Skip Tags: $SKIP_TAGS" && \
-echo "Extra Vars: $EXTRA_VARS" && \
+echo "Extra Vars: $ANSIBLE_EXTRA_VARS" && \
 echo "" && \
 echo "Ansible Playbook Command:" && \
 echo "$ANSIBLE_BUILD_COMMAND" && \
