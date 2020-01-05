@@ -100,6 +100,7 @@ install:
   # Default "run" is "command", systemd.
   - |
     docker run \
+      --hostname devshop.local.computer \
       --name devshop_server \
       --detach --publish 80:80 --privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro \
       $DEVSHOP_IMAGE_TAG $SYSTEMD_INIT
