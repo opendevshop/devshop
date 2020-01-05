@@ -4,6 +4,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 PATH="$DIR:$PATH"
 
 # Detect systemD
+# @TODO: Support other paths.
 if [ -f "/lib/systemd/systemd" ]; then
   COMMAND="/lib/systemd/systemd"
 fi
