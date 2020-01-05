@@ -83,19 +83,19 @@ install:
     --build-arg ANSIBLE_VERBOSITY \
     --tag=devshop/server:local \
 
-script:
-
   # Launch devshop server container and run tests.
   # Default "run" is "command", systemd.
   - docker run --detach --name devshop_server -p 80:80 devshop/server:local
 
   - docker exec devshop_server \
-      systemctl status
+    systemctl status
 
   # Run playbook with runtime tags to install
   - docker exec devshop_server \
-      ansible-playbook /usr/share/devshop/docker/playbook.server.yml \
-        --tags install-devmaster --extra-vars "devmaster_skip_install=false"
+    ansible-playbook /usr/share/devshop/docker/playbook.server.yml \
+    --tags install-devmaster --extra-vars "devmaster_skip_install=false"
+
+script:
 
   - docker exec devshop_server \
       /usr/share/devshop/tests/devshop-tests.sh
