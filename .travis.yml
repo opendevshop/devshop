@@ -112,7 +112,8 @@ install:
   - |
     set -x && docker exec devshop_server \
       ansible-playbook $ANSIBLE_RUN_PLAYBOOK \
-      --tags $ANSIBLE_RUN_TAGS --extra-vars "$ANSIBLE_RUN_EXTRA_VARS"
+      --tags $ANSIBLE_RUN_TAGS --extra-vars "$ANSIBLE_RUN_EXTRA_VARS" && \
+      set +x
 
 script:
 
