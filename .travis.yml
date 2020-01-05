@@ -85,7 +85,10 @@ install:
 
   # Launch devshop server container and run tests.
   # Default "run" is "command", systemd.
-  - docker run --detach --name devshop_server -p 80:80 devshop/server:local
+  - docker run \
+    --name devshop_server \
+    --detach --publish 80:80 --privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro \
+    devshop/server:local
 
   # Run playbook with runtime tags to install
   - docker exec devshop_server \
