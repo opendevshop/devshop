@@ -81,8 +81,20 @@ install:
 
 script:
 
-  # Launch devshop server and run tests.
-  - bin/robo up --test --skip-source-prep -v
+  # Launch devshop server container and run tests.
+  # Default "run" is "command", systemd.
+  - docker run --detach --name devshop_server --port 80:80 devshop/server:local
+
+  - docker exec devshop_server \
+      systemctl status
+
+  # Run playbook with runtime tags to install
+  - docker exec devshop_server \
+      ansible-playbook /usr/share/devshop/docker/playbook.server.yml \
+        --tags install-devmaster --extra-vars "devmaster_skip_install=false"
+
+  - docker exec devshop_server \
+      /usr/share/devshop/tests/devshop-tests.sh
 
 
 after_failure:
