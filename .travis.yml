@@ -87,9 +87,6 @@ install:
   # Default "run" is "command", systemd.
   - docker run --detach --name devshop_server -p 80:80 devshop/server:local
 
-  - docker exec devshop_server \
-    systemctl status
-
   # Run playbook with runtime tags to install
   - docker exec devshop_server \
     ansible-playbook /usr/share/devshop/docker/playbook.server.yml \
