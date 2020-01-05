@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 set -e
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+PATH="$DIR:$PATH"
 
 devshop-logo "Cleaning up SystemD"
 echo "This should only be run inside a container with SystemD."
@@ -7,7 +9,8 @@ echo "See https://github.com/geerlingguy/docker-ubuntu1804-ansible/pull/12"
 
 # @TODO: Make this multi-os, and determine if there are any unwanted side effects.
 # The "ls" command should fail, breaking any build without this path.
-ls -la /lib/systemd
+
+systemctl status --no-pager
 
 find /lib/systemd/system/sysinit.target.wants/* ! -name systemd-tmpfiles-setup.service -delete;
 rm -f /lib/systemd/system/multi-user.target.wants/*;
