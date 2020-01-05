@@ -319,7 +319,7 @@ class RoboFile extends \Robo\Tasks {
     $compose_env['ANSIBLE_PLAYBOOK'] = $opts['playbook'];
 
     $provision_io = new \ProvisionOps\Tools\Style($this->input(), $this->output());
-    $process = new \ProvisionOps\Tools\PowerProcess('docker-compose build --pull', $provision_io);
+    $process = new \ProvisionOps\Tools\PowerProcess('docker-compose build --pull --no-cache', $provision_io);
     $process->setEnv($compose_env);
     $process->disableOutput();
     $process->setTimeout(null);
