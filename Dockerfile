@@ -28,22 +28,35 @@
 #       build process. Use FROM_IMAGE=devshop/server to use a pre-configured
 #       image instead of building from scratch.
 #
-#     ANSIBLE_PLAYBOOK_COMMAND_OPTIONS
-#       Passed directly to the end of the `ansible-playbook` command.
-#
 #     ANSIBLE_PLAYBOOK
 #       The path to the ansible playbook file you want to run in the build.
 #       Relative to devshop repo root.
+#       Default: docker/playbook.server.yml
+#
+#     ANSIBLE_PLAYBOOK_COMMAND_OPTIONS
+#       Passed directly to the `ansible-playbook` command.
 #
 #     ANSIBLE_EXTRA_VARS
-#       Converted to EXTRA_VARS, which is consumed by the `ansible-playbook` command.
+#       Value is written to $ANSIBLE_EXTRA_VARS_FILE and used in the command
+#       `ansible-playbook --extra-vars=@$ANSIBLE_EXTRA_VARS_FILE`
 #       Can be JSON or YML.
+#        Default: <none>
+#
+#     ANSIBLE_TAGS
+#       Passed to the `--tags` ansible-playbook option.
+#       Default: all
+#
+#     ANSIBLE_SKIP_TAGS
+#       Passed to the `--skip-tags` ansible-playbook option.
+#       Default: <none>
 #
 #     ANSIBLE_VERBOSITY
-#       The path to the ansible playbook file you want to run in the build. Relative to devshop repo root.
+#       The level of verbosity for any `ansible` command. The number of "-v"s.
+#       Default: 0
 #
 #     ANSIBLE_CONFIG
 #       The path to an alternate ansible.cfg file. Relative to devshop repo root.
+#       Default: ansible.cfg (/usr/share/devshop/ansible.cfg)
 #
 #  Examples:
 #
@@ -55,21 +68,34 @@
 #
 #        docker build . --build-arg OS_VERSION=centos7
 #
-#    3. Rebuild image from `devshop/server:latest`, resulting in a faster build.
+#    3. Build image with PHP 7.4 by setting an Ansible Variable:
 #
-#        docker build . --build-arg FROM_IMAGE=devshop/server:latest
+#        docker build . --build-arg ANSIBLE_EXTRA_VARS="php_version: 7.4"
 #
-#    4. Pass environment variables to the docker container being built.
+#    4. Rebuild image from `devshop/server:latest`, and set ANSIBLE_TAGS to
+#       "none", resulting in a very short build.
 #
-#       FROM_IMAGE=devshop/server:latest \
-#       ANSIBLE_EXTRA_VARS="php_version: 7.4" \
-#          docker build . --build-arg FROM_IMAGE --build-arg ANSIBLE_EXTRA_VARS
+#        docker build . --build-arg FROM_IMAGE=devshop/server:latest \
+#          --build-arg ANSIBLE_TAGS=none
 #
-#      When you do not specify a value for a `--build-arg` option, it inherits the
+#      This is used for rapid testing of devmaster: the 'install-devmaster' tag
+#      is used when running the container, acting as the "install" step.
+#
+#    5. Pass environment variables to docker build args:
+#
+#       FROM_IMAGE=devshop/server:latest ANSIBLE_EXTRA_VARS="php_version: 7.4" \
+#          docker build . \
+#            --build-arg FROM_IMAGE \
+#           --build-arg ANSIBLE_EXTRA_VARS
+#
+#      When you do not specify a value for a `--build-arg` value, it inherits the
 #      execution environment of the `docker build` command.
 #
 #      This is useful in CI systems like Travis, where you can define environment
 #      variables in a in a matrix.
+#
+#      DON'T FORGET: Variables are only passed if you specify the --build-arg.
+#      @see .travis.yml file.
 #
 #   @TODO: When the robo commands are a little more consisten, put the directions back here.
 
