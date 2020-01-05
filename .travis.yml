@@ -103,6 +103,10 @@ install:
       --detach --publish 80:80 --privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro \
       $DEVSHOP_IMAGE_TAG
 
+  - sleep 3
+  - docker ps
+  - docker logs
+
   # Run playbook with runtime tags to install
   - |
     set -x && docker exec devshop_server \
