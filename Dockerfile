@@ -129,6 +129,7 @@ ENV ANSIBLE_CONFIG ${ANSIBLE_CONFIG:-"${DEVSHOP_PATH}/ansible.cfg"}
 ARG ANSIBLE_VERBOSITY=0
 ENV ANSIBLE_VERBOSITY ${ANSIBLE_VERBOSITY:-0}
 
+# @TODO $TAGS env vars do not seem to work. The documentation does not show a default: https://docs.ansible.com/ansible/latest/cli/ansible-playbook.html#cmdoption-ansible-playbook-tags
 ARG ANSIBLE_TAGS=""
 ENV TAGS ${ANSIBLE_TAGS:-""}
 
@@ -150,6 +151,9 @@ ENV DEVSHOP_TESTS_ASSETS_PATH="${DEVSHOP_PATH}/.github/test-assets"
 ENV ANSIBLE_BUILD_COMMAND="ansible-playbook $ANSIBLE_PLAYBOOK \
     -e aegir_user_uid=$DEVSHOP_USER_UID \
     -e aegir_user_gid=$DEVSHOP_USER_UID \
+    --extra-vars="$ANSIBLE_EXTRA_VARS" \
+    --tags="$ANSIBLE_TAGS" \
+    --skip-tags="$ANSIBLE_SKIP_TAGS" \
     $ANSIBLE_PLAYBOOK_COMMAND_OPTIONS \
 "
 
