@@ -118,7 +118,7 @@ install:
 script:
 
   - |
-    docker exec devshop_server \
+    docker exec --user aegir devshop_server \
       /usr/share/devshop/tests/devshop-tests.sh
 
 
