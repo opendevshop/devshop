@@ -85,19 +85,22 @@ install:
 
   # Launch devshop server container and run tests.
   # Default "run" is "command", systemd.
-  - docker run \
-    --name devshop_server \
-    --detach --publish 80:80 --privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro \
-    devshop/server:local
+  - |
+    docker run \
+      --name devshop_server \
+      --detach --publish 80:80 --privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro \
+      devshop/server:local
 
   # Run playbook with runtime tags to install
-  - docker exec devshop_server \
-    ansible-playbook /usr/share/devshop/docker/playbook.server.yml \
-    --tags install-devmaster --extra-vars "devmaster_skip_install=false"
+  - |
+    docker exec devshop_server \
+      ansible-playbook /usr/share/devshop/docker/playbook.server.yml \
+      --tags install-devmaster --extra-vars "devmaster_skip_install=false"
 
 script:
 
-  - docker exec devshop_server \
+  - |
+    docker exec devshop_server \
       /usr/share/devshop/tests/devshop-tests.sh
 
 
