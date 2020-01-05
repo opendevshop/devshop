@@ -23,11 +23,14 @@ env:
     - OS_VERSION: ubuntu1804
       PHP_VERSION: 7.2
 
-    - OS_VERSION: ubuntu1804
-      PHP_VERSION: 7.3
+    - OS: ubuntu1804
+      VARS: 'php_version: 7.2'
 
-    - OS_VERSION: ubuntu1804
-      PHP_VERSION: 7.4
+    - OS: ubuntu1804
+      VARS: 'php_version: 7.3'
+
+    - OS: ubuntu1804
+      VARS: 'php_version: 7.4'
 
 jobs:
   fast_finish: true
@@ -74,8 +77,9 @@ install:
   # Prepare containers
   - |
     docker build . \
-    --build-arg OS_VERSION \
-    --build-arg ANSIBLE_EXTRA_VARS='php_version: ${PHP_VERSION}' \
+    --build-arg OS_VERSION=$OS\
+    --build-arg FROM_IMAGE \
+    --build-arg ANSIBLE_EXTRA_VARS=$VARS \
     --build-arg ANSIBLE_VERBOSITY \
     --tag=devshop/server:local \
 
