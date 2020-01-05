@@ -411,9 +411,9 @@ class RoboFile extends \Robo\Tasks {
     if ($opts['build']) {
       // @TODO: Make the playbook a CLI option and figure out a better way to do this.
       // $playbook = (!empty($opts['test']) || !empty($opts['test-upgrade']))? 'playbook.testing.yml': 'docker/playbook.server.yml';
-      $playbook = 'docker/playbook.server.yml';
+      $playbook = $opts['playbook'] = 'docker/playbook.server.yml';
       $this->say("Preparing containers with playbook: $playbook");
-      $this->prepareContainers($opts['user-uid'], 'devshop.local.computer', $playbook, $opts);
+      $this->prepareContainers($opts['user-uid'], 'devshop.local.computer', $opts);
     }
 
     if ($opts['mode'] == 'docker-compose') {
