@@ -140,10 +140,11 @@ ENV TAGS ${ANSIBLE_TAGS:-"all"}
 ARG ANSIBLE_SKIP_TAGS="install-devmaster"
 ENV SKIP_TAGS ${ANSIBLE_SKIP_TAGS:-"install-devmaster"}
 
-# EXTRA_VARS is consumed by `ansible-playbook`.
-# YAML or JSON. See https://docs.ansible.com/ansible/latest/cli/ansible-playbook.html
 ARG ANSIBLE_EXTRA_VARS=""
 ENV EXTRA_VARS ${ANSIBLE_EXTRA_VARS:-""}
+
+ARG ANSIBLE_EXTRA_VARS_FILE=".extra-vars-file"
+ENV ANSIBLE_EXTRA_VARS_FILE ${ANSIBLE_EXTRA_VARS_FILE:-".extra-vars-file"}
 
 # @TODO: Figure out a better way to set ansible extra vars individually.
 ARG DEVSHOP_USER_UID=1000
@@ -155,7 +156,7 @@ ENV DEVSHOP_TESTS_ASSETS_PATH="${DEVSHOP_PATH}/.github/test-assets"
 ENV ANSIBLE_BUILD_COMMAND="ansible-playbook $ANSIBLE_PLAYBOOK \
 -e aegir_user_uid=$DEVSHOP_USER_UID \
 -e aegir_user_gid=$DEVSHOP_USER_UID \
---extra-vars="$EXTRA_VARS" \
+--extra-vars="@.extra-vars-file" \
 --tags="$TAGS" \
 --skip-tags="$SKIP_TAGS" \
 $ANSIBLE_PLAYBOOK_COMMAND_OPTIONS \
@@ -167,12 +168,19 @@ EXPOSE 80 443 3306 8025
 WORKDIR /var/aegir
 ENTRYPOINT ["docker-entrypoint"]
 
-# Provision with Ansible!
-RUN devshop-logo "Ansible Playbook Environment" && \
-  env && \
-  devshop-logo "Running Ansible Playbook Command" && \
-  echo "" && echo "$ANSIBLE_BUILD_COMMAND" && echo ""
+# Write final extra-vars file.
+RUN echo "$EXTRA_VARS" > $ANSIBLE_EXTRA_VARS_FILE
 
+# Pre-build Information
+RUN \
+  devshop-logo "Ansible Playbook Environment" && \
+    env && \
+  devshop-logo "Ansible Playbook Extra Vars" && \
+    cat $ANSIBLE_EXTRA_VARS_FILE && \
+  devshop-logo "Running Ansible Playbook Command" && \
+    echo "$ANSIBLE_BUILD_COMMAND"
+
+# Provision with Ansible!
 RUN $ANSIBLE_BUILD_COMMAND
 
 RUN devshop-logo "Ansible Playbook Docker Build Complete!" && \
