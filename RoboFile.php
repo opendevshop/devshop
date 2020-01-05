@@ -446,26 +446,7 @@ class RoboFile extends \Robo\Tasks {
       }
 
       $cmd[] = 'echo "Running docker-compose up with COMPOSE_FILE=$COMPOSE_FILE"... ';
-
-      // The --build option triggers the actions defined in Dockerfile,
-      // which runs `ansible-playbook $DEVSHOP_PLAYBOOK_PATH`
-      //
-      // The default playbook (docker/playbook.server.yml) does NOT install
-      // hostmaster, by setting the variable devmaster_skip_upgrade=true.
-      //
-      // It is run in a second process after the container is built
-      // to match the behavior of using the `devshop/server` image on docker hub.
-      //
-      // Devmaster should be installed into running containers only, not in the
-      // container image.
-      //
-      // This command runs the `docker build` command, then `docker-compose up`
-      if ($opts['build']) {
-        $cmd[] = "docker-compose up --build --detach";
-      }
-      else {
-        $cmd[] = "docker-compose up --detach";
-      }
+      $cmd[] = "docker-compose up --detach";
 
       // Run final playbook to install devshop.
       // Test commands must be run as application user.

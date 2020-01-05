@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set -e
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+PATH="$DIR:$PATH"
+
+# Detect systemD
+if [ -f "/lib/systemd/systemd" ]; then
+  COMMAND="/lib/systemd/systemd"
+fi
+devshop-logo "Launching SystemD with $COMMAND ..."
+exec $COMMAND
