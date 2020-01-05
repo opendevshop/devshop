@@ -271,17 +271,21 @@ class RoboFile extends \Robo\Tasks {
    * @param $user_uid Pass a UID to build the image with. Defaults to the UID of the user running `robo`
    *
    * @option $tag The string to tag the resulting container with.
-   * @option $from The image to use to build the docker image FROM.
+   * @option $from The image to use to build the docker image FROM. Ignored if "os" is set.
    * @option $dockerfile The dockerfile to use.
-   * @option $os-version An OS "slug" for any of the geerlingguy/docker-*-ansible images: https://hub.docker.com/u/geerlingguy/
+   * @option $os An OS "slug" for any of the geerlingguy/docker-*-ansible images: https://hub.docker.com/u/geerlingguy/
+   * @option $vars Ansible vars to pass to --extra-vars="" option.
    *
    */
-  public function prepareContainers($user_uid = NULL, $hostname = 'devshop.local.computer', $playbook = 'docker/playbook.server.yml', $opts = [
+  public function prepareContainers($user_uid = NULL, $hostname = 'devshop.local.computer', $opts = [
       'tag' => 'devshop/server:local',
       'from' => 'devshop/server:latest',
       'dockerfile' => 'Dockerfile',
-      'os-version' => null,
-      'ansible-extra-vars' => ''
+      'os' => '',
+      'vars' => '',
+      'tags' => '',
+      'skip-tags' => '',
+      'playbook' => 'docker/playbook.server.yml',
   ]) {
 
     $compose_env = array();
@@ -291,13 +295,10 @@ class RoboFile extends \Robo\Tasks {
       $compose_env['DEVSHOP_USER_UID'] = trim(shell_exec('id -u'));
     }
 
-    // Set FROM_IMAGE. If os-version is set, generate the name.
-    // If os-version is the default, set FROM to latest.
-    if ($opts['os-version'] == 'ubuntu1804') {
-      $opts['from'] = 'devshop/server:latest';
-    }
-    elseif ($opts['os-version']) {
-      $opts['from'] = "geerlingguy/docker-{$opts['os-version']}-ansible";
+    // Set FROM_IMAGE. If os is set, generate the name.
+    // If os is the default, set FROM to latest.
+    if (!empty($opts['os'])) {
+      $opts['from'] = "geerlingguy/docker-{$opts['os']}-ansible";
     }
 
     $this->yell('Building DevShop Container from: ' . $opts['from'], 40, 'blue');
@@ -309,18 +310,16 @@ class RoboFile extends \Robo\Tasks {
     // Set FROM using --from option.
     // @TODO: Tell users FROM _IMAGE env var doesn't work for prepare:containers?
     $compose_env['FROM_IMAGE'] = $opts['from'];
-
-    // Pass `robo` verbosity to Ansible.
     $compose_env['ANSIBLE_VERBOSITY'] = $this->ansibleVerbosity;
-
-    // Pass --ansible-extra-vars to ANSIBLE_EXTRA_VARS in the image.
-    $compose_env['ANSIBLE_EXTRA_VARS'] = $opts['ansible-extra-vars'];
+    $compose_env['ANSIBLE_EXTRA_VARS'] = $opts['vars'];
+    $compose_env['ANSIBLE_TAGS'] = $opts['tags'];
+    $compose_env['ANSIBLE_SKIP_TAGS'] = $opts['skip-tags'];
 
     // Pass `robo --playbook` option to Dockerfile.
-    $compose_env['ANSIBLE_PLAYBOOK'] = $playbook;
+    $compose_env['ANSIBLE_PLAYBOOK'] = $opts['playbook'];
 
     $provision_io = new \ProvisionOps\Tools\Style($this->input(), $this->output());
-    $process = new \ProvisionOps\Tools\PowerProcess('docker-compose build', $provision_io);
+    $process = new \ProvisionOps\Tools\PowerProcess('docker-compose build --pull', $provision_io);
     $process->setEnv($compose_env);
     $process->disableOutput();
     $process->setTimeout(null);
@@ -351,10 +350,6 @@ class RoboFile extends \Robo\Tasks {
    *   Launch an OS container, then install devshop using install.sh, then run
    * tests.
    *
-   *   robo up --mode=install.sh
-   * --install-sh-image=geerlingguy/docker-centos7-ansible Launch an OS
-   * container, then install devshop using install.sh in a CentOS 7 image.
-   *
    *   robo up --mode=manual
    *   Just launch the container. Allows you to manually run the install.sh script.
    *
@@ -362,10 +357,6 @@ class RoboFile extends \Robo\Tasks {
    * @option $test-upgrade Install an old version, upgrade it to this version,
    *   then run tests.
    * @option $mode Set to 'install.sh' to use the install.sh script for setup.
-   * @option $install-sh-image Enter any docker image to use for running the
-   *   install-sh-image. Since we need ansible, we are using geerlingguy's
-   *   geerlingguy/docker-centos7-ansible and
-   *   geerlingguy/docker-ubuntu1404-ansible images.
    * @option $user-uid Override the detected current user's UID when building
    *   containers.
    * @option $xdebug Set this option to launch with an xdebug container.
@@ -380,8 +371,6 @@ class RoboFile extends \Robo\Tasks {
 
     // Set 'mode' => 'install.sh' to run a traditional OS install.
     'mode' => 'docker-compose',
-    'install-sh-image' => 'geerlingguy/docker-ubuntu1404-ansible',
-    'install-sh-options' => '--server-webserver=apache',
     'user-uid' => NULL,
     'disable-xdebug' => TRUE,
     'no-dev' => FALSE,
@@ -389,7 +378,9 @@ class RoboFile extends \Robo\Tasks {
     'build' => FALSE,
     'skip-source-prep' => FALSE,
     'skip-install' => FALSE,
-    'os-version' => 'ubuntu1804',
+    'os' => 'ubuntu1804',
+    'from' => 'devshop/server:latest',
+    'vars' => '',
     'file' => 'Dockerfile',
   ]) {
 
