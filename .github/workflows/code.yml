@@ -1,4 +1,5 @@
 name: Code Quality
+on: [push]
 jobs:
   lint:
     name: Ansible Lint
