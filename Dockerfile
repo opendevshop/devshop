@@ -193,23 +193,20 @@ WORKDIR /var/aegir
 ENTRYPOINT ["docker-entrypoint"]
 
 # Pre-build Information
-# Write extra-vars.tmp if ANSIBLE_EXTRA_VARS is not empty.
 RUN \
   devshop-logo "Ansible Playbook Environment" && \
     env && \
-  [ -z "$ANSIBLE_EXTRA_VARS" ] && echo "No Extra Vars" || \
-    devshop-logo "Ansible Playbook Extra Vars | extra-vars.tmp" && \
-    (echo "$ANSIBLE_EXTRA_VARS" > extra-vars.tmp) && \
-    cat extra-vars.tmp;
+  [ -z "$ANSIBLE_EXTRA_VARS" ] && \
+    devshop-logo "No extra vars found. Use \"--build-arg ANSIBLE_EXTRA_VARS='var=value var2=value2'\" to alter the build." || \
+    devshop-logo "Ansible Playbook Extra Vars Found" && \
+    echo $ANSIBLE_EXTRA_VARS
 
 # Provision with Ansible!
-# If extra-vars.tmp file exists, pass to --extra-vars.
 RUN \
-  echo "" && \
-  [ -f extra-vars.tmp ] && ANSIBLE_BUILD_COMMAND="$ANSIBLE_BUILD_COMMAND --extra-vars=@extra-vars.tmp"; \
-  devshop-logo "Running Ansible Playbook Command" && \
-  echo "$ANSIBLE_BUILD_COMMAND" && \
-    $ANSIBLE_BUILD_COMMAND
+  echo "" && set -x && \
+  [ -z "$ANSIBLE_EXTRA_VARS" ] && \
+    $ANSIBLE_BUILD_COMMAND || \
+    $ANSIBLE_BUILD_COMMAND --extra-vars="$ANSIBLE_EXTRA_VARS"
 
 RUN devshop-logo "Ansible Playbook Docker Build Complete!" && \
 echo "Playbook: $ANSIBLE_PLAYBOOK" && \
