@@ -73,6 +73,9 @@ RUN chmod 766 $DEVSHOP_TESTS_ASSETS_PATH
 
 RUN ansible --version
 
+# Cleanup unwanted systemd files. See bin/docker-systemd-clean.
+RUN docker-systemd-clean
+
 # Remove Home Directory if desired so that devshop code is reinstalled.
 RUN if [ $DEVSHOP_REBUILD_HOME ]; then rm -rf /var/aegir; fi
 
