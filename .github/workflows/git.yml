@@ -1,4 +1,4 @@
-name: Git Split
+name: Git Management
 on: [push]
 jobs:
   monorepo-split:
