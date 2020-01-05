@@ -120,11 +120,13 @@ COPY ./ $DEVSHOP_PATH
 ENV PATH="${DEVSHOP_PATH}/bin:$PATH"
 
 # Announce some helpful stuff into the logs.
-RUN devshop-logo "Hi! Beginning to build Dockerfile from $FROM_IMAGE"
-
-RUN cat /etc/os-release 2>/dev/null || cat /etc/centos-release
-RUN ansible --version
-RUN set
+# Link centos-release file if there is one.
+RUN \
+  devshop-logo "Hi! Beginning to build Dockerfile from $FROM_IMAGE" \
+      cat /etc/centos-release; \
+      cat /etc/os-release; \
+  devshop-logo "Initial Docker Container Environment"; \
+      env
 
 RUN devshop-logo "Preparing Docker Container Environment..."
 
@@ -217,6 +219,11 @@ echo "Extra Vars: $EXTRA_VARS" && \
 echo "" && \
 echo "Ansible Playbook Command:" && \
 echo "$ANSIBLE_BUILD_COMMAND" && \
-echo "" && \
-env | grep "DEVSHOP" && \
-env | grep "ANSIBLE"
+echo ""
+
+RUN \
+    devshop-logo "Wrote build information to /etc/os-release" && \
+    env | grep "DEVSHOP" >> /etc/os-release && \
+    env | grep "ANSIBLE" >> /etc/os-release && \
+    cat  /etc/os-release
+
