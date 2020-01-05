@@ -21,6 +21,7 @@ env:
     - ANSIBLE_RUN_TAGS=devmaster-install
     - ANSIBLE_RUN_EXTRA_VARS="devmaster_skip_install=false"
 
+    - SYSTEMD_INIT=/lib/systemd/systemd
     - DEVSHOP_VERSION=1.x
     - DEVSHOP_IMAGE_TAG=devshop/server:local
     - GITHUB_REF=$TRAVIS_PULL_REQUEST_BRANCH
@@ -101,7 +102,7 @@ install:
     docker run \
       --name devshop_server \
       --detach --publish 80:80 --privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro \
-      $DEVSHOP_IMAGE_TAG
+      $DEVSHOP_IMAGE_TAG $SYSTEMD_INIT
 
   - sleep 3
   - docker ps
