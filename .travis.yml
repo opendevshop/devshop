@@ -13,7 +13,7 @@ branches:
 
 env:
   global:
-    - ANSIBLE_VERBOSITY=2
+    - ANSIBLE_VERBOSITY=1
     - ANSIBLE_PLAYBOOK=docker/playbook.server.yml
 
     # At runtime, use --tags=devmaster-install
@@ -105,7 +105,7 @@ install:
 
   - sleep 3
   - docker ps
-  - docker logs
+  - docker logs devshop_server
 
   # Run playbook with runtime tags to install
   - |
