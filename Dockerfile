@@ -94,11 +94,13 @@ COPY ./ $DEVSHOP_PATH
 ENV PATH="${DEVSHOP_PATH}/bin:$PATH"
 
 # Announce some helpful stuff into the logs.
-RUN devshop-logo "Building Dockerfile from $FROM_IMAGE"
+RUN devshop-logo "Hi! Beginning to build Dockerfile from $FROM_IMAGE"
 
 RUN cat /etc/os-release 2>/dev/null || cat /etc/centos-release
 RUN ansible --version
 RUN set
+
+RUN devshop-logo "Preparing Docker Container Environment..."
 
 #
 # Prepare Build Args with default values.
@@ -161,13 +163,26 @@ $ANSIBLE_PLAYBOOK_COMMAND_OPTIONS \
 
 RUN chmod 766 $DEVSHOP_TESTS_ASSETS_PATH
 
-# Provision with Ansible!
-RUN devshop-logo "Environment"
-RUN env
-RUN devshop-logo "$ANSIBLE_BUILD_COMMAND "
-
-RUN $ANSIBLE_BUILD_COMMAND
-
 EXPOSE 80 443 3306 8025
 WORKDIR /var/aegir
 ENTRYPOINT ["docker-entrypoint"]
+
+# Provision with Ansible!
+RUN devshop-logo "Ansible Playbook Environment" && \
+  env && \
+  devshop-logo "Running Ansible Playbook Command" && \
+  echo "" && echo "$ANSIBLE_BUILD_COMMAND" && echo ""
+
+RUN $ANSIBLE_BUILD_COMMAND
+
+RUN devshop-logo "Ansible Playbook Docker Build Complete!" && \
+echo "Playbook: $ANSIBLE_PLAYBOOK" && \
+echo "Tags: $TAGS" && \
+echo "Skip Tags: $SKIP_TAGS" && \
+echo "Extra Vars: $EXTRA_VARS" && \
+echo "" && \
+echo "Ansible Playbook Command:" && \
+echo "$ANSIBLE_BUILD_COMMAND" && \
+echo "" && \
+env | grep "DEVSHOP" && \
+env | grep "ANSIBLE"
