@@ -163,10 +163,10 @@ ENV ANSIBLE_VERBOSITY ${ANSIBLE_VERBOSITY:-0}
 # The `ansible-playbook --help` output implies that they do, but the docs do not
 # show a default value: https://docs.ansible.com/ansible/latest/cli/ansible-playbook.html#cmdoption-ansible-playbook-tags
 ARG ANSIBLE_TAGS="all"
-ENV TAGS ${ANSIBLE_TAGS:-"all"}
+ENV ANSIBLE_TAGS ${ANSIBLE_TAGS:-"all"}
 
 ARG ANSIBLE_SKIP_TAGS="install-devmaster"
-ENV SKIP_TAGS ${ANSIBLE_SKIP_TAGS:-"install-devmaster"}
+ENV ANSIBLE_SKIP_TAGS ${ANSIBLE_SKIP_TAGS:-"install-devmaster"}
 
 ARG ANSIBLE_EXTRA_VARS=""
 ENV ANSIBLE_EXTRA_VARS ${ANSIBLE_EXTRA_VARS:-""}
@@ -181,8 +181,8 @@ ENV DEVSHOP_TESTS_ASSETS_PATH="${DEVSHOP_PATH}/.github/test-assets"
 ENV ANSIBLE_BUILD_COMMAND="ansible-playbook $ANSIBLE_PLAYBOOK \
 -e aegir_user_uid=$DEVSHOP_USER_UID \
 -e aegir_user_gid=$DEVSHOP_USER_UID \
---tags="$TAGS" \
---skip-tags="$SKIP_TAGS" \
+--tags="$ANSIBLE_TAGS" \
+--skip-tags="$ANSIBLE_SKIP_TAGS" \
 $ANSIBLE_PLAYBOOK_COMMAND_OPTIONS \
 "
 
@@ -210,8 +210,8 @@ RUN \
 
 RUN devshop-logo "Ansible Playbook Docker Build Complete!" && \
 echo "Playbook: $ANSIBLE_PLAYBOOK" && \
-echo "Tags: $TAGS" && \
-echo "Skip Tags: $SKIP_TAGS" && \
+echo "Tags: $ANSIBLE_TAGS" && \
+echo "Skip Tags: $ANSIBLE_SKIP_TAGS" && \
 echo "Extra Vars: $ANSIBLE_EXTRA_VARS" && \
 echo "" && \
 echo "Ansible Playbook Command:" && \
