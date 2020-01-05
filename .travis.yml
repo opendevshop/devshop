@@ -122,6 +122,7 @@ script:
 
 after_failure:
   - docker logs devshop_server
+  - docker ps -a
 
 notifications:
   slack: devshophq:pb05x3ZL3qumHs0RjqEXvYfA
