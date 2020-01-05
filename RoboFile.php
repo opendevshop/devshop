@@ -378,9 +378,11 @@ class RoboFile extends \Robo\Tasks {
     'build' => FALSE,
     'skip-source-prep' => FALSE,
     'skip-install' => FALSE,
-    'os' => 'ubuntu1804',
+    'os' => '',
     'from' => 'devshop/server:latest',
     'vars' => '',
+    'tags' => '',
+    'skip-tags' => 'install-devshop',
     'file' => 'Dockerfile',
   ]) {
 
