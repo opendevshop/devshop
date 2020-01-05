@@ -88,7 +88,7 @@ install:
     docker build . \
     --build-arg OS_VERSION=$OS\
     --build-arg FROM_IMAGE \
-    --build-arg ANSIBLE_EXTRA_VARS=$VARS \
+    --build-arg ANSIBLE_EXTRA_VARS="$VARS" \
     --build-arg ANSIBLE_TAGS \
     --build-arg ANSIBLE_SKIP_TAGS \
     --build-arg ANSIBLE_VERBOSITY \
