@@ -193,7 +193,7 @@ RUN chmod 766 $DEVSHOP_TESTS_ASSETS_PATH
 
 EXPOSE 80 443 3306 8025
 WORKDIR /var/aegir
-CMD ["docker-entrypoint"]
+CMD ["docker-systemd"]
 ENTRYPOINT ["docker-entrypoint"]
 
 # Pre-build Information
