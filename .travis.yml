@@ -112,7 +112,7 @@ script:
 
 
 after_failure:
-  - docker-compose logs
+  - docker logs devshop_server
 
 notifications:
   slack: devshophq:pb05x3ZL3qumHs0RjqEXvYfA
