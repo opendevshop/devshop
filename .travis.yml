@@ -14,11 +14,15 @@ branches:
 env:
   global:
     - ANSIBLE_VERBOSITY=2
+    - ANSIBLE_PLAYBOOK=/usr/share/devshop/docker/playbook.server.yml
 
-    # Only run devmaster-install on docker run/exec.
+    # At runtime, use --tags=devmaster-install
+    - ANSIBLE_RUN_PLAYBOOK=/usr/share/devshop/docker/playbook.server.yml
     - ANSIBLE_RUN_TAGS=devmaster-install
     - ANSIBLE_RUN_EXTRA_VARS="devmaster_skip_install=false"
+
     - DEVSHOP_VERSION=1.x
+    - DEVSHOP_IMAGE_TAG=devshop/server:local
     - GITHUB_REF=$TRAVIS_PULL_REQUEST_BRANCH
     - GITHUB_HEAD_REF=$TRAVIS_PULL_REQUEST_BRANCH
     - SITE_HOSTS='dev.drup.devshop.travis dev.projectname.devshop.travis live.projectname.devshop.travis testenv.drpl8.devshop.travis dev.rootproject.devshop.local.computer devshop.local.computer'
@@ -88,7 +92,8 @@ install:
     --build-arg ANSIBLE_TAGS \
     --build-arg ANSIBLE_SKIP_TAGS \
     --build-arg ANSIBLE_VERBOSITY \
-    --tag=devshop/server:local \
+    --build-arg ANSIBLE_PLAYBOOK \
+    --tag $DEVSHOP_IMAGE_TAG \
 
   # Launch devshop server container and run tests.
   # Default "run" is "command", systemd.
@@ -96,12 +101,12 @@ install:
     docker run \
       --name devshop_server \
       --detach --publish 80:80 --privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro \
-      devshop/server:local
+      $DEVSHOP_IMAGE_TAG
 
   # Run playbook with runtime tags to install
   - |
     docker exec devshop_server \
-      ansible-playbook /usr/share/devshop/docker/playbook.server.yml \
+      ansible-playbook $ANSIBLE_RUN_PLAYBOOK \
       --tags $ANSIBLE_RUN_TAGS --extra-vars "$ANSIBLE_RUN_EXTRA_VARS"
 
 script:
