@@ -175,6 +175,7 @@ ENV ANSIBLE_EXTRA_VARS ${ANSIBLE_EXTRA_VARS:-""}
 ARG DEVSHOP_USER_UID=1000
 ENV DEVSHOP_USER_UID ${DEVSHOP_USER_UID:-1000}
 
+
 ENV DEVSHOP_ENTRYPOINT_LOG_FILES="/var/log/aegir/*"
 ENV DEVSHOP_TESTS_ASSETS_PATH="${DEVSHOP_PATH}/.github/test-assets"
 
@@ -186,6 +187,8 @@ ENV ANSIBLE_BUILD_COMMAND="ansible-playbook $ANSIBLE_PLAYBOOK \
 $ANSIBLE_PLAYBOOK_COMMAND_OPTIONS \
 "
 
+# Cleanup unwanted systemd files. See bin/docker-systemd-clean and https://github.com/geerlingguy/docker-ubuntu1804-ansible/pull/12
+RUN docker-systemd-clean
 RUN chmod 766 $DEVSHOP_TESTS_ASSETS_PATH
 
 EXPOSE 80 443 3306 8025

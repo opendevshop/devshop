@@ -17,7 +17,7 @@ devmaster_id_rsa.pub
 bin/*
 !bin/devshop*
 !bin/branch-or-tag
-!bin/docker-entrypoint
+!bin/docker*
 !bin/hosting-queue-runner
 !bin/mysql-wait
 
