@@ -14,6 +14,10 @@ branches:
 env:
   global:
     - ANSIBLE_VERBOSITY=2
+
+    # Only run devmaster-install on docker run/exec.
+    - ANSIBLE_RUN_TAGS=devmaster-install
+    - ANSIBLE_RUN_EXTRA_VARS="devmaster_skip_install=false"
     - DEVSHOP_VERSION=1.x
     - GITHUB_REF=$TRAVIS_PULL_REQUEST_BRANCH
     - GITHUB_HEAD_REF=$TRAVIS_PULL_REQUEST_BRANCH
@@ -21,7 +25,8 @@ env:
 
   matrix:
     - FROM_IMAGE: devshop/server:latest
-      ANSIBLE_TAGS: devmaster-install
+      # Do not run anything on docker build.
+      ANSIBLE_TAGS: none
 
     - OS: ubuntu1804
       VARS: 'php_version: 7.2'
@@ -80,6 +85,8 @@ install:
     --build-arg OS_VERSION=$OS\
     --build-arg FROM_IMAGE \
     --build-arg ANSIBLE_EXTRA_VARS=$VARS \
+    --build-arg ANSIBLE_TAGS \
+    --build-arg ANSIBLE_SKIP_TAGS \
     --build-arg ANSIBLE_VERBOSITY \
     --tag=devshop/server:local \
 
@@ -95,7 +102,7 @@ install:
   - |
     docker exec devshop_server \
       ansible-playbook /usr/share/devshop/docker/playbook.server.yml \
-      --tags install-devmaster --extra-vars "devmaster_skip_install=false"
+      --tags $ANSIBLE_RUN_TAGS --extra-vars "$ANSIBLE_RUN_EXTRA_VARS"
 
 script:
 
