@@ -17,7 +17,7 @@ env:
     - ANSIBLE_PLAYBOOK=docker/playbook.server.yml
 
     # At runtime, use --tags=devmaster-install
-    - ANSIBLE_RUN_PLAYBOOK=docker/playbook.server.yml
+    - ANSIBLE_RUN_PLAYBOOK=/usr/share/devshop/docker/playbook.server.yml
     - ANSIBLE_RUN_TAGS=devmaster-install
     - ANSIBLE_RUN_EXTRA_VARS="devmaster_skip_install=false"
 
