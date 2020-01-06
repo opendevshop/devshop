@@ -1,29 +1,25 @@
 #!/bin/bash
 set -e
-
-# Use path relative to this script to find bin dir.
 DEVSHOP_PATH="$( cd "$(dirname "$0")"/../bin ; pwd -P )"
+PATH="$DEVSHOP_PATH:$PATH"
 
-echo "DevShop | devshop-tests.sh | environment"
-env
+log() {
+  echo "DevShop | devshop-tests.sh | $@";
+}
 
-echo "DevShop | devshop-tests.sh | DevShop Version in: $DEVSHOP_PATH"
-cd $DEVSHOP_PATH
-git show --shortstat
-git remote -v
-cd -
+devshop-logo "Starting script..."
+devshop status
 
 # Print the lines and exit if a failure happens.
 echo "DevShop | devshop-tests.sh | Checking versions of devshop, drush, node, npm..."
-/usr/share/devshop/bin/devshop --version
-/usr/share/devshop/bin/drush --version
-
-# Set PATH to devshop bin folder so drush, node, npm, and devshop commands are fixed.
-export PATH=${DEVSHOP_PATH}:${PATH}
+echo "DevShop Version:  " && devshop --version
+echo "Drush Version:    " && drush --version
+echo "Node Version:     " && node --version
+echo "NPM Version:      " && npm --version
 
 # Run remaining tasks from install process.
 # Pause the task queue.
-echo "DevShop | devshop-tests.sh | Disabling hosting queue..."
+log "Disabling hosting queue..."
 drush @hostmaster dis hosting_queued -y
 drush @hostmaster vset hosting_queued_paused 1
 
