@@ -11,6 +11,8 @@ mysql_wait() {
     mysqladmin ping --host=$DATABASE_HOST --user=root --password=$MYSQL_ROOT_PASSWORD > /dev/null 2>&1
 }
 
+log "Checking database server $DATABASE_HOST ..."
+
 while !(mysql_wait)
 do
    sleep 1
