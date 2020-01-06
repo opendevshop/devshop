@@ -79,10 +79,6 @@ RUN docker-systemd-clean
 # Remove Home Directory if desired so that devshop code is reinstalled.
 RUN if [ $DEVSHOP_REBUILD_HOME ]; then rm -rf /var/aegir; fi
 
-# Install roles inside Docker.
-RUN echo "Running: ansible-galaxy install --ignore-errors -r /usr/share/devshop/requirements.yml -p /usr/share/devshop/roles ..."
-RUN ansible-galaxy install --ignore-errors -r /usr/share/devshop/requirements.yml -p /usr/share/devshop/roles
-
 # Provision DevShop inside Docker.
 RUN echo "Running: $ANSIBLE_BUILD_COMMAND ..."
 RUN $ANSIBLE_BUILD_COMMAND
