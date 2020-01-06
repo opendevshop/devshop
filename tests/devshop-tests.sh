@@ -14,8 +14,9 @@ devshop status
 echo "DevShop | devshop-tests.sh | Checking versions of devshop, drush, node, npm..."
 echo "DevShop Version:  " && devshop --version
 echo "Drush Version:    " && drush --version
-echo "Node Version:     " && node --version
-echo "NPM Version:      " && npm --version
+
+#echo "Node Version:     " && node --version
+#echo "NPM Version:      " && npm --version
 
 # Run remaining tasks from install process.
 # Pause the task queue.
