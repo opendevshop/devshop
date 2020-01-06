@@ -30,8 +30,8 @@ env:
 
   matrix:
     - FROM_IMAGE: devshop/server:latest
-      # Do not run anything on docker build.
       ANSIBLE_TAGS: none
+      VARS: 'devshop_danger_remove_devmaster: true'
 
     - OS: ubuntu1804
       VARS: 'php_version: 7.2'
