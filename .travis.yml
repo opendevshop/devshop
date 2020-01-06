@@ -21,7 +21,7 @@ env:
     - ANSIBLE_RUN_TAGS=install-devmaster
     - ANSIBLE_RUN_EXTRA_VARS="devmaster_skip_install=false"
 
-    - SYSTEMD_INIT=/lib/systemd/systemd
+    - SYSTEMD_INIT=docker-systemd
     - DEVSHOP_VERSION=1.x
     - DEVSHOP_IMAGE_TAG=devshop/server:local
     - GITHUB_REF=$TRAVIS_PULL_REQUEST_BRANCH
