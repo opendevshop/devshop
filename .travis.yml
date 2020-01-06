@@ -99,10 +99,13 @@ install:
   # Launch devshop server container and run tests.
   # Default "run" is "command", systemd.
   - |
-    docker run \
+    set -x && docker run \
       --hostname devshop.local.computer \
       --name devshop_server \
       --detach --publish 80:80 --privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro \
+      --env ANSIBLE_TAGS=$ANSIBLE_RUN_TAGS \
+      --env ANSIBLE_SKIP_TAGS=$ANSIBLE_RUN_SKIP_TAGS \
+      --env ANSIBLE_EXTRA_VARS=$ANSIBLE_RUN_EXTRA_VARS \
       $DEVSHOP_IMAGE_TAG $SYSTEMD_INIT
 
   - sleep 3
