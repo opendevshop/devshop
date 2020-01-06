@@ -33,16 +33,16 @@ env:
       # Removes /var/aegir/devmaster-x on docker build.
       # Platform gets rebuilt in devmaster install step.
       ANSIBLE_TAGS: remove-devmaster
-      VARS: 'devshop_danger_remove_devmaster: true'
+      VARS: 'devshop_danger_remove_devmaster=true'
 
     - OS: ubuntu1804
-      VARS: 'php_version: 7.2'
+      VARS: 'php_version=7.2'
 
     - OS: ubuntu1804
-      VARS: 'php_version: 7.3'
+      VARS: 'php_version=7.3'
 
     - OS: ubuntu1804
-      VARS: 'php_version: 7.4'
+      VARS: 'php_version=7.4'
 
 jobs:
   fast_finish: true
