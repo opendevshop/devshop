@@ -37,6 +37,5 @@ galaxy_info:
 dependencies:
   - opendevshop.users
   - geerlingguy.supervisor
-  - geerlingguy.mysql
   - geerlingguy.php
   - geerlingguy.composer
