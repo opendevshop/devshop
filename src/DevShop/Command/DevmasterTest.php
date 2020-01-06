@@ -124,6 +124,12 @@ class DevmasterTest extends Command {
       }
     });
 
+    // Show git info
+    $process = new Process('git show');
+    $process->setWorkingDirectory($input->getOption('behat-path'));
+    $git_show = $process->run()->getOutput();
+    $this->output->writeln($git_show);
+
     // Run bin/behat
     $cmd = 'bin/behat --colors --format-settings=\'{"expand": true}\'';
     
