@@ -4,6 +4,7 @@
     name: "{{ server_hostname }}"
   when: server_hostname != empty_string
   ignore_errors: "{{ server_hostname_ignore_errors }}"
+  tags: [install-devmaster]
 
 - name: Include version specific variables for Debian OS Family
   include_vars: "vars.{{ ansible_os_family }}.yml"
@@ -138,6 +139,13 @@
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
 
+- name: "Remove existing Devmaster Source Code from {{ devshop_devmaster_path }} before installing, if requested."
+  when: devshop_danger_remove_devmaster
+  file:
+    path: "{{ devshop_devmaster_path }}"
+    state: absent
+  tags: [never, rebuild-devmaster]
+
 - name: "Prepare DevShop Web Interface Source Code: {{ devmaster_make_command }}"
   become: true
   become_user: "{{ aegir_user_name }}"
@@ -147,6 +155,7 @@
   args:
     creates: "{{ devshop_devmaster_path }}/index.php"
     chdir: "{{ devshop_cli_path }}"
+  tags: [rebuild-devmaster]
 
 - name: Clear the drush cache.
   command: "{{ drush_bin_path }} cc drush"

@@ -1,0 +1,29 @@
+---
+dependencies: []
+
+galaxy_info:
+  author: geerlingguy
+  description: Allows different PHP versions to be installed.
+  company: "Midwestern Mac, LLC"
+  license: "MIT"
+  issue_tracker_url: https://github.com/geerlingguy/ansible-role-php-versions/issues
+  min_ansible_version: 2.4
+  platforms:
+    - name: EL
+      versions:
+        - all
+    - name: Debian
+      versions:
+        - all
+    - name: Ubuntu
+      versions:
+        - trusty
+        - xenial
+        - bionic
+  galaxy_tags:
+    - php
+    - web
+    - drupal
+    - vm
+    - magento
+    - wordpress

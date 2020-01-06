@@ -34,6 +34,7 @@ mysql_root_password_update: false
 aegir_db_host: localhost
 aegir_client_name: admin
 aegir_logs_path: /var/log/aegir
+
 hosting_queue_runner_log_path: "{{ aegir_logs_path }}/hosting-queue-runner.log"
 
 # These files are created if they don't exist.
@@ -100,3 +101,6 @@ devshop_support_license_key: ""
 
 # The path to the script to use for the Hosting Task Queue Runner. See opendevshop/devshop/bin/hosting-queue-runner
 hosting_queue_runner_bin_path: "{{ devshop_cli_bin_path }}/hosting-queue-runner"
+
+# Triggers the removal of devshop_devmaster_path: `rm -rf {{ devshop_devmaster_path }}`
+devshop_danger_remove_devmaster: false
