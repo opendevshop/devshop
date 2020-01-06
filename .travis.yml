@@ -120,6 +120,7 @@ install:
     docker exec devshop_server service mysql start && \
     docker exec devshop_server systemctl status --no-pager && \
     docker exec devshop_server rm -rf /var/aegir/devmaster-* && \
+    docker exec devshop_server ls -la /var/aegir && \
     set -x && docker exec devshop_server \
     ansible-playbook $ANSIBLE_RUN_PLAYBOOK \
       --tags "$ANSIBLE_RUN_TAGS" \
