@@ -30,7 +30,9 @@ env:
 
   matrix:
     - FROM_IMAGE: devshop/server:latest
-      ANSIBLE_TAGS: none
+      # Removes /var/aegir/devmaster-x on docker build.
+      # Platform gets rebuilt in devmaster install step.
+      ANSIBLE_TAGS: remove-devmaster
       VARS: 'devshop_danger_remove_devmaster: true'
 
     - OS: ubuntu1804
