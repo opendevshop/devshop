@@ -48,13 +48,6 @@
   changed_when: true
   tags: [install-devmaster]
 
-- name: "Remove existing Devmaster Source Code from {{ devshop_devmaster_path }} before installing, if requested."
-  when: devshop_danger_remove_devmaster
-  file:
-    path: "{{ devshop_devmaster_path }}"
-    state: absent
-  tags: [install-devmaster, rebuild-devmaster]
-
 - name: Install Devmaster
   become: true
   become_user: "{{ aegir_user_name }}"
