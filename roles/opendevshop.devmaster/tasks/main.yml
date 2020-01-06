@@ -4,6 +4,7 @@
     name: "{{ server_hostname }}"
   when: server_hostname != empty_string
   ignore_errors: "{{ server_hostname_ignore_errors }}"
+  tags: [install-devmaster]
 
 - name: Include version specific variables for Debian OS Family
   include_vars: "vars.{{ ansible_os_family }}.yml"
