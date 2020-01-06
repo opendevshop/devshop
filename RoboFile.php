@@ -455,6 +455,10 @@ class RoboFile extends \Robo\Tasks {
       $cmd[] = 'echo "Running docker-compose up with COMPOSE_FILE=$COMPOSE_FILE"... ';
       $cmd[] = "docker-compose up --detach";
       $cmd[] = "sleep 2";
+
+      // Start mysqld. Not sure why it's not kicking on.
+      $cmd[] = "docker-compose exec -T devshop service mysql start";
+      $cmd[] = "sleep 2";
       $cmd[] = "docker-compose logs";
       $cmd[] = "docker-compose exec -T devshop systemctl status --no-pager";
 
@@ -498,6 +502,11 @@ class RoboFile extends \Robo\Tasks {
       $compose_env = [];
       $compose_env['COMPOSE_FILE'] =  $compose_file;
       $compose_env['ANSIBLE_VERBOSITY'] = $this->ansibleVerbosity;
+
+      // Reset ENV vars so they don't override CLI options.
+      $compose_env['ANSIBLE_TAGS'] = $opts['tags'];
+      $compose_env['ANSIBLE_SKIP_TAGS'] = $opts['skip-tags'];
+      $compose_env['ANSIBLE_PLAYBOOK'] = $opts['playbook'];
 
       if (!empty($cmd)) {
         foreach ($cmd as $command) {

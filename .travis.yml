@@ -117,7 +117,7 @@ install:
   # @TODO: Create a bin script that runs ansible-playbook using our env vars.
   # @TODO: Not sure why services don't when using FROM devshop/server:latest.
   - |
-    docker exec devshop_server service start mysql && \
+    docker exec devshop_server service mysql start && \
     docker exec devshop_server systemctl status --no-pager && \
     set -x && docker exec devshop_server \
     ansible-playbook $ANSIBLE_RUN_PLAYBOOK \
