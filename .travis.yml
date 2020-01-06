@@ -117,6 +117,7 @@ install:
   # @TODO: Create a bin script that runs ansible-playbook using our env vars.
   - |
     docker exec devshop_server env && \
+    docker exec devshop_server systemctl status --no-pager && \
     set -x && docker exec devshop_server \
     ansible-playbook $ANSIBLE_RUN_PLAYBOOK \
       --tags "$ANSIBLE_RUN_TAGS" \
