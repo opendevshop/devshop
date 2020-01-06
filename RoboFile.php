@@ -62,6 +62,27 @@ class RoboFile extends \Robo\Tasks {
    */
   private $devshop_root_path;
 
+
+  /**
+   * Pass robo -v to Ansible -v.
+   */
+  private function setVerbosity() {
+    switch ($this->output->getVerbosity()) {
+      case OutputInterface::VERBOSITY_VERBOSE:
+        $this->ansibleVerbosity = 1;
+        break;
+      case OutputInterface::VERBOSITY_VERY_VERBOSE:
+        $this->ansibleVerbosity = 2;
+        break;
+      case OutputInterface::VERBOSITY_DEBUG:
+        $this->ansibleVerbosity = 3;
+        break;
+      default:
+        $this->ansibleVerbosity = 0;
+        break;
+    }
+  }
+
   public function  __construct()
   {
     $this->git_ref = trim(str_replace('refs/heads/', '', shell_exec("git describe --tags --exact-match 2> /dev/null || git symbolic-ref -q HEAD 2> /dev/null")));
@@ -69,23 +90,6 @@ class RoboFile extends \Robo\Tasks {
     if (empty($this->git_ref) && !empty($_SERVER['GITHUB_REF'])) {
       $this->git_ref = $_SERVER['GITHUB_REF'];
     }
-
-    // Pass robo -v to Ansible -v.
-    switch ($this->output()->getVerbosity()) {
-      case OutputInterface::VERBOSITY_VERBOSE:
-        $this->ansibleVerbosity = 1;
-        break;
-      case OutputInterface::VERBOSITY_VERY_VERBOSE:
-        $this->ansible_verbosity = 2;
-        break;
-      case OutputInterface::VERBOSITY_DEBUG:
-        $this->ansible_verbosity = 3;
-        break;
-      default:
-        $this->ansible_verbosity = 0;
-        break;
-    }
-
 
     // Tell Provision power process to print output directly.
     putenv('PROVISION_PROCESS_OUTPUT=direct');
@@ -288,6 +292,8 @@ class RoboFile extends \Robo\Tasks {
       'playbook' => 'docker/playbook.server.yml',
   ]) {
 
+    $this->setVerbosity();
+
     $compose_env = array();
 
     // Determine current UID.
@@ -388,6 +394,7 @@ class RoboFile extends \Robo\Tasks {
 
     // Check for tools
     $this->prepareHost();
+    $this->setVerbosity();
 
     if (empty($this->devshop_root_path)) {
       $this->devshop_root_path = __DIR__;
@@ -447,6 +454,9 @@ class RoboFile extends \Robo\Tasks {
 
       $cmd[] = 'echo "Running docker-compose up with COMPOSE_FILE=$COMPOSE_FILE"... ';
       $cmd[] = "docker-compose up --detach";
+      $cmd[] = "sleep 2";
+      $cmd[] = "docker-compose logs";
+      $cmd[] = "docker-compose exec -T devshop systemctl status --no-pager";
 
       // Run final playbook to install devshop.
       // Test commands must be run as application user.
@@ -485,13 +495,15 @@ class RoboFile extends \Robo\Tasks {
         }
       }
 
+      $compose_env = [];
+      $compose_env['COMPOSE_FILE'] =  $compose_file;
+      $compose_env['ANSIBLE_VERBOSITY'] = $this->ansibleVerbosity;
+
       if (!empty($cmd)) {
         foreach ($cmd as $command) {
           $provision_io = new \ProvisionOps\Tools\Style($this->input, $this->output);
           $process = new \ProvisionOps\Tools\PowerProcess($command, $provision_io);
-          $process->setEnv([
-            'COMPOSE_FILE' => $compose_file
-          ]);
+          $process->setEnv($compose_env);
           $isTty = !empty($_SERVER['XDG_SESSION_TYPE']) && $_SERVER['XDG_SESSION_TYPE'] == 'tty';
           $process->setTty($isTty);
           $process->setTimeout(NULL);
