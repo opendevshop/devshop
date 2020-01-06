@@ -106,7 +106,8 @@ install:
       --env ANSIBLE_TAGS=$ANSIBLE_RUN_TAGS \
       --env ANSIBLE_SKIP_TAGS=$ANSIBLE_RUN_SKIP_TAGS \
       --env ANSIBLE_EXTRA_VARS=$ANSIBLE_RUN_EXTRA_VARS \
-      $DEVSHOP_IMAGE_TAG $SYSTEMD_INIT
+      $DEVSHOP_IMAGE_TAG $SYSTEMD_INIT \
+      && set +x
 
   - sleep 3
   - docker ps
