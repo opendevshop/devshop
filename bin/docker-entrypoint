@@ -16,6 +16,9 @@ log() {
   echo "DevShop | entrypoint | $@";
 }
 
+COMMAND="$*"
+COMMAND=${COMMAND:-docker-systemd}
+
 if [ -z ${DEVSHOP_ENTRYPOINT_LOG_FILES+} ]; then
   log "Tailing logs: $DEVSHOP_ENTRYPOINT_LOG_FILES"
   tail -f $DEVSHOP_ENTRYPOINT_LOG_FILES &
@@ -25,5 +28,5 @@ fi
 
 sleep 3
 
-log "Running: $@"
-exec "$@"
+log "Running: $COMMAND"
+exec "$COMMAND"
