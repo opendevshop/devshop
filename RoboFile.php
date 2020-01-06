@@ -469,6 +469,8 @@ class RoboFile extends \Robo\Tasks {
       }
       else {
 
+        $cmd[]= "docker-compose exec -T devshop env";
+
         // This is run if neither --test or --test-upgrade commands are run.
         // We assume this means launch a development environment.
         if (!$opts['skip-install']) {
