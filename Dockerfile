@@ -141,7 +141,7 @@ RUN \
     if [ -d $DEVSHOP_PATH ]; then   \
         $LINE; \
         echo " Checking $DEVSHOP_PATH: ! Pre-existing DevShop found !"; \
-        git status; git log -1; \
+        cat .git/HEAD; git status; git log -1; \
     else      \
         $LINE; \
         echo " Checking $DEVSHOP_PATH: DevShop Not Present. This is a fresh image"; \
