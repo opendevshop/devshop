@@ -36,8 +36,8 @@ services:
       dockerfile: 'Dockerfile'
       args:
       # Default `docker-compose up` will use devshop/server:latest. Set this var to remove the pre-existing devmaster code.
-      - ANSIBLE_EXTRA_VARS="devshop_danger_remove_devmaster=true"
-      - ANSIBLE_TAGS="remove-devmaster"
+      - ANSIBLE_EXTRA_VARS=${ANSIBLE_EXTRA_VARS:-devshop_danger_remove_devmaster=true}
+      - ANSIBLE_TAGS=${ANSIBLE_TAGS:-remove-devmaster}
 
       # If a value for local development should be different than docker hub image,
       # set a default here.
