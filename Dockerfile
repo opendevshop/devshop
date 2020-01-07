@@ -207,7 +207,7 @@ RUN \
 
 # Provision with Ansible!
 RUN \
-  devshop-logo "Running: $ANSIBLE_BUILD_COMMAND --extra-vars=\"$ANSIBLE_EXTRA_VARS\"";
+  devshop-logo "Running: $ANSIBLE_BUILD_COMMAND --extra-vars=\"$ANSIBLE_EXTRA_VARS\"" && \
   $ANSIBLE_BUILD_COMMAND --extra-vars="$ANSIBLE_EXTRA_VARS"
 
 RUN devshop-logo "Ansible Playbook Docker Build Complete!" && \
