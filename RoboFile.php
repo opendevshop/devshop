@@ -259,16 +259,21 @@ class RoboFile extends \Robo\Tasks {
   }
 
   /**
-   * Build a devshop/server container.
+   * Build devshop containers.
    *
    * By default, `robo prepare:containers` will build a new container image
    * using the 'Dockerfile' using FROM 'devshop/server:latest'. This shortens
    * build times because the image was pre-built on docker hub.
    *
    * To force a new local build of the 'devshop/server' container image from
-   * scratch, use the '--full' option.
+   * scratch, use the '--from' option to specify a full docker image string or
+   * the `--os` option to use a  `geerlingguy/docker-*-ansible` image.
    *
-   * To create a local container
+   * For example:
+   *
+   *   robo up --os centos7
+   *
+   * will build the container from geerlingguy/docker-centos7-ansible.
    *
    * @example bin/robo prepare:containers
    *
@@ -278,8 +283,10 @@ class RoboFile extends \Robo\Tasks {
    * @option $from The image to use to build the docker image FROM. Ignored if "os" is set.
    * @option $dockerfile The dockerfile to use.
    * @option $os An OS "slug" for any of the geerlingguy/docker-*-ansible images: https://hub.docker.com/u/geerlingguy/
-   * @option $vars Ansible vars to pass to --extra-vars="" option.
-   *
+   * @option $vars Ansible vars to pass to --extra-vars option.
+   * @option $tags Ansible tags to pass to --tags option.
+   * @option $skip_tags Ansible tags to pass to --skip-tags option.
+   * @option $playbook Ansible tags to pass to ansible-playbook command.
    */
   public function prepareContainers($user_uid = NULL, $hostname = 'devshop.local.computer', $opts = [
       'tag' => 'devshop/server:local',
@@ -294,11 +301,12 @@ class RoboFile extends \Robo\Tasks {
 
     $this->setVerbosity();
 
-    $compose_env = array();
+    // Environment variables at build time: AKA Build Args.
+    $env_build = array();
 
     // Determine current UID.
     if (is_null($user_uid)) {
-      $compose_env['DEVSHOP_USER_UID'] = trim(shell_exec('id -u'));
+      $env_build['DEVSHOP_USER_UID'] = trim(shell_exec('id -u'));
     }
 
     // Set FROM_IMAGE. If os is set, generate the name.
@@ -315,18 +323,18 @@ class RoboFile extends \Robo\Tasks {
 
     // Set FROM using --from option.
     // @TODO: Tell users FROM _IMAGE env var doesn't work for prepare:containers?
-    $compose_env['FROM_IMAGE'] = $opts['from'];
-    $compose_env['ANSIBLE_VERBOSITY'] = $this->ansibleVerbosity;
-    $compose_env['ANSIBLE_EXTRA_VARS'] = $opts['vars'];
-    $compose_env['ANSIBLE_TAGS'] = $opts['tags'];
-    $compose_env['ANSIBLE_SKIP_TAGS'] = $opts['skip-tags'];
+    $env_build['FROM_IMAGE'] = $opts['from'];
+    $env_build['ANSIBLE_VERBOSITY'] = $this->ansibleVerbosity;
+    $env_build['ANSIBLE_EXTRA_VARS'] = $opts['vars'];
+    $env_build['ANSIBLE_TAGS'] = $opts['tags'];
+    $env_build['ANSIBLE_SKIP_TAGS'] = $opts['skip-tags'];
 
     // Pass `robo --playbook` option to Dockerfile.
-    $compose_env['ANSIBLE_PLAYBOOK'] = $opts['playbook'];
+    $env_build['ANSIBLE_PLAYBOOK'] = $opts['playbook'];
 
     $provision_io = new \ProvisionOps\Tools\Style($this->input(), $this->output());
     $process = new \ProvisionOps\Tools\PowerProcess('docker-compose build --pull --no-cache', $provision_io);
-    $process->setEnv($compose_env);
+    $process->setEnv($env_build);
     $process->disableOutput();
     $process->setTimeout(null);
     $process->setTty(!empty($_SERVER['XDG_SESSION_TYPE']) && $_SERVER['XDG_SESSION_TYPE'] == 'tty');
@@ -454,13 +462,12 @@ class RoboFile extends \Robo\Tasks {
 
       $cmd[] = 'echo "Running docker-compose up with COMPOSE_FILE=$COMPOSE_FILE"... ';
       $cmd[] = "docker-compose up --detach";
-      $cmd[] = "sleep 2";
 
       // Start mysqld. Not sure why it's not kicking on.
-      $cmd[] = "docker-compose exec -T devshop service mysql start";
       $cmd[] = "sleep 2";
-      $cmd[] = "docker-compose logs";
+      $cmd[] = "docker-compose exec -T devshop service mysql start";
       $cmd[] = "docker-compose exec -T devshop systemctl status --no-pager";
+      $cmd[] = "docker-compose exec -T devshop ls -la";
 
       // Run final playbook to install devshop.
       // Test commands must be run as application user.
@@ -499,20 +506,19 @@ class RoboFile extends \Robo\Tasks {
         }
       }
 
-      $compose_env = [];
-      $compose_env['COMPOSE_FILE'] =  $compose_file;
-      $compose_env['ANSIBLE_VERBOSITY'] = $this->ansibleVerbosity;
-
-      // Reset ENV vars so they don't override CLI options.
-      $compose_env['ANSIBLE_TAGS'] = $opts['tags'];
-      $compose_env['ANSIBLE_SKIP_TAGS'] = $opts['skip-tags'];
-      $compose_env['ANSIBLE_PLAYBOOK'] = $opts['playbook'];
+      //Environment variables at run time: AKA Environment variables.
+      $env_run = [];
+      $env_run['COMPOSE_FILE'] =  $compose_file;
+      $env_run['ANSIBLE_VERBOSITY'] = $this->ansibleVerbosity;
+      $env_run['ANSIBLE_TAGS'] = $opts['tags'];
+      $env_run['ANSIBLE_SKIP_TAGS'] = $opts['skip-tags'];
+      $env_run['ANSIBLE_PLAYBOOK'] = $opts['playbook'];
 
       if (!empty($cmd)) {
         foreach ($cmd as $command) {
           $provision_io = new \ProvisionOps\Tools\Style($this->input, $this->output);
           $process = new \ProvisionOps\Tools\PowerProcess($command, $provision_io);
-          $process->setEnv($compose_env);
+          $process->setEnv($env_run);
           $isTty = !empty($_SERVER['XDG_SESSION_TYPE']) && $_SERVER['XDG_SESSION_TYPE'] == 'tty';
           $process->setTty($isTty);
           $process->setTimeout(NULL);
