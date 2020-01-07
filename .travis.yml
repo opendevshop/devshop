@@ -87,57 +87,25 @@ install:
   - composer install --prefer-dist --no-progress --no-suggest
 
   # Prepare containers
-  - |
-    docker build . \
-    --build-arg OS_VERSION=$OS\
-    --build-arg FROM_IMAGE \
-    --build-arg ANSIBLE_EXTRA_VARS="$VARS" \
-    --build-arg ANSIBLE_TAGS \
-    --build-arg ANSIBLE_SKIP_TAGS \
-    --build-arg ANSIBLE_VERBOSITY \
-    --build-arg ANSIBLE_PLAYBOOK \
-    --tag $DEVSHOP_IMAGE_TAG \
+  - "bin/robo prepare:containers --os ${OS} --vars 'php_version: ${VARS}'"
 
   # Launch devshop server container and run tests.
-  # Default "run" is "command", systemd.
-  - |
-    set -x && docker run \
-      --hostname devshop.local.computer \
-      --name devshop_server \
-      --detach --publish 80:80 --privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro \
-      --env ANSIBLE_TAGS=$ANSIBLE_RUN_TAGS \
-      --env ANSIBLE_SKIP_TAGS=$ANSIBLE_RUN_SKIP_TAGS \
-      --env ANSIBLE_EXTRA_VARS=$ANSIBLE_RUN_EXTRA_VARS \
-      $DEVSHOP_IMAGE_TAG $SYSTEMD_INIT \
-      && set +x
-
-  - sleep 3
-  - docker ps
-  - docker logs devshop_server
-
   # Run playbook with runtime tags to install
-  # @TODO: Create a bin script that runs ansible-playbook using our env vars.
-  # @TODO: Not sure why services don't when using FROM devshop/server:latest.
-  - |
-    docker exec devshop_server service mysql start && \
-    docker exec devshop_server systemctl status --no-pager && \
-    docker exec devshop_server ls -la /var/aegir && \
-    set -x && docker exec devshop_server \
-    ansible-playbook $ANSIBLE_RUN_PLAYBOOK \
-      --tags "$ANSIBLE_RUN_TAGS" \
-      --extra-vars "$ANSIBLE_RUN_EXTRA_VARS" \
-      && set +x
+  # Robo up will end after install if --follow=0.
+  - "bin/robo up --follow=0"
+  - sleep 3
+  - docker-compose ps
+  - docker-compose logs
 
 script:
 
   - |
-    docker exec --user aegir devshop_server \
+    docker-compose exec -T --user aegir devshop_server \
       /usr/share/devshop/tests/devshop-tests.sh
 
-
 after_failure:
-  - docker logs devshop_server
-  - docker ps -a
+  - docker-compose logs
+  - docker-compose ps
 
 notifications:
   slack: devshophq:pb05x3ZL3qumHs0RjqEXvYfA

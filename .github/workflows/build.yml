@@ -44,7 +44,7 @@ jobs:
 
     - name: Create DevShop Server Image FROM ${{ matrix.os_version }} with PHP ${{ matrix.php_version }}
       run: |
-        bin/robo prepare:containers --os ${{ matrix.os_version }} --vars 'php_version: ${{ matrix.php_version }}'
+        bin/robo prepare:containers --os ${{ matrix.os_version }} --vars "php_version: ${{ matrix.php_version }}"
 
     - name: Prepare Docker Environment with GitHub Variables
       run: |
