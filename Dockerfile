@@ -175,7 +175,6 @@ ENV ANSIBLE_EXTRA_VARS ${ANSIBLE_EXTRA_VARS:-""}
 ARG DEVSHOP_USER_UID=1000
 ENV DEVSHOP_USER_UID ${DEVSHOP_USER_UID:-1000}
 
-
 ENV DEVSHOP_ENTRYPOINT_LOG_FILES="/var/log/aegir/*"
 ENV DEVSHOP_TESTS_ASSETS_PATH="${DEVSHOP_PATH}/.github/test-assets"
 
@@ -190,6 +189,11 @@ $ANSIBLE_PLAYBOOK_COMMAND_OPTIONS \
 # Cleanup unwanted systemd files. See bin/docker-systemd-clean and https://github.com/geerlingguy/docker-ubuntu1804-ansible/pull/12
 RUN docker-systemd-clean
 RUN chmod 766 $DEVSHOP_TESTS_ASSETS_PATH
+
+# Remove devmaster dir if desired so that devshop code is reinstalled.
+ARG DEVSHOP_REMOVE_DEVMASTER=0
+ENV DEVSHOP_REMOVE_DEVMASTER ${DEVSHOP_REMOVE_DEVMASTER:-0}
+RUN if [ $DEVSHOP_REMOVE_DEVMASTER ]; then rm -rf /var/aegir/devmaster-1.x; fi
 
 EXPOSE 80 443 3306 8025
 WORKDIR /var/aegir
