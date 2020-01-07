@@ -202,50 +202,6 @@ class RoboFile extends \Robo\Tasks {
       }
     }
 
-    // @TODO: Detect and clone the right version. This will not be necessary in Ansible 2.6.
-    // Ansible roles
-    $role_repos = [
-      'geerlingguy.apache' => 'http://github.com/geerlingguy/ansible-role-apache.git',
-      'geerlingguy.composer' => 'http://github.com/geerlingguy/ansible-role-composer.git',
-      'geerlingguy.git' => 'http://github.com/geerlingguy/ansible-role-git.git',
-      'geerlingguy.mysql' => 'http://github.com/geerlingguy/ansible-role-mysql.git',
-      'geerlingguy.nginx' => 'http://github.com/geerlingguy/ansible-role-nginx.git',
-      'geerlingguy.php' => 'http://github.com/geerlingguy/ansible-role-php.git',
-      'geerlingguy.php-versions' => 'http://github.com/geerlingguy/ansible-role-php-versions.git',
-      'geerlingguy.php-mysql' => 'http://github.com/geerlingguy/ansible-role-php-mysql.git',
-      'geerlingguy.supervisor' => 'http://github.com/geerlingguy/ansible-role-supervisor.git',
-//      'opendevshop.apache' => 'http://github.com/opendevshop/ansible-role-apache',
-//      'opendevshop.aegir-nginx' => 'http://github.com/opendevshop/ansible-role-aegir-nginx',
-//      'opendevshop.aegir-user' => 'http://github.com/opendevshop/ansible-role-aegir-user',
-//      'opendevshop.devmaster' => 'http://github.com/opendevshop/ansible-role-devmaster.git',
-    ];
-
-    $this->yell("Cloning Ansible Roles...");
-
-    $roles_yml = Yaml::parse(file_get_contents($this->devshop_root_path . '/requirements.yml'));
-    foreach ($roles_yml as $role) {
-      // Only install the role if it is in the role_repos array.
-      if (!empty($role_repos[$role['name']])) {
-        $roles[$role['name']] = [
-            'repo' => $role_repos[$role['name']],
-            'version' => $role['version'],
-        ];
-      }
-    }
-
-    foreach ($roles as $name => $role) {
-      $path = $this->devshop_root_path . '/roles/' . $name;
-      if (file_exists($path)) {
-        $this->say("$path already exists.");
-      }
-      else {
-        $this->taskGitStack()
-          ->cloneRepo($role['repo'], $path, $role['version'])
-          ->run();
-      }
-    }
-
-
     // Run drush make to build the devmaster stack.
     $make_destination = $this->devshop_root_path . "/aegir-home/devmaster-" . $opts['devshop-version'];
     $makefile_path = $opts['no-dev']? 'build-devmaster.make': "build-devmaster-dev.make.yml";

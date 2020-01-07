@@ -46,7 +46,6 @@ usage() {
     --email              The email address to use for User 1. Enter your email to receive notification when the install is complete.
     --aegir-uid          The UID to use for creating the `aegir` user (Default: 12345)
     --ansible-default-host-list  If your server is using a different ansible default host, specify it here. Default: /etc/ansible/hosts*
-    --force-ansible-role-install   Specify option to pass the "--force" option to the `ansible-galaxy install` command, causing the script to overwrite existing roles. (Default: False)
     --license            The devshop.support license key for this server.
     --help               Displays this help message and exits
 
@@ -102,7 +101,6 @@ SERVER_WEBSERVER=apache
 MAKEFILE_PATH=''
 AEGIR_USER_UID=${AEGIR_USER_UID:-12345}
 ANSIBLE_VERBOSITY="";
-ANSIBLE_GALAXY_OPTIONS=""
 ANSIBLE_DEFAULT_HOST_LIST="/etc/ansible/hosts"
 DEVSHOP_SUPPORT_LICENSE_KEY=""
 
@@ -178,10 +176,6 @@ while [ $# -gt 0 ]; do
       ;;
     -vvvv|--debug)
       ANSIBLE_VERBOSITY="-vvvv"
-      shift # past argument
-      ;;
-    --force-ansible-role-install)
-      ANSIBLE_GALAXY_OPTIONS="$ANSIBLE_GALAXY_OPTIONS --force"
       shift # past argument
       ;;
     --license=*)
@@ -316,10 +310,6 @@ if [ $OS == 'ubuntu' ] || [ $OS == 'debian' ]; then
   apt-get update
   apt-get install git -y -qq
 
-  if [ $VERSION == '14.04' ]; then
-      ANSIBLE_GALAXY_OPTIONS="$ANSIBLE_GALAXY_OPTIONS --ignore-certs"
-  fi
-
 elif [ $OS == 'centos' ] || [ $OS == 'redhat' ] || [ $OS == 'fedora'  ]; then
     yum install epel-release -y
     yum install git -y
@@ -352,7 +342,7 @@ echo $LINE
 echo " Hostname: $HOSTNAME_FQDN"
 echo " MySQL Root Password: $MYSQL_ROOT_PASSWORD"
 echo " Playbook: $DEVSHOP_INSTALL_PATH/$DEVSHOP_PLAYBOOK "
-echo " Roles: $DEVSHOP_INSTALL_PATH/requirements.yml "
+echo " Roles: $DEVSHOP_INSTALL_PATH/roles/"
 echo " Makefile: $MAKEFILE_PATH "
 echo $LINE
 
@@ -439,8 +429,6 @@ done
 
 echo $LINE
 echo "Wrote group variables file for devmaster to $ANSIBLE_VARS_GROUP_PATH"
-echo " Installing ansible roles from $DEVSHOP_INSTALL_PATH/requirements.yml in the ansible-galaxy default location..."
-ansible-galaxy install --force --ignore-errors --role-file "$DEVSHOP_INSTALL_PATH/requirements.yml" $ANSIBLE_GALAXY_OPTIONS
 echo $LINE
 
 # Run the playbook.
