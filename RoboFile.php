@@ -464,7 +464,7 @@ class RoboFile extends \Robo\Tasks {
       $cmd[] = "docker-compose up --detach";
 
       // Start mysqld. Not sure why it's not kicking on.
-      $cmd[] = "sleep 2";
+      $cmd[] = "sleep 3";
       $cmd[] = "docker-compose exec -T devshop service mysql start";
       $cmd[] = "docker-compose exec -T devshop systemctl status --no-pager";
       $cmd[] = "docker-compose exec -T devshop ls -la";
