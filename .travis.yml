@@ -87,12 +87,20 @@ install:
   - composer install --prefer-dist --no-progress --no-suggest
 
   # Prepare containers
-  - "bin/robo prepare:containers --os ${OS} --vars 'php_version: ${VARS}'"
+  - |
+    bin/robo prepare:containers \
+      --os ${OS} \
+      --vars "${VARS}" \
+      --compose-file docker-compose-tests.yml
 
   # Launch devshop server container and run tests.
   # Run playbook with runtime tags to install
   # Robo up will end after install if --follow=0.
-  - "bin/robo up --follow=0"
+  - |
+    bin/robo up \
+      --follow=0 \
+      --compose-file docker-compose-tests.yml
+
   - sleep 3
   - docker-compose ps
   - docker-compose logs

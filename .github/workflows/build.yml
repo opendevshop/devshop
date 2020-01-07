@@ -22,6 +22,9 @@ jobs:
           # @TODO: Open a new PR for one OS at a time.
           # - 'centos6'
           # - 'centos7'
+    env:
+      VARS: "php_version: ${{ matrix.php_version }}"
+      OS: ${{ matrix.php_version }}
 
     runs-on: ubuntu-18.04
     steps:
@@ -44,7 +47,10 @@ jobs:
 
     - name: Create DevShop Server Image FROM ${{ matrix.os_version }} with PHP ${{ matrix.php_version }}
       run: |
-        bin/robo prepare:containers --os ${{ matrix.os_version }} --vars "php_version: ${{ matrix.php_version }}"
+        bin/robo prepare:containers \
+          --os ${OS} \
+          --vars "${VARS}" \
+          --compose-file docker-compose-tests.yml
 
     - name: Prepare Docker Environment with GitHub Variables
       run: |
