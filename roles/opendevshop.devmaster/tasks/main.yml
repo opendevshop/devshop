@@ -144,7 +144,7 @@
   file:
     path: "{{ devshop_devmaster_path }}"
     state: absent
-  tags: [never, rebuild-devmaster]
+  tags: [never, remove-devmaster, rebuild-devmaster]
 
 - name: "Prepare DevShop Web Interface Source Code: {{ devmaster_make_command }}"
   become: true
