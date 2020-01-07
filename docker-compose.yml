@@ -31,7 +31,6 @@ services:
     extra_hosts:
       - "drpl8.testenv.devshop.local.computer:127.0.0.1"
     environment:
-      # Set any desired ansible configuration items here. (Only affects containers at run time, not build time.)
       - ANSIBLE_PLAYBOOK
       - ANSIBLE_PLAYBOOK_COMMAND_OPTIONS
       - ANSIBLE_TAGS
@@ -53,11 +52,7 @@ services:
 
     privileged: true
     volumes:
-      - ./aegir-home/.drush:/var/aegir/.drush:delegated
-      - ./aegir-home/config:/var/aegir/config:delegated
-      - ./aegir-home/projects:/var/aegir/projects:delegated
-      - ./devmaster:/var/aegir/devmaster-1.x/profiles/devmaster:delegated
-
+      - ./aegir-home:/var/aegir:delegated
       - ./:/usr/share/devshop:delegated
       - ./provision:/usr/share/drush/commands/provision:delegated
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
