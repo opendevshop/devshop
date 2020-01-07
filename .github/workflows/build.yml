@@ -24,7 +24,7 @@ jobs:
           # - 'centos7'
     env:
       VARS: "php_version: ${{ matrix.php_version }}"
-      OS: ${{ matrix.php_version }}
+      OS: ${{ matrix.os_version }}
 
     runs-on: ubuntu-18.04
     steps:
