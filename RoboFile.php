@@ -297,6 +297,7 @@ class RoboFile extends \Robo\Tasks {
       'tags' => '',
       'skip-tags' => '',
       'playbook' => 'docker/playbook.server.yml',
+      'compose-file' => 'docker-compose.yml'
   ]) {
 
     $this->setVerbosity();
@@ -334,6 +335,7 @@ class RoboFile extends \Robo\Tasks {
 
     // Pass `robo --playbook` option to Dockerfile.
     $env_build['ANSIBLE_PLAYBOOK'] = $opts['playbook'];
+    $env_build['COMPOSE_FILE'] = $opts['compose-file'];
 
     $provision_io = new \ProvisionOps\Tools\Style($this->input(), $this->output());
     $process = new \ProvisionOps\Tools\PowerProcess('docker-compose build --pull --no-cache', $provision_io);
@@ -402,6 +404,7 @@ class RoboFile extends \Robo\Tasks {
     'skip-tags' => 'install-devshop',
     'file' => 'Dockerfile',
     'playbook' => 'docker/playbook.server.yml',
+    'compose-file' => 'docker-compose.yml'
   ]) {
 
     // Check for tools
@@ -452,7 +455,7 @@ class RoboFile extends \Robo\Tasks {
       else {
         $this->yell("Development Environment Requested: Using docker-compose.yml.");
 
-        $compose_file = 'docker-compose.yml';
+        $compose_file = $opts['compose-file'];
 
         if (!file_exists('aegir-home')) {
           if ($this->confirm("Prepare source code locally? This is needed for the development environment.")) {
