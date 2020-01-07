@@ -99,34 +99,64 @@
 #
 #   @TODO: When the robo commands are a little more consisten, put the directions back here.
 
-# Set FROM to $FROM_IMAGE variable. This makes this Dockerfile basically universal. :)
-# If OS_VERSION is set without FROM_IMAGE, use the geerlingguy image.
+# Set ENVs from ARGs that that need to before FROM.
+
+# If --build-arg OS_VERSION is not set, use 'ubuntu1804'
+# NOTE: OS_VERSION is ignored if FROM_IMAGE is set as a build arg.
 ARG OS_VERSION="ubuntu1804"
+
+# If --build-arg FROM_IMAGE is not set, use '"geerlingguy/docker-${OS_VERSION}-ansible:latest'
 ARG FROM_IMAGE="geerlingguy/docker-${OS_VERSION}-ansible:latest"
+
 FROM $FROM_IMAGE
 LABEL maintainer="Jon Pugh"
 
-# Set ENVs from ARGs that that need to before FROM.
+ENV LINE="echo ────────────────────────────────────────────────────────────────────────────────"
+
+# ENVs need to be set AFTER the FROM statement.
 ENV OS_VERSION ${OS_VERSION:-"ubuntu1804"}
 ENV FROM_IMAGE ${FROM_IMAGE:-"geerlingguy/docker-${OS_VERSION}-ansible:latest"}
 
 ARG DEVSHOP_PATH="/usr/share/devshop"
 ENV DEVSHOP_PATH ${DEVSHOP_PATH:-"/usr/share/devshop"}
-
-# Copy latest DevShop Core to /usr/share/devshop
-COPY ./ $DEVSHOP_PATH
+WORKDIR $DEVSHOP_PATH
 
 # Set PATH so we can run devshop scripts immediately.
 ENV PATH="${DEVSHOP_PATH}/bin:$PATH"
 
-# Announce some helpful stuff into the logs.
-# Link centos-release file if there is one.
 RUN \
-  devshop-logo "Hi! Beginning to build Dockerfile from $FROM_IMAGE" \
-      cat /etc/centos-release; \
-      cat /etc/os-release; \
-  devshop-logo "Initial Docker Container Environment"; \
-      env
+    $LINE && echo && \
+    echo " Welcome to the DevShop Dockerfile:  Build Phase  " && \
+    echo && $LINE && \
+    echo "# OS Info: "  && \
+    (cat /etc/centos-release 2>/dev/null || cat /etc/os-release 2>/dev/null) && \
+    echo && $LINE && \
+    echo "# Initial Environment Variables: " && \
+    env && \
+    $LINE
+
+# Check if DevShop is already installed.
+# This happens when FROM is set to a devshop container.
+RUN \
+    if [ -d $DEVSHOP_PATH ]; then   \
+        $LINE; \
+        echo " Checking $DEVSHOP_PATH: ! Pre-existing DevShop found !"; \
+        git status; git log -1; \
+    else      \
+        $LINE; \
+        echo " Checking $DEVSHOP_PATH: DevShop Not Present. This is a fresh image"; \
+    fi; \
+    $LINE; \
+    echo "Preparing to copy DevShop source code from host..."; \
+    $LINE;
+
+# Copy latest DevShop Core to /usr/share/devshop
+COPY ./ $DEVSHOP_PATH
+
+# Announce container information before doing anything.
+RUN \
+  devshop-logo " Contents of ${DEVSHOP_PATH} after copy"; \
+  git status; git log -1; $LINE
 
 RUN devshop-logo "Preparing Docker Container Environment..."
 
@@ -143,8 +173,8 @@ RUN devshop-logo "Preparing Docker Container Environment..."
 ARG BUILD_ARG_EXAMPLE="buildArgDefaultValue"
 ENV BUILD_ARG_EXAMPLE ${BUILD_ARG_EXAMPLE:-"buildArgDefaultValue"}
 
-ARG ANSIBLE_PLAYBOOK=docker/playbook.server.yml
-ENV ANSIBLE_PLAYBOOK "${DEVSHOP_PATH}/${ANSIBLE_PLAYBOOK:-docker/playbook.server.yml}"
+ARG ANSIBLE_PLAYBOOK="/usr/share/devshop/docker/playbook.server.yml"
+ENV ANSIBLE_PLAYBOOK ${ANSIBLE_PLAYBOOK:-"/usr/share/devshop/docker/playbook.server.yml"}
 
 ARG ANSIBLE_PLAYBOOK_COMMAND_OPTIONS=""
 ENV ANSIBLE_PLAYBOOK_COMMAND_OPTIONS ${ANSIBLE_PLAYBOOK_COMMAND_OPTIONS:-""}
@@ -168,8 +198,8 @@ ENV ANSIBLE_TAGS ${ANSIBLE_TAGS:-"all"}
 ARG ANSIBLE_SKIP_TAGS="install-devmaster"
 ENV ANSIBLE_SKIP_TAGS ${ANSIBLE_SKIP_TAGS:-"install-devmaster"}
 
-ARG ANSIBLE_EXTRA_VARS=""
-ENV ANSIBLE_EXTRA_VARS ${ANSIBLE_EXTRA_VARS:-""}
+ARG ANSIBLE_EXTRA_VARS="dockerfile_extra_vars_source: 'ARG default Dockerfile:201'"
+ENV ANSIBLE_EXTRA_VARS ${ANSIBLE_EXTRA_VARS:-"dockerfile_extra_vars_source: 'ENV default Dockerfile:202"}
 
 # @TODO: Figure out a better way to set ansible extra vars individually.
 ARG DEVSHOP_USER_UID=1000
@@ -185,6 +215,10 @@ ENV ANSIBLE_BUILD_COMMAND="ansible-playbook $ANSIBLE_PLAYBOOK \
 --skip-tags="$ANSIBLE_SKIP_TAGS" \
 $ANSIBLE_PLAYBOOK_COMMAND_OPTIONS \
 "
+
+RUN \
+  echo "Container Environment Preparation Complete"; \
+  devshop-line
 
 # Cleanup unwanted systemd files. See bin/docker-systemd-clean and https://github.com/geerlingguy/docker-ubuntu1804-ansible/pull/12
 RUN docker-systemd-clean

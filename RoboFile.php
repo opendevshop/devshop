@@ -315,6 +315,9 @@ class RoboFile extends \Robo\Tasks {
       $opts['from'] = "geerlingguy/docker-{$opts['os']}-ansible";
     }
 
+    // Append the absolute path in the container.
+    $opts['playbook'] = '/usr/share/devshop/' . $opts['playbook'] ;
+
     $this->yell('Building DevShop Container from: ' . $opts['from'], 40, 'blue');
 
     // @TODO: Document how  ENV vars in the process running `robo` are passed to
@@ -398,6 +401,7 @@ class RoboFile extends \Robo\Tasks {
     'tags' => '',
     'skip-tags' => 'install-devshop',
     'file' => 'Dockerfile',
+    'playbook' => 'docker/playbook.server.yml',
   ]) {
 
     // Check for tools
@@ -428,7 +432,7 @@ class RoboFile extends \Robo\Tasks {
     if ($opts['build']) {
       // @TODO: Make the playbook a CLI option and figure out a better way to do this.
       // $playbook = (!empty($opts['test']) || !empty($opts['test-upgrade']))? 'playbook.testing.yml': 'docker/playbook.server.yml';
-      $playbook = $opts['playbook'] = 'docker/playbook.server.yml';
+      $playbook = $opts['playbook'];
       $this->say("Preparing containers with playbook: $playbook");
       $this->prepareContainers($opts['user-uid'], 'devshop.local.computer', $opts);
     }
@@ -512,7 +516,7 @@ class RoboFile extends \Robo\Tasks {
       $env_run['ANSIBLE_VERBOSITY'] = $this->ansibleVerbosity;
       $env_run['ANSIBLE_TAGS'] = $opts['tags'];
       $env_run['ANSIBLE_SKIP_TAGS'] = $opts['skip-tags'];
-      $env_run['ANSIBLE_PLAYBOOK'] = $opts['playbook'];
+      $env_run['ANSIBLE_PLAYBOOK'] = '/usr/share/devshop/' . $opts['playbook'];
 
       if (!empty($cmd)) {
         foreach ($cmd as $command) {
