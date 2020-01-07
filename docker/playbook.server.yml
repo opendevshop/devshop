@@ -40,6 +40,7 @@
   roles:
     - opendevshop.users
     - opendevshop.apache
+    - geerlingguy.mysql
     - geerlingguy.php-versions
     - geerlingguy.php
     - geerlingguy.php-mysql
