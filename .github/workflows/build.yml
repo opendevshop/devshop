@@ -23,8 +23,10 @@ jobs:
           # - 'centos6'
           # - 'centos7'
     env:
+      TAGS: "all"
+      SKIP_TAGS: "install-devmaster"
       VARS: "php_version: ${{ matrix.php_version }}"
-      OS: ${{ matrix.os_version }}
+      OS: "${{ matrix.os_version }}"
 
     runs-on: ubuntu-18.04
     steps:
@@ -48,8 +50,10 @@ jobs:
     - name: Create DevShop Server Image FROM ${{ matrix.os_version }} with PHP ${{ matrix.php_version }}
       run: |
         bin/robo prepare:containers \
-          --os ${OS} \
+          --os "${OS}" \
           --vars "${VARS}" \
+          --tags "${TAGS}" \
+          --skip-tags "${SKIP_TAGS}" \
           --compose-file docker-compose-tests.yml
 
     - name: Prepare Docker Environment with GitHub Variables

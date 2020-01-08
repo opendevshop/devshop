@@ -27,12 +27,15 @@ env:
     - GITHUB_REF=$TRAVIS_PULL_REQUEST_BRANCH
     - GITHUB_HEAD_REF=$TRAVIS_PULL_REQUEST_BRANCH
     - SITE_HOSTS='dev.drup.devshop.travis dev.projectname.devshop.travis live.projectname.devshop.travis testenv.drpl8.devshop.travis dev.rootproject.devshop.local.computer devshop.local.computer'
+    - TAGS=all
+    - SKIP_TAGS=install-devmaster
+    - VARS=all
 
   matrix:
     - FROM_IMAGE: devshop/server:latest
       # Removes /var/aegir/devmaster-x on docker build.
       # Platform gets rebuilt in devmaster install step.
-      ANSIBLE_TAGS: remove-devmaster
+      TAGS: remove-devmaster
       VARS: 'devshop_danger_remove_devmaster=true'
 
     - OS: ubuntu1804
@@ -89,8 +92,10 @@ install:
   # Prepare containers
   - |
     bin/robo prepare:containers \
-      --os ${OS} \
+      --os "${OS}" \
       --vars "${VARS}" \
+      --tags "${TAGS}" \
+      --skip-tags "${SKIP_TAGS}" \
       --compose-file docker-compose-tests.yml
 
   # Launch devshop server container and run tests.
