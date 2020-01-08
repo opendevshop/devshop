@@ -520,7 +520,7 @@ class RoboFile extends \Robo\Tasks {
       //Environment variables at run time: AKA Environment variables.
       $env_run = [];
       $env_run['ANSIBLE_CONFIG'] = '/usr/share/devshop/ansible.cfg';
-      $env_run['COMPOSE_FILE'] =  $compose_file;
+      $env_run['COMPOSE_FILE'] = $compose_file;
       $env_run['ANSIBLE_VERBOSITY'] = $this->ansibleVerbosity;
       $env_run['ANSIBLE_TAGS'] = $opts['tags'];
       $env_run['ANSIBLE_SKIP_TAGS'] = $opts['skip-tags'];
