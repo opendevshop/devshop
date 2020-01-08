@@ -6,6 +6,21 @@
   ignore_errors: "{{ server_hostname_ignore_errors }}"
   tags: [install-devmaster]
 
+# This is done so the roles will be visible when ansible config is the default.
+# There are too many ways to configure the roles path. If we just put the files
+# here, the DEFAULT_ROLES_PATH value will find devshop roles.
+- name: Create Ansible Share folder
+  file:
+    path: "{{ ansible_share_path }}"
+    state: directory
+
+- name: Install Ansible Roles
+  file:
+    src: "{{ devshop_path }}/roles"
+    dest: "{{ ansible_share_path }}/roles"
+    state: link
+    force: true
+
 - name: Include version specific variables for Debian OS Family
   include_vars: "vars.{{ ansible_os_family }}.yml"
   when: ansible_os_family == "Debian"
