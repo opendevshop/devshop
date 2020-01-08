@@ -832,7 +832,9 @@ class RoboFile extends \Robo\Tasks {
    * Run all devshop tests on the containers.
    */
   public function test($user = 'aegir') {
-    $command = "docker-compose exec --user $user devshop /usr/share/devshop/tests/devshop-tests.sh";
+    $is_tty = !empty($_SERVER['XDG_SESSION_TYPE']) && $_SERVER['XDG_SESSION_TYPE'] == 'tty';
+    $no_tty = !$is_tty? '-T': '';
+    $command = "docker-compose exec $no_tty --user $user devshop /usr/share/devshop/tests/devshop-tests.sh";
     $provision_io = new \ProvisionOps\Tools\Style($this->input, $this->output);
     $process = new \ProvisionOps\Tools\PowerProcess($command, $provision_io);
 
