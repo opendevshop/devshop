@@ -325,6 +325,8 @@ class RoboFile extends \Robo\Tasks {
     // the `docker-compose build` command, which, if they are listed in docker-compose.yml,
     // will get passed into the containers.
 
+    $env_build['DOCKER_TAG'] = $opts['tag'];
+
     // Set FROM using --from option.
     // @TODO: Tell users FROM _IMAGE env var doesn't work for prepare:containers?
     $env_build['FROM_IMAGE'] = $opts['from'];
@@ -439,6 +441,14 @@ class RoboFile extends \Robo\Tasks {
       $playbook = $opts['playbook'];
       $this->say("Preparing containers with playbook: $playbook");
       $this->prepareContainers($opts['user-uid'], 'devshop.local.computer', $opts);
+      $docker_tag = 'local';
+    }
+    else {
+      // If the --build option was not specified, pull the containers first.
+      // If we don't, `docker-compose up` will BUILD and tag the image.
+      $this->say("Pulling containers before docker-compose up...");
+      $cmd[] = "docker-compose pull --quiet";
+      $docker_tag = 'latest';
     }
 
     if ($opts['mode'] == 'docker-compose') {
@@ -519,6 +529,7 @@ class RoboFile extends \Robo\Tasks {
 
       //Environment variables at run time: AKA Environment variables.
       $env_run = [];
+      $env_run['DOCKER_TAG'] = $docker_tag;
       $env_run['ANSIBLE_CONFIG'] = '/usr/share/devshop/ansible.cfg';
       $env_run['COMPOSE_FILE'] = $compose_file;
       $env_run['ANSIBLE_VERBOSITY'] = $this->ansibleVerbosity;
