@@ -13,19 +13,17 @@ jobs:
     name: Build DevShop
     strategy:
       matrix:
-        php_version:
+        php:
           - "7.2"
-          - "7.3"
-        os_version:
+        os:
           - 'ubuntu1804'
-          # @TODO: Open a new PR for one OS at a time.
-          # - 'centos6'
-          # - 'centos7'
+          - 'centos6'
+          - 'centos7'
     env:
       TAGS: "all"
       SKIP_TAGS: "install-devmaster"
-      VARS: "php_version: ${{ matrix.php_version }}"
-      OS: "${{ matrix.os_version }}"
+      VARS: "php_version: ${{ matrix.php }}"
+      OS: "${{ matrix.os }}"
 
     runs-on: ubuntu-18.04
     steps:
