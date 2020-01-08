@@ -328,6 +328,7 @@ class RoboFile extends \Robo\Tasks {
     // Set FROM using --from option.
     // @TODO: Tell users FROM _IMAGE env var doesn't work for prepare:containers?
     $env_build['FROM_IMAGE'] = $opts['from'];
+    $env_build['ANSIBLE_CONFIG'] = '/usr/share/devshop/ansible.cfg';
     $env_build['ANSIBLE_VERBOSITY'] = $this->ansibleVerbosity;
     $env_build['ANSIBLE_EXTRA_VARS'] = $opts['vars'];
     $env_build['ANSIBLE_TAGS'] = $opts['tags'];
@@ -518,6 +519,7 @@ class RoboFile extends \Robo\Tasks {
 
       //Environment variables at run time: AKA Environment variables.
       $env_run = [];
+      $env_run['ANSIBLE_CONFIG'] = '/usr/share/devshop/ansible.cfg';
       $env_run['COMPOSE_FILE'] =  $compose_file;
       $env_run['ANSIBLE_VERBOSITY'] = $this->ansibleVerbosity;
       $env_run['ANSIBLE_TAGS'] = $opts['tags'];
