@@ -14,8 +14,7 @@ echo " Path $DEVSHOP_PATH    "
 
 if [ -z "$1" ]; then exit; fi
 
-echo "__________________________________________________"
-echo ""
+devshop-line
 echo " $1 "
-echo "__________________________________________________"
+devshop-line
 

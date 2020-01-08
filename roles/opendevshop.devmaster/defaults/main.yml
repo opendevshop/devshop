@@ -92,6 +92,7 @@ devmaster_skip_upgrade: false
 
 # If your system does not allow root user in "sudo" group, change this to "su"
 ansible_become_method_aegir: sudo
+ansible_share_path: /usr/share/ansible
 
 # Server Options
 php_memory_limit: "512M"

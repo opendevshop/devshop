@@ -39,7 +39,7 @@ usage() {
 
   Options:
     --hostname           The desired fully qualified domain name to set as this machine\''s hostname (Default: Current hostname)
-    --install-path       The path to install the main devshop source code including CLI, makefile, requirements.yml (Default: /usr/share/devshop)
+    --install-path       The path to install the main devshop source code. (Default: /usr/share/devshop)
     --server-webserver   Set to 'nginx' if you want to use the Aegir NGINX packages. (Default: apache)
     --makefile           The makefile to use to build the front-end site. (Default: {install-path}/build-devmaster.make)
     --playbook           The Ansible playbook.yml file to use other than the included playbook.yml. (Default: {install-path}/playbook.yml)
@@ -325,7 +325,7 @@ else
   echo $MYSQL_ROOT_PASSWORD > /tmp/mysql_root_password
 fi
 
-# Clone the installer code if a playbook path was not set.
+# Clone the installer if $DEVSHOP_INSTALL_PATH does not exist yet.
 if [ ! -d "$DEVSHOP_INSTALL_PATH" ]; then
     git clone $DEVSHOP_GIT_REPO $DEVSHOP_INSTALL_PATH
     cd $DEVSHOP_INSTALL_PATH
@@ -404,7 +404,8 @@ ANSIBLE_EXTRA_VARS+=("server_hostname: ${HOSTNAME_FQDN}")
 ANSIBLE_EXTRA_VARS+=("devshop_cli_path: ${DEVSHOP_INSTALL_PATH}")
 ANSIBLE_EXTRA_VARS+=("playbook_path: ${DEVSHOP_INSTALL_PATH}")
 ANSIBLE_EXTRA_VARS+=("aegir_server_webserver: ${SERVER_WEBSERVER}")
-ANSIBLE_EXTRA_VARS+=("devshop_version: ${DEVSHOP_VERSION}")
+# @TODO: Remove this var? a vars file gets created from this. We don't want old "devshop_version" vars around.
+# ANSIBLE_EXTRA_VARS+=("devshop_version: ${DEVSHOP_VERSION}")
 ANSIBLE_EXTRA_VARS+=("aegir_user_uid: ${AEGIR_USER_UID}")
 ANSIBLE_EXTRA_VARS+=("devshop_github_token: ${GITHUB_TOKEN}")
 

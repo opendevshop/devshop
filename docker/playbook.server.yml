@@ -11,7 +11,7 @@
     mysql_root_password: root
 
     # @TODO: Install multiple versions per-container: https://github.com/oerdnj/deb.sury.org/wiki/Managing-Multiple-Versions
-    php_version: "7.1"
+    php_version: "7.2"
 
     php_default_version_debian: "{{ php_version }}"
 

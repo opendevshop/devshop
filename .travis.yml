@@ -13,31 +13,40 @@ branches:
 
 env:
   global:
+    - ANSIBLE_VERBOSITY=1
+    - ANSIBLE_PLAYBOOK=docker/playbook.server.yml
+
+    # At runtime, use --tags=install-devmaster
+    - ANSIBLE_RUN_PLAYBOOK=/usr/share/devshop/docker/playbook.server.yml
+    - ANSIBLE_RUN_TAGS=install-devmaster
+    - ANSIBLE_RUN_EXTRA_VARS="devmaster_skip_install=false"
+
+    - SYSTEMD_INIT=docker-systemd
     - DEVSHOP_VERSION=1.x
+    - DEVSHOP_IMAGE_TAG=devshop/server:local
     - GITHUB_REF=$TRAVIS_PULL_REQUEST_BRANCH
     - GITHUB_HEAD_REF=$TRAVIS_PULL_REQUEST_BRANCH
     - SITE_HOSTS='dev.drup.devshop.travis dev.projectname.devshop.travis live.projectname.devshop.travis testenv.drpl8.devshop.travis dev.rootproject.devshop.local.computer devshop.local.computer'
+    - TAGS=all
+    - SKIP_TAGS=install-devmaster
+    - VARS=all
 
   matrix:
-  # @TODO: 16.04 fails. Apache restart weirdness!
-  # - test='Install on Ubuntu 16.04 Apache'
-  #  COMMAND='bin/robo up --mode=install.sh --install-sh-image=geerlingguy/docker-ubuntu1604-ansible --test'
-  #  ALLOW_FAIL=true
+    - FROM_IMAGE: devshop/server:latest
+      # Removes /var/aegir/devmaster-x on docker build.
+      # Platform gets rebuilt in devmaster install step.
+      TAGS: remove-devmaster
+      VARS: 'devshop_danger_remove_devmaster=true'
 
-  - test='Install on Ubuntu 18.04 Apache'
-    COMMAND='bin/robo up --mode=install.sh --install-sh-image=geerlingguy/docker-ubuntu1804-ansible --test'
-    ALLOW_FAIL=true
+    - OS: ubuntu1804
+      VARS: 'php_version=7.2'
 
-# Removing from TravisCI for now.
-#  - test="Upgrade"
-#    COMMAND="bin/robo up --build --test-upgrade"
-#    UPGRADE_FROM_VERSION="1.0.0-beta10"
+    - OS: ubuntu1804
+      VARS: 'php_version=7.3'
 
-# @TODO: Docker install is failing because of some anomoly. I can't explain why devmaster install would fail here but
-# not in the other 2 jobs!
-# This should be removed anyway. It uses the Aegir dockerfiles. We can switch to our own Dockerfiles now that we have a monorepo.
-#  - test="Install"
-#    COMMAND="bin/robo up --test"
+# Soon!
+#    - OS: ubuntu1804
+#      VARS: 'php_version=7.4'
 
 jobs:
   fast_finish: true
@@ -77,14 +86,41 @@ before_install:
   - docker --version
   - docker-compose --version
 
+install:
   # Prepare devshop CLI.
-  - composer install
+  - composer install --prefer-dist --no-progress --no-suggest
+
+  # Prepare containers
+  - |
+    bin/robo prepare:containers \
+      --os "${OS}" \
+      --vars "${VARS}" \
+      --tags "${TAGS}" \
+      --skip-tags "${SKIP_TAGS}" \
+      --compose-file docker-compose-tests.yml
+
+  # Launch devshop server container and run tests.
+  # Run playbook with runtime tags to install
+  # Robo up will end after install if --follow=0.
+  - |
+    bin/robo up \
+      --follow=0 \
+      --compose-file docker-compose-tests.yml \
+      --skip-source-prep \
+      -vv
+
+  - sleep 3
+  - docker-compose ps
+  - docker-compose logs
 
 script:
 
-  # Launch devshop including preparing the source code.
-  - echo "Running ${COMMAND} -n --disable-xdebug ..."
-  - ${COMMAND} -n --disable-xdebug
-  
+  - |
+    bin/robo test
+
+after_failure:
+  - docker-compose logs
+  - docker-compose ps
+
 notifications:
   slack: devshophq:pb05x3ZL3qumHs0RjqEXvYfA

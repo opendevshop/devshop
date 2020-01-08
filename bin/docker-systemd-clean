@@ -10,7 +10,7 @@ echo "See https://github.com/geerlingguy/docker-ubuntu1804-ansible/pull/12"
 # @TODO: Make this multi-os, and determine if there are any unwanted side effects.
 # The "ls" command should fail, breaking any build without this path.
 
-ls  /lib/systemd/system
+ls /lib/systemd/system/sysinit.target.wants
 
 find /lib/systemd/system/sysinit.target.wants/* ! -name systemd-tmpfiles-setup.service -delete;
 rm -f /lib/systemd/system/multi-user.target.wants/*;

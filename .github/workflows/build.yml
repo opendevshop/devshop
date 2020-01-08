@@ -1,51 +1,32 @@
-name: Tests
+name: Build
 
 on: 
  push:
  schedule:
    - cron: "10 * * * *"
 
+env:
+  ANSIBLE_VERBOSITY: 2
+
 jobs:
-
-  lint:
-    name: Ansible Lint
-    runs-on: ubuntu-18.04
-
-    steps:
-    - uses: actions/checkout@v1
-    - uses: actions/setup-python@v1
-
-    # @TODO: Attempted to cache the pip packages, doesn't seem to work in subfolders.
-    #      - uses: actions/cache@v1
-    #        id: cache
-    #        with:
-    #          path: .cache/pip
-    #          key: ${{ runner.os }}-pip-${{ hashFiles('**/roles/opendevshop.devmaster/molecule/requirements.txt') }}
-    #          restore-keys: |
-    #                ${{ runner.os }}-test
-
-    - name: Install Ansible Molecule
-      if: steps.cache.outputs.cache-hit != 'true'
-      working-directory: ./roles/molecule
-      run: |
-        pwd
-        ls -la
-        python -m pip install --upgrade pip
-        pip install -r molecule-requirements.txt
-
-    - name: Run `molecule lint`
-      working-directory: ./roles
-      run: molecule lint
-
   build:
     name: Build DevShop
     strategy:
       matrix:
+        php_version:
+          - "7.2"
+          - "7.3"
+          - "7.4"
         os_version:
           - 'ubuntu1804'
           # @TODO: Open a new PR for one OS at a time.
           # - 'centos6'
           # - 'centos7'
+    env:
+      TAGS: "all"
+      SKIP_TAGS: "install-devmaster"
+      VARS: "php_version: ${{ matrix.php_version }}"
+      OS: "${{ matrix.os_version }}"
 
     runs-on: ubuntu-18.04
     steps:
@@ -66,8 +47,14 @@ jobs:
     - name: Install Composer dependencies
       run: composer install --prefer-dist --no-progress --no-suggest
 
-    - name: Create DevShop Server Image FROM devshop/server:latest
-      run: bin/robo prepare:containers -v --os-version=${{ matrix.os_version }}
+    - name: Create DevShop Server Image FROM ${{ matrix.os_version }} with PHP ${{ matrix.php_version }}
+      run: |
+        bin/robo prepare:containers \
+          --os "${OS}" \
+          --vars "${VARS}" \
+          --tags "${TAGS}" \
+          --skip-tags "${SKIP_TAGS}" \
+          --compose-file docker-compose-tests.yml
 
     - name: Prepare Docker Environment with GitHub Variables
       run: |
