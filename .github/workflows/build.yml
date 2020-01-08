@@ -13,17 +13,17 @@ jobs:
     name: Build DevShop
     strategy:
       matrix:
-        php:
-          - "7.2"
         os:
           - 'ubuntu1804'
           - 'centos6'
           - 'centos7'
+        vars:
+          - 'php_version: 7.2'
     env:
       TAGS: "all"
       SKIP_TAGS: "install-devmaster"
-      VARS: "php_version: ${{ matrix.php }}"
-      OS: "${{ matrix.os }}"
+      VARS: "${{ matrix.php }}"
+      OS: "${{ matrix.vars }}"
 
     runs-on: ubuntu-18.04
     steps:
@@ -44,7 +44,7 @@ jobs:
     - name: Install Composer dependencies
       run: composer install --prefer-dist --no-progress --no-suggest
 
-    - name: Create DevShop Server Image FROM ${{ matrix.os_version }} with PHP ${{ matrix.php_version }}
+    - name: Create DevShop Server Image FROM ${{ matrix.os }} with vars ${{ matrix.vars }}
       run: |
         bin/robo prepare:containers \
           --os "${OS}" \
