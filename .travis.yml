@@ -44,8 +44,9 @@ env:
     - OS: ubuntu1804
       VARS: 'php_version=7.3'
 
-    - OS: ubuntu1804
-      VARS: 'php_version=7.4'
+# Soon!
+#    - OS: ubuntu1804
+#      VARS: 'php_version=7.4'
 
 jobs:
   fast_finish: true
