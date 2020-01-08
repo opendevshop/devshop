@@ -454,7 +454,7 @@ class RoboFile extends \Robo\Tasks {
         $compose_file = 'docker-compose-tests.yml';
       }
       else {
-        $this->yell("Development Environment Requested: Using docker-compose.yml.");
+        $this->yell("Development Environment Requested: Using {$opts['compose-file']}");
 
         $compose_file = $opts['compose-file'];
 
@@ -526,6 +526,8 @@ class RoboFile extends \Robo\Tasks {
       $env_run['ANSIBLE_SKIP_TAGS'] = $opts['skip-tags'];
       $env_run['ANSIBLE_PLAYBOOK'] = '/usr/share/devshop/' . $opts['playbook'];
       $env_run['ANSIBLE_ROLES_PATH'] = '/usr/share/devshop/roles';
+
+      $this->say("Custom Environment: " . print_r($env_run, 1));
 
       if (!empty($cmd)) {
         foreach ($cmd as $command) {
