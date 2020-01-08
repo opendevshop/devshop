@@ -229,11 +229,6 @@ ARG DEVSHOP_REMOVE_DEVMASTER=0
 ENV DEVSHOP_REMOVE_DEVMASTER ${DEVSHOP_REMOVE_DEVMASTER:-0}
 RUN if [ $DEVSHOP_REMOVE_DEVMASTER ]; then rm -rf /var/aegir/devmaster-1.x; fi
 
-EXPOSE 80 443 3306 8025
-WORKDIR /var/aegir
-CMD ["docker-systemd"]
-ENTRYPOINT ["docker-entrypoint"]
-
 # Pre-build Information
 RUN \
   devshop-logo "Ansible Playbook Environment" && \
@@ -264,3 +259,7 @@ RUN \
     env | grep "ANSIBLE" >> /etc/os-release && \
     cat  /etc/os-release
 
+EXPOSE 80 443 3306 8025
+WORKDIR /var/aegir
+CMD ["docker-systemd"]
+ENTRYPOINT ["docker-entrypoint"]
