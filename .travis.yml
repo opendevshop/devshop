@@ -115,8 +115,7 @@ install:
 script:
 
   - |
-    docker-compose exec -T --user aegir devshop_server \
-      /usr/share/devshop/tests/devshop-tests.sh
+    bin/robo test
 
 after_failure:
   - docker-compose logs
