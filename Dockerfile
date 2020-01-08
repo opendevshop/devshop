@@ -183,8 +183,8 @@ ENV ANSIBLE_PLAYBOOK_COMMAND_OPTIONS ${ANSIBLE_PLAYBOOK_COMMAND_OPTIONS:-""}
 # Ansible playbook command line options.
 # See https://docs.ansible.com/ansible/latest/cli/ansible-playbook.html
 
-ARG ANSIBLE_CONFIG="${DEVSHOP_PATH}/ansible.cfg"
-ENV ANSIBLE_CONFIG ${ANSIBLE_CONFIG:-"${DEVSHOP_PATH}/ansible.cfg"}
+ARG ANSIBLE_CONFIG="/usr/share/devshop/ansible.cfg"
+ENV ANSIBLE_CONFIG ${ANSIBLE_CONFIG:-"/usr/share/devshop/ansible.cfg"}
 
 ARG ANSIBLE_VERBOSITY=0
 ENV ANSIBLE_VERBOSITY ${ANSIBLE_VERBOSITY:-0}
