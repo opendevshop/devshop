@@ -16,7 +16,7 @@
 
 - name: Install Ansible Roles
   file:
-    src: "{{ devshop_path }}/roles"
+    src: "{{ devshop_cli_path }}/roles"
     dest: "{{ ansible_share_path }}/roles"
     state: link
     force: true
