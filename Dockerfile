@@ -141,7 +141,7 @@ RUN \
     if [ -d $DEVSHOP_PATH ]; then   \
         $LINE; \
         echo " Checking $DEVSHOP_PATH: ! Pre-existing DevShop found !"; \
-        cat $DEVSHOP_PATH/.git/HEAD; git status; git log -1; \
+        ls -la $DEVSHOP_PATH; cat $DEVSHOP_PATH/.git/HEAD; git status; git log -1; \
         echo "Deleting $DEVSHOP_PATH and /var/aegir/* ...";  \
         rm -rf $DEVSHOP_PATH /var/aegir/* /var/aegir/.* 2> /dev/null; \
     else      \
