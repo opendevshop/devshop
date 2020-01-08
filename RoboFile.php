@@ -457,10 +457,13 @@ class RoboFile extends \Robo\Tasks {
 
         $compose_file = $opts['compose-file'];
 
-        if (!file_exists('aegir-home')) {
+        if (!$opts['skip-source-prep'] && !file_exists('aegir-home')) {
           if ($this->confirm("Prepare source code locally? This is needed for the development environment.")) {
             $this->prepareSourcecode($opts);
           }
+        }
+        elseif (!$opts['skip-source-prep']) {
+          $this->say("Source code prepare skipped.");
         }
         else {
           $this->say("The aegir-home folder already exists.");
