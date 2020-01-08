@@ -137,6 +137,7 @@
     group: "{{ aegir_user_name }}"
     mode: 0744
     state: directory
+  tags: [install-devmaster]
 
 - name: Install required drush packages.
   command: |
@@ -146,6 +147,7 @@
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
+  tags: [install-devmaster]
 
 - name: Setup Drush Bash Enhancements
   command: "{{ drush_bin_path }} init --yes"
@@ -153,6 +155,7 @@
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
+  tags: [install-devmaster]
 
 - name: "Remove existing Devmaster Source Code from {{ devshop_devmaster_path }} before installing, if requested."
   when: devshop_danger_remove_devmaster
