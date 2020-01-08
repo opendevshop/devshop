@@ -523,6 +523,7 @@ class RoboFile extends \Robo\Tasks {
       $env_run['ANSIBLE_TAGS'] = $opts['tags'];
       $env_run['ANSIBLE_SKIP_TAGS'] = $opts['skip-tags'];
       $env_run['ANSIBLE_PLAYBOOK'] = '/usr/share/devshop/' . $opts['playbook'];
+      $env_run['ANSIBLE_ROLES_PATH'] = '/usr/share/devshop/roles';
 
       if (!empty($cmd)) {
         foreach ($cmd as $command) {
