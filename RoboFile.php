@@ -463,7 +463,7 @@ class RoboFile extends \Robo\Tasks {
             $this->prepareSourcecode($opts);
           }
         }
-        elseif (!$opts['skip-source-prep']) {
+        elseif ($opts['skip-source-prep']) {
           $this->say("Source code prepare skipped.");
         }
         else {
