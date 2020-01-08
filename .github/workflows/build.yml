@@ -16,7 +16,6 @@ jobs:
         php_version:
           - "7.2"
           - "7.3"
-          - "7.4"
         os_version:
           - 'ubuntu1804'
           # @TODO: Open a new PR for one OS at a time.
@@ -56,15 +55,17 @@ jobs:
           --skip-tags "${SKIP_TAGS}" \
           --compose-file docker-compose-tests.yml
 
-    - name: Prepare Docker Environment with GitHub Variables
+    - name: Install DevShop
       run: |
-        env
-        env | grep GITHUB_ > .ci.env
+        bin/robo up \
+          --follow=0 \
+          --compose-file docker-compose-tests.yml \
+          --skip-source-prep \
+          -vv
 
     - name: Test DevShop
-      run: bin/robo up --test --skip-source-prep -v
-      # @TODO: When we have time, stabilize the github actions tests.
-      if: false 
+      run: |
+        bin/robo test
 
     - uses: actions/upload-artifact@v1
       if: failure()
