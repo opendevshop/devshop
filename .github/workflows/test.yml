@@ -5,6 +5,7 @@ on:
 
 env:
   ANSIBLE_VERBOSITY: 2
+  FROM_IMAGE: devshop/server:latest
 
 jobs:
   test:
