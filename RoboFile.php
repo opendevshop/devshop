@@ -325,7 +325,7 @@ class RoboFile extends \Robo\Tasks {
     // the `docker-compose build` command, which, if they are listed in docker-compose.yml,
     // will get passed into the containers.
 
-    $env_build['DOCKER_TAG'] = $opts['tag'];
+    $env_build['DEVSHOP_DOCKER_TAG'] = $opts['tag'];
 
     // Set FROM using --from option.
     // @TODO: Tell users FROM _IMAGE env var doesn't work for prepare:containers?
@@ -526,7 +526,7 @@ class RoboFile extends \Robo\Tasks {
 
       //Environment variables at run time: AKA Environment variables.
       $env_run = [];
-      $env_run['DOCKER_TAG'] = $docker_tag;
+      $env_run['DEVSHOP_DOCKER_TAG'] = $docker_tag;
       $env_run['ANSIBLE_CONFIG'] = '/usr/share/devshop/ansible.cfg';
       $env_run['COMPOSE_FILE'] = $compose_file;
       $env_run['ANSIBLE_VERBOSITY'] = $this->ansibleVerbosity;
