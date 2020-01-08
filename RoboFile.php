@@ -289,7 +289,7 @@ class RoboFile extends \Robo\Tasks {
    * @option $playbook Ansible tags to pass to ansible-playbook command.
    */
   public function prepareContainers($user_uid = NULL, $hostname = 'devshop.local.computer', $opts = [
-      'tag' => 'devshop/server:local',
+      'tag' => 'local',
       'from' => 'devshop/server:latest',
       'dockerfile' => 'Dockerfile',
       'os' => '',
@@ -325,6 +325,8 @@ class RoboFile extends \Robo\Tasks {
     // the `docker-compose build` command, which, if they are listed in docker-compose.yml,
     // will get passed into the containers.
 
+    $env_build['DEVSHOP_DOCKER_TAG'] = $opts['tag'];
+
     // Set FROM using --from option.
     // @TODO: Tell users FROM _IMAGE env var doesn't work for prepare:containers?
     $env_build['FROM_IMAGE'] = $opts['from'];
@@ -337,6 +339,8 @@ class RoboFile extends \Robo\Tasks {
     // Pass `robo --playbook` option to Dockerfile.
     $env_build['ANSIBLE_PLAYBOOK'] = $opts['playbook'];
     $env_build['COMPOSE_FILE'] = $opts['compose-file'];
+
+    $this->say("Custom Build Environment: " . print_r($env_build, 1));
 
     $provision_io = new \ProvisionOps\Tools\Style($this->input(), $this->output());
     $process = new \ProvisionOps\Tools\PowerProcess('docker-compose build --pull --no-cache', $provision_io);
@@ -438,7 +442,15 @@ class RoboFile extends \Robo\Tasks {
       // $playbook = (!empty($opts['test']) || !empty($opts['test-upgrade']))? 'playbook.testing.yml': 'docker/playbook.server.yml';
       $playbook = $opts['playbook'];
       $this->say("Preparing containers with playbook: $playbook");
+      $docker_tag = $opts['tag'] = 'local';
       $this->prepareContainers($opts['user-uid'], 'devshop.local.computer', $opts);
+    }
+    else {
+      // If the --build option was not specified, pull the containers first.
+      // If we don't, `docker-compose up` will BUILD and tag the image.
+      $this->say("Pulling containers before docker-compose up...");
+      $cmd[] = "docker-compose pull --quiet";
+      $docker_tag = 'latest';
     }
 
     if ($opts['mode'] == 'docker-compose') {
@@ -454,20 +466,17 @@ class RoboFile extends \Robo\Tasks {
         $compose_file = 'docker-compose-tests.yml';
       }
       else {
-        $this->yell("Development Environment Requested: Using docker-compose.yml.");
+        $this->yell("Development Environment Requested: Using {$opts['compose-file']}");
 
         $compose_file = $opts['compose-file'];
 
-        if (!$opts['skip-source-prep'] && !file_exists('aegir-home')) {
+        if (!$opts['skip-source-prep']) {
           if ($this->confirm("Prepare source code locally? This is needed for the development environment.")) {
             $this->prepareSourcecode($opts);
           }
         }
-        elseif (!$opts['skip-source-prep']) {
+        elseif ($opts['skip-source-prep']) {
           $this->say("Source code prepare skipped.");
-        }
-        else {
-          $this->say("The aegir-home folder already exists.");
         }
       }
 
@@ -519,13 +528,16 @@ class RoboFile extends \Robo\Tasks {
 
       //Environment variables at run time: AKA Environment variables.
       $env_run = [];
+      $env_run['DEVSHOP_DOCKER_TAG'] = $docker_tag;
       $env_run['ANSIBLE_CONFIG'] = '/usr/share/devshop/ansible.cfg';
-      $env_run['COMPOSE_FILE'] =  $compose_file;
+      $env_run['COMPOSE_FILE'] = $compose_file;
       $env_run['ANSIBLE_VERBOSITY'] = $this->ansibleVerbosity;
       $env_run['ANSIBLE_TAGS'] = $opts['tags'];
       $env_run['ANSIBLE_SKIP_TAGS'] = $opts['skip-tags'];
       $env_run['ANSIBLE_PLAYBOOK'] = '/usr/share/devshop/' . $opts['playbook'];
       $env_run['ANSIBLE_ROLES_PATH'] = '/usr/share/devshop/roles';
+
+      $this->say("Custom Environment: " . print_r($env_run, 1));
 
       if (!empty($cmd)) {
         foreach ($cmd as $command) {
@@ -822,10 +834,14 @@ class RoboFile extends \Robo\Tasks {
    * Run all devshop tests on the containers.
    */
   public function test($user = 'aegir') {
-    $command = "docker-compose exec --user $user devshop /usr/share/devshop/tests/devshop-tests.sh";
+    $is_tty = !empty($_SERVER['XDG_SESSION_TYPE']) && $_SERVER['XDG_SESSION_TYPE'] == 'tty';
+    $no_tty = !$is_tty? '-T': '';
+    $command = "docker-compose exec $no_tty --user $user devshop /usr/share/devshop/tests/devshop-tests.sh";
     $provision_io = new \ProvisionOps\Tools\Style($this->input, $this->output);
     $process = new \ProvisionOps\Tools\PowerProcess($command, $provision_io);
-    $process->setTty(TRUE);
+
+    $process->setTty(!empty($_SERVER['XDG_SESSION_TYPE']) && $_SERVER['XDG_SESSION_TYPE'] == 'tty');
+
     $process->setTimeout(NULL);
     $process->disableOutput();
     $process->mustRun();
