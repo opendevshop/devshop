@@ -535,6 +535,7 @@ class RoboFile extends \Robo\Tasks {
           $isTty = !empty($_SERVER['XDG_SESSION_TYPE']) && $_SERVER['XDG_SESSION_TYPE'] == 'tty';
           $process->setTty($isTty);
           $process->setTimeout(NULL);
+          $process->disableOutput();
           $process->mustRun();
         }
         return;
@@ -821,10 +822,13 @@ class RoboFile extends \Robo\Tasks {
    * Run all devshop tests on the containers.
    */
   public function test($user = 'aegir') {
-    $process = new \Symfony\Component\Process\Process("docker-compose exec --user $user devshop /usr/share/devshop/tests/devshop-tests.sh");
+    $command = "docker-compose exec --user $user devshop /usr/share/devshop/tests/devshop-tests.sh";
+    $provision_io = new \ProvisionOps\Tools\Style($this->input, $this->output);
+    $process = new \ProvisionOps\Tools\PowerProcess($command, $provision_io);
     $process->setTty(TRUE);
     $process->setTimeout(NULL);
-    $process->run();
+    $process->disableOutput();
+    $process->mustRun();
   }
 
   /**
