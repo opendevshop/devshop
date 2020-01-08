@@ -1,6 +1,7 @@
 
 # devshop repos
-aegir-home
+aegir-home/*
+!aegir-home/.ssh/.gitkeep
 aegir-dockerfiles
 aegir-tests
 dockerfiles
