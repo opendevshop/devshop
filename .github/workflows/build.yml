@@ -10,7 +10,7 @@ env:
 
 jobs:
   build:
-    name: Build DevShop
+    name: "${{ matrix.os }} / ${{ matrix.vars }}"
     strategy:
       matrix:
         os:
