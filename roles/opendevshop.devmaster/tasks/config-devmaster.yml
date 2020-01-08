@@ -1,4 +1,9 @@
 ---
+
+- name: "Create default projects"
+  include_tasks: "config-projects.yml"
+  tags: [install-devmaster, create-projects]
+
 - name: Devmaster | Save GitHub Token
   become: true
   become_user: "{{ aegir_user_name }}"

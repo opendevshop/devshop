@@ -1,0 +1,42 @@
+<?php
+/**
+ * THIS IS NOT A REAL DRUSH ALIAS FILE!!
+ *
+ * Aegir uses files like these to store metadata about things.
+ *
+ * This file will be copied into /var/aegir/.drush/project_cms.alias.drushrc.php,
+ * and it will be imported into the DevShop drupal site in the playbook using
+ *
+ *   drush @hm hosting-import @project_cms
+ *
+ * Once that happens, this file is not used again until the server is rebuilt.
+ */
+
+$aliases['project_{{ item.name }}'] = array(
+    'context_type' => 'project',
+    'server' => '@server_master',
+    'name' => 'project_{{ item.name }}',
+    'project_name' => '{{ item.name }}',
+    'project' =>
+        array(
+            'git_url' => '{{ item.src }}',
+            'drupal_path' => '{{ item.docroot }}',
+            'code_path' => $_SERVER['HOME'] . '/projects/{{ item.name }}',
+            'base_url' => '{{ item.url_pattern }}',
+            'install_profile' => 'standard',
+            'name' => '{{ item.name }}',
+            'environments' => array(
+             {# @TODO: Foreach? #}
+              'master' => array(
+                'git_ref' => 'master',
+                'settings' => array(
+                  'install_method' => array(
+                    'method' => 'import',
+                    'import' => '/var/aegir/backups/cms.va.gov.sql'  // @TODO: Put the ansible variable in here.
+                  ),
+                ),
+              ),
+            ),
+            'settings' => {{ item.settings }},
+        )
+);

@@ -105,3 +105,26 @@ hosting_queue_runner_bin_path: "{{ devshop_cli_bin_path }}/hosting-queue-runner"
 
 # Triggers the removal of devshop_devmaster_path: `rm -rf {{ devshop_devmaster_path }}`
 devshop_danger_remove_devmaster: false
+
+devshop_default_projects: []
+
+# Projects List
+#- name: cms
+#  src: https://github.com/department-of-veterans-affairs/va.gov-cms
+#  docroot: docroot
+#  url_pattern: @environment.@project.@hostname
+#  live_domain: cms.va.gov
+#  settings:
+#    github:
+#      pull_request_environments: true
+#      pull_request_environments_delete: true
+#      pull_request_environments_method: mirror
+#      pull_request_reinstall: 1
+#      pull_request_create_policy: all
+#  environments:
+#  - name: master
+#    git_ref: master
+#    settings:
+#      install_method:
+#        method: import
+#        import: /var/aegir/backups/cms.va.gov.sql
