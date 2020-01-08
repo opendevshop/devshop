@@ -329,15 +329,14 @@ class RoboFile extends \Robo\Tasks {
 
     // Set FROM using --from option.
     // @TODO: Tell users FROM _IMAGE env var doesn't work for prepare:containers?
-    $env_build['FROM_IMAGE'] = $opts['from'];
+    $env_build['FROM_IMAGE'] = $_SERVER['FROM_IMAGE']?: $opts['from'];
     $env_build['ANSIBLE_CONFIG'] = '/usr/share/devshop/ansible.cfg';
-    $env_build['ANSIBLE_VERBOSITY'] = $this->ansibleVerbosity;
-    $env_build['ANSIBLE_EXTRA_VARS'] = $opts['vars'];
-    $env_build['ANSIBLE_TAGS'] = $opts['tags'];
-    $env_build['ANSIBLE_SKIP_TAGS'] = $opts['skip-tags'];
+    $env_build['ANSIBLE_VERBOSITY'] = $_SERVER['ANSIBLE_VERBOSITY']?: $this->ansibleVerbosity;
+    $env_build['ANSIBLE_EXTRA_VARS'] = $_SERVER['ANSIBLE_EXTRA_VARS']?: $opts['vars'];
+    $env_build['ANSIBLE_TAGS'] = $_SERVER['ANSIBLE_TAGS']?: $opts['tags'];
+    $env_build['ANSIBLE_SKIP_TAGS'] = $_SERVER['ANSIBLE_SKIP_TAGS']?: $opts['skip-tags'];
+    $env_build['ANSIBLE_PLAYBOOK'] = $_SERVER['ANSIBLE_PLAYBOOK']?: $opts['playbook'];;
 
-    // Pass `robo --playbook` option to Dockerfile.
-    $env_build['ANSIBLE_PLAYBOOK'] = $opts['playbook'];
     $env_build['COMPOSE_FILE'] = $opts['compose-file'];
 
     $this->say("Custom Build Environment: " . print_r($env_build, 1));
@@ -527,14 +526,17 @@ class RoboFile extends \Robo\Tasks {
       }
 
       //Environment variables at run time: AKA Environment variables.
+      // If a variable is set here, it will reset it's value. If CI systems use
+      // these variables, make sure to check for a pre-existing value in $_SERVER.
       $env_run = [];
       $env_run['DEVSHOP_DOCKER_TAG'] = $docker_tag;
       $env_run['ANSIBLE_CONFIG'] = '/usr/share/devshop/ansible.cfg';
       $env_run['COMPOSE_FILE'] = $compose_file;
-      $env_run['ANSIBLE_VERBOSITY'] = $this->ansibleVerbosity;
-      $env_run['ANSIBLE_TAGS'] = $opts['tags'];
-      $env_run['ANSIBLE_SKIP_TAGS'] = $opts['skip-tags'];
-      $env_run['ANSIBLE_PLAYBOOK'] = '/usr/share/devshop/' . $opts['playbook'];
+      $env_run['ANSIBLE_VERBOSITY'] = $_SERVER['ANSIBLE_VERBOSITY']?: $this->ansibleVerbosity;
+      $env_run['ANSIBLE_EXTRA_VARS'] = $_SERVER['ANSIBLE_EXTRA_VARS']?: $opts['vars'];
+      $env_run['ANSIBLE_TAGS'] = $_SERVER['ANSIBLE_TAGS']?: $opts['tags'];
+      $env_run['ANSIBLE_SKIP_TAGS'] = $_SERVER['ANSIBLE_SKIP_TAGS']?: $opts['skip-tags'];
+      $env_run['ANSIBLE_PLAYBOOK'] = $_SERVER['ANSIBLE_PLAYBOOK']?: '/usr/share/devshop/' . $opts['playbook'];
       $env_run['ANSIBLE_ROLES_PATH'] = '/usr/share/devshop/roles';
 
       $this->say("Custom Environment: " . print_r($env_run, 1));
