@@ -123,13 +123,6 @@
   become_method: "{{ ansible_become_method_aegir }}"
   changed_when: true
 
-- name: Clear drush caches
-  command: "{{ drush_bin_path }} cache-clear drush"
-  become: true
-  become_user: "{{ aegir_user_name }}"
-  become_method: "{{ ansible_become_method_aegir }}"
-  changed_when: true
-
 - name: Create /var/aegir/.drush
   file:
     path: "{{ aegir_user_home }}/.drush"
@@ -181,6 +174,7 @@
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
+  tags: [install-devmaster]
 
 - name: "Install DevShop Web Interface"
   include_tasks: "install-devmaster.yml"
