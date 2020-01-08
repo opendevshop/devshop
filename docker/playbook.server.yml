@@ -38,6 +38,8 @@
     devshop_makefile: "{{ devshop_cli_path }}/build-devmaster-dev.make.yml"
 
   roles:
+    - role: geerlingguy.repo-remi
+      when: ansible_os_family == 'RedHat'
     - opendevshop.users
     - opendevshop.apache
     - geerlingguy.mysql
