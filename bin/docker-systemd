@@ -21,5 +21,6 @@ elif [ -f "/usr/lib/systemd/systemd" ]; then
 elif [ -f "/sbin/init" ]; then
   COMMAND="/sbin/init"
 fi
+
 devshop-logo "Launching $COMMAND ..."
 exec $COMMAND
