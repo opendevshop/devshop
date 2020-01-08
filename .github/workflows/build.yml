@@ -22,8 +22,8 @@ jobs:
     env:
       TAGS: "all"
       SKIP_TAGS: "install-devmaster"
-      VARS: "${{ matrix.php }}"
-      OS: "${{ matrix.vars }}"
+      VARS: "${{ matrix.vars }}"
+      OS: "${{ matrix.os }}"
 
     runs-on: ubuntu-18.04
     steps:
