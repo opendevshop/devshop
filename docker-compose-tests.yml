@@ -93,6 +93,7 @@ services:
     # - DEVSHOP_ENTRYPOINT_LOG_FILES="/var/log/aegir/*"
     # - DEVSHOP_TESTS_ASSETS_PATH="/usr/share/devshop/.github/test-assets"
 
+    - CI=CI
     privileged: true
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
