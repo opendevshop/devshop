@@ -36,7 +36,7 @@ jobs:
           --tags=rebuild-devmaster
           --vars=devshop_danger_remove_devmaster=true
           --follow=0 \
-          --compose-file docker-compose-tests.yml \
+          --compose-file=docker-compose-tests.yml \
           --skip-source-prep
 
     - name: Test DevShop
