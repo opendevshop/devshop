@@ -340,6 +340,8 @@ class RoboFile extends \Robo\Tasks {
     $env_build['ANSIBLE_PLAYBOOK'] = $opts['playbook'];
     $env_build['COMPOSE_FILE'] = $opts['compose-file'];
 
+    $this->say("Custom Build Environment: " . print_r($env_build, 1));
+
     $provision_io = new \ProvisionOps\Tools\Style($this->input(), $this->output());
     $process = new \ProvisionOps\Tools\PowerProcess('docker-compose build --pull --no-cache', $provision_io);
     $process->setEnv($env_build);
