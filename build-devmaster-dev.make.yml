@@ -107,6 +107,7 @@ projects:
       tag: 7.x-1.5
 
   bootstrap:
+    type: theme
     download:
       type: git
       tag: 7.x-3.26

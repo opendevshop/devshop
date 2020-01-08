@@ -46,7 +46,8 @@
             "DevShop\\Composer::installBins"
         ],
         "post-update-cmd": [
-            "DevShop\\Composer::installBins"
+            "DevShop\\Composer::installBins",
+            "ansible-galaxy install -r roles/roles.yml -p roles --force"
         ]
     }
 }

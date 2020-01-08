@@ -1,48 +1,99 @@
-#
-# docker-compose-tests.yml
-#
-# Only used in CI.  See https://github.com/opendevshop/devshop/actions
+version: '2.2'
 
-version: '2.1'
+# This compose file is just an example. Create your own to launch your own Aegir cluster
+
 services:
-  # @TODO: Remove this duplication by creating a docker-compose overrides yml file for automated testing that just makes the changes needed.
+
   devshop:
-    image: devshop/server:local
+    # If the image listed here does't exist yet locally (even if you use a docker hub image),
+    # `docker-compose up` will automatically BUILD it and tag it with this name.
+    #
+    # As soon as the image listed here DOES exists locally, `docker-compose up`
+    # only launch the container. It will only rebuild it if you use --build.
+    #
+    # This can cause confusion. If "image:  devshop/server:latest", try:
+    #    $ docker-compose up
+    #
+    #    1. Runs a docker build FROM devshop/server:latest (and pulls it in the process.)
+    #    2. If it completes, you will have a NEW devshop/server:latest that is DIFFERENT from the remote.
+    #    3. It will launch this container when done building.
+    #    4. The next time you run `docker-compose up` it will use the same image (devshop/server:latest),
+    #       only recreating the CONTAINER if any docker-compose.yml changed,
+    #       and only rebuilding the IMAGE if the `--build` option is used. (or `docker-compose  build` is used)
+    #
+    #    The problem arises if you are developing, and the build fails.
+    #    Even if your build fails, docker downloaded the FROM image in the background.
+    #
+    #    If this image name matches the "image" string below, the next `docker-compose up`
+    #    call will see that you have a local copy and will launch that INSTEAD of building it new.
+    #
+    #    By using the non-docker-hub image "devshop/server:local" in this docker-compose file, we force the
+    #    the developer to finish that first build before any container can be launched.
+    #
+    image: devshop/server:${DEVSHOP_DOCKER_TAG:-latest}
     build:
       context: '.'
       dockerfile: 'Dockerfile'
       args:
-      - FROM_IMAGE
+      # Default `docker-compose up` will use devshop/server:latest. Set this var to remove the pre-existing devmaster code.
+      - ANSIBLE_EXTRA_VARS=${ANSIBLE_EXTRA_VARS:-devshop_danger_remove_devmaster=true}
+      - ANSIBLE_TAGS=${ANSIBLE_TAGS:-remove-devmaster}
+
+      # If a value for local development should be different than docker hub image,
+      # set a default here.
+      # Otherwise values are inherited from `docker-compose` execution environment.
       - ANSIBLE_VERBOSITY
+      - ANSIBLE_PLAYBOOK
+      - ANSIBLE_SKIP_TAGS
+      - ANSIBLE_PLAYBOOK_COMMAND_OPTIONS
+      - ANSIBLE_CONFIG
+      - ANSIBLE_ROLES_PATH
+      - FROM_IMAGE
+      - OS_VERSION
       - DEVSHOP_USER_UID
-      - DEVSHOP_PLAYBOOK
+
+      - DRUPAL_MAKEFILE
+      - DRUPAL_ROOT
 
     ports:
-      - 80:80
+    - "80:80"
+    - "2222:22"
     hostname: devshop.local.computer
     extra_hosts:
     - "drpl8.testenv.devshop.local.computer:127.0.0.1"
-    env_file:
-      - .github/.ci.env
-
     environment:
+    # Default Ansible tags at Runtime
+    - ANSIBLE_TAGS="${ANSIBLE_TAGS:-install-devmaster}  "
 
-      # When using the "devshop-test-upgrade.sh" script, installs this version first.
-      UPGRADE_FROM_VERSION: "1.0.0-rc4-testing"
-      UPGRADE_FROM_PROVISION_VERSION: "7.x-3.10"
+    # Values are inherited from `docker-compose` execution environment.
+    - ANSIBLE_EXTRA_VARS
+    - ANSIBLE_VERBOSITY
+    - ANSIBLE_PLAYBOOK
+    - ANSIBLE_SKIP_TAGS
+    - ANSIBLE_PLAYBOOK_COMMAND_OPTIONS
+    - ANSIBLE_CONFIG
+    - ANSIBLE_ROLES_PATH
+    - FROM_IMAGE
+    - OS_VERSION
+    - DEVSHOP_USER_UID
 
-      # Set any desired ansible configuration items here. (Only affects containers at run time, not build time.)
-      ANSIBLE_VERBOSITY: 0
+    - DRUPAL_MAKEFILE
+    - DRUPAL_ROOT
 
-      CI: "CI"
+    # Change to use a different database host.
+    - DATABASE_HOST=localhost
+    - XDEBUG_CONFIG="remote_host=172.17.0.1 idekey=PHPSTORM"
+    - PHP_IDE_CONFIG="serverName=devshop.local.computer"
 
-      # Add additional files you would like to output in the container logs here, separated by a space.
-      DEVSHOP_ENTRYPOINT_LOG_FILES: "/var/log/aegir/*"
-      DEVSHOP_TESTS_ASSETS_PATH: "/usr/share/devshop/.github/test-assets"
+    # To allow the devmaster container to launch other docker containers, we need the host's path to aegir home directory.
+    - HOST_AEGIR_HOME=/home/jon/Projects/devshop/aegir-home
+    - GITHUB_TOKEN
 
-      # Reads GITHUB TOKEN from the calling environment.
-      GITHUB_TOKEN: "${GITHUB_TOKEN}"
+    # Add additional files you would like to output in the container logs here, separated by a space.
+    # - DEVSHOP_ENTRYPOINT_LOG_FILES="/var/log/aegir/*"
+    # - DEVSHOP_TESTS_ASSETS_PATH="/usr/share/devshop/.github/test-assets"
 
+    - CI=CI
     privileged: true
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro

@@ -62,6 +62,27 @@ class RoboFile extends \Robo\Tasks {
    */
   private $devshop_root_path;
 
+
+  /**
+   * Pass robo -v to Ansible -v.
+   */
+  private function setVerbosity() {
+    switch ($this->output->getVerbosity()) {
+      case OutputInterface::VERBOSITY_VERBOSE:
+        $this->ansibleVerbosity = 1;
+        break;
+      case OutputInterface::VERBOSITY_VERY_VERBOSE:
+        $this->ansibleVerbosity = 2;
+        break;
+      case OutputInterface::VERBOSITY_DEBUG:
+        $this->ansibleVerbosity = 3;
+        break;
+      default:
+        $this->ansibleVerbosity = 0;
+        break;
+    }
+  }
+
   public function  __construct()
   {
     $this->git_ref = trim(str_replace('refs/heads/', '', shell_exec("git describe --tags --exact-match 2> /dev/null || git symbolic-ref -q HEAD 2> /dev/null")));
@@ -69,23 +90,6 @@ class RoboFile extends \Robo\Tasks {
     if (empty($this->git_ref) && !empty($_SERVER['GITHUB_REF'])) {
       $this->git_ref = $_SERVER['GITHUB_REF'];
     }
-
-    // Pass robo -v to Ansible -v.
-    switch ($this->output()->getVerbosity()) {
-      case OutputInterface::VERBOSITY_VERBOSE:
-        $this->ansibleVerbosity = 1;
-        break;
-      case OutputInterface::VERBOSITY_VERY_VERBOSE:
-        $this->ansible_verbosity = 2;
-        break;
-      case OutputInterface::VERBOSITY_DEBUG:
-        $this->ansible_verbosity = 3;
-        break;
-      default:
-        $this->ansible_verbosity = 0;
-        break;
-    }
-
 
     // Tell Provision power process to print output directly.
     putenv('PROVISION_PROCESS_OUTPUT=direct');
@@ -202,50 +206,6 @@ class RoboFile extends \Robo\Tasks {
       }
     }
 
-    // @TODO: Detect and clone the right version. This will not be necessary in Ansible 2.6.
-    // Ansible roles
-    $role_repos = [
-      'geerlingguy.apache' => 'http://github.com/geerlingguy/ansible-role-apache.git',
-      'geerlingguy.composer' => 'http://github.com/geerlingguy/ansible-role-composer.git',
-      'geerlingguy.git' => 'http://github.com/geerlingguy/ansible-role-git.git',
-      'geerlingguy.mysql' => 'http://github.com/geerlingguy/ansible-role-mysql.git',
-      'geerlingguy.nginx' => 'http://github.com/geerlingguy/ansible-role-nginx.git',
-      'geerlingguy.php' => 'http://github.com/geerlingguy/ansible-role-php.git',
-      'geerlingguy.php-versions' => 'http://github.com/geerlingguy/ansible-role-php-versions.git',
-      'geerlingguy.php-mysql' => 'http://github.com/geerlingguy/ansible-role-php-mysql.git',
-      'geerlingguy.supervisor' => 'http://github.com/geerlingguy/ansible-role-supervisor.git',
-//      'opendevshop.apache' => 'http://github.com/opendevshop/ansible-role-apache',
-//      'opendevshop.aegir-nginx' => 'http://github.com/opendevshop/ansible-role-aegir-nginx',
-//      'opendevshop.aegir-user' => 'http://github.com/opendevshop/ansible-role-aegir-user',
-//      'opendevshop.devmaster' => 'http://github.com/opendevshop/ansible-role-devmaster.git',
-    ];
-
-    $this->yell("Cloning Ansible Roles...");
-
-    $roles_yml = Yaml::parse(file_get_contents($this->devshop_root_path . '/requirements.yml'));
-    foreach ($roles_yml as $role) {
-      // Only install the role if it is in the role_repos array.
-      if (!empty($role_repos[$role['name']])) {
-        $roles[$role['name']] = [
-            'repo' => $role_repos[$role['name']],
-            'version' => $role['version'],
-        ];
-      }
-    }
-
-    foreach ($roles as $name => $role) {
-      $path = $this->devshop_root_path . '/roles/' . $name;
-      if (file_exists($path)) {
-        $this->say("$path already exists.");
-      }
-      else {
-        $this->taskGitStack()
-          ->cloneRepo($role['repo'], $path, $role['version'])
-          ->run();
-      }
-    }
-
-
     // Run drush make to build the devmaster stack.
     $make_destination = $this->devshop_root_path . "/aegir-home/devmaster-" . $opts['devshop-version'];
     $makefile_path = $opts['no-dev']? 'build-devmaster.make': "build-devmaster-dev.make.yml";
@@ -299,64 +259,92 @@ class RoboFile extends \Robo\Tasks {
   }
 
   /**
-   * Build a devshop/server container.
+   * Build devshop containers.
    *
    * By default, `robo prepare:containers` will build a new container image
    * using the 'Dockerfile' using FROM 'devshop/server:latest'. This shortens
    * build times because the image was pre-built on docker hub.
    *
    * To force a new local build of the 'devshop/server' container image from
-   * scratch, use the '--full' option.
+   * scratch, use the '--from' option to specify a full docker image string or
+   * the `--os` option to use a  `geerlingguy/docker-*-ansible` image.
    *
-   * To create a local container
+   * For example:
+   *
+   *   robo up --os centos7
+   *
+   * will build the container from geerlingguy/docker-centos7-ansible.
    *
    * @example bin/robo prepare:containers
    *
    * @param $user_uid Pass a UID to build the image with. Defaults to the UID of the user running `robo`
    *
    * @option $tag The string to tag the resulting container with.
-   * @option $from The image to use to build the docker image FROM.
+   * @option $from The image to use to build the docker image FROM. Ignored if "os" is set.
    * @option $dockerfile The dockerfile to use.
-   * @option $os-version An OS "slug" for any of the geerlingguy/docker-*-ansible images: https://hub.docker.com/u/geerlingguy/
-   *
+   * @option $os An OS "slug" for any of the geerlingguy/docker-*-ansible images: https://hub.docker.com/u/geerlingguy/
+   * @option $vars Ansible vars to pass to --extra-vars option.
+   * @option $tags Ansible tags to pass to --tags option.
+   * @option $skip_tags Ansible tags to pass to --skip-tags option.
+   * @option $playbook Ansible tags to pass to ansible-playbook command.
    */
-  public function prepareContainers($user_uid = NULL, $hostname = 'devshop.local.computer', $playbook = 'docker/playbook.server.yml', $opts = [
-      'tag' => 'devshop/server:local',
+  public function prepareContainers($user_uid = NULL, $hostname = 'devshop.local.computer', $opts = [
+      'tag' => 'local',
       'from' => 'devshop/server:latest',
       'dockerfile' => 'Dockerfile',
-      'os-version' => null,
+      'os' => '',
+      'vars' => '',
+      'tags' => '',
+      'skip-tags' => '',
+      'playbook' => 'docker/playbook.server.yml',
+      'compose-file' => 'docker-compose.yml'
   ]) {
 
-    $compose_env = array();
+    $this->setVerbosity();
+
+    // Environment variables at build time: AKA Build Args.
+    $env_build = array();
 
     // Determine current UID.
     if (is_null($user_uid)) {
-      $compose_env['DEVSHOP_USER_UID'] = trim(shell_exec('id -u'));
+      $env_build['DEVSHOP_USER_UID'] = trim(shell_exec('id -u'));
     }
 
-    // Set FROM_IMAGE. If os-version is set, generate the name.
-    // If os-version is the default, set FROM to latest.
-    if ($opts['os-version'] == 'ubuntu1804') {
-      $opts['from'] = 'devshop/server:latest';
+    // Set FROM_IMAGE. If os is set, generate the name.
+    // If os is the default, set FROM to latest.
+    if (!empty($opts['os'])) {
+      $opts['from'] = "geerlingguy/docker-{$opts['os']}-ansible";
     }
-    elseif ($opts['os-version']) {
-      $opts['from'] = "geerlingguy/docker-{$opts['os-version']}-ansible";
-    }
+
+    // Append the absolute path in the container.
+    $opts['playbook'] = '/usr/share/devshop/' . $opts['playbook'] ;
 
     $this->yell('Building DevShop Container from: ' . $opts['from'], 40, 'blue');
 
-    // Set FROM using --from option.
-    $compose_env['FROM_IMAGE'] = $opts['from'];
+    // @TODO: Document how  ENV vars in the process running `robo` are passed to
+    // the `docker-compose build` command, which, if they are listed in docker-compose.yml,
+    // will get passed into the containers.
 
-    // Pass `robo` verbosity to Ansible.
-    $compose_env['ANSIBLE_VERBOSITY'] = $this->ansibleVerbosity;
+    $env_build['DEVSHOP_DOCKER_TAG'] = $opts['tag'];
+
+    // Set FROM using --from option.
+    // @TODO: Tell users FROM _IMAGE env var doesn't work for prepare:containers?
+    $env_build['FROM_IMAGE'] = $opts['from'];
+    $env_build['ANSIBLE_CONFIG'] = '/usr/share/devshop/ansible.cfg';
+    $env_build['ANSIBLE_VERBOSITY'] = $this->ansibleVerbosity;
+    $env_build['ANSIBLE_EXTRA_VARS'] = $opts['vars'];
+    $env_build['ANSIBLE_TAGS'] = $opts['tags'];
+    $env_build['ANSIBLE_SKIP_TAGS'] = $opts['skip-tags'];
 
     // Pass `robo --playbook` option to Dockerfile.
-    $compose_env['DEVSHOP_PLAYBOOK'] = $playbook;
+    $env_build['ANSIBLE_PLAYBOOK'] = $opts['playbook'];
+    $env_build['COMPOSE_FILE'] = $opts['compose-file'];
+
+    $this->say("Custom Build Environment: " . print_r($env_build, 1));
 
     $provision_io = new \ProvisionOps\Tools\Style($this->input(), $this->output());
-    $process = new \ProvisionOps\Tools\PowerProcess('docker-compose build', $provision_io);
-    $process->setEnv($compose_env);
+    $process = new \ProvisionOps\Tools\PowerProcess('docker-compose build --pull --no-cache', $provision_io);
+    $process->setEnv($env_build);
     $process->disableOutput();
     $process->setTimeout(null);
     $process->setTty(!empty($_SERVER['XDG_SESSION_TYPE']) && $_SERVER['XDG_SESSION_TYPE'] == 'tty');
@@ -386,10 +374,6 @@ class RoboFile extends \Robo\Tasks {
    *   Launch an OS container, then install devshop using install.sh, then run
    * tests.
    *
-   *   robo up --mode=install.sh
-   * --install-sh-image=geerlingguy/docker-centos7-ansible Launch an OS
-   * container, then install devshop using install.sh in a CentOS 7 image.
-   *
    *   robo up --mode=manual
    *   Just launch the container. Allows you to manually run the install.sh script.
    *
@@ -397,10 +381,6 @@ class RoboFile extends \Robo\Tasks {
    * @option $test-upgrade Install an old version, upgrade it to this version,
    *   then run tests.
    * @option $mode Set to 'install.sh' to use the install.sh script for setup.
-   * @option $install-sh-image Enter any docker image to use for running the
-   *   install-sh-image. Since we need ansible, we are using geerlingguy's
-   *   geerlingguy/docker-centos7-ansible and
-   *   geerlingguy/docker-ubuntu1404-ansible images.
    * @option $user-uid Override the detected current user's UID when building
    *   containers.
    * @option $xdebug Set this option to launch with an xdebug container.
@@ -415,8 +395,6 @@ class RoboFile extends \Robo\Tasks {
 
     // Set 'mode' => 'install.sh' to run a traditional OS install.
     'mode' => 'docker-compose',
-    'install-sh-image' => 'geerlingguy/docker-ubuntu1404-ansible',
-    'install-sh-options' => '--server-webserver=apache',
     'user-uid' => NULL,
     'disable-xdebug' => TRUE,
     'no-dev' => FALSE,
@@ -424,12 +402,19 @@ class RoboFile extends \Robo\Tasks {
     'build' => FALSE,
     'skip-source-prep' => FALSE,
     'skip-install' => FALSE,
-    'os-version' => 'ubuntu1804',
+    'os' => '',
+    'from' => 'devshop/server:latest',
+    'vars' => '',
+    'tags' => '',
+    'skip-tags' => 'install-devshop',
     'file' => 'Dockerfile',
+    'playbook' => 'docker/playbook.server.yml',
+    'compose-file' => 'docker-compose.yml'
   ]) {
 
     // Check for tools
     $this->prepareHost();
+    $this->setVerbosity();
 
     if (empty($this->devshop_root_path)) {
       $this->devshop_root_path = __DIR__;
@@ -455,9 +440,17 @@ class RoboFile extends \Robo\Tasks {
     if ($opts['build']) {
       // @TODO: Make the playbook a CLI option and figure out a better way to do this.
       // $playbook = (!empty($opts['test']) || !empty($opts['test-upgrade']))? 'playbook.testing.yml': 'docker/playbook.server.yml';
-      $playbook = 'docker/playbook.server.yml';
+      $playbook = $opts['playbook'];
       $this->say("Preparing containers with playbook: $playbook");
-      $this->prepareContainers($opts['user-uid'], 'devshop.local.computer', $playbook, $opts);
+      $docker_tag = $opts['tag'] = 'local';
+      $this->prepareContainers($opts['user-uid'], 'devshop.local.computer', $opts);
+    }
+    else {
+      // If the --build option was not specified, pull the containers first.
+      // If we don't, `docker-compose up` will BUILD and tag the image.
+      $this->say("Pulling containers before docker-compose up...");
+      $cmd[] = "docker-compose pull --quiet";
+      $docker_tag = 'latest';
     }
 
     if ($opts['mode'] == 'docker-compose') {
@@ -473,41 +466,28 @@ class RoboFile extends \Robo\Tasks {
         $compose_file = 'docker-compose-tests.yml';
       }
       else {
-        $this->yell("Development Environment Requested: Using docker-compose.yml.");
+        $this->yell("Development Environment Requested: Using {$opts['compose-file']}");
 
-        $compose_file = 'docker-compose.yml';
+        $compose_file = $opts['compose-file'];
 
-        if (!file_exists('aegir-home')) {
+        if (!$opts['skip-source-prep']) {
           if ($this->confirm("Prepare source code locally? This is needed for the development environment.")) {
             $this->prepareSourcecode($opts);
           }
         }
-        else {
-          $this->say("The aegir-home folder already exists.");
+        elseif ($opts['skip-source-prep']) {
+          $this->say("Source code prepare skipped.");
         }
       }
 
       $cmd[] = 'echo "Running docker-compose up with COMPOSE_FILE=$COMPOSE_FILE"... ';
+      $cmd[] = "docker-compose up --detach";
 
-      // The --build option triggers the actions defined in Dockerfile,
-      // which runs `ansible-playbook $DEVSHOP_PLAYBOOK_PATH`
-      //
-      // The default playbook (docker/playbook.server.yml) does NOT install
-      // hostmaster, by setting the variable devmaster_skip_upgrade=true.
-      //
-      // It is run in a second process after the container is built
-      // to match the behavior of using the `devshop/server` image on docker hub.
-      //
-      // Devmaster should be installed into running containers only, not in the
-      // container image.
-      //
-      // This command runs the `docker build` command, then `docker-compose up`
-      if ($opts['build']) {
-        $cmd[] = "docker-compose up --build --detach";
-      }
-      else {
-        $cmd[] = "docker-compose up --detach";
-      }
+      // Start mysqld. Not sure why it's not kicking on.
+      $cmd[] = "sleep 3";
+      $cmd[] = "docker-compose exec -T devshop service mysql start";
+      $cmd[] = "docker-compose exec -T devshop systemctl status --no-pager";
+      $cmd[] = "docker-compose exec -T devshop ls -la";
 
       // Run final playbook to install devshop.
       // Test commands must be run as application user.
@@ -530,6 +510,8 @@ class RoboFile extends \Robo\Tasks {
       }
       else {
 
+        $cmd[]= "docker-compose exec -T devshop env";
+
         // This is run if neither --test or --test-upgrade commands are run.
         // We assume this means launch a development environment.
         if (!$opts['skip-install']) {
@@ -544,201 +526,214 @@ class RoboFile extends \Robo\Tasks {
         }
       }
 
+      //Environment variables at run time: AKA Environment variables.
+      $env_run = [];
+      $env_run['DEVSHOP_DOCKER_TAG'] = $docker_tag;
+      $env_run['ANSIBLE_CONFIG'] = '/usr/share/devshop/ansible.cfg';
+      $env_run['COMPOSE_FILE'] = $compose_file;
+      $env_run['ANSIBLE_VERBOSITY'] = $this->ansibleVerbosity;
+      $env_run['ANSIBLE_TAGS'] = $opts['tags'];
+      $env_run['ANSIBLE_SKIP_TAGS'] = $opts['skip-tags'];
+      $env_run['ANSIBLE_PLAYBOOK'] = '/usr/share/devshop/' . $opts['playbook'];
+      $env_run['ANSIBLE_ROLES_PATH'] = '/usr/share/devshop/roles';
+
+      $this->say("Custom Environment: " . print_r($env_run, 1));
+
       if (!empty($cmd)) {
         foreach ($cmd as $command) {
           $provision_io = new \ProvisionOps\Tools\Style($this->input, $this->output);
           $process = new \ProvisionOps\Tools\PowerProcess($command, $provision_io);
-          $process->setEnv([
-            'COMPOSE_FILE' => $compose_file
-          ]);
+          $process->setEnv($env_run);
           $isTty = !empty($_SERVER['XDG_SESSION_TYPE']) && $_SERVER['XDG_SESSION_TYPE'] == 'tty';
           $process->setTty($isTty);
           $process->setTimeout(NULL);
+          $process->disableOutput();
           $process->mustRun();
         }
         return;
       }
     }
-    elseif ($opts['mode'] == 'install.sh' || $opts['mode'] == 'manual') {
-
-      $init_map = [
-        'centos:7' => '/usr/lib/systemd/systemd',
-        'ubuntu:14.04' => '/sbin/init',
-        'geerlingguy/docker-ubuntu1404-ansible' => '/sbin/init',
-        'geerlingguy/docker-ubuntu1604-ansible' => '/lib/systemd/systemd',
-        'geerlingguy/docker-ubuntu1804-ansible' => '/lib/systemd/systemd',
-        'geerlingguy/docker-centos7-ansible' => '/usr/lib/systemd/systemd',
-      ];
-
-      $init = isset($init_map[$opts['install-sh-image']])? $init_map[$opts['install-sh-image']]: '/sbin/init';
-
-      # This is the list of test sites, set in .travis.yml.
-      # This is so requests to these sites go back to localhost.
-      if (empty($_SERVER['SITE_HOSTS'])) {
-        $_SERVER['SITE_HOSTS'] = 'devshop.local.computer';
-      }
-
-      # Launch Server container
-      if (!$this->taskDockerRun($opts['install-sh-image'])
-        ->name('devshop_container')
-        ->volume($this->devshop_root_path, '/usr/share/devshop')
-        ->volume($this->devshop_root_path . '/aegir-home', '/var/aegir')
-        ->volume($this->devshop_root_path . '/roles', '/etc/ansible/roles')
-        ->volume($this->devshop_root_path . '/provision', '/var/aegir/.drush/commands/provision')
-        ->option('--hostname', 'devshop.local.computer')
-        ->option('--add-host', '"' . $_SERVER['SITE_HOSTS'] . '":127.0.0.1')
-        ->option('--volume', '/sys/fs/cgroup:/sys/fs/cgroup:ro')
-        ->option('-t')
-        ->publish(80,80)
-        ->detached()
-        ->privileged()
-        ->env('COMPOSE_FILE', 'docker-compose-tests.yml')
-        ->env('GITHUB_TOKEN', $_SERVER['GITHUB_TOKEN']?: '')
-        ->env('TERM', 'xterm')
-        ->env('GITHUB_REF', $_SERVER['GITHUB_REF'])
-        ->env('AEGIR_USER_UID', $opts['user-uid'])
-        ->env('PATH', "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/share/devshop/bin")
-        ->exec('/usr/share/devshop/tests/run-tests.sh')
-        ->exec($init)
-        ->run()
-        ->wasSuccessful()) {
-        throw new RuntimeException('Docker Run failed.');
-      }
-
-      # Install mysql first to ensure it is started.
-      if ($opts['install-sh-image'] == 'ubuntu:14.04') {
-        if (!$this->taskDockerExec('devshop_container')
-          ->exec("sed -i 's/101/0/' /usr/sbin/policy-rc.d")
-          ->run()
-          ->wasSuccessful()
-        ) {
-          throw new RuntimeException('Set init policy failed.');
-        }
-      }
-      elseif ($opts['install-sh-image'] == 'geerlingguy/docker-ubuntu1604-ansible') {
-// @TODO: If this is the cause of wonkiness, let's not install dbus just for testing. There are better ways to set hostname.
-        // Hostname install fails without dbus, so I am told: https://github.com/ansible/ansible/issues/25543
-//        if (!(
-//          $this->taskDockerExec('devshop_container')
-//            ->exec("apt-get update")
-//            ->run()
-//            ->wasSuccessful()
-//          && $this->taskDockerExec('devshop_container')
-//            ->exec("apt-get install dbus -y")
-//            ->env('DEBIAN_FRONTEND', 'noninteractive')
-//            ->run()
-//            ->wasSuccessful()
+    // @TODO: Leaving here until the "Upgrade Test" is migrated to the new pattern.
+//    elseif ($opts['mode'] == 'install.sh' || $opts['mode'] == 'manual') {
 //
-//          // @TODO: Hack attempt to fix failing apache restarts: https://travis-ci.org/opendevshop/devshop/jobs/608769926#L2447
-//          // Idea from: https://unix.stackexchange.com/questions/239489/dbus-system-failed-to-activate-service-org-freedesktop-login1-timed-out
-//          && $this->taskDockerExec('devshop_container')
-//            ->exec("systemctl restart systemd-logind")
-//            ->run()
-//            ->wasSuccessful()
-//        )) {
-//          $this->say('Unable to install dbus. Setting hostname wont work. See https://github.com/ansible/ansible/issues/25543');
+//      $init_map = [
+//        'centos:7' => '/usr/lib/systemd/systemd',
+//        'ubuntu:14.04' => '/sbin/init',
+//        'geerlingguy/docker-ubuntu1404-ansible' => '/sbin/init',
+//        'geerlingguy/docker-ubuntu1604-ansible' => '/lib/systemd/systemd',
+//        'geerlingguy/docker-ubuntu1804-ansible' => '/lib/systemd/systemd',
+//        'geerlingguy/docker-centos7-ansible' => '/usr/lib/systemd/systemd',
+//      ];
 //
-//          exit(1);
+//      $init = isset($init_map[$opts['install-sh-image']])? $init_map[$opts['install-sh-image']]: '/sbin/init';
+//
+//      # This is the list of test sites, set in .travis.yml.
+//      # This is so requests to these sites go back to localhost.
+//      if (empty($_SERVER['SITE_HOSTS'])) {
+//        $_SERVER['SITE_HOSTS'] = 'devshop.local.computer';
+//      }
+//
+//      # Launch Server container
+//      if (!$this->taskDockerRun($opts['install-sh-image'])
+//        ->name('devshop_container')
+//        ->volume($this->devshop_root_path, '/usr/share/devshop')
+//        ->volume($this->devshop_root_path . '/aegir-home', '/var/aegir')
+//        ->volume($this->devshop_root_path . '/roles', '/etc/ansible/roles')
+//        ->volume($this->devshop_root_path . '/provision', '/var/aegir/.drush/commands/provision')
+//        ->option('--hostname', 'devshop.local.computer')
+//        ->option('--add-host', '"' . $_SERVER['SITE_HOSTS'] . '":127.0.0.1')
+//        ->option('--volume', '/sys/fs/cgroup:/sys/fs/cgroup:ro')
+//        ->option('-t')
+//        ->publish(80,80)
+//        ->detached()
+//        ->privileged()
+//        ->env('COMPOSE_FILE', 'docker-compose-tests.yml')
+//        ->env('GITHUB_TOKEN', $_SERVER['GITHUB_TOKEN']?: '')
+//        ->env('TERM', 'xterm')
+//        ->env('GITHUB_REF', $_SERVER['GITHUB_REF'])
+//        ->env('AEGIR_USER_UID', $opts['user-uid'])
+//        ->env('PATH', "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/share/devshop/bin")
+//        ->exec('/usr/share/devshop/tests/run-tests.sh')
+//        ->exec($init)
+//        ->run()
+//        ->wasSuccessful()) {
+//        throw new RuntimeException('Docker Run failed.');
+//      }
+//
+//      # Install mysql first to ensure it is started.
+//      if ($opts['install-sh-image'] == 'ubuntu:14.04') {
+//        if (!$this->taskDockerExec('devshop_container')
+//          ->exec("sed -i 's/101/0/' /usr/sbin/policy-rc.d")
+//          ->run()
+//          ->wasSuccessful()
+//        ) {
+//          throw new RuntimeException('Set init policy failed.');
 //        }
-      }
-
-      // Display home folder.
-      $this->taskDockerExec('devshop_container')
-        ->exec('ls -la /var/aegir')
-        ->run();
-
-      // Try to set ownership of home folder to AEGIR_UID.
-      $this->taskDockerExec('devshop_container')
-        ->exec("chown {$opts['user-uid']} /var/aegir -R")
-        ->run();
-
-      # If test-upgrade requested, install older version first, then run devshop upgrade $VERSION
-      if ($opts['test-upgrade']) {
-
-//        // This is needed because the old playbook has an incompatibility with newer ansible.
-        // UPDATE: Seems to be not needed now?? This was triggering sh: 1: cannot create /root/.ansible.cfg: Permission denied
+//      }
+//      elseif ($opts['install-sh-image'] == 'geerlingguy/docker-ubuntu1604-ansible') {
+//// @TODO: If this is the cause of wonkiness, let's not install dbus just for testing. There are better ways to set hostname.
+//        // Hostname install fails without dbus, so I am told: https://github.com/ansible/ansible/issues/25543
+////        if (!(
+////          $this->taskDockerExec('devshop_container')
+////            ->exec("apt-get update")
+////            ->run()
+////            ->wasSuccessful()
+////          && $this->taskDockerExec('devshop_container')
+////            ->exec("apt-get install dbus -y")
+////            ->env('DEBIAN_FRONTEND', 'noninteractive')
+////            ->run()
+////            ->wasSuccessful()
+////
+////          // @TODO: Hack attempt to fix failing apache restarts: https://travis-ci.org/opendevshop/devshop/jobs/608769926#L2447
+////          // Idea from: https://unix.stackexchange.com/questions/239489/dbus-system-failed-to-activate-service-org-freedesktop-login1-timed-out
+////          && $this->taskDockerExec('devshop_container')
+////            ->exec("systemctl restart systemd-logind")
+////            ->run()
+////            ->wasSuccessful()
+////        )) {
+////          $this->say('Unable to install dbus. Setting hostname wont work. See https://github.com/ansible/ansible/issues/25543');
+////
+////          exit(1);
+////        }
+//      }
+//
+//      // Display home folder.
+//      $this->taskDockerExec('devshop_container')
+//        ->exec('ls -la /var/aegir')
+//        ->run();
+//
+//      // Try to set ownership of home folder to AEGIR_UID.
+//      $this->taskDockerExec('devshop_container')
+//        ->exec("chown {$opts['user-uid']} /var/aegir -R")
+//        ->run();
+//
+//      # If test-upgrade requested, install older version first, then run devshop upgrade $VERSION
+//      if ($opts['test-upgrade']) {
+//
+////        // This is needed because the old playbook has an incompatibility with newer ansible.
+//        // UPDATE: Seems to be not needed now?? This was triggering sh: 1: cannot create /root/.ansible.cfg: Permission denied
+////        $this->taskDockerExec('devshop_container')
+////          ->exec('echo "invalid_task_attribute_failed = false" >> /root/.ansible.cfg')
+////          ->run();
+//
+//        // get geerlingguy.git role, it's not in the old release but it needs to be there because the aegir-apache role has it listed as a dependency.
 //        $this->taskDockerExec('devshop_container')
-//          ->exec('echo "invalid_task_attribute_failed = false" >> /root/.ansible.cfg')
+//          ->exec('ansible-galaxy install geerlingguy.git geerlingguy.apache')
 //          ->run();
-
-        // get geerlingguy.git role, it's not in the old release but it needs to be there because the aegir-apache role has it listed as a dependency.
-        $this->taskDockerExec('devshop_container')
-          ->exec('ansible-galaxy install geerlingguy.git geerlingguy.apache')
-          ->run();
-
-        $this->yell("Running install.sh for old version...");
-
-        // Run install.sh old version.
-        $version = self::UPGRADE_FROM_VERSION;
-        $this->_exec("curl -fsSL https://raw.githubusercontent.com/opendevshop/devshop/{$version}/install.sh -o {$this->devshop_root_path}/install.{$version}.sh");
-
-        // Set makefile and devshop install path options because they need to be different than the defaults for upgrading.
-        $install_path = "/usr/share/devshop-{$version}";
-        $makefile_filename = $opts['no-dev']? 'build-devmaster.make': "build-devmaster-dev.make.yml";
-
-        $opts['install-sh-options'] .= " --makefile=https://raw.githubusercontent.com/opendevshop/devshop/{$version}/{$makefile_filename}" ;
-        $opts['install-sh-options'] .= " --install-path={$install_path}";
-        $opts['install-sh-options'] .= " --force-ansible-role-install";
-
-        if (!empty($opts['user-uid'])) {
-          $opts['install-sh-options'] .= " --aegir-uid={$opts['user-uid']}";
-        }
-
-        if (!$this->taskDockerExec('devshop_container')
-          ->exec("bash /usr/share/devshop/install.{$version}.sh " . $opts['install-sh-options'])
-          ->run()
-          ->wasSuccessful()) {
-          throw new RunException("Installation of devshop $version failed.");
-        };
-
-        // Run devshop upgrade. This command runs:
-        $this->yell("Running devshop upgrade...");
-        //  - self-update, which checks out the branch being tested and installs the roles.
-        //  - verify:system, which runs the playbook with those roles, along with a devmaster:upgrade
-        $upgrade_to_branch = !empty($_SERVER['GITHUB_REF'])? $_SERVER['GITHUB_REF']: '1.x';
-        $upgrade_command = '/usr/share/devshop/bin/devshop upgrade -n ' . $upgrade_to_branch;
-        if (!$this->taskDockerExec('devshop_container')
-          ->exec($upgrade_command)
-          ->run()
-          ->wasSuccessful()) {
-          throw new RuntimeException("Command $upgrade_command failed.");
-        };
-
-        if (!$this->taskDockerExec('devshop_container')
-          ->exec('/usr/share/devshop/bin/devshop status')
-          ->run()
-          ->wasSuccessful()) {
-          throw new RuntimeException("Command 'devshop status' failed.");
-        };
-      }
-      else {
-        # Run install script on the container.
-        $this->yell("Running install.sh ...");
-        $install_command = '/usr/share/devshop/install.sh ' . $opts['install-sh-options'];
-        if ($opts['mode'] != 'manual' && ($this->input()
-              ->getOption('no-interaction') || $this->confirm('Run install.sh script?')) && !$this->taskDockerExec('devshop_container')
-            ->exec($install_command)
-            //        ->option('tty')
-            ->run()
-            ->wasSuccessful()) {
-          throw new RuntimeException('Docker Exec install.sh failed.');
-        }
-      }
-
-      if ($opts['test']) {
-
-        $this->yell("Running devshop-tests.sh ...");
-
-        # Run test script on the container.
-        if (!$this->taskDockerExec('devshop_container')
-          ->exec('su - aegir -c  - /usr/share/devshop/tests/devshop-tests.sh')
-          ->run()
-          ->wasSuccessful()
-        ) {
-          throw new RuntimeException('Docker Exec devshop-tests.sh failed.');
-        }
-      }
-    }
+//
+//        $this->yell("Running install.sh for old version...");
+//
+//        // Run install.sh old version.
+//        $version = self::UPGRADE_FROM_VERSION;
+//        $this->_exec("curl -fsSL https://raw.githubusercontent.com/opendevshop/devshop/{$version}/install.sh -o {$this->devshop_root_path}/install.{$version}.sh");
+//
+//        // Set makefile and devshop install path options because they need to be different than the defaults for upgrading.
+//        $install_path = "/usr/share/devshop-{$version}";
+//        $makefile_filename = $opts['no-dev']? 'build-devmaster.make': "build-devmaster-dev.make.yml";
+//
+//        $opts['install-sh-options'] .= " --makefile=https://raw.githubusercontent.com/opendevshop/devshop/{$version}/{$makefile_filename}" ;
+//        $opts['install-sh-options'] .= " --install-path={$install_path}";
+//        $opts['install-sh-options'] .= " --force-ansible-role-install";
+//
+//        if (!empty($opts['user-uid'])) {
+//          $opts['install-sh-options'] .= " --aegir-uid={$opts['user-uid']}";
+//        }
+//
+//        if (!$this->taskDockerExec('devshop_container')
+//          ->exec("bash /usr/share/devshop/install.{$version}.sh " . $opts['install-sh-options'])
+//          ->run()
+//          ->wasSuccessful()) {
+//          throw new RunException("Installation of devshop $version failed.");
+//        };
+//
+//        // Run devshop upgrade. This command runs:
+//        $this->yell("Running devshop upgrade...");
+//        //  - self-update, which checks out the branch being tested and installs the roles.
+//        //  - verify:system, which runs the playbook with those roles, along with a devmaster:upgrade
+//        $upgrade_to_branch = !empty($_SERVER['GITHUB_REF'])? $_SERVER['GITHUB_REF']: '1.x';
+//        $upgrade_command = '/usr/share/devshop/bin/devshop upgrade -n ' . $upgrade_to_branch;
+//        if (!$this->taskDockerExec('devshop_container')
+//          ->exec($upgrade_command)
+//          ->run()
+//          ->wasSuccessful()) {
+//          throw new RuntimeException("Command $upgrade_command failed.");
+//        };
+//
+//        if (!$this->taskDockerExec('devshop_container')
+//          ->exec('/usr/share/devshop/bin/devshop status')
+//          ->run()
+//          ->wasSuccessful()) {
+//          throw new RuntimeException("Command 'devshop status' failed.");
+//        };
+//      }
+//      else {
+//        # Run install script on the container.
+//        $this->yell("Running install.sh ...");
+//        $install_command = '/usr/share/devshop/install.sh ' . $opts['install-sh-options'];
+//        if ($opts['mode'] != 'manual' && ($this->input()
+//              ->getOption('no-interaction') || $this->confirm('Run install.sh script?')) && !$this->taskDockerExec('devshop_container')
+//            ->exec($install_command)
+//            //        ->option('tty')
+//            ->run()
+//            ->wasSuccessful()) {
+//          throw new RuntimeException('Docker Exec install.sh failed.');
+//        }
+//      }
+//
+//      if ($opts['test']) {
+//
+//        $this->yell("Running devshop-tests.sh ...");
+//
+//        # Run test script on the container.
+//        if (!$this->taskDockerExec('devshop_container')
+//          ->exec('su - aegir -c  - /usr/share/devshop/tests/devshop-tests.sh')
+//          ->run()
+//          ->wasSuccessful()
+//        ) {
+//          throw new RuntimeException('Docker Exec devshop-tests.sh failed.');
+//        }
+//      }
+//    }
   }
 
   /**
@@ -839,10 +834,17 @@ class RoboFile extends \Robo\Tasks {
    * Run all devshop tests on the containers.
    */
   public function test($user = 'aegir') {
-    $process = new \Symfony\Component\Process\Process("docker-compose exec --user $user devshop /usr/share/devshop/tests/devshop-tests.sh");
-    $process->setTty(TRUE);
+    $is_tty = !empty($_SERVER['XDG_SESSION_TYPE']) && $_SERVER['XDG_SESSION_TYPE'] == 'tty';
+    $no_tty = !$is_tty? '-T': '';
+    $command = "docker-compose exec $no_tty --user $user devshop /usr/share/devshop/tests/devshop-tests.sh";
+    $provision_io = new \ProvisionOps\Tools\Style($this->input, $this->output);
+    $process = new \ProvisionOps\Tools\PowerProcess($command, $provision_io);
+
+    $process->setTty(!empty($_SERVER['XDG_SESSION_TYPE']) && $_SERVER['XDG_SESSION_TYPE'] == 'tty');
+
     $process->setTimeout(NULL);
-    $process->run();
+    $process->disableOutput();
+    $process->mustRun();
   }
 
   /**

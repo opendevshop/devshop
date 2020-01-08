@@ -1,0 +1,74 @@
+name: Build
+
+on: 
+ push:
+ schedule:
+   - cron: "10 * * * *"
+
+env:
+  ANSIBLE_VERBOSITY: 2
+
+jobs:
+  build:
+    name: Build DevShop
+    strategy:
+      matrix:
+        php_version:
+          - "7.2"
+          - "7.3"
+        os_version:
+          - 'ubuntu1804'
+          # @TODO: Open a new PR for one OS at a time.
+          # - 'centos6'
+          # - 'centos7'
+    env:
+      TAGS: "all"
+      SKIP_TAGS: "install-devmaster"
+      VARS: "php_version: ${{ matrix.php_version }}"
+      OS: "${{ matrix.os_version }}"
+
+    runs-on: ubuntu-18.04
+    steps:
+
+    - uses: actions/checkout@v1
+    - name: Get Composer Cache Directory
+      id: composer-cache
+      run: |
+        echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+    - uses: actions/cache@v1
+      with:
+        path: ${{ steps.composer-cache.outputs.dir }}
+        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-composer-
+
+    - name: Install Composer dependencies
+      run: composer install --prefer-dist --no-progress --no-suggest
+
+    - name: Create DevShop Server Image FROM ${{ matrix.os_version }} with PHP ${{ matrix.php_version }}
+      run: |
+        bin/robo prepare:containers \
+          --os "${OS}" \
+          --vars "${VARS}" \
+          --tags "${TAGS}" \
+          --skip-tags "${SKIP_TAGS}" \
+          --compose-file docker-compose-tests.yml
+
+    - name: Install DevShop
+      run: |
+        bin/robo up \
+          --follow=0 \
+          --compose-file docker-compose-tests.yml \
+          --skip-source-prep \
+          -vv
+
+    - name: Test DevShop
+      run: |
+        bin/robo test
+
+    - uses: actions/upload-artifact@v1
+      if: failure()
+      with:
+        name: test-assets
+        path: ./.github/test-assets

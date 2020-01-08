@@ -1,0 +1,50 @@
+name: Test
+
+on: 
+ push:
+
+env:
+  ANSIBLE_VERBOSITY: 2
+  FROM_IMAGE: devshop/server:latest
+
+jobs:
+  test:
+    name: Test DevShop
+
+    runs-on: ubuntu-18.04
+    steps:
+
+    - uses: actions/checkout@v1
+    - name: Get Composer Cache Directory
+      id: composer-cache
+      run: |
+        echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+    - uses: actions/cache@v1
+      with:
+        path: ${{ steps.composer-cache.outputs.dir }}
+        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-composer-
+
+    - name: Install Composer dependencies
+      run: composer install --prefer-dist --no-progress --no-suggest
+
+    - name: Install DevShop
+      run: |
+        bin/robo up \
+          --tags=rebuild-devmaster \
+          --vars=devshop_danger_remove_devmaster=true \
+          --follow=0 \
+          --compose-file=docker-compose-tests.yml \
+          --skip-source-prep
+
+    - name: Test DevShop
+      run: |
+        bin/robo test
+
+    - uses: actions/upload-artifact@v1
+      if: failure()
+      with:
+        name: test-assets
+        path: ./.github/test-assets

@@ -34,7 +34,15 @@ mysql_root_password_update: false
 aegir_db_host: localhost
 aegir_client_name: admin
 aegir_logs_path: /var/log/aegir
+
 hosting_queue_runner_log_path: "{{ aegir_logs_path }}/hosting-queue-runner.log"
+
+# These files are created if they don't exist.
+# Useful when using the Docker containers and customizing DEVSHOP_ENTRYPOINT_LOG_FILES
+aegir_log_files_touch:
+  - "{{ hosting_queue_runner_log_path }}"
+  - "{{ aegir_logs_path }}/hostmaster.error.log"
+  - "{{ aegir_logs_path }}/hostmaster.access.log"
 
 drush_dl_method: wget
 
@@ -84,6 +92,7 @@ devmaster_skip_upgrade: false
 
 # If your system does not allow root user in "sudo" group, change this to "su"
 ansible_become_method_aegir: sudo
+ansible_share_path: /usr/share/ansible
 
 # Server Options
 php_memory_limit: "512M"
@@ -93,3 +102,6 @@ devshop_support_license_key: ""
 
 # The path to the script to use for the Hosting Task Queue Runner. See opendevshop/devshop/bin/hosting-queue-runner
 hosting_queue_runner_bin_path: "{{ devshop_cli_bin_path }}/hosting-queue-runner"
+
+# Triggers the removal of devshop_devmaster_path: `rm -rf {{ devshop_devmaster_path }}`
+devshop_danger_remove_devmaster: false
