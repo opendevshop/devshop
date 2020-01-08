@@ -105,7 +105,8 @@ install:
     bin/robo up \
       --follow=0 \
       --compose-file docker-compose-tests.yml \
-      --skip-source-prep
+      --skip-source-prep \
+      -vv
 
   - sleep 3
   - docker-compose ps
