@@ -289,7 +289,7 @@ class RoboFile extends \Robo\Tasks {
    * @option $playbook Ansible tags to pass to ansible-playbook command.
    */
   public function prepareContainers($user_uid = NULL, $hostname = 'devshop.local.computer', $opts = [
-      'tag' => 'devshop/server:local',
+      'tag' => 'local',
       'from' => 'devshop/server:latest',
       'dockerfile' => 'Dockerfile',
       'os' => '',
@@ -442,8 +442,8 @@ class RoboFile extends \Robo\Tasks {
       // $playbook = (!empty($opts['test']) || !empty($opts['test-upgrade']))? 'playbook.testing.yml': 'docker/playbook.server.yml';
       $playbook = $opts['playbook'];
       $this->say("Preparing containers with playbook: $playbook");
+      $docker_tag = $opts['tag'] = 'local';
       $this->prepareContainers($opts['user-uid'], 'devshop.local.computer', $opts);
-      $docker_tag = 'local';
     }
     else {
       // If the --build option was not specified, pull the containers first.
