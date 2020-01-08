@@ -190,7 +190,7 @@
     mode: 0755
   with_items: "{{ aegir_log_files_touch }}"
 
-- name: Confirm PHP version is correct.
+- name: Confirm PHP version {{ php_version }} is installed
   shell: php -v | grep -F '{{ php_version }}'
   changed_when: false
 
