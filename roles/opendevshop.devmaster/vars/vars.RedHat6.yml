@@ -11,10 +11,13 @@ apache_packages:
 # Used to inject date.timezone.
 # ip_cli_ini_path: /opt/rh/php55/root/etc/php.ini
 
+devshop_prerequisite_packages:
+  - openssh-clients
+  - python36-pip
+
 extra_packages:
   - git
   - patch
-  - python-pip
   - postfix
   - sendmail
   - cronie
