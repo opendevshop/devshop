@@ -43,16 +43,11 @@ class hostingService_http_ansible_apache extends hostingService_http_https_apach
      */
     function getRoles() {
         return array(
-            'opendevshop.aegir-apache',
-            'geerlingguy.php' => array(
-                'name' => 'geerlingguy.php',
-                'version' => '3.5.0',
-            ),
-            'geerlingguy.php-mysql' => array(
-              'name' => 'geerlingguy.php-mysql',
-              'version' => '2.0.1',
-            ),
-            'geerlingguy.composer'
+            'opendevshop.users',
+            'opendevshop.apache',
+            'geerlingguy.php',
+            'geerlingguy.php-mysql',
+            'geerlingguy.composer',
         );
     }
 
