@@ -126,7 +126,7 @@ function ansible_roles_node_load($nodes, $types)
             // @TODO: Rename all mentions.
             $node->ansible_roles_available = $node->ansible_galaxy_roles;
 
-            if (empty($node->ansible_galaxy_roles)) {
+            if (!empty($node->ansible_galaxy_roles)) {
                 $yml = new \Symfony\Component\Yaml\Dumper();
                 $node->ansible_role_file = $yml->dump(array_values($node->ansible_galaxy_roles), 10);
             }
