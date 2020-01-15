@@ -240,8 +240,8 @@ RUN \
 
 # Provision with Ansible!
 RUN \
-  devshop-logo "Running: $ANSIBLE_BUILD_COMMAND && \
-  $ANSIBLE_BUILD_COMMAND"
+  devshop-logo "Running: $ANSIBLE_BUILD_COMMAND" && \
+  $ANSIBLE_BUILD_COMMAND
 
 RUN devshop-logo "Ansible Playbook Docker Build Complete!" && \
 echo "Playbook: $ANSIBLE_PLAYBOOK" && \
