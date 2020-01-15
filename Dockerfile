@@ -4,7 +4,7 @@
 # This Dockerfile is designed to be built into any kind of container.
 #
 # Without any build arguments, Docker will build from the standard `geerlingguy/docker-ubuntu1804-ansible`
-#  image, using the `docker/playbook.server.yml` Ansible playbook file.
+#  image, using the `roles/server.playbook.yml` Ansible playbook file.
 #
 # This is how the official devshop/server:latest image is built:
 #
@@ -31,7 +31,7 @@
 #     ANSIBLE_PLAYBOOK
 #       The path to the ansible playbook file you want to run in the build.
 #       Relative to devshop repo root.
-#       Default: docker/playbook.server.yml
+#       Default: roles/server.playbook.yml
 #
 #     ANSIBLE_PLAYBOOK_COMMAND_OPTIONS
 #       Passed directly to the `ansible-playbook` command.
@@ -175,8 +175,9 @@ RUN devshop-logo "Preparing Docker Container Environment..."
 ARG BUILD_ARG_EXAMPLE="buildArgDefaultValue"
 ENV BUILD_ARG_EXAMPLE ${BUILD_ARG_EXAMPLE:-"buildArgDefaultValue"}
 
-ARG ANSIBLE_PLAYBOOK="/usr/share/devshop/docker/playbook.server.yml"
-ENV ANSIBLE_PLAYBOOK ${ANSIBLE_PLAYBOOK:-"/usr/share/devshop/docker/playbook.server.yml"}
+# @TODO: ARG statement below does not seem to change the value when using a FROM image that already has the environment variable.
+ARG ANSIBLE_PLAYBOOK="/usr/share/devshop/roles/server.playbook.yml"
+ENV ANSIBLE_PLAYBOOK ${ANSIBLE_PLAYBOOK:-"/usr/share/devshop/roles/server.playbook.yml"}
 
 ARG ANSIBLE_PLAYBOOK_COMMAND_OPTIONS=""
 ENV ANSIBLE_PLAYBOOK_COMMAND_OPTIONS ${ANSIBLE_PLAYBOOK_COMMAND_OPTIONS:-""}
