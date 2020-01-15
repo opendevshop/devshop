@@ -51,7 +51,7 @@ function drush_ansible_roles_pre_hosting_task() {
   if ($task->task_type == 'verify' && $task->ref->hosting_name == 'hostmaster' ) {
 
     if (empty($task->ref->ansible_role_file)) {
-      drush_log("No Ansible Galaxy roles loaded.", 'p_ok');
+      drush_log("No Ansible Galaxy roles loaded from hostmaster node.", 'ok');
       return;
     }
     // First we must save a roles.yml file so we can install custom ones.
