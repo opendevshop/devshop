@@ -77,7 +77,7 @@ function ansible_roles_node_load($nodes, $types)
         if (isset($node->hosting_name) && $node->hosting_name == 'hostmaster') {
 
             // Load all available custom roles
-            $node->ansible_roles_available = array();
+            $node->ansible_galaxy_roles = array();
 
             // Load all ansible roles from all services that have them.
             foreach (hosting_server_services() as $name => $service) {
@@ -112,15 +112,19 @@ function ansible_roles_node_load($nodes, $types)
                                     }
                                     $role_name = $role->name;
                                 }
-                                $node->ansible_roles_available[$role_name] = $role_data;
+                                $node->ansible_galaxy_roles[$role_name] = $role_data;
                             }
                         }
                     }
                 }
-
             }
+
+            // Maintain backwards compatibility.
+            // @TODO: Rename all mentions.
+            $node->ansible_roles_available = $node->ansible_galaxy_roles;
+
             $yml = new \Symfony\Component\Yaml\Dumper();
-            $node->ansible_role_file = $yml->dump(array_values($node->ansible_roles_available), 10);
+            $node->ansible_role_file = $yml->dump(array_values($node->ansible_galaxy_roles), 10);
         }
 
         // Only act on server nodes with services.
