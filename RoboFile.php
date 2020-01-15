@@ -756,8 +756,6 @@ class RoboFile extends \Robo\Tasks {
     if ($opts['no-interaction'] || $this->confirm("Destroy docker containers and volumes?")) {
       $this->_exec('docker-compose kill');
       $this->_exec('docker-compose rm -fv');
-      $this->_exec('docker kill devshop_container');
-      $this->_exec('docker rm -fv devshop_container');
     }
 
     $version = self::DEVSHOP_LOCAL_VERSION;
