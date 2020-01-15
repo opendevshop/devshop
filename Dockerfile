@@ -78,7 +78,7 @@
 #        docker build . --build-arg FROM_IMAGE=devshop/server:latest \
 #          --build-arg ANSIBLE_TAGS=none
 #
-#      This is used for rapid testing of devmaster: the 'install-devmaster' tag
+#      This is used for rapid testing of devmaster: the 'runtime' tag
 #      is used when running the container, acting as the "install" step.
 #
 #    5. Pass environment variables to docker build args:
@@ -198,8 +198,8 @@ ENV ANSIBLE_VERBOSITY ${ANSIBLE_VERBOSITY:-0}
 ARG ANSIBLE_TAGS="all"
 ENV ANSIBLE_TAGS ${ANSIBLE_TAGS:-"all"}
 
-ARG ANSIBLE_SKIP_TAGS="install-devmaster"
-ENV ANSIBLE_SKIP_TAGS ${ANSIBLE_SKIP_TAGS:-"install-devmaster"}
+ARG ANSIBLE_SKIP_TAGS="runtime"
+ENV ANSIBLE_SKIP_TAGS ${ANSIBLE_SKIP_TAGS:-"runtime"}
 
 ARG ANSIBLE_EXTRA_VARS="dockerfile_extra_vars_source: 'ARG default Dockerfile:201'"
 ENV ANSIBLE_EXTRA_VARS ${ANSIBLE_EXTRA_VARS:-"dockerfile_extra_vars_source: 'ENV default Dockerfile:202"}

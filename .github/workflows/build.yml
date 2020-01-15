@@ -23,7 +23,7 @@ jobs:
           # - 'centos7'
     env:
       TAGS: "all"
-      SKIP_TAGS: "install-devmaster"
+      SKIP_TAGS: "runtime"
       VARS: "php_version: ${{ matrix.php_version }}"
       OS: "${{ matrix.os_version }}"
 

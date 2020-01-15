@@ -4,7 +4,7 @@
     name: "{{ server_hostname }}"
   when: server_hostname != empty_string
   ignore_errors: "{{ server_hostname_ignore_errors }}"
-  tags: [install-devmaster]
+  tags: [runtime]
 
 # This is done so the roles will be visible when ansible config is the default.
 # There are too many ways to configure the roles path. If we just put the files
@@ -131,7 +131,7 @@
     group: "{{ aegir_user_name }}"
     mode: 0744
     state: directory
-  tags: [install-devmaster]
+  tags: [runtime]
 
 - name: Install required drush packages.
   command: |
@@ -141,7 +141,7 @@
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
-  tags: [install-devmaster]
+  tags: [runtime]
 
 - name: Setup Drush Bash Enhancements
   command: "{{ drush_bin_path }} init --yes"
@@ -149,7 +149,7 @@
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
-  tags: [install-devmaster]
+  tags: [runtime]
 
 - name: "Remove existing Devmaster Source Code from {{ devshop_devmaster_path }} before installing, if requested."
   when: devshop_danger_remove_devmaster
@@ -175,15 +175,15 @@
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
-  tags: [install-devmaster]
+  tags: [runtime]
 
 - name: "Install DevShop Web Interface"
-  include_tasks: "install-devmaster.yml"
-  tags: [install-devmaster]
+  include_tasks: "runtime.yml"
+  tags: [runtime]
   when: not devmaster_skip_install|bool
 
 - name: Configure DevShop Web Interface
-  tags: [install-devmaster]
+  tags: [runtime]
   include_tasks: "config-devmaster.yml"
   when: not devmaster_skip_install|bool
 
