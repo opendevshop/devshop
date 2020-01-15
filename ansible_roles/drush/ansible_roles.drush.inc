@@ -52,6 +52,7 @@ function drush_ansible_roles_pre_hosting_task() {
 
     if (empty($task->ref->ansible_role_file)) {
       drush_log("No Ansible Galaxy roles loaded.", 'p_ok');
+      return;
     }
     // First we must save a roles.yml file so we can install custom ones.
     // @see ansible_roles_node_load()
