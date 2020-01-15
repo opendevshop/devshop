@@ -211,12 +211,9 @@ ENV DEVSHOP_USER_UID ${DEVSHOP_USER_UID:-1000}
 ENV DEVSHOP_ENTRYPOINT_LOG_FILES="/var/log/aegir/*"
 ENV DEVSHOP_TESTS_ASSETS_PATH="${DEVSHOP_PATH}/.github/test-assets"
 
-ENV ANSIBLE_BUILD_COMMAND="ansible-playbook $ANSIBLE_PLAYBOOK \
--e aegir_user_uid=$DEVSHOP_USER_UID \
--e aegir_user_gid=$DEVSHOP_USER_UID \
---tags="$ANSIBLE_TAGS" \
---skip-tags="$ANSIBLE_SKIP_TAGS" \
-$ANSIBLE_PLAYBOOK_COMMAND_OPTIONS \
+ENV ANSIBLE_BUILD_COMMAND="devshop-ansible-playbook \
+    -e aegir_user_uid=$DEVSHOP_USER_UID \
+    -e aegir_user_gid=$DEVSHOP_USER_UID \
 "
 
 RUN \
@@ -243,8 +240,8 @@ RUN \
 
 # Provision with Ansible!
 RUN \
-  devshop-logo "Running: $ANSIBLE_BUILD_COMMAND --extra-vars=\"$ANSIBLE_EXTRA_VARS\"" && \
-  $ANSIBLE_BUILD_COMMAND --extra-vars="$ANSIBLE_EXTRA_VARS"
+  devshop-logo "Running: $ANSIBLE_BUILD_COMMAND && \
+  $ANSIBLE_BUILD_COMMAND"
 
 RUN devshop-logo "Ansible Playbook Docker Build Complete!" && \
 echo "Playbook: $ANSIBLE_PLAYBOOK" && \
@@ -262,7 +259,16 @@ RUN \
     env | grep "ANSIBLE" >> /etc/os-release && \
     cat  /etc/os-release
 
+# Prepare run-time environment variable defaults.
+# These can be overridden at docker container run time, and define what it run by default in the entrypoint.
+ENV ANSIBLE_TAGS_RUNTIME 'runtime'
+ENV ANSIBLE_SKIP_TAGS_RUNTIME 'none'
+ENV ANSIBLE_PLAYBOOK_RUNTIME $ANSIBLE_PLAYBOOK
+ENV ANSIBLE_PLAYBOOK_COMMAND_OPTIONS_RUNTIME $ANSIBLE_PLAYBOOK_COMMAND_OPTIONS
+ENV ANSIBLE_EXTRA_VARS_RUNTIME $ANSIBLE_EXTRA_VARS
+ENV ANSIBLE_VERBOSITY_RUNTIME $ANSIBLE_VERBOSITY
+
 EXPOSE 80 443 3306 8025
 WORKDIR /var/aegir
-CMD ["docker-systemd"]
+CMD ["devshop-ansible-playbook"]
 ENTRYPOINT ["docker-entrypoint"]

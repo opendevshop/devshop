@@ -1,5 +1,12 @@
 #!/usr/bin/env bash
+DEVSHOP_PATH="$( cd "$(dirname "$0")"/.. ; pwd -P )"
+PATH="$DEVSHOP_PATH/bin:$PATH"
+
 set -e
+
+log() {
+  echo "DevShop | entrypoint | $@";
+}
 
 echo "   ____              ____  _                      "
 echo "  |  _ \  _____   __/ ___|| |__   ___  _ __       "
@@ -12,21 +19,32 @@ echo ""
 echo "              Docker Entrypoint                   "
 echo "__________________________________________________"
 
-log() {
-  echo "DevShop | entrypoint | $@";
-}
+# Convert run-time vars back to the expected names.
+ANSIBLE_TAGS=$ANSIBLE_TAGS_RUNTIME
+ANSIBLE_SKIP_TAGS=$ANSIBLE_SKIP_TAGS_RUNTIME
+ANSIBLE_PLAYBOOK=$ANSIBLE_PLAYBOOK_RUNTIME
+ANSIBLE_PLAYBOOK_COMMAND_OPTIONS=$ANSIBLE_PLAYBOOK_COMMAND_OPTIONS_RUNTIME
+ANSIBLE_EXTRA_VARS=$ANSIBLE_EXTRA_VARS_RUNTIME
+ANSIBLE_VERBOSITY=$ANSIBLE_VERBOSITY_RUNTIME
 
-COMMAND="$*"
-COMMAND=${COMMAND:-docker-systemd}
+log "Ansible Config: "
 
-if [ -z ${DEVSHOP_ENTRYPOINT_LOG_FILES+} ]; then
+env | grep "ANSIBLE_" || echo "No Ansible Variables found."
+
+DOCKER_COMMAND=${@:-devshop-ansible-playbook}
+log "Docker Command: $DOCKER_COMMAND"
+
+if [ -n "${DEVSHOP_ENTRYPOINT_LOG_FILES}" ]; then
   log "Tailing logs: $DEVSHOP_ENTRYPOINT_LOG_FILES"
   tail -f $DEVSHOP_ENTRYPOINT_LOG_FILES &
 else
-  log 'No files being output. $DEVSHOP_ENTRYPOINT_LOG_FILES variable is empty.'
+  log 'No files being output. Set $DEVSHOP_ENTRYPOINT_LOG_FILES variable with a list of files to tail.'
 fi
 
-sleep 3
+log "Launching Command in a new process: $DOCKER_COMMAND"
+(sleep 3 && $DOCKER_COMMAND) &
 
-log "Running: $COMMAND"
-exec "$COMMAND"
+# We keep this as devshop-systemd because systemd must run as PID 1.
+ENTRYPOINT_COMMAND=${ENTRYPOINT_COMMAND:'devshop-systemd'}
+log "Running Init Command: $ENTRYPOINT_COMMAND"
+exec "$ENTRYPOINT_COMMAND"

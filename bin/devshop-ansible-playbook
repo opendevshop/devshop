@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+DEVSHOP_PATH="$( cd "$(dirname "$0")"/.. ; pwd -P )"
+PATH="$DEVSHOP_PATH/bin:$PATH"
+
+ANSIBLE_PLAYBOOK=${ANSIBLE_PLAYBOOK:-"roles/server.playbook.yml"}
+ANSIBLE_TAGS=${ANSIBLE_TAGS:-"all"}
+ANSIBLE_SKIP_TAGS=${ANSIBLE_SKIP_TAGS:-"none"}
+ANSIBLE_EXTRA_VARS=${ANSIBLE_EXTRA_VARS:-""}
+ANSIBLE_PLAYBOOK_COMMAND_OPTIONS=${ANSIBLE_PLAYBOOK_COMMAND_OPTIONS:-}
+
+set -ex
+
+ansible-playbook $ANSIBLE_PLAYBOOK \
+    --tags=$ANSIBLE_TAGS \
+    --skip-tags=$ANSIBLE_SKIP_TAGS \
+    --extra-vars="$ANSIBLE_EXTRA_VARS" \
+    $ANSIBLE_PLAYBOOK_COMMAND_OPTIONS \
+    $*
