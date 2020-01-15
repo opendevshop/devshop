@@ -153,7 +153,12 @@ function devshop_github_form_project_node_form_alter(&$form, &$form_state, $form
 
 
   // If Pull Requests were found in the environment, enable PR environments by default.
-  $prs = devshop_github_client()->pullRequests()->all($node->project->github_owner, $node->project->github_repo);
+  if (!empty(variable_get('devshop_github_token', ''))) {
+    $prs = devshop_github_client()->pullRequests()->all($node->project->github_owner, $node->project->github_repo);
+  }
+  else {
+    $prs = [];
+  }
   $pr_count = count($prs);
   if ($pr_count > 0) {
     $form['project']['settings']['github']['found_prs'] = array(
@@ -297,7 +302,9 @@ function devshop_github_form_hosting_task_confirm_form_alter_submit($form, &$for
 function devshop_github_form_site_node_form_alter(&$form, &$form_state, $form_id) {
 
   $project = $form_state['project'];
-  if (arg(1) == 'add' && $project->git_provider == 'github'){
+
+  // Don't try to load PRs if there isn't even a token.
+  if (!empty(variable_get('devshop_github_token', '')) && arg(1) == 'add' && $project->git_provider == 'github'){
     try {
       $prs = devshop_github_client()->pullRequests()->all($project->github_owner, $project->github_repo);
     }
@@ -712,6 +719,11 @@ function devshop_github_create_project_form_set_values($element, &$form_state, &
  * Alters devshop_project_create_step_environments form.
  */
 function devshop_github_form_devshop_project_create_step_environments_alter(&$form, &$form_state, $form_id) {
+
+  // Don't try to load PRs if there isn't even a token.
+  if (empty(variable_get('devshop_github_token', ''))) {
+    return;
+  }
 
   $project = &$form_state['project'];
   $form['pr_environments'] = array(
