@@ -99,8 +99,9 @@
 
 - name: Install DevShop CLI Dependencies with Composer
   command: "{{ php_executable }} {{ composer_path }} {{ devshop_cli_composer_install_command }}"
-  register: devshop_ansible_command_output
-  changed_when: devshop_ansible_command_output is not search("Nothing to install or update")
+  # @TODO: Decide if this was needed.
+  # register: devshop_ansible_command_output
+  # changed_when: devshop_ansible_command_output is not search("Nothing to install or update")
   args:
     chdir: "{{ devshop_cli_path }}"
 
