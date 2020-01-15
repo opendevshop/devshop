@@ -12,6 +12,7 @@ class Provision_Config_AnsibleConfig extends Provision_Config {
   public $template = 'ansible.cfg.tpl.php';
 
   function __construct($context = '@none', $data = array()) {
+    $this->data['roles_path'] = variable_get('aegir_ansible_roles_path', '/var/aegir/roles');
     parent::__construct($context, $data);
   }
 
