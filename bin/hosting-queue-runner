@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
+set -e
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+PATH="$DIR:$PATH"
+
 # This script just calls the "drush" executable in this folder, with the drush command "hosting-queued" on the @hostmaster site.
 # See hosting_queued.drush.inc
 
@@ -6,11 +10,19 @@ log() {
   echo "DevShop | hosting-queue-runner | $@";
 }
 
-# Get the directory of this script so we can run this drush.
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+log "Checking for hostmaster..."
+hostmaster_wait() {
+    drush @hm status --fields=bootstrap > /dev/null 2>&1
+}
 
-log "Running drush cc drush ..."
-$DIR/drush cc drush
+while ! (hostmaster_wait)
+do
+   sleep 1
+   echo "Waiting for hostmaster site to be ready..."
+done
+
+log "Running drush @hostmaster cc drush ..."
+drush @hostmaster cc drush
 
 log "Running drush @hostmaster hosting-queued ..."
-$DIR/drush @hostmaster hosting-queued
+drush @hostmaster hosting-queued
