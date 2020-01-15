@@ -35,10 +35,6 @@ services:
       context: '.'
       dockerfile: 'Dockerfile'
       args:
-      # Default `docker-compose up` will use devshop/server:latest. Set this var to remove the pre-existing devmaster code.
-      - ANSIBLE_EXTRA_VARS=${ANSIBLE_EXTRA_VARS:-devshop_danger_remove_devmaster=true}
-      - ANSIBLE_TAGS=${ANSIBLE_TAGS:-remove-devmaster}
-
       # If a value for local development should be different than docker hub image,
       # set a default here.
       # Otherwise values are inherited from `docker-compose` execution environment.
@@ -62,16 +58,13 @@ services:
     extra_hosts:
       - "drpl8.testenv.devshop.local.computer:127.0.0.1"
     environment:
-      # Default Ansible tags at Runtime
-      - ANSIBLE_TAGS="${ANSIBLE_TAGS:-install-devmaster}  "
-
-      # Values are inherited from `docker-compose` execution environment.
-      - ANSIBLE_EXTRA_VARS
-      - ANSIBLE_VERBOSITY
-      - ANSIBLE_PLAYBOOK
-      - ANSIBLE_SKIP_TAGS
-      - ANSIBLE_PLAYBOOK_COMMAND_OPTIONS
-      - ANSIBLE_CONFIG
+      - ANSIBLE_TAGS_RUNTIME
+      - ANSIBLE_EXTRA_VARS_RUNTIME
+      - ANSIBLE_VERBOSITY_RUNTIME
+      - ANSIBLE_PLAYBOOK_RUNTIME
+      - ANSIBLE_SKIP_TAGS_RUNTIME
+      - ANSIBLE_PLAYBOOK_COMMAND_OPTIONS_RUNTIME
+      - ANSIBLE_CONFIG_RUNTIME
       - ANSIBLE_ROLES_PATH
       - FROM_IMAGE
       - OS_VERSION
