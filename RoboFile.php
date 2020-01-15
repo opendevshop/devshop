@@ -470,7 +470,7 @@ class RoboFile extends \Robo\Tasks {
 
         $compose_file = $opts['compose-file'];
 
-        if (!$opts['skip-source-prep']) {
+        if (!file_exists('aegir-home/.drush') && !$opts['skip-source-prep']) {
           if ($this->confirm("Prepare source code locally? This is needed for the development environment.")) {
             $this->prepareSourcecode($opts);
           }
