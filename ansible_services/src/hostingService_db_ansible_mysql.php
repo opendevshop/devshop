@@ -10,7 +10,7 @@
 class hostingService_db_ansible_mysql extends hostingService_db_mysql {
     public $type = 'ansible_mysql';
     public $name = 'Ansible: MySQL';
-    
+
     public $has_port = TRUE;
     public $ansible_vars = array();
 
@@ -79,7 +79,7 @@ class hostingService_db_ansible_mysql extends hostingService_db_mysql {
      */
     function getRoles() {
         return array(
-            'opendevshop.aegir-user',
+            'opendevshop.users',
             'geerlingguy.mysql',
         );
     }
