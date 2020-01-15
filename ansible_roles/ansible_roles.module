@@ -119,6 +119,9 @@ function ansible_roles_node_load($nodes, $types)
                 }
             }
 
+            // Allow other modules to alter the galaxy roles list.
+            drupal_alter('ansible_galaxy_roles', $node->ansible_galaxy_roles);
+
             // Maintain backwards compatibility.
             // @TODO: Rename all mentions.
             $node->ansible_roles_available = $node->ansible_galaxy_roles;
