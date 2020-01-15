@@ -21,6 +21,8 @@ apache_mods_enabled:
   - "php{{ php_version }}.load"
 
 apache_mods_disabled:
+  - "php7.0.conf"
+  - "php7.0.load"
   - "php7.1.conf"
   - "php7.1.load"
   - "php7.2.conf"
