@@ -13,7 +13,7 @@ mysql_wait() {
 
 log "Checking database server $DATABASE_HOST ..."
 
-while !(mysql_wait)
+while ! (mysql_wait)
 do
    sleep 1
    echo "Waiting for database host '$DATABASE_HOST' ..."
