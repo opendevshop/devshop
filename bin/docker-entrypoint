@@ -45,6 +45,6 @@ log "Launching Command in a new process: $DOCKER_COMMAND"
 (sleep 3 && $DOCKER_COMMAND) &
 
 # We keep this as devshop-systemd because systemd must run as PID 1.
-ENTRYPOINT_COMMAND=${ENTRYPOINT_COMMAND:'devshop-systemd'}
+ENTRYPOINT_COMMAND=${ENTRYPOINT_COMMAND:-docker-systemd}
 log "Running Init Command: $ENTRYPOINT_COMMAND"
 exec "$ENTRYPOINT_COMMAND"
