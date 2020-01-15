@@ -119,7 +119,6 @@ ENV FROM_IMAGE ${FROM_IMAGE:-"geerlingguy/docker-${OS_VERSION}-ansible:latest"}
 
 ARG DEVSHOP_PATH="/usr/share/devshop"
 ENV DEVSHOP_PATH ${DEVSHOP_PATH:-"/usr/share/devshop"}
-WORKDIR $DEVSHOP_PATH
 
 # Set PATH so we can run devshop scripts immediately.
 ENV PATH="${DEVSHOP_PATH}/bin:$PATH"
@@ -154,6 +153,7 @@ RUN \
 
 # Copy latest DevShop Core to /usr/share/devshop
 COPY ./ $DEVSHOP_PATH
+WORKDIR $DEVSHOP_PATH
 
 # Announce container information before doing anything.
 RUN \
