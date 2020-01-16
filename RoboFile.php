@@ -296,7 +296,7 @@ class RoboFile extends \Robo\Tasks {
       'vars' => '',
       'tags' => '',
       'skip-tags' => '',
-      'playbook' => 'docker/playbook.server.yml',
+      'playbook' => 'roles/server.playbook.yml',
       'compose-file' => 'docker-compose.yml'
   ]) {
 
@@ -408,7 +408,7 @@ class RoboFile extends \Robo\Tasks {
     'tags' => '',
     'skip-tags' => 'install-devshop',
     'file' => 'Dockerfile',
-    'playbook' => 'docker/playbook.server.yml',
+    'playbook' => 'roles/server.playbook.yml',
     'compose-file' => 'docker-compose.yml'
   ]) {
 
