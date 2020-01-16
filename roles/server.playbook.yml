@@ -8,7 +8,7 @@
 ###
 ---
 - hosts: all
-  become: yes
+  become: true
 
   vars:
     # Hostname must be set when container is launched, which "hostname" option.
