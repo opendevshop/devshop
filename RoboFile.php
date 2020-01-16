@@ -498,7 +498,7 @@ class RoboFile extends \Robo\Tasks {
         // @TODO: If we had the hostmaster-wait script, we would not use this. The tests could run only once devshop is installed.
         $opts['tags'] = "skip-all";
         $cmd[]= "docker-compose exec -T devshop service supervisord stop";
-        $cmd[]= "docker-compose exec -T devshop $this->devshopInstall";
+        $cmd[]= "docker-compose exec -T devshop site-wait @hostmaster";
 
         $command = "/usr/share/devshop/tests/devshop-tests.sh";
         $cmd[]= "docker-compose exec -T --user $this->devshopUsername devshop $command";
@@ -508,7 +508,7 @@ class RoboFile extends \Robo\Tasks {
       elseif ($opts['test-upgrade']) {
         $opts['tags'] = "skip-all";
         $cmd[]= "docker-compose exec -T devshop service supervisord stop";
-        $cmd[]= "docker-compose exec -T devshop $this->devshopInstall";
+        $cmd[]= "docker-compose exec -T devshop site-wait @hostmaster";
 
         $command = "/usr/share/devshop/tests/devshop-tests-upgrade.sh";
         $cmd[]= "docker-compose exec -T --user $this->devshopUsername devshop $command";
@@ -529,10 +529,6 @@ class RoboFile extends \Robo\Tasks {
         if ($opts['follow']) {
           $cmd[] = "docker-compose logs";
         }
-
-        // @TODO: This might run before devmaster is installed, right?
-        $cmd[] = "docker-compose exec -T devshop devshop status";
-        $cmd[] = "docker-compose exec -T devshop devshop login";
       }
 
       //Environment variables at run time: AKA Environment variables.
