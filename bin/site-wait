@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+set -e
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+PATH="$DIR:$PATH"
+ALIAS=$1
+
+if [ -z "${ALIAS}" ]; then
+
+  echo "Usage: site-wait @site_alias"
+  exit 1
+
+fi
+
+log() {
+  echo "DevShop | site-wait | $@";
+}
+
+log "Checking for Drush alias $ALIAS ..."
+
+site_wait() {
+    drush $ALIAS user-information 1 2> /dev/null
+}
+
+while ! (site_wait)
+do
+   sleep 1
+   log "Waiting for site $ALIAS to be ready..."
+done
+
+log "Site Ready!"
+
+drush $ALIAS status

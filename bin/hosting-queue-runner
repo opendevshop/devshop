@@ -10,16 +10,7 @@ log() {
   echo "DevShop | hosting-queue-runner | $@";
 }
 
-log "Checking for hostmaster..."
-hostmaster_wait() {
-    drush @hm status --fields=bootstrap > /dev/null 2>&1
-}
-
-while ! (hostmaster_wait)
-do
-   sleep 1
-   echo "Waiting for hostmaster site to be ready..."
-done
+site-wait @hostmaster
 
 log "Running drush @hostmaster cc drush ..."
 drush @hostmaster cc drush
