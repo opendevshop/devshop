@@ -406,7 +406,7 @@ class RoboFile extends \Robo\Tasks {
     'from' => 'devshop/server:latest',
     'vars' => '',
     'tags' => '',
-    'skip-tags' => 'install-devshop',
+    'skip-tags' => '',
     'file' => 'Dockerfile',
     'playbook' => 'roles/server.playbook.yml',
     'compose-file' => 'docker-compose.yml'
