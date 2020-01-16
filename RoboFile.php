@@ -493,6 +493,10 @@ class RoboFile extends \Robo\Tasks {
       // Test commands must be run as application user.
       // The `--test` command is run in GitHub Actions.
       if ($opts['test']) {
+
+        // Do not run a playbook on docker-compose up, because it will launch as a separate process and we won't know when it ends.
+        // @TODO: If we had the hostmaster-wait script, we would not use this. The tests could run only once devshop is installed.
+        $opts['tags'] = "skip-all";
         $cmd[]= "docker-compose exec -T devshop service supervisord stop";
         $cmd[]= "docker-compose exec -T devshop $this->devshopInstall";
 
@@ -502,6 +506,7 @@ class RoboFile extends \Robo\Tasks {
       // @TODO: The `--test-upgrade` command is NOT YET run in GitHub Actions.
       // The PR with the update hook can be used to finalize upgrade tests: https://github.com/opendevshop/devshop/pull/426
       elseif ($opts['test-upgrade']) {
+        $opts['tags'] = "skip-all";
         $cmd[]= "docker-compose exec -T devshop service supervisord stop";
         $cmd[]= "docker-compose exec -T devshop $this->devshopInstall";
 
@@ -515,15 +520,19 @@ class RoboFile extends \Robo\Tasks {
         // This is run if neither --test or --test-upgrade commands are run.
         // We assume this means launch a development environment.
         if (!$opts['skip-install']) {
-          $cmd[]= "docker-compose exec -T devshop $this->devshopInstall";
+          $opts['tags'] = 'skip-install';
         }
 
         $cmd[] = "docker-compose exec -T devshop devshop status";
         $cmd[] = "docker-compose exec -T devshop devshop login";
 
         if ($opts['follow']) {
-          $cmd[] = "docker-compose logs -f";
+          $cmd[] = "docker-compose logs";
         }
+
+        // @TODO: This might run before devmaster is installed, right?
+        $cmd[] = "docker-compose exec -T devshop devshop status";
+        $cmd[] = "docker-compose exec -T devshop devshop login";
       }
 
       //Environment variables at run time: AKA Environment variables.
@@ -531,10 +540,10 @@ class RoboFile extends \Robo\Tasks {
       $env_run['DEVSHOP_DOCKER_TAG'] = $docker_tag;
       $env_run['ANSIBLE_CONFIG'] = '/usr/share/devshop/ansible.cfg';
       $env_run['COMPOSE_FILE'] = $compose_file;
-      $env_run['ANSIBLE_VERBOSITY'] = $this->ansibleVerbosity;
-      $env_run['ANSIBLE_TAGS'] = $opts['tags'];
-      $env_run['ANSIBLE_SKIP_TAGS'] = $opts['skip-tags'];
-      $env_run['ANSIBLE_PLAYBOOK'] = '/usr/share/devshop/' . $opts['playbook'];
+      $env_run['ANSIBLE_VERBOSITY_RUNTIME'] = $this->ansibleVerbosity;
+      $env_run['ANSIBLE_TAGS_RUNTIME'] = $opts['tags'];
+      $env_run['ANSIBLE_SKIP_TAGS_RUNTIME'] = $opts['skip-tags'];
+      $env_run['ANSIBLE_PLAYBOOK_RUNTIME'] = '/usr/share/devshop/' . $opts['playbook'];
       $env_run['ANSIBLE_ROLES_PATH'] = '/usr/share/devshop/roles';
 
       $this->say("Custom Environment: " . print_r($env_run, 1));
