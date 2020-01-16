@@ -178,7 +178,7 @@
   tags: [runtime]
 
 - name: "Install DevShop Web Interface"
-  include_tasks: "runtime.yml"
+  include_tasks: "install-devmaster.yml"
   tags: [runtime]
   when: not devmaster_skip_install|bool
 
