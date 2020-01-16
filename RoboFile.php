@@ -456,7 +456,7 @@ class RoboFile extends \Robo\Tasks {
     if ($opts['mode'] == 'docker-compose') {
 
       if ($opts['test'] || $opts['test-upgrade']) {
-        $this->yell("Test Environment Requested: Using docker-compose-tests.yml.");
+        $this->yell("Test Environment Requested: Using docker-compose-tests.yml.", 40, 'cyan');
         $this->say("No docker volumes are enabled using this mode.");
 
         if (!$opts['build']) {
@@ -466,17 +466,21 @@ class RoboFile extends \Robo\Tasks {
         $compose_file = 'docker-compose-tests.yml';
       }
       else {
-        $this->yell("Development Environment Requested: Using {$opts['compose-file']}");
+        $this->yell("Local Development Environment Requested: Using {$opts['compose-file']}", 40, 'cyan');
+        $this->say('Volumes will be mounted for:');
+        $this->say(' - ' . __DIR__ . '/aegir-home to /var/aegir');
+        $this->say(' - ' . __DIR__ . '/devmaster to /var/aegir/devmaster-1.x/profiles/devmaster');
 
         $compose_file = $opts['compose-file'];
 
         if (!file_exists('aegir-home/.drush') && !$opts['skip-source-prep']) {
-          if ($this->confirm("Prepare source code locally? This is needed for the development environment.")) {
-            $this->prepareSourcecode($opts);
-          }
+          $this->prepareSourcecode($opts);
         }
         elseif ($opts['skip-source-prep']) {
-          $this->say("Source code prepare skipped.");
+          $this->say("Source code prep skipped because --skip-source-prep option was used.");
+        }
+        elseif (file_exists('aegir-home/.drush')) {
+          $this->say("Source code prep skipped because 'aegir-home/.drush' folder already exists.");
         }
       }
 
