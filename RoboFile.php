@@ -325,7 +325,7 @@ class RoboFile extends \Robo\Tasks {
     // the `docker-compose build` command, which, if they are listed in docker-compose.yml,
     // will get passed into the containers.
 
-    $env_build['DEVSHOP_DOCKER_TAG_ARG'] = $opts['tag'];
+    $env_build['DEVSHOP_DOCKER_TAG'] = $opts['tag'];
 
     // Set FROM using --from option.
     // @TODO: Tell users FROM _IMAGE env var doesn't work for prepare:containers?
