@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 ##
-# wait.sh
+# wait-for.sh
 #
 # @author Jon Pugh
 #
@@ -26,12 +26,12 @@ OUTPUT=${OUTPUT:-}
 TIMEOUT=${TIMEOUT:-30}
 
 if [ -z "${COMMAND}" ]; then
-  echo "Usage: wait any-command-that-exits --until-successful"
+  echo "Usage: wait-for any-command-that-exits --until-successful"
   exit 1
 fi
 
 log() {
-  echo "DevShop | wait | $@";
+  echo "DevShop | wait-for | $@";
 }
 
 runCommand() {
