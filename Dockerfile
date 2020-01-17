@@ -172,6 +172,10 @@ RUN devshop-logo "Preparing Docker Container Environment..."
 #
 
 # Example ARG/ENV pair. Use the same value for "buildArgDefaultValue".
+# NOTE: Name the ARG differently than the ENV. If you don't, the parent images ENV values will persist and force docker
+# to ignore the build args that are passed when building the child container.
+# On the child container build, BUILD_ARG_EXAMPLE_ARG only gets set if passed via --build-arg.
+# If --build-arg is NOT passed, the child container environment variable BUILD_ARG_EXAMPLE will be set to the same value of the parent.
 ARG BUILD_ARG_EXAMPLE_ARG="buildArgDefaultValue"
 ENV BUILD_ARG_EXAMPLE ${BUILD_ARG_EXAMPLE_ARG:-"buildArgDefaultValue"}
 
