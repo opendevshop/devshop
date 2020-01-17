@@ -761,40 +761,29 @@ class RoboFile extends \Robo\Tasks {
    * Running with --force
    */
   public function destroy($opts = ['force' => 0]) {
-
-    if ($opts['no-interaction'] || $this->confirm("Destroy docker containers and volumes?")) {
+    if ($opts['no-interaction'] || $this->confirm("Destroy all local data? (docker containers, volumes, config)")) {
       $this->_exec('docker-compose kill');
       $this->_exec('docker-compose rm -fv');
+
+      // Remove devmaster site folder
+      $version = self::DEVSHOP_LOCAL_VERSION;
+      $uri = self::DEVSHOP_LOCAL_URI;
+      $this->_exec("sudo rm -rf aegir-home/.drush");
+      $this->_exec("sudo rm -rf aegir-home/config");
+      $this->_exec("sudo rm -rf aegir-home/clients");
+      $this->_exec("sudo rm -rf aegir-home/projects");
+      $this->_exec("sudo rm -rf aegir-home/devmaster-{$version}/sites/{$uri}");
+      $this->_exec("sudo rm -rf aegir-home/devmaster-1.0.0-beta10/sites/{$uri}");
     }
 
-    $version = self::DEVSHOP_LOCAL_VERSION;
-    $uri = self::DEVSHOP_LOCAL_URI;
-
-    if (!$opts['force'] && (!$opts['no-interaction'] && !$this->confirm("Destroy entire aegir-home folder? (If answered 'n', devmaster root will be saved.)"))) {
-      if ($this->confirm("Destroy local config, drush aliases, and projects?")) {
-
-        // Remove devmaster site folder
-        $this->_exec("sudo rm -rf aegir-home/.drush");
-        $this->_exec("sudo rm -rf aegir-home/config");
-        $this->_exec("sudo rm -rf aegir-home/clients");
-        $this->_exec("sudo rm -rf aegir-home/projects");
-        $this->_exec("sudo rm -rf aegir-home/devmaster-{$version}/sites/{$uri}");
-        $this->_exec("sudo rm -rf aegir-home/devmaster-1.0.0-beta10/sites/{$uri}");
-
-        $this->say("Deleted local folders. Source code is still in place.");
-        $this->say("To launch a new instance, run `robo up`");
-      }
-      else {
-        $this->yell('Unable to delete local folders! Remove manually to fully destroy your local install.');
-      }
-    }
-    else {
+    // Don't run when -n is specified,
+    if ($opts['force'] || !$opts['no-interaction'] && $this->confirm("Destroy local source code? (aegir-home)")) {
       if ($this->_exec("sudo rm -rf aegir-home")->wasSuccessful()) {
         $this->say("Entire aegir-home folder deleted.");
       }
-      else {
-        $this->yell("Unable to delete aegir-home folder, even with sudo!");
-      }
+    }
+    elseif ($opts['no-interaction']) {
+      $this->say("Local source code was retained. Use 'robo destroy --force' option to remove it, or run 'rm -rf aegir-home'.");
     }
   }
 
