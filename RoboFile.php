@@ -502,33 +502,18 @@ class RoboFile extends \Robo\Tasks {
       // Run final playbook to install devshop.
       // Test commands must be run as application user.
       // The `--test` command is run in GitHub Actions.
+      $test_command = 'echo "Install Complete!"';
       if ($opts['test']) {
-
         // Do not run a playbook on docker-compose up, because it will launch as a separate process and we won't know when it ends.
-        // @TODO: If we had the hostmaster-wait script, we would not use this. The tests could run only once devshop is installed.
-        $opts['tags'] = "skip-all";
         $cmd[]= "docker-compose exec -T devshop service supervisord stop";
         $test_command = "/usr/share/devshop/tests/devshop-tests.sh";
       }
       // @TODO: The `--test-upgrade` command is NOT YET run in GitHub Actions.
       // The PR with the update hook can be used to finalize upgrade tests: https://github.com/opendevshop/devshop/pull/426
       elseif ($opts['test-upgrade']) {
-        $opts['tags'] = "skip-all";
         $test_command = "/usr/share/devshop/tests/devshop-tests-upgrade.sh";
       }
       else {
-
-        $cmd[]= "docker-compose exec -T devshop env";
-
-        // This is run if neither --test or --test-upgrade commands are run.
-        // We assume this means launch a development environment.
-        if ($opts['skip-install']) {
-          $opts['tags'] = 'skip-install';
-        }
-
-        $cmd[] = "docker-compose exec -T devshop devshop status";
-        $cmd[] = "docker-compose exec -T devshop devshop login";
-
         if ($opts['follow']) {
           $cmd[] = "docker-compose logs";
         }
