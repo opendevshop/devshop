@@ -23,6 +23,7 @@ bin/*
 !bin/mysql-wait
 !bin/site-wait
 !bin/wait-for
+!bin/tail-file
 
 # Symfony code
 vendor
