@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+##
+# wait.sh
+#
+# @author Jon Pugh
+#
+# Runs any command over and over again until it passes.
+#
+# Use Environment variables for options:
+#
+# SLEEP: Length of time to wait in-between running the command.
+# CHAR: The character to print after every command run.
+# OUTPUT: Set to 'err' to print all output, set to 'out' to print just stdOut. Otherwise, all output is hidden.
+#
+set -e
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+PATH="$DIR:$PATH"
+
+# All Arguments and options after `wait`
+COMMAND=$@
+
+# Environment Variables
+SLEEP=${SLEEP:-1}
+CHAR=${CHAR:-.}
+OUTPUT=${OUTPUT:-}
+
+if [ -z "${COMMAND}" ]; then
+  echo "Usage: wait any-command-that-exits --until-successful"
+  exit 1
+fi
+
+log() {
+  echo "DevShop | wait | $@";
+}
+
+runCommand() {
+
+    # If $OUTPUT=out, hide errors.
+    if [ "${OUTPUT}" == "out" ]; then
+      $COMMAND 2> /dev/null
+
+    # If $OUTPUT=err, print only errors
+    elif [ "${OUTPUT}" == "err" ]; then
+      $COMMAND > /dev/null
+
+    # If $OUTPUT=all, just print
+    elif [ "${OUTPUT}" == "all" ]; then
+      $COMMAND
+
+    # Otherwise, hide output and errors
+    else
+      $COMMAND > /dev/null 2>&1
+    fi
+}
+
+log "Waiting for command to exit successfully: $COMMAND"
+
+while ! (runCommand)
+do
+   sleep $SLEEP
+   echo -n "."
+done
+
+log "Done in $SECONDS seconds!"
