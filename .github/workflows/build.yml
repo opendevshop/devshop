@@ -61,6 +61,7 @@ jobs:
           --follow=0 \
           --compose-file docker-compose-tests.yml \
           --skip-source-prep \
+          --local \
           -vv
 
     - name: Test DevShop

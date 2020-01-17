@@ -37,6 +37,7 @@ jobs:
           --vars=devshop_danger_remove_devmaster=true \
           --follow=0 \
           --compose-file=docker-compose-tests.yml \
+          --local \
           --skip-source-prep
 
     - name: Test DevShop
