@@ -444,6 +444,12 @@ class RoboFile extends \Robo\Tasks {
       $playbook = $opts['playbook'];
       $this->say("Preparing containers with playbook: $playbook");
       $opts['tag'] = 'local';
+
+      // If --local is also specified, set "os" option so container is built from scratch.
+      if (empty($opts['os']) && $opts['local']) {
+        $opts['os'] = 'ubuntu1804';
+      }
+
       $this->prepareContainers($opts['user-uid'], 'devshop.local.computer', $opts);
     }
     elseif ($opts['local']) {
