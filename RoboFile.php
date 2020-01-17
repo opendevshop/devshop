@@ -307,7 +307,7 @@ class RoboFile extends \Robo\Tasks {
 
     // Determine current UID.
     if (is_null($user_uid)) {
-      $env_build['DEVSHOP_USER_UID'] = trim(shell_exec('id -u'));
+      $env_build['DEVSHOP_USER_UID_ARG'] = trim(shell_exec('id -u'));
     }
 
     // Set FROM_IMAGE. If os is set, generate the name.
@@ -325,20 +325,20 @@ class RoboFile extends \Robo\Tasks {
     // the `docker-compose build` command, which, if they are listed in docker-compose.yml,
     // will get passed into the containers.
 
-    $env_build['DEVSHOP_DOCKER_TAG'] = $opts['tag'];
+    $env_build['DEVSHOP_DOCKER_TAG_ARG'] = $opts['tag'];
 
     // Set FROM using --from option.
     // @TODO: Tell users FROM _IMAGE env var doesn't work for prepare:containers?
-    $env_build['FROM_IMAGE'] = $opts['from'];
-    $env_build['ANSIBLE_CONFIG'] = '/usr/share/devshop/ansible.cfg';
-    $env_build['ANSIBLE_VERBOSITY'] = $this->ansibleVerbosity;
-    $env_build['ANSIBLE_EXTRA_VARS'] = $opts['vars'];
-    $env_build['ANSIBLE_TAGS'] = $opts['tags'];
-    $env_build['ANSIBLE_SKIP_TAGS'] = $opts['skip-tags'];
+    $env_build['FROM_IMAGE_ARG'] = $opts['from'];
+    $env_build['ANSIBLE_CONFIG_ARG'] = '/usr/share/devshop/ansible.cfg';
+    $env_build['ANSIBLE_VERBOSITY_ARG'] = $this->ansibleVerbosity;
+    $env_build['ANSIBLE_EXTRA_VARS_ARG'] = $opts['vars'];
+    $env_build['ANSIBLE_TAGS_ARG'] = $opts['tags'];
+    $env_build['ANSIBLE_SKIP_TAGS_ARG'] = $opts['skip-tags'];
 
     // Pass `robo --playbook` option to Dockerfile.
-    $env_build['ANSIBLE_PLAYBOOK'] = $opts['playbook'];
-    $env_build['COMPOSE_FILE'] = $opts['compose-file'];
+    $env_build['ANSIBLE_PLAYBOOK_ARG'] = $opts['playbook'];
+    $env_build['COMPOSE_FILE_ARG'] = $opts['compose-file'];
 
     $this->say("Custom Build Environment: " . print_r($env_build, 1));
 
@@ -485,13 +485,12 @@ class RoboFile extends \Robo\Tasks {
       }
 
       $cmd[] = 'echo "Running docker-compose up with COMPOSE_FILE=$COMPOSE_FILE"... ';
-      $cmd[] = "docker-compose up --detach";
+      $cmd[] = "docker-compose up --detach --force-recreate";
+      $cmd[] = "docker-compose logs -f &";
 
       // Start mysqld. Not sure why it's not kicking on.
       $cmd[] = "sleep 3";
-      $cmd[] = "docker-compose exec -T devshop service mysql start";
       $cmd[] = "docker-compose exec -T devshop systemctl status --no-pager";
-      $cmd[] = "docker-compose exec -T devshop ls -la";
 
       // Run final playbook to install devshop.
       // Test commands must be run as application user.
@@ -502,20 +501,13 @@ class RoboFile extends \Robo\Tasks {
         // @TODO: If we had the hostmaster-wait script, we would not use this. The tests could run only once devshop is installed.
         $opts['tags'] = "skip-all";
         $cmd[]= "docker-compose exec -T devshop service supervisord stop";
-        $cmd[]= "docker-compose exec -T devshop site-wait @hostmaster";
-
-        $command = "/usr/share/devshop/tests/devshop-tests.sh";
-        $cmd[]= "docker-compose exec -T --user $this->devshopUsername devshop $command";
+        $test_command = "/usr/share/devshop/tests/devshop-tests.sh";
       }
       // @TODO: The `--test-upgrade` command is NOT YET run in GitHub Actions.
       // The PR with the update hook can be used to finalize upgrade tests: https://github.com/opendevshop/devshop/pull/426
       elseif ($opts['test-upgrade']) {
         $opts['tags'] = "skip-all";
-        $cmd[]= "docker-compose exec -T devshop service supervisord stop";
-        $cmd[]= "docker-compose exec -T devshop site-wait @hostmaster";
-
-        $command = "/usr/share/devshop/tests/devshop-tests-upgrade.sh";
-        $cmd[]= "docker-compose exec -T --user $this->devshopUsername devshop $command";
+        $test_command = "/usr/share/devshop/tests/devshop-tests-upgrade.sh";
       }
       else {
 
@@ -540,11 +532,16 @@ class RoboFile extends \Robo\Tasks {
       $env_run['DEVSHOP_DOCKER_TAG'] = $docker_tag;
       $env_run['ANSIBLE_CONFIG'] = '/usr/share/devshop/ansible.cfg';
       $env_run['COMPOSE_FILE'] = $compose_file;
-      $env_run['ANSIBLE_VERBOSITY_RUNTIME'] = $this->ansibleVerbosity;
-      $env_run['ANSIBLE_TAGS_RUNTIME'] = $opts['tags'];
-      $env_run['ANSIBLE_SKIP_TAGS_RUNTIME'] = $opts['skip-tags'];
-      $env_run['ANSIBLE_PLAYBOOK_RUNTIME'] = '/usr/share/devshop/' . $opts['playbook'];
+      $env_run['ANSIBLE_VERBOSITY'] = $this->ansibleVerbosity;
+      $env_run['ANSIBLE_TAGS'] = $opts['tags'];
+      $env_run['ANSIBLE_SKIP_TAGS'] = $opts['skip-tags'];
+      $env_run['ANSIBLE_PLAYBOOK'] = '/usr/share/devshop/' . $opts['playbook'];
       $env_run['ANSIBLE_ROLES_PATH'] = '/usr/share/devshop/roles';
+
+      // Run a secondary command alongside the docker command.
+      if ($test_command) {
+        $env_run['DOCKER_SECONDARY_COMMAND'] = "/usr/share/devshop/site-wait @hostmaster && $test_command";
+      }
 
       $this->say("Custom Environment: " . print_r($env_run, 1));
 
