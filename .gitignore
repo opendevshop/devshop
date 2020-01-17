@@ -22,6 +22,7 @@ bin/*
 !bin/hosting-queue-runner
 !bin/mysql-wait
 !bin/site-wait
+!bin/wait-for
 
 # Symfony code
 vendor

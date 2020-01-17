@@ -1,22 +1,26 @@
 #!/bin/bash
+set -e
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+PATH="$PATH:$DIR"
 
 log() {
   echo "DevShop | mysql-wait | $@";
 }
 
-# Returns true once mysql can connect.
-# Thanks to http://askubuntu.com/questions/697798/shell-script-how-to-run-script-after-mysql-is-ready
-
-mysql_wait() {
-    mysqladmin ping --host=$DATABASE_HOST --user=root --password=$MYSQL_ROOT_PASSWORD > /dev/null 2>&1
-}
+if [ -z "${DATABASE_HOST}" ]; then
+  log "No DATABASE_HOST variable found. Unable to check for database."
+  exit 1
+fi
 
 log "Checking database server $DATABASE_HOST ..."
 
-while ! (mysql_wait)
-do
-   sleep 1
-   echo "Waiting for database host '$DATABASE_HOST' ..."
-done
 
-echo "DevShop | Database active! Checking for Hostmaster Install..."
+# Returns true once mysql can connect.
+# Thanks to http://askubuntu.com/questions/697798/shell-script-how-to-run-script-after-mysql-is-ready
+# Set SILENT=1 to tell `wait-for` script not to print the command.
+# DO NOT CHANGE unless you want to expose MYSQL_ROOT_PASSWORD in your logs.
+export SILENT=1
+wait-for mysqladmin ping --host=$DATABASE_HOST --user=root --password=$MYSQL_ROOT_PASSWORD && \
+  log "Database connected and accessible!" || \
+  exit 1
+
