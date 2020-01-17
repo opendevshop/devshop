@@ -22,6 +22,7 @@ echo "__________________________________________________"
 # Set ANSIBLE_TAGS from environment variable ANSIBLE_TAGS, or use ANSIBLE_TAGS_RUNTIME.
 ANSIBLE_TAGS=${ANSIBLE_TAGS:-runtime}
 DOCKER_COMMAND=${@:-devshop-ansible-playbook}
+DOCKER_COMMAND_POST=${DOCKER_COMMAND_POST:-"echo 'Docker command $DOCKER_COMMAND complete!'"}
 ENTRYPOINT_COMMAND=${ENTRYPOINT_COMMAND:-docker-systemd}
 
 log "Docker Command: $DOCKER_COMMAND"
@@ -38,8 +39,8 @@ else
   log 'No files being output. Set $DEVSHOP_ENTRYPOINT_LOG_FILES variable with a list of files to tail.'
 fi
 
-log "Launching Command in a new process: $DOCKER_COMMAND"
-(sleep 3 && $DOCKER_COMMAND) &
+log "Launching Docker Command in a new process: $DOCKER_COMMAND"
+(sleep 3 && $DOCKER_COMMAND && $DOCKER_COMMAND_POST) &
 
 # We keep this as devshop-systemd because systemd must run as PID 1.
 log "Running Init Command: $ENTRYPOINT_COMMAND"

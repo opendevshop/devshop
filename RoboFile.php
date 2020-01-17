@@ -538,7 +538,7 @@ class RoboFile extends \Robo\Tasks {
 
       // Run a secondary command alongside the docker command.
       if ($test_command) {
-        $env_run['DOCKER_SECONDARY_COMMAND'] = "/usr/share/devshop/site-wait @hostmaster && $test_command";
+        $env_run['DOCKER_COMMAND_POST'] = $test_command;
       }
 
       $this->say("Custom Environment: " . print_r($env_run, 1));

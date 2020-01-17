@@ -69,6 +69,7 @@ services:
       - FROM_IMAGE
       - OS_VERSION
       - DEVSHOP_USER_UID
+      - DOCKER_COMMAND_POST
 
       # Change to use a different database host.
       - DATABASE_HOST=localhost
