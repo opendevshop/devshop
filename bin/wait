@@ -58,7 +58,7 @@ log "Waiting for command to exit successfully: $COMMAND"
 while ! (runCommand)
 do
    sleep $SLEEP
-   echo -n "."
+   echo -n "$CHAR"
 done
 
 log "Done in $SECONDS seconds!"
