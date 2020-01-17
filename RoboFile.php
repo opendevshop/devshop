@@ -409,7 +409,8 @@ class RoboFile extends \Robo\Tasks {
     'skip-tags' => '',
     'file' => 'Dockerfile',
     'playbook' => 'roles/server.playbook.yml',
-    'compose-file' => 'docker-compose.yml'
+    'compose-file' => 'docker-compose.yml',
+    'local' => FALSE,
   ]) {
 
     // Check for tools
@@ -442,15 +443,21 @@ class RoboFile extends \Robo\Tasks {
       // $playbook = (!empty($opts['test']) || !empty($opts['test-upgrade']))? 'playbook.testing.yml': 'docker/playbook.server.yml';
       $playbook = $opts['playbook'];
       $this->say("Preparing containers with playbook: $playbook");
-      $docker_tag = $opts['tag'] = 'local';
+      $opts['tag'] = 'local';
       $this->prepareContainers($opts['user-uid'], 'devshop.local.computer', $opts);
     }
+    elseif ($opts['local']) {
+      // If the --local option was specified, use 'devshop/server:local' tag for the image name.
+      $opts['tag'] = 'local';
+    }
     else {
-      // If the --build option was not specified, pull the containers first.
-      // If we don't, `docker-compose up` will BUILD and tag the image.
+      // If the --build or --local options were not specified, use 'devshop/server:local'
+      // tag for the image name and pull the containers first.
+      // If we don't, `docker-compose up` will BUILD and tag the image even if
+      // it exists on docker hub.
       $this->say("Pulling containers before docker-compose up...");
       $cmd[] = "docker-compose pull --quiet";
-      $docker_tag = 'latest';
+      $opts['tag'] = 'latest';
     }
 
     if ($opts['mode'] == 'docker-compose') {
@@ -529,7 +536,7 @@ class RoboFile extends \Robo\Tasks {
 
       //Environment variables at run time: AKA Environment variables.
       $env_run = [];
-      $env_run['DEVSHOP_DOCKER_TAG'] = $docker_tag;
+      $env_run['DEVSHOP_DOCKER_TAG'] = $opts['tag'];
       $env_run['ANSIBLE_CONFIG'] = '/usr/share/devshop/ansible.cfg';
       $env_run['COMPOSE_FILE'] = $compose_file;
       $env_run['ANSIBLE_VERBOSITY'] = $this->ansibleVerbosity;
