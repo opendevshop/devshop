@@ -523,7 +523,7 @@ class RoboFile extends \Robo\Tasks {
 
         // This is run if neither --test or --test-upgrade commands are run.
         // We assume this means launch a development environment.
-        if (!$opts['skip-install']) {
+        if ($opts['skip-install']) {
           $opts['tags'] = 'skip-install';
         }
 
