@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-##
-# wait-for.sh
+# wait-for
 #
 # @author Jon Pugh
 #
@@ -14,11 +13,21 @@
 # TIMEOUT: Default: 30. Exit with an error if process doesn't pass within this time.
 # SILENT: Set to 1 to not print any output except the timeout exceeded error. Useful when running from other scripts. See wait-mysql
 #
+
+# Document usage
+usage() {
+  cat <<<EOF
+Usage:
+  wait-for any-command any-arguments --any-options
+EOF
+}
+
+# Set Environment
 set -e
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 PATH="$DIR:$PATH"
 
-# All Arguments and options after `wait`
+# Prepare arguments and options.
 COMMAND=$@
 
 # Environment Variables
@@ -28,8 +37,9 @@ OUTPUT=${OUTPUT:-}
 TIMEOUT=${TIMEOUT:-30}
 SILENT=${SILENT:-""}
 
+# Check for required variables
 if [ -z "${COMMAND}" ]; then
-  echo "Usage: wait-for any-command-that-exits --until-successful"
+  usage
   exit 1
 fi
 
@@ -70,5 +80,5 @@ do
 done
 
 if [ -z "${SILENT}" ]; then
-  log "Done in $SECONDS seconds!"
+  echo "Done in $SECONDS seconds!"
 fi
