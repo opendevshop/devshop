@@ -6,14 +6,9 @@ PATH="$DIR:$PATH"
 # This script just calls the "drush" executable in this folder, with the drush command "hosting-queued" on the @hostmaster site.
 # See hosting_queued.drush.inc
 
-log() {
-  echo "DevShop | hosting-queue-runner | $@";
-}
-
-site-wait @hostmaster
-
-log "Running drush @hostmaster cc drush ..."
-drush @hostmaster cc drush
+# Set timeout to 5 minutes
+export TIMEOUT=300
+wait-site @hostmaster
 
 log "Running drush @hostmaster hosting-queued ..."
 drush @hostmaster hosting-queued
