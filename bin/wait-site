@@ -1,32 +1,44 @@
 #!/usr/bin/env bash
+# wait-site
+#
+# @author Jon Pugh
+#
+# Uses the wait-for command to pause execution until a Drupal site is active.
+#
+#
+
+# Document usage
+usage() {
+  cat <<<EOF
+Usage:
+  wait-site @alias
+
+  Continously check status of @alias and return once connected.
+EOF
+}
+
+# Set Environment
 set -e
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 PATH="$DIR:$PATH"
+
+# Prepare arguments and options.
 ALIAS=$1
 
 if [ -z "${ALIAS}" ]; then
-
   echo "Usage: site-wait @site_alias"
   exit 1
-
 fi
-
-log() {
-  echo "DevShop | site-wait | $@";
-}
 
 log "Checking for Drush alias $ALIAS ..."
 
-site_wait() {
-    drush $ALIAS user-information 1 2> /dev/null
-}
-
-while ! (site_wait)
-do
-   sleep 1
-   log "Waiting for site $ALIAS to be ready..."
-done
-
-log "Site Ready!"
+# Returns true once mysql can connect.
+# Thanks to http://askubuntu.com/questions/697798/shell-script-how-to-run-script-after-mysql-is-ready
+# Set SILENT=1 to tell `wait-for` script not to print the command.
+# DO NOT CHANGE unless you want to expose MYSQL_ROOT_PASSWORD in your logs.
+export SILENT=1
+wait-for devshop-site-active "$ALIAS" && \
+  log "Successfully connected to site $ALIAS:" || \
+  exit 1
 
 drush $ALIAS status
