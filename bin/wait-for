@@ -11,6 +11,7 @@
 # SLEEP: Length of time to wait in-between running the command.
 # CHAR: The character to print after every command run.
 # OUTPUT: Set to 'all' to print all output, set to 'out' to print just stdOut, set to "err" to print just stdErr.
+# TIMEOUT: Default: 30. Exit with an error if process doesn't pass within this time.
 #
 set -e
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
@@ -24,6 +25,7 @@ SLEEP=${SLEEP:-1}
 CHAR=${CHAR:-.}
 OUTPUT=${OUTPUT:-}
 TIMEOUT=${TIMEOUT:-30}
+SILENT=${SILENT:-""}
 
 if [ -z "${COMMAND}" ]; then
   echo "Usage: wait-for any-command-that-exits --until-successful"
@@ -54,7 +56,9 @@ runCommand() {
     fi
 }
 
-log "Waiting for command to exit successfully: $COMMAND"
+if [ -z "${SILENT}" ]; then
+    log "Waiting for command to exit successfully: $COMMAND"
+fi
 
 while ! (runCommand)
 do
@@ -68,4 +72,6 @@ do
     echo -n "$CHAR"
 done
 
-log "Done in $SECONDS seconds!"
+if [ -z "${SILENT}" ]; then
+  log "Done in $SECONDS seconds!"
+fi
