@@ -23,6 +23,7 @@ COMMAND=$@
 SLEEP=${SLEEP:-1}
 CHAR=${CHAR:-.}
 OUTPUT=${OUTPUT:-}
+TIMEOUT=${TIMEOUT:-30}
 
 if [ -z "${COMMAND}" ]; then
   echo "Usage: wait any-command-that-exits --until-successful"
@@ -57,8 +58,14 @@ log "Waiting for command to exit successfully: $COMMAND"
 
 while ! (runCommand)
 do
-   sleep $SLEEP
-   echo -n "$CHAR"
+    # Exit with an error if timeout is reached.
+    [ "$SECONDS" -gt "$TIMEOUT" ] && echo "Timeout exceeded. Command did not succeed in $SECONDS seconds." && exit 1
+
+    # Pause for $SLEEP seconds.
+    sleep $SLEEP
+
+    # Print $CHAR without a new line.
+    echo -n "$CHAR"
 done
 
 log "Done in $SECONDS seconds!"
