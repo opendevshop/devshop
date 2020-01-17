@@ -28,9 +28,6 @@
     # @TODO: This may not be needed now that the "ancestor" check is in place.
     devshop_cli_update: false
 
-    # Since this file only runs during docker build, we should skip devmaster install... BUT...
-    devmaster_skip_install: true
-
     # This is set to TRUE to ensure the playbooks don't try to run the devmaster upgade every time they run (aka on robo up).
     devmaster_skip_upgrade: true
 
