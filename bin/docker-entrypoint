@@ -19,12 +19,17 @@ echo ""
 echo "              Docker Entrypoint                   "
 echo "__________________________________________________"
 
-log "Ansible Config: "
-
-env | grep "ANSIBLE_" || echo "No Ansible Variables found."
-
+# Set ANSIBLE_TAGS from environment variable ANSIBLE_TAGS, or use ANSIBLE_TAGS_RUNTIME.
+ANSIBLE_TAGS=${ANSIBLE_TAGS:-runtime}
 DOCKER_COMMAND=${@:-devshop-ansible-playbook}
+ENTRYPOINT_COMMAND=${ENTRYPOINT_COMMAND:-docker-systemd}
+
 log "Docker Command: $DOCKER_COMMAND"
+log "Secondary Docker Command: $DOCKER_SECONDARY_COMMAND"
+log "Init Command: $ENTRYPOINT_COMMAND"
+
+echo "Environment:"
+env | grep "ANSIBLE_" || echo "No Ansible Variables found."
 
 if [ -n "${DEVSHOP_ENTRYPOINT_LOG_FILES}" ]; then
   log "Tailing logs: $DEVSHOP_ENTRYPOINT_LOG_FILES"
@@ -37,6 +42,5 @@ log "Launching Command in a new process: $DOCKER_COMMAND"
 (sleep 3 && $DOCKER_COMMAND) &
 
 # We keep this as devshop-systemd because systemd must run as PID 1.
-ENTRYPOINT_COMMAND=${ENTRYPOINT_COMMAND:-docker-systemd}
 log "Running Init Command: $ENTRYPOINT_COMMAND"
 exec "$ENTRYPOINT_COMMAND"
