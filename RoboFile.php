@@ -455,7 +455,7 @@ class RoboFile extends \Robo\Tasks {
 
     if ($opts['mode'] == 'docker-compose') {
 
-      if ($opts['test'] || $opts['test-upgrade']) {
+      if ($opts['test'] || $opts['test-upgrade'] || $opts['compose-file'] == 'docker-compose-tests.yml') {
         $this->yell("Test Environment Requested: Using docker-compose-tests.yml.", 40, 'cyan');
         $this->say("No docker volumes are enabled using this mode.");
 
