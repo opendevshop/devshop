@@ -12,6 +12,7 @@
 # CHAR: The character to print after every command run.
 # OUTPUT: Set to 'all' to print all output, set to 'out' to print just stdOut, set to "err" to print just stdErr.
 # TIMEOUT: Default: 30. Exit with an error if process doesn't pass within this time.
+# SILENT: Set to 1 to not print any output except the timeout exceeded error. Useful when running from other scripts. See mysql-wait
 #
 set -e
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
