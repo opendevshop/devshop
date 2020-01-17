@@ -36,7 +36,7 @@ log "Docker Command: $DOCKER_COMMAND"
 
 if [ -n "${DEVSHOP_ENTRYPOINT_LOG_FILES}" ]; then
   log "Tailing logs: $DEVSHOP_ENTRYPOINT_LOG_FILES"
-  tail -f $DEVSHOP_ENTRYPOINT_LOG_FILES &
+  tail-file --follow --retry --verbose $DEVSHOP_ENTRYPOINT_LOG_FILES &
 else
   log 'No files being output. Set $DEVSHOP_ENTRYPOINT_LOG_FILES variable with a list of files to tail.'
 fi
