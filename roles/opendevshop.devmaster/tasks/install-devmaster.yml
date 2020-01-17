@@ -44,7 +44,7 @@
   tags: [runtime]
 
 - name: Wait for MySQL Server to be ready.
-  command: "{{ devshop_cli_bin_path }}/mysql-wait"
+  command: "{{ devshop_cli_bin_path }}/wait-mysql"
   changed_when: true
   tags: [runtime]
 

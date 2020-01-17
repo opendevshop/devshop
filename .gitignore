@@ -20,9 +20,7 @@ bin/*
 !bin/branch-or-tag
 !bin/docker*
 !bin/hosting-queue-runner
-!bin/mysql-wait
-!bin/site-wait
-!bin/wait-for
+!bin/wait-*
 !bin/tail-file
 
 # Symfony code
