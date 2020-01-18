@@ -14,6 +14,7 @@ SCRIPT_PATH=${COMMANDS[1]}
 FILENAME=$(basename -- "$SCRIPT_PATH")
 LABEL=${LABEL:-$FILENAME}
 PREFIX=${PREFIX:-DevShop}
+OPTIONS=${OPTIONS:-}
 MESSAGE="$@"
 
 if [ -n "${LABEL}" ]; then
@@ -34,4 +35,4 @@ echo \
 }
 
 if [ -z "$MESSAGE" ]; then usage && exit 1; fi
-echo "$PREFIX $LABEL| $@";
+echo $OPTIONS "$PREFIX $LABEL| $@";
