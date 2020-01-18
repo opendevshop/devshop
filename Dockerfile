@@ -212,6 +212,11 @@ ENV ANSIBLE_EXTRA_VARS ${ANSIBLE_EXTRA_VARS_ARG:-"dockerfile_extra_vars_source: 
 ARG DEVSHOP_USER_UID_ARG=1000
 ENV DEVSHOP_USER_UID ${DEVSHOP_USER_UID_ARG:-1000}
 
+RUN mkdir -p /var/log/aegir/ && \
+    touch /var/log/aegir/hosting-queue-runner.log && \
+    touch /var/log/aegir/hostmaster.error.log && \
+    touch /var/log/aegir/hostmaster.access.log
+
 ENV DEVSHOP_ENTRYPOINT_LOG_FILES="/var/log/aegir/*"
 ENV DEVSHOP_TESTS_ASSETS_PATH="${DEVSHOP_PATH}/.github/test-assets"
 
@@ -235,7 +240,7 @@ RUN if [ $DEVSHOP_REMOVE_DEVMASTER ]; then rm -rf /var/aegir/devmaster-1.x; fi
 
 # Pre-build Information
 RUN \
-  devshop-logo "Ansible Playbook Environment" && \
+  devshop-logo "Ansible Playbook Build Environment" && \
     env && \
   [ -z "$ANSIBLE_EXTRA_VARS" ] && \
     devshop-logo "No extra vars found. Use \"--build-arg ANSIBLE_EXTRA_VARS='var=value var2=value2'\" to alter the build." || \
