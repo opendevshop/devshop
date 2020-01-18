@@ -8,5 +8,7 @@ PATH="$DIR:$PATH"
 if [ -f "/lib/systemd/systemd" ]; then
   COMMAND="/lib/systemd/systemd"
 fi
-devshop-logo "Launching SystemD with $COMMAND ..."
+devshop-line
+echo "Initiating with $COMMAND ..."
+devshop-line
 exec $COMMAND
