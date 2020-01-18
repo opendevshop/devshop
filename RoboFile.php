@@ -298,13 +298,14 @@ class RoboFile extends \Robo\Tasks {
       'tags' => '',
       'skip-tags' => '',
       'playbook' => 'roles/server.playbook.yml',
-      'compose-file' => 'docker-compose.yml'
+      'compose-file' => 'docker-compose.yml',
+      'environment' => [],
   ]) {
 
     $this->setVerbosity();
 
     // Environment variables at build time: AKA Build Args.
-    $env_build = array();
+    $env_build = $this->optionsToArray($opts['environment']);
 
     // Determine current UID.
     if (is_null($user_uid)) {
@@ -390,6 +391,7 @@ class RoboFile extends \Robo\Tasks {
    * @option no-dev Use build-devmaster.make instead of the development makefile.
    * @option $build Run `robo prepare:containers` to rebuild the container first.
    * @option os-version An OS "slug" for any of the geerlingguy/docker-*-ansible images: https://hub.docker.com/u/geerlingguy/
+   * @option environment pass an environment variable to docker-compose in the form --environment NAME=VALUE
    */
   public function up($opts = [
     'follow' => 1,
@@ -414,6 +416,7 @@ class RoboFile extends \Robo\Tasks {
     'playbook' => 'roles/server.playbook.yml',
     'compose-file' => 'docker-compose.yml',
     'local' => FALSE,
+    'environment' => [],
   ]) {
 
     // Check for tools
@@ -511,7 +514,7 @@ class RoboFile extends \Robo\Tasks {
       // Run final playbook to install devshop.
       // Test commands must be run as application user.
       // The `--test` command is run in GitHub Actions.
-      $test_command = 'echo "Install Complete!"';
+      $test_command = '';
       if ($opts['test']) {
         // Do not run a playbook on docker-compose up, because it will launch as a separate process and we won't know when it ends.
         $cmd[]= "docker-compose exec -T devshop service supervisord stop";
@@ -529,7 +532,7 @@ class RoboFile extends \Robo\Tasks {
       }
 
       //Environment variables at run time: AKA Environment variables.
-      $env_run = [];
+      $env_run = $this->optionsToArray($opts['environment']);
       $env_run['DEVSHOP_DOCKER_TAG'] = $opts['tag'];
       $env_run['ANSIBLE_CONFIG'] = '/usr/share/devshop/ansible.cfg';
       $env_run['COMPOSE_FILE'] = $compose_file;
@@ -743,6 +746,26 @@ class RoboFile extends \Robo\Tasks {
 //        }
 //      }
 //    }
+  }
+
+  /**
+   * Convert this:    to this:
+   *
+   * array(           array(
+   *   "this=that"      "this" => "that"
+   * );               );
+   *
+   * @param $options_list
+   *
+   * @return array
+   */
+  function optionsToArray($options_list) {
+    $vars = [];
+    foreach ($options_list as $options_string) {
+      list($name, $value) = explode("=", $options_string);
+      $vars[$name] = $value;
+    }
+    return $vars;
   }
 
   /**
