@@ -54,6 +54,7 @@ class RoboFile extends \Robo\Tasks {
    * @var int Ansible verbosity. Passed from robo verbosity.
    */
   protected $ansibleVerbosity = 0;
+  protected $verbosity = 0;
 
   use \Robo\Common\IO;
 
@@ -340,7 +341,9 @@ class RoboFile extends \Robo\Tasks {
     $env_build['ANSIBLE_PLAYBOOK_ARG'] = $opts['playbook'];
     $env_build['COMPOSE_FILE_ARG'] = $opts['compose-file'];
 
-    $this->say("Custom Build Environment: " . print_r($env_build, 1));
+    if ($this->ansibleVerbosity > 0) {
+      $this->say("Custom Build Environment: " . print_r($env_build, 1));
+    }
 
     $provision_io = new \ProvisionOps\Tools\Style($this->input(), $this->output());
     $process = new \ProvisionOps\Tools\PowerProcess('docker-compose build --pull --no-cache', $provision_io);
@@ -541,7 +544,9 @@ class RoboFile extends \Robo\Tasks {
         $env_run['DOCKER_COMMAND_POST'] = $test_command;
       }
 
-      $this->say("Custom Environment: " . print_r($env_run, 1));
+      if ($this->ansibleVerbosity > 0) {
+        $this->say("Custom Run Environment: " . print_r($env_run, 1));
+      }
 
       if (!empty($cmd)) {
         foreach ($cmd as $command) {
