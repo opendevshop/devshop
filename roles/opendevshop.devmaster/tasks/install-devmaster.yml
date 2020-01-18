@@ -47,6 +47,8 @@
   command: "{{ devshop_cli_bin_path }}/wait-mysql"
   changed_when: true
   tags: [runtime]
+  environment:
+    MYSQL_ROOT_PASSWORD: "{{ mysql_root_password }}"
 
 - name: Install Devmaster
   become: true
