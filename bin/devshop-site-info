@@ -11,11 +11,12 @@
 usage() {
   cat << EOF
 Usage:
-  drush-site-info @alias field
+  drush-site-info @alias [field]
 
-  Print out a specific field from drush site status.
+  Print out "drush core-status", or a specific field from drush site status.
 
   For available fields, run "drush status --help".
+  Set field to "all" or leave blank to just run "drush core-status".
 EOF
 }
 
@@ -29,10 +30,15 @@ ALIAS=$1
 FIELD=$2
 
 # Check for required variables
-if [ -z "${ALIAS}" ] || [ -z "${FIELD}" ]; then
+if [ -z "${ALIAS}" ]; then
   usage
   exit 1
 fi
 
-drush ${ALIAS} status --fields=${FIELD} --field-labels=0 --json 2>/dev/null | tr "\n" " " | sed -e "s/^[[:space:]]*//g" -e "s/[[:space:]]*\$//g"
+if [ -z "${FIELD}" ] || [ "${FIELD}" == "all" ]; then
+  drush ${ALIAS} status --format=yaml
+else
+  drush ${ALIAS} status --fields=${FIELD} --field-labels=0 | tr "\n" " " | sed -e "s/^[[:space:]]*//g" -e "s/[[:space:]]*\$//g"
+fi
+
 echo ""
