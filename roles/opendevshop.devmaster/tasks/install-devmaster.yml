@@ -1,8 +1,7 @@
 ---
 
 - name: Get Devmaster root
-  shell: |
-    {{ drush_bin_path }} @hostmaster status --fields="root" --field-labels=0 2>/dev/null | tr "\n" " " | sed -e "s/^[[:space:]]*//g" -e "s/[[:space:]]*\$//g"
+  shell: "{{ devshop_cli_bin_path }}/devshop-site-info @hostmaster root"
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
@@ -12,8 +11,7 @@
   tags: [runtime]
 
 - name: Get Devmaster URI
-  shell: |
-    {{ drush_bin_path }} @hostmaster status --fields="uri" --field-labels=0 2>/dev/null | tr "\n" " " | sed -e "s/^[[:space:]]*//g" -e "s/[[:space:]]*\$//g"
+  shell: "{{ devshop_cli_bin_path }}/devshop-site-info @hostmaster uri"
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
@@ -24,8 +22,8 @@
 
 - name: Set devmaster_site_root and devmaster_site_uri variables
   set_fact:
-    devmaster_site_root: "{{ devmaster_site_root.stdout }}"
-    devmaster_site_uri: "{{ devmaster_site_uri.stdout }}"
+    devmaster_site_root: "{{ devmaster_site_root.stdout | trim }}"
+    devmaster_site_uri: "{{ devmaster_site_uri.stdout | trim }}"
   tags: [runtime]
 
 - name: Devmaster Root
