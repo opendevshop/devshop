@@ -24,13 +24,15 @@ PATH="$DIR:$PATH"
 
 # Prepare arguments and options.
 ALIAS=$1
+URI=$(devshop-site-info ${ALIAS} uri)
+CLIENT_NAME=${CLIENT_NAME:-admin}\
 
 if [ -z "${ALIAS}" ]; then
   echo "Usage: site-wait @site_alias"
   exit 1
 fi
 
-log "Checking for Drush alias $ALIAS ..."
+OPTIONS=-n log "Checking database... "
 
 # Returns true once mysql can connect.
 # Thanks to http://askubuntu.com/questions/697798/shell-script-how-to-run-script-after-mysql-is-ready
@@ -38,7 +40,23 @@ log "Checking for Drush alias $ALIAS ..."
 # DO NOT CHANGE unless you want to expose MYSQL_ROOT_PASSWORD in your logs.
 export SILENT=1
 wait-for devshop-site-active "$ALIAS" && \
-  log "Successfully connected to site $ALIAS:" || \
+  echo "Success." || \
   exit 1
 
-drush $ALIAS status
+# In drush_provision_drupal_post_provision_install(), _provision_client_create_symlink() is called, creating the /var/aegir/clients/URI symlinks.
+# For now, this is the best way to determine if a provision site install completed.
+INSTALLED_FILE_PATH="${HOME}/clients/${CLIENT_NAME}/${URI}/settings.php"
+
+if [ -f $INSTALLED_FILE_PATH ]; then
+  # Log without a newline at the end
+  OPTIONS=-n log "Checking installation... "
+  echo "Success: https://$URI"
+else
+  # Log without a newline at the end
+  OPTIONS=-n log "Waiting for installation to complete... "
+  export TIMEOUT=300
+  wait-for ls $INSTALLED_FILE_PATH && \
+    echo "Success: https://$URI" || \
+    exit 1
+fi
+
