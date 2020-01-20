@@ -6,11 +6,7 @@ PATH="$DIR:$PATH"
 # Detect systemD
 # @TODO: Support other paths.
 if [ -f "/lib/systemd/systemd" ]; then
-  COMMAND="/lib/systemd/systemd ${SYSTEMD_OPTIONS:-} \
-    --crash-reboot=0 \
-    --crash-shell=0 \
-    
-  "
+  COMMAND="/lib/systemd/systemd ${SYSTEMD_OPTIONS:-}"
 fi
 devshop-line
 echo "Initiating with $COMMAND ..."
