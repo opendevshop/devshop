@@ -111,7 +111,7 @@ ARG FROM_IMAGE_ARG="geerlingguy/docker-${OS_VERSION_ARG}-ansible:latest"
 FROM $FROM_IMAGE_ARG
 LABEL maintainer="Jon Pugh"
 
-ENV LINE="echo ────────────────────────────────────────────────────────────────────────────────"
+ENV LINE="echo --------------------------------------------------------------------------------"
 
 # ENVs need to be set AFTER the FROM statement.
 ENV OS_VERSION ${OS_VERSION_ARG:-"ubuntu1804"}
