@@ -249,18 +249,20 @@ RUN \
 
 # Provision with Ansible!
 RUN \
-  devshop-logo "Running: $ANSIBLE_BUILD_COMMAND" && \
-  $ANSIBLE_BUILD_COMMAND
+    devshop-logo "Docker Build: Ansible Playbook Start" && \
+    echo $ANSIBLE_BUILD_COMMAND && \
+    $ANSIBLE_BUILD_COMMAND
 
-RUN devshop-logo "Ansible Playbook Docker Build Complete!" && \
-echo "Playbook: $ANSIBLE_PLAYBOOK" && \
-echo "Tags: $ANSIBLE_TAGS" && \
-echo "Skip Tags: $ANSIBLE_SKIP_TAGS" && \
-echo "Extra Vars: $ANSIBLE_EXTRA_VARS" && \
-echo "" && \
-echo "Ansible Playbook Command:" && \
-echo "$ANSIBLE_BUILD_COMMAND" && \
-echo ""
+RUN \
+    devshop-logo "Docker Build: Ansible Playbook Complete!" && \
+    echo "Playbook: $ANSIBLE_PLAYBOOK" && \
+    echo "Tags: $ANSIBLE_TAGS" && \
+    echo "Skip Tags: $ANSIBLE_SKIP_TAGS" && \
+    echo "Extra Vars: $ANSIBLE_EXTRA_VARS" && \
+    echo "" && \
+    echo "Ansible Playbook Command:" && \
+    echo "$ANSIBLE_BUILD_COMMAND" && \
+    echo ""
 
 RUN \
     devshop-logo "Wrote build information to /etc/os-release" && \
