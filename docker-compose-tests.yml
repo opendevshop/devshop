@@ -31,6 +31,7 @@ services:
     #    the developer to finish that first build before any container can be launched.
     #
     image: devshop/server:${DEVSHOP_DOCKER_TAG:-latest}
+    command: ${DOCKER_COMMAND:-}
     build:
       context: '.'
       dockerfile: 'Dockerfile'
@@ -64,6 +65,7 @@ services:
     - FROM_IMAGE
     - OS_VERSION
     - DEVSHOP_USER_UID
+    - DOCKER_COMMAND_POST
 
     - DRUPAL_MAKEFILE
     - DRUPAL_ROOT
@@ -80,7 +82,6 @@ services:
     # Add additional files you would like to output in the container logs here, separated by a space.
     # - DEVSHOP_ENTRYPOINT_LOG_FILES="/var/log/aegir/*"
     # - DEVSHOP_TESTS_ASSETS_PATH="/usr/share/devshop/.github/test-assets"
-    - DOCKER_COMMAND_POST
     - CI=CI
     privileged: true
     volumes:
