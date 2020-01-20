@@ -505,11 +505,6 @@ class RoboFile extends \Robo\Tasks {
 
       $cmd[] = 'echo "Running docker-compose up with COMPOSE_FILE=$COMPOSE_FILE"... ';
       $cmd[] = "docker-compose up --detach --force-recreate";
-      $cmd[] = "docker-compose logs -f &";
-
-      // Start mysqld. Not sure why it's not kicking on.
-      $cmd[] = "sleep 3";
-      $cmd[] = "docker-compose exec -T devshop systemctl status --no-pager";
 
       // Run final playbook to install devshop.
       // Test commands must be run as application user.
