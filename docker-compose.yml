@@ -31,6 +31,7 @@ services:
     #    the developer to finish that first build before any container can be launched.
     #
     image: devshop/server:${DEVSHOP_DOCKER_TAG:-latest}
+    command: ${DOCKER_COMMAND:-}
     build:
       context: '.'
       dockerfile: 'Dockerfile'
