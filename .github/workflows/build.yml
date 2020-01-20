@@ -46,9 +46,10 @@ jobs:
     - name: Install Composer dependencies
       run: composer install --prefer-dist --no-progress --no-suggest
 
-    - name: Create DevShop Server Image FROM ${{ matrix.os_version }} with PHP ${{ matrix.php_version }}
+    - name: Build and Launch DevShop Server Image FROM ${{ matrix.os_version }} with PHP ${{ matrix.php_version }}
       run: |
-        bin/robo prepare:containers \
+        bin/robo up "sleep infinity"
+          --build \
           --os "${OS}" \
           --vars "${VARS}" \
           --tags "${TAGS}" \
@@ -56,13 +57,13 @@ jobs:
           --compose-file docker-compose-tests.yml
 
     - name: Install DevShop
+      env:
+        TAGS: "runtime"
+        SKIP_TAGS: "none"
       run: |
-        bin/robo up \
-          --follow=0 \
+        docker-compose exec devshop \
           --compose-file docker-compose-tests.yml \
-          --skip-source-prep \
-          --local \
-          -vv
+          devshop-ansible-playbook
 
     - name: Test DevShop
       run: |
