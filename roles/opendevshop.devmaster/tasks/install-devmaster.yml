@@ -1,7 +1,7 @@
 ---
 
 - name: Get Devmaster root
-  shell: "{{ devshop_cli_bin_path }}/devshop-site-info @hostmaster root"
+  command: "{{ devshop_cli_bin_path }}/devshop-site-info @hostmaster root"
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
@@ -11,7 +11,7 @@
   tags: [runtime]
 
 - name: Get Devmaster URI
-  shell: "{{ devshop_cli_bin_path }}/devshop-site-info @hostmaster uri"
+  command: "{{ devshop_cli_bin_path }}/devshop-site-info @hostmaster uri"
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
