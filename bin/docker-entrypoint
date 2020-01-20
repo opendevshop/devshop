@@ -18,9 +18,11 @@ if [ -n "${DEVSHOP_ENTRYPOINT_LOG_FILES}" ]; then
   DOCKER_COMMAND_LOGS="tail-file --follow --verbose $DEVSHOP_ENTRYPOINT_LOG_FILES"
   echo "Tailing Log Files: $DEVSHOP_ENTRYPOINT_LOG_FILES"
   echo 'TIP: Set the $DEVSHOP_ENTRYPOINT_LOG_FILES environment variable to change the files to show in the Docker logs.'
+  log "Running DOCKER_COMMAND_LOGS in a new process after 5 seconds: $DOCKER_COMMAND_LOGS ..."
   devshop-line
+  (sleep 5 && $DOCKER_COMMAND_LOGS) &
 else
-  echo 'WARNING: $DEVSHOP_ENTRYPOINT_LOG_FILES variable was empty. Not showing any log files.'
+  echo 'WARNING: $DEVSHOP_ENTRYPOINT_LOG_FILES variable was empty. Not launching log tails.'
   devshop-line
 fi
 
@@ -39,8 +41,10 @@ log "Launching Docker Commands in a new process..."
 ((sleep 3 && \
   devshop-logo "Running DOCKER_COMMAND: $DOCKER_COMMAND ..." && $DOCKER_COMMAND &&
   devshop-logo "Running DOCKER_COMMAND_POST: $DOCKER_COMMAND_POST ..." && $DOCKER_COMMAND_POST && \
-  devshop-logo "Running DOCKER_COMMAND_LOGS: $DOCKER_COMMAND_LOGS ..." && $DOCKER_COMMAND_LOGS \
-) || (echo "Command failed!" && exit 1)) &
+    # If successful
+    log "Docker Entrypoint Commands Completed successfully! (exit 0)") || ( \
+    log "Docker Entrypoint Command failed. (exit $?)" && echo !! && \
+        exit $?)) &
 
 DOCKER_COMMANDS_PID=$!
 
