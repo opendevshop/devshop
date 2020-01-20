@@ -393,7 +393,7 @@ class RoboFile extends \Robo\Tasks {
    * @option os-version An OS "slug" for any of the geerlingguy/docker-*-ansible images: https://hub.docker.com/u/geerlingguy/
    * @option environment pass an environment variable to docker-compose in the form --environment NAME=VALUE
    */
-  public function up($opts = [
+  public function up($docker_command = null, $opts = [
     'follow' => 1,
     'test' => FALSE,
     'test-upgrade' => FALSE,
@@ -527,7 +527,7 @@ class RoboFile extends \Robo\Tasks {
       }
       else {
         if ($opts['follow']) {
-          $cmd[] = "docker-compose logs";
+          $cmd[] = "docker-compose logs -f";
         }
       }
 
@@ -546,6 +546,9 @@ class RoboFile extends \Robo\Tasks {
       if ($test_command) {
         $env_run['DOCKER_COMMAND_POST'] = $test_command;
       }
+
+      // Override the docker commmand:
+      $env_run['DOCKER_COMMAND'] = $docker_command;
 
       if ($this->ansibleVerbosity > 0) {
         $this->say("Custom Run Environment: " . print_r($env_run, 1));
