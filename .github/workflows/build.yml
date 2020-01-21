@@ -63,7 +63,7 @@ jobs:
         SKIP_TAGS: "none"
       run: |
         docker-compose exec -T devshop \
-          --compose-file docker-compose-tests.yml \
+          --file docker-compose-tests.yml \
           devshop-ansible-playbook
 
     - name: Test DevShop
