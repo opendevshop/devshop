@@ -30,15 +30,24 @@ jobs:
     - name: Install Composer dependencies
       run: composer install --prefer-dist --no-progress --no-suggest
 
-    - name: Install DevShop
+    - name: Launch pre-built DevShop Server Image devshop/server
       run: |
-        bin/robo up \
-          --tags=rebuild-devmaster \
-          --vars=devshop_danger_remove_devmaster=true \
-          --follow=0 \
-          --compose-file=docker-compose-tests.yml \
-          --local \
-          --skip-source-prep
+        bin/robo up "sleep infinity" \
+          --follow 0 \
+          --compose-file
+
+    - name: Install DevShop
+      env:
+        ANSIBLE_TAGS: "runtime"
+        ANSIBLE_SKIP_TAGS: "none"
+      # @TODO: Seems like env above is not making it's way to the container and devshop-ansible-playbook command: https://github.com/opendevshop/devshop/pull/487/checks?check_run_id=400001612#step:7:10
+      # Once the problem is discovered, remove either 'env' or the --env options below.
+      run: |
+        docker-compose exec -T \
+          --env ANSIBLE_TAGS=runtime \
+          --env ANSIBLE_SKIP_TAGS=none \
+            devshop \
+            devshop-ansible-playbook
 
     - name: Test DevShop
       run: |
