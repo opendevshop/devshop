@@ -59,8 +59,8 @@ jobs:
 
     - name: Install DevShop
       env:
-        TAGS: "runtime"
-        SKIP_TAGS: "none"
+        ANSIBLE_TAGS: "runtime"
+        ANSIBLE_SKIP_TAGS: "none"
         COMPOSE_FILE: "docker-compose-tests.yml"
       run: |
         docker-compose exec -T devshop devshop-ansible-playbook
