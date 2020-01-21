@@ -61,10 +61,9 @@ jobs:
       env:
         TAGS: "runtime"
         SKIP_TAGS: "none"
+        COMPOSE_FILE: "docker-compose-tests.yml"
       run: |
-        docker-compose exec -T devshop \
-          --file docker-compose-tests.yml \
-          devshop-ansible-playbook
+        docker-compose exec -T devshop devshop-ansible-playbook
 
     - name: Test DevShop
       run: |
