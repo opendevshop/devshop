@@ -524,6 +524,9 @@ class RoboFile extends \Robo\Tasks {
         if ($opts['follow']) {
           $cmd[] = "docker-compose logs -f";
         }
+        else {
+          $cmd[] = "docker-compose logs";
+        }
       }
 
       //Environment variables at run time: AKA Environment variables.
