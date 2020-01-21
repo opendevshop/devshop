@@ -6,7 +6,9 @@ PATH="$DIR:$PATH"
 # Detect systemD
 # @TODO: Support other paths.
 if [ -f "/lib/systemd/systemd" ]; then
-  COMMAND="/lib/systemd/systemd"
+  COMMAND="/lib/systemd/systemd ${SYSTEMD_OPTIONS:-}"
 fi
-devshop-logo "Launching SystemD with $COMMAND ..."
+devshop-line
+echo "Initiating with $COMMAND ..."
+devshop-line
 exec $COMMAND

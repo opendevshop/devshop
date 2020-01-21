@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Usage:
-# set-user-ids NAME UID GID
+# chuid NAME UID GID
 #
 set -e
 
