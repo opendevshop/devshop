@@ -853,7 +853,9 @@ class RoboFile extends \Robo\Tasks {
   /**
    * Run all devshop tests on the containers.
    */
-  public function test($user = 'aegir') {
+  public function test($user = 'aegir', $opts = array(
+    'compose-file' => 'docker-compose.yml',
+  )) {
     $is_tty = !empty($_SERVER['XDG_SESSION_TYPE']) && $_SERVER['XDG_SESSION_TYPE'] == 'tty';
     $no_tty = !$is_tty? '-T': '';
     $command = "docker-compose exec $no_tty --user $user devshop /usr/share/devshop/tests/devshop-tests.sh";
@@ -862,6 +864,9 @@ class RoboFile extends \Robo\Tasks {
 
     $process->setTty(!empty($_SERVER['XDG_SESSION_TYPE']) && $_SERVER['XDG_SESSION_TYPE'] == 'tty');
 
+    $process->setEnv([
+      'COMPOSE_FILE' => $opts['compose-file'],
+    ]);
     $process->setTimeout(NULL);
     $process->disableOutput();
     $process->mustRun();
