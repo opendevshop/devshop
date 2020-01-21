@@ -50,6 +50,7 @@ jobs:
       run: |
         bin/robo up "sleep infinity" \
           --build \
+          --follow 0 \
           --os "${OS}" \
           --vars "${VARS}" \
           --tags "${TAGS}" \
