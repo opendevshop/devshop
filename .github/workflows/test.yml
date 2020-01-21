@@ -5,7 +5,7 @@ on:
 
 env:
   ANSIBLE_VERBOSITY: 2
-  FROM_IMAGE: devshop/server:latest
+  FROM_IMAGE_ARG: devshop/server:latest
 
 jobs:
   test:
@@ -42,7 +42,7 @@ jobs:
 
     - name: Test DevShop
       run: |
-        bin/robo test
+        bin/robo test --compose-file docker-compose-tests.yml
 
     - uses: actions/upload-artifact@v1
       if: failure()
