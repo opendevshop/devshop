@@ -47,6 +47,7 @@
   tags: [runtime]
   environment:
     MYSQL_ROOT_PASSWORD: "{{ mysql_root_password }}"
+    DATABASE_HOST: "{{ aegir_db_host }}"
 
 - name: Install Devmaster
   become: true
