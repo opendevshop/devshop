@@ -15,7 +15,7 @@ jobs:
       matrix:
         os:
           - 'ubuntu1804'
-          - 'centos6'
+          # - 'centos6'
           - 'centos7'
         vars:
           - 'php_version: 7.2'
