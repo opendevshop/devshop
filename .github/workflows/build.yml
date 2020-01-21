@@ -62,7 +62,7 @@ jobs:
         TAGS: "runtime"
         SKIP_TAGS: "none"
       run: |
-        docker-compose exec devshop \
+        docker-compose exec -T devshop \
           --compose-file docker-compose-tests.yml \
           devshop-ansible-playbook
 
