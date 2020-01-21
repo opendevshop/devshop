@@ -53,7 +53,7 @@ if [ -f $INSTALLED_FILE_PATH ]; then
   echo "Success: https://$URI"
 else
   # Log without a newline at the end
-  OPTIONS=-n log "Waiting for installation to complete... "
+  OPTIONS=-n log "Waiting for installation to complete... (Waiting for file: $INSTALLED_FILE_PATH)"
   export TIMEOUT=300
   wait-for ls $INSTALLED_FILE_PATH && \
     echo "Success: https://$URI" || \
