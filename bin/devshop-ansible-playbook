@@ -11,7 +11,7 @@ ANSIBLE_PLAYBOOK_COMMAND_OPTIONS=${ANSIBLE_PLAYBOOK_COMMAND_OPTIONS:-}
 
 set -ex
 
-ansible-playbook $ANSIBLE_PLAYBOOK \
+exec ansible-playbook $ANSIBLE_PLAYBOOK \
     --tags=$ANSIBLE_TAGS \
     --skip-tags=$ANSIBLE_SKIP_TAGS \
     --extra-vars="$ANSIBLE_EXTRA_VARS" \
