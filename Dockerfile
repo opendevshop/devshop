@@ -4,7 +4,7 @@
 # This Dockerfile is designed to be built into any kind of container.
 #
 # Without any build arguments, Docker will build from the standard `geerlingguy/docker-ubuntu1804-ansible`
-#  image, using the `docker/playbook.server.yml` Ansible playbook file.
+#  image, using the `roles/server.playbook.yml` Ansible playbook file.
 #
 # This is how the official devshop/server:latest image is built:
 #
@@ -31,7 +31,7 @@
 #     ANSIBLE_PLAYBOOK
 #       The path to the ansible playbook file you want to run in the build.
 #       Relative to devshop repo root.
-#       Default: docker/playbook.server.yml
+#       Default: roles/server.playbook.yml
 #
 #     ANSIBLE_PLAYBOOK_COMMAND_OPTIONS
 #       Passed directly to the `ansible-playbook` command.
@@ -78,7 +78,7 @@
 #        docker build . --build-arg FROM_IMAGE=devshop/server:latest \
 #          --build-arg ANSIBLE_TAGS=none
 #
-#      This is used for rapid testing of devmaster: the 'install-devmaster' tag
+#      This is used for rapid testing of devmaster: the 'runtime' tag
 #      is used when running the container, acting as the "install" step.
 #
 #    5. Pass environment variables to docker build args:
@@ -103,23 +103,22 @@
 
 # If --build-arg OS_VERSION is not set, use 'ubuntu1804'
 # NOTE: OS_VERSION is ignored if FROM_IMAGE is set as a build arg.
-ARG OS_VERSION="ubuntu1804"
+ARG OS_VERSION_ARG="ubuntu1804"
 
 # If --build-arg FROM_IMAGE is not set, use '"geerlingguy/docker-${OS_VERSION}-ansible:latest'
-ARG FROM_IMAGE="geerlingguy/docker-${OS_VERSION}-ansible:latest"
+ARG FROM_IMAGE_ARG="geerlingguy/docker-${OS_VERSION_ARG}-ansible:latest"
 
-FROM $FROM_IMAGE
+FROM $FROM_IMAGE_ARG
 LABEL maintainer="Jon Pugh"
 
-ENV LINE="echo ────────────────────────────────────────────────────────────────────────────────"
+ENV LINE="echo --------------------------------------------------------------------------------"
 
 # ENVs need to be set AFTER the FROM statement.
-ENV OS_VERSION ${OS_VERSION:-"ubuntu1804"}
-ENV FROM_IMAGE ${FROM_IMAGE:-"geerlingguy/docker-${OS_VERSION}-ansible:latest"}
+ENV OS_VERSION ${OS_VERSION_ARG:-"ubuntu1804"}
+ENV FROM_IMAGE ${FROM_IMAGE_ARG:-"geerlingguy/docker-${OS_VERSION}-ansible:latest"}
 
-ARG DEVSHOP_PATH="/usr/share/devshop"
-ENV DEVSHOP_PATH ${DEVSHOP_PATH:-"/usr/share/devshop"}
-WORKDIR $DEVSHOP_PATH
+ARG DEVSHOP_PATH_ARG="/usr/share/devshop"
+ENV DEVSHOP_PATH ${DEVSHOP_PATH_ARG:-"/usr/share/devshop"}
 
 # Set PATH so we can run devshop scripts immediately.
 ENV PATH="${DEVSHOP_PATH}/bin:$PATH"
@@ -154,6 +153,7 @@ RUN \
 
 # Copy latest DevShop Core to /usr/share/devshop
 COPY ./ $DEVSHOP_PATH
+WORKDIR $DEVSHOP_PATH
 
 # Announce container information before doing anything.
 RUN \
@@ -172,50 +172,57 @@ RUN devshop-logo "Preparing Docker Container Environment..."
 #
 
 # Example ARG/ENV pair. Use the same value for "buildArgDefaultValue".
-ARG BUILD_ARG_EXAMPLE="buildArgDefaultValue"
-ENV BUILD_ARG_EXAMPLE ${BUILD_ARG_EXAMPLE:-"buildArgDefaultValue"}
+# NOTE: Name the ARG differently than the ENV. If you don't, the parent images ENV values will persist and force docker
+# to ignore the build args that are passed when building the child container.
+# On the child container build, BUILD_ARG_EXAMPLE_ARG only gets set if passed via --build-arg.
+# If --build-arg is NOT passed, the child container environment variable BUILD_ARG_EXAMPLE will be set to the same value of the parent.
+ARG BUILD_ARG_EXAMPLE_ARG="buildArgDefaultValue"
+ENV BUILD_ARG_EXAMPLE ${BUILD_ARG_EXAMPLE_ARG:-"buildArgDefaultValue"}
 
-ARG ANSIBLE_PLAYBOOK="/usr/share/devshop/docker/playbook.server.yml"
-ENV ANSIBLE_PLAYBOOK ${ANSIBLE_PLAYBOOK:-"/usr/share/devshop/docker/playbook.server.yml"}
+# @TODO: ARG statement below does not seem to change the value when using a FROM image that already has the environment variable.
+ARG ANSIBLE_PLAYBOOK_ARG="/usr/share/devshop/roles/server.playbook.yml"
+ENV ANSIBLE_PLAYBOOK ${ANSIBLE_PLAYBOOK_ARG:-"/usr/share/devshop/roles/server.playbook.yml"}
 
-ARG ANSIBLE_PLAYBOOK_COMMAND_OPTIONS=""
-ENV ANSIBLE_PLAYBOOK_COMMAND_OPTIONS ${ANSIBLE_PLAYBOOK_COMMAND_OPTIONS:-""}
+ARG ANSIBLE_PLAYBOOK_COMMAND_OPTIONS_ARG=""
+ENV ANSIBLE_PLAYBOOK_COMMAND_OPTIONS ${ANSIBLE_PLAYBOOK_COMMAND_OPTIONS_ARG:-""}
 
 # Convert build args into ENV vars that are used by ansible-playbook
 # Ansible playbook command line options.
 # See https://docs.ansible.com/ansible/latest/cli/ansible-playbook.html
 
-ARG ANSIBLE_CONFIG="/usr/share/devshop/ansible.cfg"
-ENV ANSIBLE_CONFIG ${ANSIBLE_CONFIG:-"/usr/share/devshop/ansible.cfg"}
+ARG ANSIBLE_CONFIG_ARG="/usr/share/devshop/ansible.cfg"
+ENV ANSIBLE_CONFIG ${ANSIBLE_CONFIG_ARG:-"/usr/share/devshop/ansible.cfg"}
 
-ARG ANSIBLE_VERBOSITY=0
-ENV ANSIBLE_VERBOSITY ${ANSIBLE_VERBOSITY:-0}
+ARG ANSIBLE_VERBOSITY_ARG=0
+ENV ANSIBLE_VERBOSITY ${ANSIBLE_VERBOSITY_ARG:-0}
 
 # @TODO These env vars do not seem to work for ansible-playbook.
 # The `ansible-playbook --help` output implies that they do, but the docs do not
 # show a default value: https://docs.ansible.com/ansible/latest/cli/ansible-playbook.html#cmdoption-ansible-playbook-tags
-ARG ANSIBLE_TAGS="all"
-ENV ANSIBLE_TAGS ${ANSIBLE_TAGS:-"all"}
+ARG ANSIBLE_TAGS_ARG="all"
+ENV ANSIBLE_TAGS ${ANSIBLE_TAGS_ARG:-"all"}
 
-ARG ANSIBLE_SKIP_TAGS="install-devmaster"
-ENV ANSIBLE_SKIP_TAGS ${ANSIBLE_SKIP_TAGS:-"install-devmaster"}
+ARG ANSIBLE_SKIP_TAGS_ARG="runtime"
+ENV ANSIBLE_SKIP_TAGS ${ANSIBLE_SKIP_TAGS_ARG:-"runtime"}
 
-ARG ANSIBLE_EXTRA_VARS="dockerfile_extra_vars_source: 'ARG default Dockerfile:201'"
-ENV ANSIBLE_EXTRA_VARS ${ANSIBLE_EXTRA_VARS:-"dockerfile_extra_vars_source: 'ENV default Dockerfile:202"}
+ARG ANSIBLE_EXTRA_VARS_ARG="dockerfile_extra_vars_source: 'ARG default Dockerfile:201'"
+ENV ANSIBLE_EXTRA_VARS ${ANSIBLE_EXTRA_VARS_ARG:-"dockerfile_extra_vars_source: 'ENV default Dockerfile:202"}
 
 # @TODO: Figure out a better way to set ansible extra vars individually.
-ARG DEVSHOP_USER_UID=1000
-ENV DEVSHOP_USER_UID ${DEVSHOP_USER_UID:-1000}
+ARG DEVSHOP_USER_UID_ARG=1000
+ENV DEVSHOP_USER_UID ${DEVSHOP_USER_UID_ARG:-1000}
+
+RUN mkdir -p /var/log/aegir/ && \
+    touch /var/log/aegir/hosting-queue-runner.log && \
+    touch /var/log/aegir/hostmaster.error.log && \
+    touch /var/log/aegir/hostmaster.access.log
 
 ENV DEVSHOP_ENTRYPOINT_LOG_FILES="/var/log/aegir/*"
 ENV DEVSHOP_TESTS_ASSETS_PATH="${DEVSHOP_PATH}/.github/test-assets"
 
-ENV ANSIBLE_BUILD_COMMAND="ansible-playbook $ANSIBLE_PLAYBOOK \
--e aegir_user_uid=$DEVSHOP_USER_UID \
--e aegir_user_gid=$DEVSHOP_USER_UID \
---tags="$ANSIBLE_TAGS" \
---skip-tags="$ANSIBLE_SKIP_TAGS" \
-$ANSIBLE_PLAYBOOK_COMMAND_OPTIONS \
+ENV ANSIBLE_BUILD_COMMAND="devshop-ansible-playbook \
+    -e aegir_user_uid=$DEVSHOP_USER_UID \
+    -e aegir_user_gid=$DEVSHOP_USER_UID \
 "
 
 RUN \
@@ -227,13 +234,13 @@ RUN docker-systemd-clean
 RUN chmod 766 $DEVSHOP_TESTS_ASSETS_PATH
 
 # Remove devmaster dir if desired so that devshop code is reinstalled.
-ARG DEVSHOP_REMOVE_DEVMASTER=0
-ENV DEVSHOP_REMOVE_DEVMASTER ${DEVSHOP_REMOVE_DEVMASTER:-0}
+ARG DEVSHOP_REMOVE_DEVMASTER_ARG=0
+ENV DEVSHOP_REMOVE_DEVMASTER ${DEVSHOP_REMOVE_DEVMASTER_ARG:-0}
 RUN if [ $DEVSHOP_REMOVE_DEVMASTER ]; then rm -rf /var/aegir/devmaster-1.x; fi
 
 # Pre-build Information
 RUN \
-  devshop-logo "Ansible Playbook Environment" && \
+  devshop-logo "Ansible Playbook Build Environment" && \
     env && \
   [ -z "$ANSIBLE_EXTRA_VARS" ] && \
     devshop-logo "No extra vars found. Use \"--build-arg ANSIBLE_EXTRA_VARS='var=value var2=value2'\" to alter the build." || \
@@ -242,18 +249,20 @@ RUN \
 
 # Provision with Ansible!
 RUN \
-  devshop-logo "Running: $ANSIBLE_BUILD_COMMAND --extra-vars=\"$ANSIBLE_EXTRA_VARS\"" && \
-  $ANSIBLE_BUILD_COMMAND --extra-vars="$ANSIBLE_EXTRA_VARS"
+    devshop-logo "Docker Build: Ansible Playbook Start" && \
+    echo $ANSIBLE_BUILD_COMMAND && \
+    $ANSIBLE_BUILD_COMMAND
 
-RUN devshop-logo "Ansible Playbook Docker Build Complete!" && \
-echo "Playbook: $ANSIBLE_PLAYBOOK" && \
-echo "Tags: $ANSIBLE_TAGS" && \
-echo "Skip Tags: $ANSIBLE_SKIP_TAGS" && \
-echo "Extra Vars: $ANSIBLE_EXTRA_VARS" && \
-echo "" && \
-echo "Ansible Playbook Command:" && \
-echo "$ANSIBLE_BUILD_COMMAND" && \
-echo ""
+RUN \
+    devshop-logo "Docker Build: Ansible Playbook Complete!" && \
+    echo "Playbook: $ANSIBLE_PLAYBOOK" && \
+    echo "Tags: $ANSIBLE_TAGS" && \
+    echo "Skip Tags: $ANSIBLE_SKIP_TAGS" && \
+    echo "Extra Vars: $ANSIBLE_EXTRA_VARS" && \
+    echo "" && \
+    echo "Ansible Playbook Command:" && \
+    echo "$ANSIBLE_BUILD_COMMAND" && \
+    echo ""
 
 RUN \
     devshop-logo "Wrote build information to /etc/os-release" && \
@@ -261,7 +270,11 @@ RUN \
     env | grep "ANSIBLE" >> /etc/os-release && \
     cat  /etc/os-release
 
+# Reset ANSIBLE_TAGS and ANSIBLE_SKIP_TAGS to runtime values.
+ENV ANSIBLE_TAGS 'runtime'
+ENV ANSIBLE_SKIP_TAGS 'none'
+
 EXPOSE 80 443 3306 8025
 WORKDIR /var/aegir
-CMD ["docker-systemd"]
+CMD ["devshop-ansible-playbook"]
 ENTRYPOINT ["docker-entrypoint"]

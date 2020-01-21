@@ -443,7 +443,7 @@ if [[ ! `ansible-playbook --syntax-check ${PLAYBOOK_PATH}` ]]; then
     exit 1
 fi
 
-ansible-playbook $PLAYBOOK_PATH --connection=local $ANSIBLE_VERBOSITY
+ansible-playbook $PLAYBOOK_PATH --connection=local --limit $HOSTNAME_FQDN $ANSIBLE_VERBOSITY
 
 # Run devshop status, return exit code.
 su - aegir -c "devshop status"

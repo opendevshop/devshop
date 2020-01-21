@@ -22,7 +22,7 @@ jobs:
           - 'php_version: 7.2'
     env:
       TAGS: "all"
-      SKIP_TAGS: "install-devmaster"
+      SKIP_TAGS: "runtime"
       VARS: "${{ matrix.vars }}"
       OS: "${{ matrix.os }}"
 
@@ -45,9 +45,11 @@ jobs:
     - name: Install Composer dependencies
       run: composer install --prefer-dist --no-progress --no-suggest
 
-    - name: Create DevShop Server Image FROM ${{ matrix.os }} with vars ${{ matrix.vars }}
+    - name: Build and Launch DevShop Server Image FROM ${{ matrix.os }} with PHP ${{ matrix.vars }}
       run: |
-        bin/robo prepare:containers \
+        bin/robo up "sleep infinity" \
+          --build \
+          --follow 0 \
           --os "${OS}" \
           --vars "${VARS}" \
           --tags "${TAGS}" \
@@ -55,16 +57,22 @@ jobs:
           --compose-file docker-compose-tests.yml
 
     - name: Install DevShop
+      env:
+        ANSIBLE_TAGS: "runtime"
+        ANSIBLE_SKIP_TAGS: "none"
+        COMPOSE_FILE: "docker-compose-tests.yml"
+      # @TODO: Seems like env above is not making it's way to the container and devshop-ansible-playbook command: https://github.com/opendevshop/devshop/pull/487/checks?check_run_id=400001612#step:7:10
+      # Once the problem is discovered, remove either 'env' or the --env options below.
       run: |
-        bin/robo up \
-          --follow=0 \
-          --compose-file docker-compose-tests.yml \
-          --skip-source-prep \
-          -vv
+        docker-compose exec -T \
+          --env ANSIBLE_TAGS=runtime \
+          --env ANSIBLE_SKIP_TAGS=none \
+            devshop \
+            devshop-ansible-playbook
 
     - name: Test DevShop
       run: |
-        bin/robo test
+        bin/robo test --compose-file docker-compose-tests.yml
 
     - uses: actions/upload-artifact@v1
       if: failure()

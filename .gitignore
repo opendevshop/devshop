@@ -20,7 +20,8 @@ bin/*
 !bin/branch-or-tag
 !bin/docker*
 !bin/hosting-queue-runner
-!bin/mysql-wait
+!bin/wait-*
+!bin/tail-file
 
 # Symfony code
 vendor

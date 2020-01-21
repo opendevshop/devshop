@@ -439,3 +439,19 @@ function devshop_get_tasks($environment, $type = NULL, $key = NULL, $limit = 20)
     return $tasks;
   }
 }
+
+/**
+ * Implement hook_ansible_galaxy_roles_alter()
+ *
+ * @param $roles
+ */
+function devshop_hosting_ansible_galaxy_roles_alter(&$roles) {
+
+  // Remove devshop roles from the list so they don't get installed twice.
+  $devshop_roles_path = variable_get('devshop_source_path', '/usr/share/devshop') . '/roles';
+  foreach (new DirectoryIterator($devshop_roles_path) as $file) {
+    if ($file->isDir() && isset($roles[$file->getFilename()])) {
+      unset($roles[$file->getFilename()]);
+    }
+  }
+}

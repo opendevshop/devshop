@@ -9,7 +9,7 @@ PATH="$DIR:$PATH"
 # Ubuntu
 # https://github.com/geerlingguy/docker-ubuntu1804-ansible/blob/master/Dockerfile
 if [ -f "/lib/systemd/systemd" ]; then
-  COMMAND="/lib/systemd/systemd"
+  COMMAND="/lib/systemd/systemd ${SYSTEMD_OPTIONS:-}"
 
 # CentOS7
 # https://github.com/geerlingguy/docker-centos7-ansible/blob/master/Dockerfile
@@ -22,5 +22,7 @@ elif [ -f "/sbin/init" ]; then
   COMMAND="/sbin/init"
 fi
 
-devshop-logo "Launching $COMMAND ..."
+devshop-line
+echo "Initiating with $COMMAND ..."
+devshop-line
 exec $COMMAND
