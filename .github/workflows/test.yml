@@ -47,9 +47,8 @@ jobs:
       # Once the problem is discovered, remove either 'env' or the --env options below.
       run: |
         docker-compose exec -T \
-          --env ANSIBLE_TAGS=rebuild-devmaster \
+          --env ANSIBLE_TAGS=runtime \
           --env ANSIBLE_SKIP_TAGS=none \
-          --env ANSIBLE_VARS=devshop_danger_remove_devmaster=true \
             devshop \
             devshop-ansible-playbook
 
