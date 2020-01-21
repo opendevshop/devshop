@@ -16,8 +16,7 @@ jobs:
         os:
           - 'ubuntu1804'
           - 'centos6'
-          # Commented to see how centos6 does in github actions.
-          # - 'centos7'
+          - 'centos7'
         vars:
           - 'php_version: 7.2'
     env:
