@@ -33,8 +33,7 @@ jobs:
     - name: Launch pre-built DevShop Server Image devshop/server
       run: |
         bin/robo up "sleep infinity" \
-          --follow 0 \
-          --compose-file
+          --follow 0
 
     - name: Install DevShop
       env:
