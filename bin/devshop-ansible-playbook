@@ -9,6 +9,8 @@ ANSIBLE_SKIP_TAGS=${ANSIBLE_SKIP_TAGS:-"none"}
 ANSIBLE_EXTRA_VARS=${ANSIBLE_EXTRA_VARS:-""}
 ANSIBLE_PLAYBOOK_COMMAND_OPTIONS=${ANSIBLE_PLAYBOOK_COMMAND_OPTIONS:-}
 
+ON_FAIL=${ON_FAIL:-"systemctl status --no-pager"}
+
 set -ex
 
 exec ansible-playbook $ANSIBLE_PLAYBOOK \
@@ -16,4 +18,6 @@ exec ansible-playbook $ANSIBLE_PLAYBOOK \
     --skip-tags=$ANSIBLE_SKIP_TAGS \
     --extra-vars="$ANSIBLE_EXTRA_VARS" \
     $ANSIBLE_PLAYBOOK_COMMAND_OPTIONS \
-    $*
+    $* || \
+    log "Call to ansible-playbook failed. (exit $?) Running $ON_FAIL ..." && \
+    $ON_FAIL; exit $?
