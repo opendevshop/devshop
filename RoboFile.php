@@ -63,25 +63,75 @@ class RoboFile extends \Robo\Tasks {
    */
   private $devshop_root_path;
 
+  /**
+   * Map of $opts keys to $_SERVER variables.
+   *
+   * SERVER vars are set for the "docker-compose" process.
+   *
+   * @var array
+   */
+  private $serverOptionsMap = [
+    'verbosity' => 'ANSIBLE_VERBOSITY',
+    'vars' => 'ANSIBLE_EXTRA_VARS',
+    'tags' => 'ANSIBLE_TAGS',
+    'skip-tags' => 'ANSIBLE_SKIP_TAGS',
+    'playbook' => 'ANSIBLE_PLAYBOOK',
+    'roles-path' => 'ANSIBLE_ROLES_PATH',
+    'config' => 'ANSIBLE_CONFIG',
+    'compose-file' => 'COMPOSE_FILE',
+
+    // Used in docker compose image.
+    'tag' => 'DEVSHOP_DOCKER_TAG',
+    'from' => 'FROM_IMAGE'
+  ];
 
   /**
-   * Pass robo -v to Ansible -v.
+   * Map of Symfony Console verbosity to Ansible Verbosity value.
+   * @var array
    */
-  private function setVerbosity() {
-    switch ($this->output->getVerbosity()) {
-      case OutputInterface::VERBOSITY_VERBOSE:
-        $this->ansibleVerbosity = 1;
-        break;
-      case OutputInterface::VERBOSITY_VERY_VERBOSE:
-        $this->ansibleVerbosity = 2;
-        break;
-      case OutputInterface::VERBOSITY_DEBUG:
-        $this->ansibleVerbosity = 3;
-        break;
-      default:
-        $this->ansibleVerbosity = 0;
-        break;
+  private $ansibleVerbosityMap = [
+    0,
+    OutputInterface::VERBOSITY_VERBOSE => 1,
+    OutputInterface::VERBOSITY_VERY_VERBOSE => 2,
+    OutputInterface::VERBOSITY_DEBUG => 3,
+  ];
+
+  /**
+   * Merge robo $opts and $_SERVER environment vars into the runtime environment
+   * of the docker-compose calls.
+   *
+   * @param array $opts
+   */
+
+  /**
+   * @param array $opts The robo options array.
+   * @param array $env The initial environment.
+   *
+   * @return array
+   */
+  private function generateEnvironment(array $opts, array $env = []) {
+    $env += $this->optionsToArray($opts['environment']);
+    foreach ($this->serverOptionsMap as $opt_name => $var_name) {
+      // Use $_SERVER var if it exists...
+      $env[$var_name] = !empty($_SERVER[$var_name])? $_SERVER[$var_name]:
+        // or use --options value if it exists.
+        // If not, set to empty string.
+        !empty($opts[$opt_name])? $opts[$opt_name]: '';
     }
+    return $env;
+  }
+
+  /**
+   * Append _ARG to all values of an environment vars array.
+   *
+   * @return array
+   */
+  private function generateEnvironmentArgs(array $opts) {
+    $new_env = [];
+    foreach ($this->generateEnvironment($opts) as $name => $value) {
+      $new_env["{$name}_ARG"] = $value;
+    }
+    return $new_env;
   }
 
   public function  __construct()
@@ -300,17 +350,9 @@ class RoboFile extends \Robo\Tasks {
       'playbook' => 'roles/server.playbook.yml',
       'compose-file' => 'docker-compose.yml',
       'environment' => [],
+      'roles-path' => '/usr/share/devshop/roles',
+      'config' => '/usr/share/devshop/ansible.cfg',
   ]) {
-
-    $this->setVerbosity();
-
-    // Environment variables at build time: AKA Build Args.
-    $env_build = $this->optionsToArray($opts['environment']);
-
-    // Determine current UID.
-    if (is_null($user_uid)) {
-      $env_build['DEVSHOP_USER_UID_ARG'] = trim(shell_exec('id -u'));
-    }
 
     // Set FROM_IMAGE. If os is set, generate the name.
     // If os is the default, set FROM to latest.
@@ -323,28 +365,17 @@ class RoboFile extends \Robo\Tasks {
 
     $this->yell('Building DevShop Container from: ' . $opts['from'], 40, 'blue');
 
-    // @TODO: Document how  ENV vars in the process running `robo` are passed to
-    // the `docker-compose build` command, which, if they are listed in docker-compose.yml,
-    // will get passed into the containers.
+    // Runtime Environment for the docker-compose build command.
+    $env_build = $this->generateEnvironmentArgs($opts);
 
-    $env_build['DEVSHOP_DOCKER_TAG'] = $opts['tag'];
+    if ($opts['verbose'] > 0) {
+      $this->yell("Environment for Docker Build: ", 40, 'cyan');
+      $this->say(Yaml::dump($env_build));
+    }
 
-    // Set FROM using --from option.
-    // @TODO: Tell users FROM _IMAGE env var doesn't work for prepare:containers?
-    $env_build['FROM_IMAGE_ARG'] = $_SERVER['FROM_IMAGE']?: $opts['from'];
-    $env_build['ANSIBLE_CONFIG_ARG'] = '/usr/share/devshop/ansible.cfg';
-    $env_build['ANSIBLE_VERBOSITY_ARG'] = $_SERVER['ANSIBLE_VERBOSITY']?: $this->ansibleVerbosity;
-    $env_build['ANSIBLE_EXTRA_VARS_ARG'] = $_SERVER['ANSIBLE_EXTRA_VARS']?: $opts['vars'];
-    $env_build['ANSIBLE_TAGS_ARG'] = $_SERVER['ANSIBLE_TAGS']?: $opts['tags'];
-    $env_build['ANSIBLE_SKIP_TAGS_ARG'] = $_SERVER['ANSIBLE_SKIP_TAGS']?: $opts['skip-tags'];
-    $env_build['ANSIBLE_PLAYBOOK'] = $_SERVER['ANSIBLE_PLAYBOOK']?: $opts['playbook'];;
-
-    // Pass `robo --playbook` option to Dockerfile.
-    $env_build['ANSIBLE_PLAYBOOK_ARG'] = $opts['playbook'];
-    $env_build['COMPOSE_FILE'] = $opts['compose-file'];
-
-    if ($this->ansibleVerbosity > 0) {
-      $this->say("Custom Build Environment: " . print_r($env_build, 1));
+    // Determine current UID.
+    if (is_null($user_uid)) {
+      $env_build['DEVSHOP_USER_UID_ARG'] = trim(shell_exec('id -u'));
     }
 
     $provision_io = new \ProvisionOps\Tools\Style($this->input(), $this->output());
@@ -415,6 +446,8 @@ class RoboFile extends \Robo\Tasks {
     'skip-tags' => '',
     'file' => 'Dockerfile',
     'playbook' => 'roles/server.playbook.yml',
+    'roles-path' => '/usr/share/devshop/roles',
+    'config' => '/usr/share/devshop/ansible.cfg',
     'compose-file' => 'docker-compose.yml',
     'local' => FALSE,
     'environment' => [],
@@ -422,7 +455,6 @@ class RoboFile extends \Robo\Tasks {
 
     // Check for tools
     $this->prepareHost();
-    $this->setVerbosity();
 
     if (empty($this->devshop_root_path)) {
       $this->devshop_root_path = __DIR__;
@@ -530,30 +562,20 @@ class RoboFile extends \Robo\Tasks {
         }
       }
 
-      //Environment variables at run time: AKA Environment variables.
-      // If a variable is set here, it will reset it's value. If CI systems use
-      // these variables, make sure to check for a pre-existing value in $_SERVER.
-      $env_run = $this->optionsToArray($opts['environment']);
-      $env_run['DEVSHOP_DOCKER_TAG'] = $opts['tag'];
-      $env_run['ANSIBLE_CONFIG'] = '/usr/share/devshop/ansible.cfg';
-      $env_run['COMPOSE_FILE'] = $compose_file;
-      $env_run['ANSIBLE_VERBOSITY'] = $_SERVER['ANSIBLE_VERBOSITY']?: $this->ansibleVerbosity;
-      $env_run['ANSIBLE_EXTRA_VARS'] = $_SERVER['ANSIBLE_EXTRA_VARS']?: $opts['vars'];
-      $env_run['ANSIBLE_TAGS'] = $_SERVER['ANSIBLE_TAGS']?: $opts['tags'];
-      $env_run['ANSIBLE_SKIP_TAGS'] = $_SERVER['ANSIBLE_SKIP_TAGS']?: $opts['skip-tags'];
-      $env_run['ANSIBLE_PLAYBOOK'] = $_SERVER['ANSIBLE_PLAYBOOK']?: '/usr/share/devshop/' . $opts['playbook'];
-      $env_run['ANSIBLE_ROLES_PATH'] = '/usr/share/devshop/roles';
+      // Runtime Environment for the $cmd list.
+      $env_run = $this->generateEnvironment($opts);
 
-      // Run a secondary command alongside the docker command.
+      // Run a secondary command after the docker command.
       if ($test_command) {
         $env_run['DOCKER_COMMAND_POST'] = $test_command;
       }
 
-      // Override the docker commmand:
+      // Override the docker commmand.
       $env_run['DOCKER_COMMAND'] = $docker_command;
 
-      if ($this->ansibleVerbosity > 0) {
-        $this->say("Custom Run Environment: " . print_r($env_run, 1));
+      if ($opts['verbosity'] > 0) {
+        $this->yell("Environment: ", 40, 'cyan');
+        $this->say(Yaml::dump($env_run));
       }
 
       if (!empty($cmd)) {
