@@ -573,7 +573,7 @@ class RoboFile extends \Robo\Tasks {
       // Override the docker commmand.
       $env_run['DOCKER_COMMAND'] = $docker_command;
 
-      if ($opts['verbosity'] > 0) {
+      if ($opts['verbose'] > 0) {
         $this->yell("Environment: ", 40, 'cyan');
         $this->say(Yaml::dump($env_run));
       }
