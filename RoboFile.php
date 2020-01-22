@@ -50,12 +50,6 @@ class RoboFile extends \Robo\Tasks {
   protected $devshopInstall = "ansible-playbook /usr/share/devshop/docker/playbook.server.yml --tags install-devmaster --extra-vars \"devmaster_skip_install=false\"";
   protected $devshopUsername = "aegir";
 
-  /**
-   * @var int Ansible verbosity. Passed from robo verbosity.
-   */
-  protected $ansibleVerbosity = 0;
-  protected $verbosity = 0;
-
   use \Robo\Common\IO;
 
   /**
@@ -71,7 +65,7 @@ class RoboFile extends \Robo\Tasks {
    * @var array
    */
   private $serverOptionsMap = [
-    'verbosity' => 'ANSIBLE_VERBOSITY',
+    'verbose' => 'ANSIBLE_VERBOSITY',
     'vars' => 'ANSIBLE_EXTRA_VARS',
     'tags' => 'ANSIBLE_TAGS',
     'skip-tags' => 'ANSIBLE_SKIP_TAGS',
