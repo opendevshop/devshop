@@ -491,7 +491,7 @@ class RoboFile extends \Robo\Tasks {
 
       $this->prepareContainers($opts['user-uid'], 'devshop.local.computer', $opts);
     }
-    elseif ($opts['local']) {
+    elseif ($opts['local'] || !empty($opts['os'])) {
       // If the --local option was specified, use 'devshop/server:local' tag for the image name.
       $opts['tag'] = 'local';
     }
