@@ -371,7 +371,7 @@ class RoboFile extends \Robo\Tasks {
     // @TODO: Figure out why centos can't enable service in build phase.
     if ($opts['os'] == 'centos7') {
       // Block anything from running on build.
-      $opts['tags'] = 'none'
+      $opts['tags'] = 'none';
     }
 
     // Runtime Environment for the docker-compose build command.
@@ -509,7 +509,7 @@ class RoboFile extends \Robo\Tasks {
     // @TODO: Figure out why centos can't enable service in build phase.
     if ($opts['os'] == 'centos7') {
       // Set tags to all so it does a full install at runtime.
-      $opts['tags'] = 'all'
+      $opts['tags'] = 'all';
     }
 
     // Set from and tag if --os option is used.  (except for ubuntu1804,
