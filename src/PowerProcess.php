@@ -58,7 +58,7 @@ class PowerProcess extends BaseProcess {
      */
     public function run(callable $callback = null, array $env = []): int
     {
-        $this->io->write(" <comment>$</comment> {$this->getCommandLine()} <fg=black>Output:/path/to/file</>");
+        $this->io->writeln(" <comment>$</comment> {$this->getCommandLine()} <fg=black>Output:/path/to/file</>");
 
         $timer = new TimeKeeper();
         $timer->start();
