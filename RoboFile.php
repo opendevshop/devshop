@@ -360,7 +360,7 @@ class RoboFile extends \Robo\Tasks {
     // If os is the default, set FROM to latest.
     if (!empty($opts['os'])) {
       $opts['from'] = "geerlingguy/docker-{$opts['os']}-ansible";
-      $opts['docker-image'] .= '-' . $opts['os'];
+      $opts['docker-image'] = 'devshop/server:local-' . $opts['os'];
     }
 
     // Append the absolute path in the container.
@@ -484,8 +484,7 @@ class RoboFile extends \Robo\Tasks {
         $opts['os'] = 'ubuntu1804';
       }
 
-      $opts['docker-image'] .= '-' . $opts['os'];
-
+      $opts['docker-image'] = 'devshop/server:local-' . $opts['os'];
 
       $this->prepareContainers($opts['user-uid'], 'devshop.local.computer', $opts);
     }
