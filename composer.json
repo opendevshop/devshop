@@ -47,7 +47,7 @@
         ],
         "post-update-cmd": [
             "DevShop\\Composer::installBins",
-            "ansible-galaxy install -r roles/roles.yml -p roles --force"
+            "# @TODO: Move to DevShop\\Composer so we can check presence of ansible: ansible-galaxy install -r roles/roles.yml -p roles --force"
         ]
     }
 }
