@@ -224,7 +224,7 @@ ENV DEVSHOP_TESTS_ASSETS_PATH="${DEVSHOP_PATH}/.github/test-assets"
 ENV ANSIBLE_BUILD_COMMAND="devshop-ansible-playbook \
     --extra-vars aegir_user_uid=$DEVSHOP_USER_UID \
     --extra-vars aegir_user_gid=$DEVSHOP_USER_UID \
-    --extra-vars devshop_install_phase=buildtime
+    --extra-vars devshop_install_phase=buildtime \
 "
 
 RUN \
