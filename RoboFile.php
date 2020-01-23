@@ -75,7 +75,7 @@ class RoboFile extends \Robo\Tasks {
     'compose-file' => 'COMPOSE_FILE',
 
     // Used in docker compose image.
-    'tag' => 'DEVSHOP_DOCKER_TAG',
+    'docker-image' => 'DEVSHOP_DOCKER_IMAGE',
     'from' => 'FROM_IMAGE',
     'os' => 'OS_VERSION',
   ];
@@ -118,10 +118,10 @@ class RoboFile extends \Robo\Tasks {
 
   /**
    * Append _ARG to all variable names of an environment vars array.
-   * @param bool new Set to "false" to merge values with new _ARG values.
+   * @param bool new Set to "true" to reset environment with only the new _ARG values.
    * @return array
    */
-  private function generateEnvironmentArgs(array $opts, $new = true) {
+  private function generateEnvironmentArgs(array $opts, $new = false) {
 
     // Convert opts to environment vars.
     $environment = $this->generateEnvironment($opts);
@@ -342,7 +342,7 @@ class RoboFile extends \Robo\Tasks {
    * @option $playbook Ansible tags to pass to ansible-playbook command.
    */
   public function prepareContainers($user_uid = NULL, $hostname = 'devshop.local.computer', $opts = [
-      'tag' => 'local',
+      'docker-image' => 'devshop/server:local',
       'from' => 'devshop/server:latest',
       'dockerfile' => 'Dockerfile',
       'os' => '',
@@ -360,7 +360,7 @@ class RoboFile extends \Robo\Tasks {
     // If os is the default, set FROM to latest.
     if (!empty($opts['os'])) {
       $opts['from'] = "geerlingguy/docker-{$opts['os']}-ansible";
-      $opts['tag'] = 'local-' . $opts['os'];
+      $opts['docker-image'] .= '-' . $opts['os'];
     }
 
     // Append the absolute path in the container.
@@ -369,7 +369,7 @@ class RoboFile extends \Robo\Tasks {
     $this->yell('Building DevShop Container from: ' . $opts['from'], 40, 'blue');
 
     // Runtime Environment for the docker-compose build command.
-    $env_build = $this->generateEnvironmentArgs($opts, true);
+    $env_build = $this->generateEnvironmentArgs($opts);
 
     // Determine current UID.
     if (is_null($user_uid)) {
@@ -438,6 +438,7 @@ class RoboFile extends \Robo\Tasks {
     'skip-source-prep' => FALSE,
     'skip-install' => FALSE,
     'os' => '',
+    'docker-image' => 'devshop/server:latest',
     'from' => 'devshop/server:latest',
     'vars' => '',
     'tags' => '',
@@ -474,40 +475,38 @@ class RoboFile extends \Robo\Tasks {
       $opts['user-uid'] = trim(shell_exec('id -u'));
     }
 
-    // Set from and tag if --os option is used.
-    if (!empty($opts['os'])) {
-      $opts['from'] = "geerlingguy/docker-{$opts['os']}-ansible";
-      $opts['tag'] = 'local-' . $opts['os'];
-    }
-
-
     // Build the container if desired.
     if ($opts['build']) {
-      // @TODO: Make the playbook a CLI option and figure out a better way to do this.
-      // $playbook = (!empty($opts['test']) || !empty($opts['test-upgrade']))? 'playbook.testing.yml': 'docker/playbook.server.yml';
-      $playbook = $opts['playbook'];
-      $this->say("Preparing containers with playbook: $playbook");
-      $opts['tag'] = 'local';
+      $opts['docker-image'] = 'devshop/server:local';
 
       // If --local is also specified, set "os" option so container is built from scratch.
       if (empty($opts['os']) && $opts['local']) {
         $opts['os'] = 'ubuntu1804';
       }
 
+      $opts['docker-image'] .= '-' . $opts['os'];
+
+
       $this->prepareContainers($opts['user-uid'], 'devshop.local.computer', $opts);
     }
     elseif ($opts['local'] || !empty($opts['os'])) {
       // If the --local option was specified, use 'devshop/server:local' tag for the image name.
-      $opts['tag'] = 'local';
+      $opts['docker-image'] = 'devshop/server:local';
     }
     else {
-      // If the --build or --local options were not specified, use 'devshop/server:local'
+      // If the --build or --local options were not specified, use 'devshop/server:latest'
       // tag for the image name and pull the containers first.
       // If we don't, `docker-compose up` will BUILD and tag the image even if
       // it exists on docker hub.
-      $this->say("Pulling containers before docker-compose up...");
       $cmd[] = "docker-compose pull --quiet";
-      $opts['tag'] = 'latest';
+      $opts['docker-image'] = 'devshop/server:latest';
+    }
+
+    // Set from and tag if --os option is used.  (except for ubuntu1804,
+    if (!empty($opts['os']) && $opts['os'] != 'ubuntu1804') {
+      // from doesn't actually matter here, everything past this is Runtime.
+      $opts['from'] = "geerlingguy/docker-{$opts['os']}-ansible";
+      $opts['docker-image'] .= '-' . $opts['os'];
     }
 
     if ($opts['mode'] == 'docker-compose') {
