@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1976b7d1a91a33e3513c56eefe413cdb",
+    "content-hash": "f07dd139318edc0781d73b56e8c45dfb",
     "packages": [
         {
             "name": "asm/php-ansible",
@@ -1537,7 +1537,7 @@
         },
         {
             "name": "provision-ops/power-process",
-            "version": "1.2.4",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/provision-ops/power-process.git",
@@ -3058,7 +3058,9 @@
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": [],
+    "stability-flags": {
+        "provision-ops/power-process": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {

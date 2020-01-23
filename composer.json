@@ -8,7 +8,7 @@
         "consolidation/robo": "^2",
         "mouf/nodejs-installer": "^1.0",
         "php": "^7.1",
-        "provision-ops/power-process": "^1.2"
+        "provision-ops/power-process": "dev-master"
     },
     "require-dev": {
     },
