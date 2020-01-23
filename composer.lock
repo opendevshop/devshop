@@ -1541,12 +1541,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/provision-ops/power-process.git",
-                "reference": "7980ab58458fb10381603e766fe82f1d0f936a36"
+                "reference": "5c418277ee78076bcd3eab1522634e15b097db35"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/provision-ops/power-process/zipball/7980ab58458fb10381603e766fe82f1d0f936a36",
-                "reference": "7980ab58458fb10381603e766fe82f1d0f936a36",
+                "url": "https://api.github.com/repos/provision-ops/power-process/zipball/5c418277ee78076bcd3eab1522634e15b097db35",
+                "reference": "5c418277ee78076bcd3eab1522634e15b097db35",
                 "shasum": ""
             },
             "require": {
