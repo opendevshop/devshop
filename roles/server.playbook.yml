@@ -43,23 +43,17 @@
     devshop_makefile: "{{ devshop_cli_path }}/build-devmaster-dev.make.yml"
 
   pre_tasks:
-  - name: Set variables
-    when:
-    - ansible_os_family == 'RedHat'
-    - devshop_install_phase == 'buildtime'
-    set_fact:
-      apache_state: stopped
+    - name: Set variables
+      when:
+        - ansible_os_family == 'RedHat'
+        - devshop_install_phase == 'buildtime'
+      set_fact:
+        apache_state: stopped
 
   roles:
     - role: geerlingguy.repo-remi
       when: ansible_os_family == 'RedHat'
       tags: [geerlingguy, apache]
-
-  # opendevshop.apache depends on these roles, which will be run first:
-    # - opendevshop.users
-    # - geerlingguy.apache
-    # - geerlingguy.php-versions
-    # - geerlingguy.php
 
     - role: opendevshop.apache
       tags: [opendevshop, opendevshop.apache]
