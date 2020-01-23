@@ -76,7 +76,8 @@ class RoboFile extends \Robo\Tasks {
 
     // Used in docker compose image.
     'tag' => 'DEVSHOP_DOCKER_TAG',
-    'from' => 'FROM_IMAGE'
+    'from' => 'FROM_IMAGE',
+    'os' => 'OS_VERSION',
   ];
 
   /**
@@ -116,16 +117,23 @@ class RoboFile extends \Robo\Tasks {
   }
 
   /**
-   * Append _ARG to all values of an environment vars array.
-   *
+   * Append _ARG to all variable names of an environment vars array.
+   * @param bool new Set to "false" to merge values with new _ARG values.
    * @return array
    */
-  private function generateEnvironmentArgs(array $opts) {
-    $new_env = [];
-    foreach ($this->generateEnvironment($opts) as $name => $value) {
-      $new_env["{$name}_ARG"] = $value;
+  private function generateEnvironmentArgs(array $opts, $new = true) {
+
+    // Convert opts to environment vars.
+    $environment = $this->generateEnvironment($opts);
+
+    // Load default environment, either empty or from existing.
+    $return_env = $new? []: $environment;
+
+    // Append _ARG to all environment variable names.
+    foreach ($environment as $name => $value) {
+      $return_env["{$name}_ARG"] = $value;
     }
-    return $new_env;
+    return $return_env;
   }
 
   public function  __construct()
@@ -352,6 +360,7 @@ class RoboFile extends \Robo\Tasks {
     // If os is the default, set FROM to latest.
     if (!empty($opts['os'])) {
       $opts['from'] = "geerlingguy/docker-{$opts['os']}-ansible";
+      $opts['tag'] = 'local-' . $opts['os'];
     }
 
     // Append the absolute path in the container.
@@ -360,12 +369,7 @@ class RoboFile extends \Robo\Tasks {
     $this->yell('Building DevShop Container from: ' . $opts['from'], 40, 'blue');
 
     // Runtime Environment for the docker-compose build command.
-    $env_build = $this->generateEnvironmentArgs($opts);
-
-    if ($opts['verbose'] > 0) {
-      $this->yell("Environment for Docker Build: ", 40, 'cyan');
-      $this->say(Yaml::dump($env_build));
-    }
+    $env_build = $this->generateEnvironmentArgs($opts, true);
 
     // Determine current UID.
     if (is_null($user_uid)) {
@@ -470,6 +474,13 @@ class RoboFile extends \Robo\Tasks {
       $opts['user-uid'] = trim(shell_exec('id -u'));
     }
 
+    // Set from and tag if --os option is used.
+    if (!empty($opts['os'])) {
+      $opts['from'] = "geerlingguy/docker-{$opts['os']}-ansible";
+      $opts['tag'] = 'local-' . $opts['os'];
+    }
+
+
     // Build the container if desired.
     if ($opts['build']) {
       // @TODO: Make the playbook a CLI option and figure out a better way to do this.
@@ -530,7 +541,6 @@ class RoboFile extends \Robo\Tasks {
         }
       }
 
-      $cmd[] = 'echo "Running docker-compose up with COMPOSE_FILE=$COMPOSE_FILE"... ';
       $cmd[] = "docker-compose up --detach --force-recreate";
 
       // Run final playbook to install devshop.
@@ -557,7 +567,7 @@ class RoboFile extends \Robo\Tasks {
       }
 
       // Runtime Environment for the $cmd list.
-      $env_run = $this->generateEnvironment($opts);
+      $env_run = $this->generateEnvironmentArgs($opts);
 
       // Run a secondary command after the docker command.
       if ($test_command) {
