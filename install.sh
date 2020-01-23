@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 usage() {
 
@@ -430,6 +430,16 @@ done
 
 echo $LINE
 echo "Wrote group variables file for devmaster to $ANSIBLE_VARS_GROUP_PATH"
+echo $LINE
+
+ANSIBLE_VARS_GROUP_MYSQL_PATH="$ANSIBLE_CONFIG_PATH/group_vars/mysql"
+echo "# This variables file is written by devshop's install.sh script and 'devshop upgrade' command. Do not edit." > $ANSIBLE_VARS_GROUP_MYSQL_PATH
+echo "# You may add variables to the host_vars file located at $ANSIBLE_VARS_HOSTNAME_PATH" >> $ANSIBLE_VARS_GROUP_MYSQL_PATH
+echo "---" >> $ANSIBLE_VARS_GROUP_MYSQL_PATH
+echo "mysql_root_password: $MYSQL_ROOT_PASSWORD" >> $ANSIBLE_VARS_GROUP_MYSQL_PATH
+
+echo $LINE
+echo "Wrote database secrets file for devmaster to $ANSIBLE_VARS_GROUP_MYSQL_PATH"
 echo $LINE
 
 # Run the playbook.
