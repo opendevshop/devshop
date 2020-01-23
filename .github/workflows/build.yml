@@ -47,6 +47,7 @@ jobs:
     - name: Build and Launch DevShop Server Image FROM ${{ matrix.os }} with PHP ${{ matrix.vars }}
       run: |
         bin/robo up "sleep infinity" \
+          -vvv \
           --build \
           --follow 0 \
           --os "${OS}" \
