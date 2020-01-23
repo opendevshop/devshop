@@ -368,6 +368,12 @@ class RoboFile extends \Robo\Tasks {
 
     $this->yell('Building DevShop Container from: ' . $opts['from'], 40, 'blue');
 
+    // @TODO: Figure out why centos can't enable service in build phase.
+    if ($opts['os'] == 'centos7') {
+      // Block anything from running on build.
+      $opts['tags'] = 'none'
+    }
+
     // Runtime Environment for the docker-compose build command.
     $env_build = $this->generateEnvironmentArgs($opts);
 
@@ -485,7 +491,6 @@ class RoboFile extends \Robo\Tasks {
       }
 
       $opts['docker-image'] = 'devshop/server:local-' . $opts['os'];
-
       $this->prepareContainers($opts['user-uid'], 'devshop.local.computer', $opts);
     }
     elseif ($opts['local'] || !empty($opts['os'])) {
@@ -499,6 +504,12 @@ class RoboFile extends \Robo\Tasks {
       // it exists on docker hub.
       $cmd[] = "docker-compose pull --quiet";
       $opts['docker-image'] = 'devshop/server:latest';
+    }
+
+    // @TODO: Figure out why centos can't enable service in build phase.
+    if ($opts['os'] == 'centos7') {
+      // Set tags to all so it does a full install at runtime.
+      $opts['tags'] = 'all'
     }
 
     // Set from and tag if --os option is used.  (except for ubuntu1804,
