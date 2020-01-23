@@ -63,6 +63,10 @@ class PowerProcess extends BaseProcess {
         $timer = new TimeKeeper();
         $timer->start();
 
+        if ($this->io->isDebug()) {
+          $this->io->table(["Execution Environment"], $this->getEnvTableRows());
+        }
+
         $exit = parent::run(function ($type, $buffer) {
           if (getenv('PROVISION_PROCESS_OUTPUT') == 'direct') {
             echo $buffer;
@@ -93,5 +97,16 @@ class PowerProcess extends BaseProcess {
 
         return $exit;
 
+    }
+
+    /**
+     * Convert the execution environment to table row arrays.
+     */
+    public function getEnvTableRows() {
+      $rows = [];
+      foreach ($this->getEnv() as $name => $value) {
+        $rows[] = [$name, $value];
+      }
+      return $rows;
     }
 }
