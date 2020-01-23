@@ -42,14 +42,35 @@
     # build-devmaster.make is designed for standalone use, and always downloads 1.x until release.
     devshop_makefile: "{{ devshop_cli_path }}/build-devmaster-dev.make.yml"
 
+  pre_tasks:
+  - name: Set variables
+    when:
+    - ansible_os_family == 'RedHat'
+    - devshop_install_phase == 'buildtime'
+    set_fact:
+      apache_state: stopped
+
   roles:
     - role: geerlingguy.repo-remi
       when: ansible_os_family == 'RedHat'
-    - opendevshop.users
-    - opendevshop.apache
+      tags: [geerlingguy, apache]
+
+  # opendevshop.apache depends on these roles, which will be run first:
+    # - opendevshop.users
+    # - geerlingguy.apache
+    # - geerlingguy.php-versions
+    # - geerlingguy.php
+
+    - role: opendevshop.apache
+      tags: [opendevshop, opendevshop.apache]
+
+    - role: geerlingguy.apache
+      tags: [geerlingguy, apache]
+
     - geerlingguy.mysql
     - geerlingguy.php-versions
     - geerlingguy.php
     - geerlingguy.php-mysql
+
     - geerlingguy.composer
     - opendevshop.devmaster
