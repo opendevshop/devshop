@@ -372,6 +372,7 @@ class RoboFile extends \Robo\Tasks {
     if ($opts['os'] == 'centos7') {
       // Block anything from running on build.
       $opts['tags'] = $_SERVER['ANSIBLE_TAGS'] = 'none';
+      $this->yell('CENTOS DETECTED in BUILDTIME. Skipping playbook run in image build.', 40, 'red');
     }
 
     // Runtime Environment for the docker-compose build command.
@@ -481,21 +482,36 @@ class RoboFile extends \Robo\Tasks {
       $opts['user-uid'] = trim(shell_exec('id -u'));
     }
 
-    // Build the container if desired.
-    if ($opts['build']) {
-      $opts['docker-image'] = 'devshop/server:local';
+    // Set from and tag if --os option is used.  (except for ubuntu1804,
+    if (!empty($opts['os']) && $opts['os'] != 'ubuntu1804') {
+      $opts['from'] = "geerlingguy/docker-{$opts['os']}-ansible";
+
+      // Change docker-image, but only if it was not set to something other than the default.
+      $opts['docker-image'] = $opts['docker-image'] == 'devshop/server:latest'? 'devshop/server:local-'. $opts['os']: $opts['docker-image'];
+    }
+
+    // Build the image if requested, or if the image doesn't exist yet.
+    // If we don't, docker-compose up will automatically build it, but without these options.
+    $container_check = $this->_exec("docker inspect {$opts['docker-image']}");
+    if ($opts['build'] || ! $container_check->wasSuccessful()) {
+
+      if (!$container_check->wasSuccessful()) {
+        $this->yell("Docker Image {$opts['docker-image']} was not found on this system. Building it...");
+      }
 
       // If --local is also specified, set "os" option so container is built from scratch.
       if (empty($opts['os']) && $opts['local']) {
         $opts['os'] = 'ubuntu1804';
+        // Set docker-image again to include 'os' change above, but only if it was not set to something other than the default.
+        $opts['docker-image'] = $opts['docker-image'] == 'devshop/server:latest'? 'devshop/server:local-'. $opts['os']: $opts['docker-image'];
       }
 
-      $opts['docker-image'] = 'devshop/server:local-' . $opts['os'];
       $this->prepareContainers($opts['user-uid'], 'devshop.local.computer', $opts);
     }
     elseif ($opts['local'] || !empty($opts['os'])) {
-      // If the --local option was specified, use 'devshop/server:local' tag for the image name.
-      $opts['docker-image'] = 'devshop/server:local';
+      // If the --local option was specified, use 'devshop/server:local' tag for the image name, but only if it was not set to something other than the default.
+      // @TODO: This may not be needed because it is set on line 489 now.
+      $opts['docker-image'] = $opts['docker-image'] == 'devshop/server:latest'? 'devshop/server:local-'. $opts['os']: $opts['docker-image'];
     }
     else {
       // If the --build or --local options were not specified, use 'devshop/server:latest'
@@ -510,14 +526,9 @@ class RoboFile extends \Robo\Tasks {
     if ($opts['os'] == 'centos7') {
       // Set tags to all so it does a full install at runtime.
       $opts['tags'] = $_SERVER['ANSIBLE_TAGS'] = 'all';
+      $this->yell('CENTOS DETECTED in RUNTIME. Running full playbook in container.', 40, 'red');
     }
 
-    // Set from and tag if --os option is used.  (except for ubuntu1804,
-    if (!empty($opts['os']) && $opts['os'] != 'ubuntu1804') {
-      // from doesn't actually matter here, everything past this is Runtime.
-      $opts['from'] = "geerlingguy/docker-{$opts['os']}-ansible";
-      $opts['docker-image'] .= '-' . $opts['os'];
-    }
 
     if ($opts['mode'] == 'docker-compose') {
 
