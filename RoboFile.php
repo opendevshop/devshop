@@ -807,13 +807,20 @@ class RoboFile extends \Robo\Tasks {
    *
    * @return array
    */
-  function optionsToArray($options_list) {
+  private function optionsToArray($options_list) {
     $vars = [];
     foreach ($options_list as $options_string) {
       list($name, $value) = explode("=", $options_string);
       $vars[$name] = $value;
     }
     return $vars;
+  }
+
+  /**
+   * Run a command in the devshop container.
+   */
+  public function exec($cmd = "devshop-ansible-playbook") {
+    $this->_exec("docker-compose exec -T devshop $cmd");
   }
 
   /**
