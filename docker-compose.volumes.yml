@@ -3,6 +3,7 @@
 #
 # This dockerfile is for local development only. It maps the development folders to volumes,
 #
+version: '2.2'
 services:
   devshop:
     volumes:

@@ -3,6 +3,7 @@
 #
 # This dockerfile is CI only. It maps the test assets folder only and adds a CI environment var.
 #
+version: '2.2'
 services:
   devshop:
     build:
