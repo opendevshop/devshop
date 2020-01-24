@@ -5,7 +5,7 @@ on:
 
 env:
   ANSIBLE_VERBOSITY: 2
-  COMPOSE_FILE: "docker-compose.tests.yml"
+  COMPOSE_FILE: "docker-compose.yml:docker-compose.tests.yml"
 
 jobs:
   test:
