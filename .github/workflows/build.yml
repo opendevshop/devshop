@@ -64,11 +64,9 @@ jobs:
       # @TODO: Seems like env above is not making it's way to the container and devshop-ansible-playbook command: https://github.com/opendevshop/devshop/pull/487/checks?check_run_id=400001612#step:7:10
       # Once the problem is discovered, remove either 'env' or the --env options below.
       run: |
-        docker-compose exec -T \
-          --env ANSIBLE_TAGS=runtime \
-          --env ANSIBLE_SKIP_TAGS=none \
-            devshop \
-            devshop-ansible-playbook
+        bin/robo exec devshop-ansible-playbook \
+          -vvv \
+          --compose-file docker-compose-tests.yml
 
     - name: Test DevShop
       run: |
