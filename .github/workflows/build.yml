@@ -17,10 +17,10 @@ jobs:
       fail-fast: false
       matrix:
         # Default build/run tags: Skip 'runtime' tag on build, Limit to 'runtime' tag on run.
-        build_tags: 'all'
-        build_skip_tags: 'runtime'
-        run_tags: 'none'
-        run_skip_tags: 'runtime'
+        build_tags: ['all']
+        build_skip_tags: ['runtime']
+        run_tags: ['none']
+        run_skip_tags: ['runtime']
 
         os:
           - 'ubuntu1804'
