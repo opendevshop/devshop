@@ -374,6 +374,7 @@ class RoboFile extends \Robo\Tasks {
     if ($opts['os'] == 'centos7') {
       // Block anything from running on build.
       $opts['tags'] = $_SERVER['ANSIBLE_TAGS'] = 'none';
+      $opts['skip-tags'] = $_SERVER['ANSIBLE_SKIP_TAGS'] = '';
       $this->yell('CENTOS DETECTED in BUILDTIME. Skipping playbook run in image build.', 40, 'red');
     }
 
@@ -528,6 +529,7 @@ class RoboFile extends \Robo\Tasks {
     if ($opts['os'] == 'centos7') {
       // Set tags to all so it does a full install at runtime.
       $opts['tags'] = $_SERVER['ANSIBLE_TAGS'] = 'all';
+      $opts['skip-tags'] = $_SERVER['ANSIBLE_SKIP_TAGS'] = 'none';
       $this->yell('CENTOS DETECTED in RUNTIME. Running full playbook in container.', 40, 'red');
     }
 
