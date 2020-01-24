@@ -32,6 +32,7 @@ jobs:
           # Override build/run tags for CentOS. Services can't start in docker build ATM.
           # Use 'none' tag on build to skip all steps. Set `all` tag on run to run entire playbook at runtime.
           - os: 'centos7'
+            custom: true
             build_tags: 'none'
             build_skip_tags: ''
             run_tags: 'all'
