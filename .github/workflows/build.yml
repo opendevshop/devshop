@@ -8,7 +8,7 @@ on:
 env:
   # Set ANSIBLE_VERBOSITY to 1,2 or 3 when needed for development.
   ANSIBLE_VERBOSITY: 0
-  COMPOSE_FILE: "docker-compose-tests.yml"
+  COMPOSE_FILE: "docker-compose.tests.yml"
 
 jobs:
   build:

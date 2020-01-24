@@ -537,15 +537,15 @@ class RoboFile extends \Robo\Tasks {
 
     if ($opts['mode'] == 'docker-compose') {
 
-      if ($opts['test'] || $opts['test-upgrade'] || $opts['compose-file'] == 'docker-compose-tests.yml') {
-        $this->yell("Test Environment Requested: Using docker-compose-tests.yml.", 40, 'cyan');
+      if ($opts['test'] || $opts['test-upgrade'] || $opts['compose-file'] == 'docker-compose.tests.yml') {
+        $this->yell("Test Environment Requested: Using docker-compose.tests.yml.", 40, 'cyan');
         $this->say("No docker volumes are enabled using this mode.");
 
         if (!$opts['build']) {
           $this->say("The --build option was not specified: The latest code may not be in the container.");
         }
 
-        $compose_file = 'docker-compose-tests.yml';
+        $compose_file = 'docker-compose.tests.yml';
       }
       else {
         $this->yell("Local Development Environment Requested: Using {$opts['compose-file']}", 40, 'cyan');
@@ -650,7 +650,7 @@ class RoboFile extends \Robo\Tasks {
 //        ->publish(80,80)
 //        ->detached()
 //        ->privileged()
-//        ->env('COMPOSE_FILE', 'docker-compose-tests.yml')
+//        ->env('COMPOSE_FILE', 'docker-compose.tests.yml')
 //        ->env('GITHUB_TOKEN', $_SERVER['GITHUB_TOKEN']?: '')
 //        ->env('TERM', 'xterm')
 //        ->env('GITHUB_REF', $_SERVER['GITHUB_REF'])
