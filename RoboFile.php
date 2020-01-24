@@ -485,11 +485,19 @@ class RoboFile extends \Robo\Tasks {
       $opts['user-uid'] = trim(shell_exec('id -u'));
     }
 
-    // Set from and tag if --os option is used.  (except for ubuntu1804,
+    // Define docker-image.
+    // Set from and tag if --os option is used.  (except for ubuntu1804)
     if (!empty($opts['os']) && $opts['os'] != 'ubuntu1804') {
       $opts['from'] = "geerlingguy/docker-{$opts['os']}-ansible";
 
       // Change docker-image, but only if it was not set to something other than the default.
+      $opts['docker-image'] = $opts['docker-image'] == 'devshop/server:latest'? 'devshop/server:local-'. $opts['os']: $opts['docker-image'];
+    }
+
+    // If --local is also specified, set "os" option so container is built from scratch.
+    if (empty($opts['os']) && $opts['local']) {
+      $opts['os'] = 'ubuntu1804';
+      // Set docker-image again to include 'os' change above, but only if it was not set to something other than the default.
       $opts['docker-image'] = $opts['docker-image'] == 'devshop/server:latest'? 'devshop/server:local-'. $opts['os']: $opts['docker-image'];
     }
 
@@ -500,13 +508,6 @@ class RoboFile extends \Robo\Tasks {
 
       if (!$container_check->wasSuccessful()) {
         $this->yell("Docker Image {$opts['docker-image']} was not found on this system. Building it...");
-      }
-
-      // If --local is also specified, set "os" option so container is built from scratch.
-      if (empty($opts['os']) && $opts['local']) {
-        $opts['os'] = 'ubuntu1804';
-        // Set docker-image again to include 'os' change above, but only if it was not set to something other than the default.
-        $opts['docker-image'] = $opts['docker-image'] == 'devshop/server:latest'? 'devshop/server:local-'. $opts['os']: $opts['docker-image'];
       }
 
       $this->prepareContainers($opts['user-uid'], 'devshop.local.computer', $opts);
