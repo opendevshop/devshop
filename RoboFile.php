@@ -113,7 +113,7 @@ class RoboFile extends \Robo\Tasks {
       $env[$var_name] = !empty($_SERVER[$var_name])? $_SERVER[$var_name]:
         // or use --options value if it exists.
         // If not, set to empty string.
-        !empty($opts[$opt_name])? $opts[$opt_name]: '';
+        (!empty($opts[$opt_name])? $opts[$opt_name]: '');
     }
     return $env;
   }
