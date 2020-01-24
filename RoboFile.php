@@ -500,29 +500,22 @@ class RoboFile extends \Robo\Tasks {
       $opts['docker-image'] = $opts['docker-image'] == 'devshop/server:latest'? 'devshop/server:local-'. $opts['os']: $opts['docker-image'];
     }
 
-    // Build the image if requested, or if the image doesn't exist yet.
+    // Build the image if --build option specified, or if the image doesn't exist yet locally.
     // If we don't, docker-compose up will automatically build it, but without these options.
-    $container_check = $this->_exec("docker inspect {$opts['docker-image']}");
-    if ($opts['build'] || ! $container_check->wasSuccessful()) {
+    // Run a "docker-compose pull" here confirms that the remote container by this name exists, and gets us a local copy.
+    $docker_image_exists_remotely = $this->_exec("docker pull {$opts['docker-image']}")->wasSuccessful();
+    $docker_image_exists_locally = $this->_exec("docker inspect {$opts['docker-image']} > /dev/null")->wasSuccessful();
 
-      if (!$container_check->wasSuccessful()) {
-        $this->yell("Docker Image {$opts['docker-image']} was not found on this system. Building it...");
-      }
-      $opts['docker-image'] = $opts['docker-image'] == 'devshop/server:latest'? 'devshop/server:local-'. $opts['os']: $opts['docker-image'];
+    // If --build option is used, or if docker image does not exist anywhere, build it with "local-$OS" tag
+    if ($opts['build'] || !$docker_image_exists_remotely && !$docker_image_exists_locally) {
+      $this->yell("Docker Image {$opts['docker-image']} was not found on this system or on docker hub. Building it...");
+      $opts['docker-image'] ='devshop/server:local-'. $opts['os'];
       $this->prepareContainers($opts['user-uid'], 'devshop.local.computer', $opts);
     }
     elseif ($opts['local'] || !empty($opts['os'])) {
       // If the --local option was specified, use 'devshop/server:local' tag for the image name, but only if it was not set to something other than the default.
       // @TODO: This may not be needed because it is set on line 489 now.
       $opts['docker-image'] = $opts['docker-image'] == 'devshop/server:latest'? 'devshop/server:local-'. $opts['os']: $opts['docker-image'];
-    }
-    else {
-      // If the --build or --local options were not specified, use 'devshop/server:latest'
-      // tag for the image name and pull the containers first.
-      // If we don't, `docker-compose up` will BUILD and tag the image even if
-      // it exists on docker hub.
-      $cmd[] = "docker-compose pull --quiet";
-      $opts['docker-image'] = 'devshop/server:latest';
     }
 
     // @TODO: Figure out why centos can't enable service in build phase.
