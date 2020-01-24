@@ -72,7 +72,6 @@ class RoboFile extends \Robo\Tasks {
     'playbook' => 'ANSIBLE_PLAYBOOK',
     'roles-path' => 'ANSIBLE_ROLES_PATH',
     'config' => 'ANSIBLE_CONFIG',
-    'compose-file' => 'COMPOSE_FILE',
 
     // Used in docker compose image.
     'docker-image' => 'DEVSHOP_DOCKER_IMAGE',
@@ -352,7 +351,6 @@ class RoboFile extends \Robo\Tasks {
       'tags' => '',
       'skip-tags' => '',
       'playbook' => 'roles/server.playbook.yml',
-      'compose-file' => 'docker-compose.yml',
       'environment' => [],
       'roles-path' => '/usr/share/devshop/roles',
       'config' => '/usr/share/devshop/ansible.cfg',
@@ -432,6 +430,7 @@ class RoboFile extends \Robo\Tasks {
    * @option $build Run `robo prepare:containers` to rebuild the container first.
    * @option os-version An OS "slug" for any of the geerlingguy/docker-*-ansible images: https://hub.docker.com/u/geerlingguy/
    * @option environment pass an environment variable to docker-compose in the form --environment NAME=VALUE
+   * @option volumes Set to TRUE to use the docker-compose.volumes.yml file to map local folders into the container.
    */
   public function up($docker_command = null, $opts = [
     'follow' => 1,
@@ -457,9 +456,9 @@ class RoboFile extends \Robo\Tasks {
     'playbook' => 'roles/server.playbook.yml',
     'roles-path' => '/usr/share/devshop/roles',
     'config' => '/usr/share/devshop/ansible.cfg',
-    'compose-file' => 'docker-compose.yml',
     'local' => FALSE,
     'environment' => [],
+    'volumes' => FALSE,
   ]) {
 
     // Check for tools
@@ -537,38 +536,23 @@ class RoboFile extends \Robo\Tasks {
 
     if ($opts['mode'] == 'docker-compose') {
 
-      if ($opts['test'] || $opts['test-upgrade'] || $opts['compose-file'] == 'docker-compose.tests.yml') {
-        $this->yell("Test Environment Requested: Using docker-compose.tests.yml.", 40, 'cyan');
-        $this->say("No docker volumes are enabled using this mode.");
-
-        if (!$opts['build']) {
-          $this->say("The --build option was not specified: The latest code may not be in the container.");
-        }
-
-        $compose_file = 'docker-compose.tests.yml';
-      }
-      else {
-        $this->yell("Local Development Environment Requested: Using {$opts['compose-file']}", 40, 'cyan');
-        $this->say('Volumes will be mounted for:');
+      // Volumes
+      if ($opts['volumes']) {
+        $this->yell('Volume mounts requested. Adding docker-compose.volumes.yml');
         $this->say(' - ' . __DIR__ . '/aegir-home to /var/aegir');
         $this->say(' - ' . __DIR__ . '/devmaster to /var/aegir/devmaster-1.x/profiles/devmaster');
 
-        $compose_file = $opts['compose-file'];
+        // Set COMPOSE_FILE to include volumes.
+        putenv('COMPOSE_FILE=docker-compose.yml:docker-compose.volumes.yml');
 
-        if (!file_exists('aegir-home/.drush') && !$opts['skip-source-prep']) {
+        if (!file_exists('aegir-home/config') && !$opts['skip-source-prep']) {
+          $this->io()->warning('The aegir-home folder not present. Running prepare source code command.');
           $this->prepareSourcecode($opts);
-        }
-        elseif ($opts['skip-source-prep']) {
-          $this->say("Source code prep skipped because --skip-source-prep option was used.");
-        }
-        elseif (file_exists('aegir-home/.drush')) {
-          $this->say("Source code prep skipped because 'aegir-home/.drush' folder already exists.");
         }
       }
 
       $cmd[] = "docker-compose up --detach --force-recreate";
 
-      // Run final playbook to install devshop.
       // Test commands must be run as application user.
       // The `--test` command is run in GitHub Actions.
       $test_command = '';

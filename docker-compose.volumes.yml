@@ -1,5 +1,5 @@
 #
-# docker-compose.dev.yml
+# docker-compose.volumes.yml
 #
 # This dockerfile is for local development only. It maps the development folders to volumes,
 #

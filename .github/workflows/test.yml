@@ -41,10 +41,6 @@ jobs:
           --skip-tags "none"
 
     - name: Install DevShop
-      env:
-        COMPOSE_FILE: "docker-compose.tests.yml"
-      # @TODO: Seems like env above is not making it's way to the container and devshop-ansible-playbook command: https://github.com/opendevshop/devshop/pull/487/checks?check_run_id=400001612#step:7:10
-      # Once the problem is discovered, remove either 'env' or the --env options below.
       run: |
         docker-compose exec -T devshop service mysql start && \
         bin/robo exec devshop-ansible-playbook
