@@ -85,7 +85,7 @@ class RoboFile extends \Robo\Tasks {
    * @var array
    */
   private $ansibleVerbosityMap = [
-    0 => 0,
+    OutputInterface::VERBOSITY_NORMAL => 0,
     OutputInterface::VERBOSITY_VERBOSE => 1,
     OutputInterface::VERBOSITY_VERY_VERBOSE => 2,
     OutputInterface::VERBOSITY_DEBUG => 3,
