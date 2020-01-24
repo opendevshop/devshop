@@ -278,5 +278,10 @@ ENV ANSIBLE_SKIP_TAGS 'none'
 
 EXPOSE 80 443 3306 8025
 WORKDIR /var/aegir
+
+VOLUME /var/aegir
+VOLUME /var/lib/mysql
+VOLUME /var/log/aegir
+
 CMD ["devshop-ansible-playbook"]
 ENTRYPOINT ["docker-entrypoint"]
