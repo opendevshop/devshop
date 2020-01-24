@@ -5,7 +5,7 @@ on:
 
 env:
   ANSIBLE_VERBOSITY: 2
-  FROM_IMAGE_ARG: devshop/server:latest
+  COMPOSE_FILE: "docker-compose-tests.yml"
 
 jobs:
   test:
@@ -37,8 +37,8 @@ jobs:
           --follow 0 \
           --vars "devshop_danger_remove_devmaster=true" \
           --tags "rebuild-devmaster" \
-          --skip-tags "none" \
-          --compose-file docker-compose-tests.yml
+          --from "devshop/server:latest" \
+          --skip-tags "none"
 
     - name: Install DevShop
       env:
@@ -47,16 +47,11 @@ jobs:
       # Once the problem is discovered, remove either 'env' or the --env options below.
       run: |
         docker-compose exec -T devshop service mysql start && \
-        docker-compose exec -T \
-          --env ANSIBLE_TAGS=runtime \
-          --env ANSIBLE_SKIP_TAGS=none \
-            devshop \
-            devshop-ansible-playbook
-
+        bin/robo exec devshop-ansible-playbook
 
     - name: Test DevShop
       run: |
-        bin/robo test --compose-file docker-compose-tests.yml
+        bin/robo test
 
     - uses: actions/upload-artifact@v1
       if: failure()

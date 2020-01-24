@@ -6,7 +6,8 @@ on:
    - cron: "10 * * * *"
 
 env:
-  ANSIBLE_VERBOSITY: 2
+  # Set ANSIBLE_VERBOSITY to 1,2 or 3 when needed for development.
+  ANSIBLE_VERBOSITY: 0
   COMPOSE_FILE: "docker-compose-tests.yml"
 
 jobs:
@@ -55,8 +56,7 @@ jobs:
           --os "${OS}" \
           --vars "${VARS}" \
           --tags "${TAGS}" \
-          --skip-tags "${SKIP_TAGS}" \
-          --compose-file docker-compose-tests.yml
+          --skip-tags "${SKIP_TAGS}"
 
     - name: Install DevShop
       env:
@@ -69,7 +69,7 @@ jobs:
 
     - name: Test DevShop
       run: |
-        bin/robo test --compose-file docker-compose-tests.yml
+        bin/robo test
 
     - uses: actions/upload-artifact@v1
       if: failure()
