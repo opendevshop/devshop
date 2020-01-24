@@ -509,7 +509,7 @@ class RoboFile extends \Robo\Tasks {
       if (!$container_check->wasSuccessful()) {
         $this->yell("Docker Image {$opts['docker-image']} was not found on this system. Building it...");
       }
-
+      $opts['docker-image'] = $opts['docker-image'] == 'devshop/server:latest'? 'devshop/server:local-'. $opts['os']: $opts['docker-image'];
       $this->prepareContainers($opts['user-uid'], 'devshop.local.computer', $opts);
     }
     elseif ($opts['local'] || !empty($opts['os'])) {
