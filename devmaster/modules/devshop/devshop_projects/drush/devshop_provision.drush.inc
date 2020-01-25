@@ -134,7 +134,7 @@ function devshop_provision_provision_services() {
  * @param $data
  *   Associative array of data from Provision_Config_Apache_Site::data.
  *
- * @return
+ * @return string|null
  *   Lines to add to the configuration file.
  *
  * @see Provision_Config_Apache_Site
@@ -146,7 +146,7 @@ function devshop_provision_provision_apache_vhost_config($uri, $data) {
   $project = d()->project;
 
   if (empty($environment) || empty($project)) {
-    return;
+    return NULL;
   }
 
   return <<<PHP
@@ -165,7 +165,7 @@ PHP;
  * @param $data
  *   Associative array of data from Provision_Config_Nginx_Server::data.
  *
- * @return
+ * @return string|null
  *   Lines to add to the configuration file.
  *
  * @see Provision_Config_Nginx_Server
@@ -176,7 +176,7 @@ function devshop_provision_provision_nginx_vhost_config($data) {
   $project = d()->project;
 
   if (empty($environment) || empty($project)) {
-    return;
+    return NULL;
   }
 
   return <<<PHP
