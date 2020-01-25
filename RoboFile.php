@@ -486,7 +486,7 @@ class RoboFile extends \Robo\Tasks {
 
     // Define docker-image.
     // Set from and tag if --os option is used.  (except for ubuntu1804)
-    if (!empty($opts['os']) && $opts['os'] != 'ubuntu1804') {
+    if (!empty($opts['os'])) {
       $opts['from'] = "geerlingguy/docker-{$opts['os']}-ansible";
 
       // Change docker-image, but only if it was not set to something other than the default.
