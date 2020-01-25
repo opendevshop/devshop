@@ -19,8 +19,8 @@ jobs:
         # Default build/run tags: Skip 'runtime' tag on build, Limit to 'runtime' tag on run.
         build_tags: ['all']
         build_skip_tags: ['runtime']
-        run_tags: ['none']
-        run_skip_tags: ['runtime']
+        run_tags: ['runtime']
+        run_skip_tags: ['none']
 
         os:
           - 'ubuntu1804'
