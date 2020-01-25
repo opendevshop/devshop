@@ -16,6 +16,8 @@ ANSIBLE_PLAYBOOK_COMMAND_OPTIONS=${ANSIBLE_PLAYBOOK_COMMAND_OPTIONS:-}
 
 ON_FAIL=${ON_FAIL:-"systemctl status --no-pager"}
 
+devshop-logo "Running Ansible Playbook..."
+
 set -ex
 
 exec ansible-playbook $ANSIBLE_PLAYBOOK \
