@@ -877,7 +877,9 @@ function devshop_projects_form_site_node_form_alter(&$form, &$form_state, $form_
   );
 
   // Load deploy hooks form element.
-  $form['environment']['settings']['deploy'] = devshop_environment_deploy_hooks_form($project, $environment);
+  if (isset($environment)) {
+    $form['environment']['settings']['deploy'] = devshop_environment_deploy_hooks_form($project, $environment);
+  }
 
   // UX Improvements
   // Project Settings Vertical Tabs
@@ -931,7 +933,7 @@ function devshop_projects_form_site_node_form_alter(&$form, &$form_state, $form_
   if (!isset($form['install_method'])) {
     $form['install_method'] = array(
       '#type' => 'value',
-      '#value' => $environment->settings->install_method,
+      '#value' => $environment->settings->install_method ?? '',
     );
   }
   
@@ -1442,7 +1444,7 @@ function devshop_projects_create_environment_form_validate_import($element, &$fo
   if ($form_state['values']['install_method']['method'] == 'import' && empty($element['#value'])) {
     form_set_error('install_method][import', t('If using the "Import Database" Install Method, you must enter a MySQL connection URL or absolute path to an SQL file.'));
   }
-  elseif ($url_components['scheme'] == 'mysql') {
+  elseif (!empty($url_components['scheme']) && $url_components['scheme'] == 'mysql') {
     $database = array(
       'database' => ltrim($url_components['path'], '/'),
       'username' => $url_components['user'],

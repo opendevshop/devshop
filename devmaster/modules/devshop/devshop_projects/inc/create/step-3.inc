@@ -280,7 +280,7 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
   }
 
   // For all removed platforms, trigger a delete task
-  $removed_environments = array_diff_key($project->environments, $environments);
+  $removed_environments = array_diff_key($project->environments ?? [], $environments);
   foreach ($removed_environments as $environment_name => $settings) {
     $platform_nid = $settings->platform;
     $platform_node = node_load($platform_nid);

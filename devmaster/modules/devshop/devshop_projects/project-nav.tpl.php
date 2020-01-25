@@ -88,9 +88,9 @@
 
         <!-- Branch & Tag List -->
         <div class="input-group-btn">
-          <button type="button" class="btn btn-default dropdown-toggle <?php print $branches_class ?>" data-toggle="dropdown" title="<?php print $branches_label; ?>">
+          <button type="button" class="btn btn-default dropdown-toggle <?php print $branches_class ?>" data-toggle="dropdown" title="<?php print $branches_label ?? ''; ?>">
 
-            <?php if ($branches_show_label): ?>
+            <?php if (!empty($branches_show_label)): ?>
               <i class="fa fa-<?php print $branches_icon; ?>"></i>
               <?php print $branches_label; ?>
             <?php else: ?>

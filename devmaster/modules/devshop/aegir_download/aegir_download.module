@@ -61,11 +61,10 @@ function hosting_task_download_form() {
  * Defines the list of tasks that appear under the gear icon.
  */
 function aegir_download_devshop_environment_menu($environment) {
-
-    if ($environment->site && $environment->site_status == HOSTING_SITE_ENABLED) {
-        $items[] = 'download';
-    }
-    return $items;
+  if ($environment->site && $environment->site_status == HOSTING_SITE_ENABLED) {
+    return ['download'];
+  }
+  return [];
 }
 
 function drush_aegir_download_pre_hosting_task()

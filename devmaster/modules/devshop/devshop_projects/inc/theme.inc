@@ -156,7 +156,7 @@ function devshop_projects_preprocess_node(&$vars) {
 
     // Load ref node
     $ref_node = node_load($vars['rid']);
-    if ($ref_node->type == 'site') {
+    if ($ref_node->type == 'site' && !empty($ref_node->environment)) {
       $vars['site_url'] = l($ref_node->environment->url, $ref_node->environment->url);
     }
 
@@ -393,14 +393,15 @@ function template_preprocess_devshop_project_nav(&$vars) {
   }
 
   // Generate branches/tags lists
-  $vars['branches_count'] = count($project->settings->git['branches']);
-  $vars['tags_count'] = count($project->settings->git['tags']);
+  $vars['branches_count'] = count($project->settings->git['branches'] ?? []);
+  $vars['tags_count'] = count($project->settings->git['tags'] ?? []);
   $vars['branches_items'] = array();
   $vars['branches_icon'] = 'code-fork';
 
   if ($vars['branches_count'] == 0) {
     // If branches are 0 and last verifying is queued...
-    if ($node->project->verify->task_status == HOSTING_TASK_PROCESSING || $node->verify->task_status === HOSTING_TASK_QUEUED) {
+    $node_verify_task_status = $node->verify->task_status ?? NULL;
+    if ($node->project->verify->task_status == HOSTING_TASK_PROCESSING || $node_verify_task_status === HOSTING_TASK_QUEUED) {
       $vars['branches_show_label'] = TRUE;
       $vars['branches_label'] = t('Refreshing...');
       $vars['branches_class'] = 'btn-warning';
@@ -457,7 +458,8 @@ function template_preprocess_devshop_project_nav(&$vars) {
   }
 
   // Add "refresh branches" link if project is manual deploy mode or is missing a webhook
-  if ($project->settings->deploy['method'] == 'manual' || empty($project->settings->deploy['last_webhook'])) {
+  $deploy_method = $project->settings->deploy['method'] ?? '';
+  if ($deploy_method == 'manual' || empty($project->settings->deploy['last_webhook'])) {
     $link_refresh = l(t('Refresh branches'), 'hosting_confirm/' . $node->nid . '/project_verify', array('attributes' => array('class' => array('refresh-link')), 'query' => array('token' => drupal_get_token($user->uid))));
     array_unshift($vars['branches_items'], $link_refresh);
   }

@@ -57,7 +57,7 @@
             <small><?php print t('Disabled') ; ?></small>
         </li>
     <?php endif; ?>
-    <?php if ($project->settings->live['live_domain']): ?>
+    <?php if (!empty($project->settings->live['live_domain'])): ?>
     <li>
       <strong>Live Site</strong>
       <small><a href="http://<?php print $project->settings->live['live_domain']; ?>" target="_blank">http://<?php print $project->settings->live['live_domain']; ?></a></small>
@@ -109,11 +109,12 @@
       </div>
     </li>
     <li>
-    <?php if ($project->settings->deploy['method'] == 'manual'): ?>
+    <?php $deploy_method = $project->settings->deploy['method'] ?? '';
+    if ($deploy_method == 'manual'): ?>
       <strong><?php print t('Manual Deployment Only'); ?></strong>
     <?php else: ?>
         <!-- Webhook -->
-        <?php if ($project->settings->deploy['method'] == 'webhook'): ?>
+        <?php if ($deploy_method == 'webhook'): ?>
 
 
       <strong><?php print t('Last Commit'); ?></strong>
@@ -135,7 +136,7 @@
           <?php endif; ?>
           </small>
 
-        <?php elseif ($project->settings->deploy['method'] == 'queue'): ?>
+        <?php elseif ($deploy_method == 'queue'): ?>
         <!-- Queue -->
         <strong><?php print t('Queue'); ?>:</strong>
         <small>
@@ -148,7 +149,7 @@
     </li>
 
     <!-- Webhook -->
-    <?php if ($project->settings->deploy['method'] == 'webhook'):
+    <?php if ($deploy_method == 'webhook'):
 
         $float = empty($project->settings->deploy['last_webhook'])? 'inline': 'pull-right';
       ?>
@@ -175,7 +176,7 @@
 
 <!-- ENVIRONMENTS-->
 <div class="row">
-    <?php foreach ($environments as $environment): ?>
+    <?php foreach ($environments ?? [] as $environment): ?>
 
         <div class="environment-wrapper col-xs-12 col-sm-6 col-md-4 col-lg-3">
             <?php print $environment; ?>

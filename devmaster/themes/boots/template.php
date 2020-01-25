@@ -638,10 +638,11 @@ function boots_preprocess_page(&$vars){
     }
 
     // Task nodes only have project nid and environment name.
-    if (is_numeric($vars['node']->project)) {
+    if (is_numeric($vars['node']->project ?? NULL)) {
       $project_node = node_load($vars['node']->project);
       $vars['node']->project = $project_node->project;
-      $vars['node']->environment = $project_node->project->environments[$vars['node']->environment];
+      $env = $vars['node']->environment ?? NULL;
+      $vars['node']->environment = $project_node->project->environments[$env] ?? NULL;
     }
 
     // load $vars['node'] if it's not present (like on node/%/edit)
@@ -705,7 +706,7 @@ function boots_preprocess_page(&$vars){
 
       // Only show environment name if site is in project.
       if (isset($object->project)) {
-        $vars['title2'] = $object->environment->name;
+        $vars['title2'] = $object->environment->name ?? '';
       }
 
       if (!empty($object->environment->site)) {
@@ -869,7 +870,7 @@ function boots_preprocess_node_project(&$vars){
   $project = $vars['project'] = $vars['node']->project;
 
   // Live Domain link.
-  if ($project->settings->live['live_domain']) {
+  if ($project->settings->live['live_domain'] ?? NULL) {
     $vars['live_domain_url'] =  'http://' . $project->settings->live['live_domain'];
     $vars['live_domain_text'] =  'http://' . $project->settings->live['live_domain'];
   }
@@ -882,13 +883,14 @@ function boots_preprocess_node_project(&$vars){
   if (empty($node->project->settings->git['refs'])){
     $vars['deploy_label'] = '';
 
-    if ($node->verify->task_status == HOSTING_TASK_ERROR) {
+    $task_status = $node->verify->task_status ?? NULL;
+    if ($task_status == HOSTING_TASK_ERROR) {
       $vars['deploy_label'] = t('There was a problem refreshing branches and tags.');
       $vars['git_refs'][] = l(t('View task log'), 'node/' . $node->verify->nid);
       $link_refresh = l(t('Refresh branches'), 'hosting_confirm/' . $node->nid . '/project_verify', array('attributes' => array('class' => array('refresh-link')), 'query' => array('token' => drupal_get_token($user->uid))));
       array_unshift($vars['git_refs'], $link_refresh);
     }
-    elseif ($node->verify->task_status == HOSTING_TASK_QUEUED || $node->verify->task_status == HOSTING_TASK_PROCESSING) {
+    elseif ($task_status === HOSTING_TASK_QUEUED || $task_status == HOSTING_TASK_PROCESSING) {
       $vars['deploy_label'] =  t('Branches refreshing.  Please wait.');
     }
   }
@@ -935,12 +937,13 @@ function boots_preprocess_node_project(&$vars){
   }
 
   // Set webhook interval
-  if ($project->settings->deploy['method'] == 'webhook' && $project->settings->deploy['last_webhook']){
+  $deploy_method = $project->settings->deploy['method'] ?? '';
+  if ($deploy_method == 'webhook' && $project->settings->deploy['last_webhook']) {
     $interval = format_interval(REQUEST_TIME - $project->settings->deploy['last_webhook']);
     $vars['webhook_ago'] = t('@time ago', array('@time' => $interval));
   }
 
-  if ($project->settings->deploy['method'] == 'queue') {
+  if ($deploy_method == 'queue') {
     $vars['queued_ago'] = hosting_format_interval(variable_get('hosting_queue_pull_last_run', FALSE));
   }
 
@@ -972,6 +975,8 @@ function boots_preprocess_node_project(&$vars){
   }
   else {
     $suffix = t('Ping this URL after each code push to keep the servers up to date.');
+    $suffix2 = NULL;
+    $suffix3 = NULL;
     $button = '';
     //@TODO: Link to more help such as example scripts.
   }
@@ -1045,7 +1050,8 @@ HTML;
     $vars['project_messages'] = $project->messages;
   }
 
-  if (!$vars['node']->project->settings->deploy['allow_environment_deploy_config'] && count(array_filter($vars['node']->project->settings->deploy['default_hooks'])) == 0) {
+  $deploy = $vars['node']->project->settings->deploy ?? [];
+  if (empty($deploy['allow_environment_deploy_config']) && count(array_filter($deploy['default_hooks'] ?? [])) == 0) {
     $vars['project_messages'][] = array(
       'message' => t('No deploy hooks are configured for this project. If new code is deployed, you will have to run update.php manually. Check your !link.', array(
         '!link' => l(t('Project Settings'),"node/{$vars['node']->nid}/edit"),
