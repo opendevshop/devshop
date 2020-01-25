@@ -58,7 +58,7 @@ jobs:
 
     # NOTE: The env vars shown below should be loaded into the Robo options automatically.
     # They are added to the command here for visibility.
-    - name: Launch Server Container FROM ${OS}
+    - name: Launch Server Container (${{ matrix.os }})
       run: |
         bin/robo up "sleep infinity" \
           --build \
