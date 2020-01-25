@@ -18,7 +18,6 @@ function devshop_environment_get_git_ref_type($environment_repo_path) {
   if (strpos($git_status, 'On branch ') === 0 || strpos($git_status, 'Your branch ') === 0) {
     return 'branch';
   }
-  else {
-    return 'tag';
-  }
+
+  return 'tag';
 }
