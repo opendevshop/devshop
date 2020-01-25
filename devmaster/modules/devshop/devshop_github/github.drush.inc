@@ -10,7 +10,7 @@
  */
 function devshop_environment_get_git_ref_type($environment_repo_path) {
   if (!file_exists($environment_repo_path . '/.git')) {
-    return null;
+    return NULL;
   }
   $git_status = shell_exec("cd {$environment_repo_path}; git status");
 

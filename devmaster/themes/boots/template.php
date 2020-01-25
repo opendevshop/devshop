@@ -862,7 +862,7 @@ function boots_preprocess_node_task(&$vars) {
  * Preprocessor for Project Nodes.
  * @param $vars
  */
-function boots_preprocess_node_project(&$vars){
+function boots_preprocess_node_project(&$vars) {
   global $user;
 
   // Easy Access
@@ -875,12 +875,12 @@ function boots_preprocess_node_project(&$vars){
     $vars['live_domain_text'] =  'http://' . $project->settings->live['live_domain'];
   }
   else {
-    $vars['live_domain_url'] =  '';
+    $vars['live_domain_url'] = '';
   }
 
   $vars['git_refs'] = array();
 
-  if (empty($node->project->settings->git['refs'])){
+  if (empty($node->project->settings->git['refs'])) {
     $vars['deploy_label'] = '';
 
     $task_status = $node->verify->task_status ?? NULL;
@@ -891,19 +891,19 @@ function boots_preprocess_node_project(&$vars){
       array_unshift($vars['git_refs'], $link_refresh);
     }
     elseif ($task_status === HOSTING_TASK_QUEUED || $task_status == HOSTING_TASK_PROCESSING) {
-      $vars['deploy_label'] =  t('Branches refreshing.  Please wait.');
+      $vars['deploy_label'] = t('Branches refreshing.  Please wait.');
     }
   }
   else {
     $vars['deploy_label'] = t('Deploy a tag or branch');
 
-    foreach ($node->project->settings->git['refs'] as $ref => $type){
+    foreach ($node->project->settings->git['refs'] as $ref => $type) {
       $href = url('hosting_confirm/ENV_NID/site_devshop-deploy', array(
-        'query' =>array(
+        'query' => array(
           'git_ref' => $ref,
         )
       ));
-      $icon = $type == 'tag'? 'tag': 'code-fork';
+      $icon = $type == 'tag' ? 'tag' : 'code-fork';
 
       $vars['git_refs'][$ref] = "<a href='$href'>
         <i class='fa fa-$icon'></i>
@@ -922,7 +922,7 @@ function boots_preprocess_node_project(&$vars){
       'git@github.com:' => 'http://github.com/',
       '.git' => '',
     ));
-    if (empty($project->settings->deploy['last_webhook'])){
+    if (empty($project->settings->deploy['last_webhook'])) {
       $url .= '/settings/hooks/new';
     }
     else {
@@ -953,7 +953,7 @@ function boots_preprocess_node_project(&$vars){
     $class = 'btn-warning';
   }
   else {
-    $button_text =  t('Webhook URL');
+    $button_text = t('Webhook URL');
     $class = 'text-muted';
   }
 
@@ -965,7 +965,7 @@ function boots_preprocess_node_project(&$vars){
     $suffix2 = t('Copy the link above, then click the link below to go to the webhooks page for this project.');
     $suffix3 = t('DevShop only has support for Push and Pull Request events.  Set content type to <em>application/json</em>.');
 
-    if (empty($project->settings->deploy['last_webhook'])){
+    if (empty($project->settings->deploy['last_webhook'])) {
       $github_button_text = t('Add a Webhook at GitHub.com');
     }
     else {
@@ -981,7 +981,7 @@ function boots_preprocess_node_project(&$vars){
     //@TODO: Link to more help such as example scripts.
   }
 
-  $url =  $node->project->webhook_url;
+  $url = $node->project->webhook_url;
   $project_name = $node->title;
 
   // Only show the webhook url to those who can create projects.
@@ -1054,7 +1054,7 @@ HTML;
   if (empty($deploy['allow_environment_deploy_config']) && count(array_filter($deploy['default_hooks'] ?? [])) == 0) {
     $vars['project_messages'][] = array(
       'message' => t('No deploy hooks are configured for this project. If new code is deployed, you will have to run update.php manually. Check your !link.', array(
-        '!link' => l(t('Project Settings'),"node/{$vars['node']->nid}/edit"),
+        '!link' => l(t('Project Settings'), "node/{$vars['node']->nid}/edit"),
       )),
       'icon' => '<i class="fa fa-exclamation-triangle"></i>',
       'type' => 'warning',
