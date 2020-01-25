@@ -61,7 +61,6 @@ jobs:
     - name: Launch Server Container FROM ${OS}
       run: |
         bin/robo up "sleep infinity" \
-          -vvv \
           --build \
           --follow 0 \
           --os "${OS}" \
@@ -74,7 +73,7 @@ jobs:
         ANSIBLE_TAGS: "${{ matrix.run_tags }}"
         ANSIBLE_SKIP_TAGS: "${{ matrix.run_skip_tags }}"
       run: |
-        bin/robo exec devshop-ansible-playbook -vvv
+        bin/robo exec devshop-ansible-playbook
 
     - name: Test DevShop
       run: |
