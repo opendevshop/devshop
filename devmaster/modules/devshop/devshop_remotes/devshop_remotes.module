@@ -355,7 +355,7 @@ function devshop_remotes_preprocess_environment(&$vars) {
 /**
  * When loading project node, lookup sql sources from composer.json!
  *
- * @param $nodes
+ * @param \stdClass[] $nodes
  * @param $types
  */
 function devshop_remotes_node_load($nodes, $types) {

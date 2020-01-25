@@ -1,9 +1,10 @@
 <?php
 
 /**
- * Detect if an environment's path is on a branch or a checkout out tag (aka detachd HEAD)
+ * Detect if an environment's path is on a branch or a tag (aka detached HEAD).
  *
- * @param $environment
+ * @param string $environment_repo_path
+ *   Path to a Git repository.
  *
  * @return string
  */

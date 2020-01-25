@@ -1222,6 +1222,7 @@ function devshop_projects_create_environment_form(&$form, &$form_state, $form_id
       ),
     ),
     '#element_validate' => array(
+      /** @uses devshop_projects_create_environment_form_validate_import */
       'devshop_projects_create_environment_form_validate_import'
     ),
   );
@@ -1523,10 +1524,13 @@ function devshop_environment_add_form_profile_options($project) {
 /**
  * Helper to output the forms selection for Deploy Hooks.
  *
- * Used in the Projects settings form, environment settings form, deploy task form, and sync form.
+ * Used in the Projects settings form, environment settings form, deploy task
+ * form, and sync form.
  *
- * @param $project
- * @param null $environment
+ * @param \stdClass $project
+ * @param null|\stdClass $environment
+ * @param string $task_type
+ *
  * @return array
  */
 function devshop_environment_deploy_hooks_form($project, $environment = NULL, $task_type = NULL) {
