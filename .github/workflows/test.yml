@@ -41,6 +41,8 @@ jobs:
           --skip-tags "none"
 
     - name: Install DevShop
+      env:
+        ANSIBLE_TAGS: runtime
       run: |
         docker-compose exec -T devshop service mysql start && \
         bin/robo exec devshop-ansible-playbook
