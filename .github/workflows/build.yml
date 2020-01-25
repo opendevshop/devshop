@@ -70,6 +70,9 @@ jobs:
           --skip-tags "${ANSIBLE_SKIP_TAGS}"
 
     - name: Install DevShop
+      env:
+        ANSIBLE_TAGS: "${{ matrix.run_tags }}"
+        ANSIBLE_SKIP_TAGS: "${{ matrix.run_skip_tags }}"
       run: |
         bin/robo exec devshop-ansible-playbook -vvv
 
