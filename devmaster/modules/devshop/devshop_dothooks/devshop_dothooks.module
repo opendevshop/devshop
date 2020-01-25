@@ -148,6 +148,7 @@ function devshop_dothooks_run_hook($hook, $site) {
   $env = $_SERVER;
   $env['DEVSHOP_PROJECT'] = $environment->project_name;
   $env['DEVSHOP_ENVIRONMENT'] = $environment->name;
+  $env['DEVSHOP_ENV_URI'] = $environment->uri; // the domain
   $env['DRUSH_ALIAS'] = $environment->system_alias;
 
   // Prepare and run each command.
