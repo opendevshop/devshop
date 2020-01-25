@@ -93,7 +93,7 @@ function boots_preprocess_environment(&$vars) {
   }
 
   // Pull Request?
-  if (isset($environment->github_pull_request) && $environment->github_pull_request) {
+  if (!empty($environment->github_pull_request)) {
     $environment->class .= ' pull-request';
     $vars['warnings'][] = array(
       'type' => 'info',
@@ -167,7 +167,7 @@ function boots_preprocess_environment(&$vars) {
 //  }
 
   // No hooks configured.
-  if (isset($project->settings->deploy) && $project->settings->deploy['allow_environment_deploy_config'] && $environment->site_status == HOSTING_SITE_ENABLED && isset($environment->settings->deploy) && count(array_filter($environment->settings->deploy)) == 0) {
+  if (isset($project->settings->deploy, $environment->settings->deploy) && $project->settings->deploy['allow_environment_deploy_config'] && $environment->site_status == HOSTING_SITE_ENABLED && count(array_filter($environment->settings->deploy)) == 0) {
     $vars['warnings'][] = array(
       'text' => t('No deploy hooks are configured. Check !link.', array(
         '!link' => l(t('Environment Settings'), "node/{$environment->site}/edit"),
