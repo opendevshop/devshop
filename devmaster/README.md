@@ -1,4 +1,4 @@
-DevShop DevMaster
+OpenDevShop Devmaster
 =================
 
 This is the DevShop web-based front-end, called Devmaster.

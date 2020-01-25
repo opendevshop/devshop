@@ -1,5 +1,5 @@
 ;
-; Loads the DevMaster install profile from drupal.org.
+; Loads the Devmaster install profile from drupal.org.
 ;
 ; This makefile is used by the DevShop standalone installer to build devmaster.
 ;
