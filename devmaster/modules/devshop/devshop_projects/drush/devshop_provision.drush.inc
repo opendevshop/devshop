@@ -4,8 +4,6 @@
  * Drush commands for DevShop Provision
  */
 
-use Symfony\Component\Process\Process;
-
 /**
  * Implements hook_drush_init()
  * - Ensures that provision is loaded before devshop_provision

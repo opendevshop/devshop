@@ -1,12 +1,6 @@
 <?php
 
-use Symfony\Component\Yaml\Parser;
-use Symfony\Component\Yaml\Dumper;
-use Symfony\Component\Process\Process;
-use Symfony\Component\Process\Exception\ProcessFailedException;
 use SensioLabs\AnsiConverter\AnsiToHtmlConverter;
-use SensioLabs\AnsiConverter\Theme\Theme;
-use SensioLabs\AnsiConverter\Theme\SolarizedTheme;
 use SensioLabs\AnsiConverter\Theme\SolarizedXTermTheme;
 
 /**
