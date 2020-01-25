@@ -151,12 +151,13 @@ function devshop_provision_provision_apache_vhost_config($uri, $data) {
     return NULL;
   }
 
-  return <<<PHP
+  return <<<APACHE_VHOST_CONF
   # Saving project and environment server variables
+  # These are also available in DevShop .hooks.yml
   SetEnv DEVSHOP_PROJECT $project
   SetEnv DEVSHOP_ENVIRONMENT $environment
 
-PHP;
+APACHE_VHOST_CONF;
 }
 
 /**
@@ -182,12 +183,13 @@ function devshop_provision_provision_nginx_vhost_config($data) {
     return NULL;
   }
 
-  return <<<PHP
+  return <<<NGINX_VHOST_CONFIG
   # Saving project and environment server variables
+  # These are also available in DevShop .hooks.yml
   fastcgi_param DEVSHOP_PROJECT $project;
   fastcgi_param DEVSHOP_ENVIRONMENT $environment;
 
-PHP;
+NGINX_VHOST_CONFIG;
 }
 
 /**
