@@ -16,10 +16,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Default build/run tags: Skip 'runtime' tag on build, Limit to 'runtime' tag on run.
-        build_tags: ['all']
-        build_skip_tags: ['runtime']
-        run_tags: ['runtime']
+        # Default build/run tags.
+        # For simpler testing, install everything at runtime here.
+        # @TODO: Add a build-time test specifically for the docker image build. (Same thing docker hub runs)
+        build_tags: ['none']
+        build_skip_tags: ['']
+        run_tags: ['all']
         run_skip_tags: ['none']
 
         os:
@@ -28,20 +30,11 @@ jobs:
           - 'centos7'
         vars:
           - 'php_version: 7.2'
-        include:
-          # Override build/run tags for CentOS. Services can't start in docker build ATM.
-          # Use 'none' tag on build to skip all steps. Set `all` tag on run to run entire playbook at runtime.
-          - os: 'centos7'
-            custom: true
-            build_tags: 'none'
-            build_skip_tags: ''
-            run_tags: 'all'
-            run_skip_tags: 'none'
 
     env:
-      TAGS: "${{ matrix.build_tags }}"
-      SKIP_TAGS: "${{ matrix.build_skip_tags }}"
-      VARS: "${{ matrix.vars }}"
+      ANSIBLE_TAGS: "${{ matrix.build_tags }}"
+      ANSIBLE_SKIP_TAGS: "${{ matrix.build_skip_tags }}"
+      ANSIBLE_VARS: "${{ matrix.vars }}"
       OS: "${{ matrix.os }}"
 
     runs-on: ubuntu-18.04
@@ -63,22 +56,20 @@ jobs:
     - name: Install Composer dependencies
       run: composer install --prefer-dist --no-progress --no-suggest
 
-    - name: Build and Launch DevShop Server Image FROM ${{ matrix.os }} with PHP ${{ matrix.vars }}
+    # NOTE: The env vars shown below should be loaded into the Robo options automatically.
+    # They are added to the command here for visibility.
+    - name: Launch Server Container FROM ${OS}
       run: |
         bin/robo up "sleep infinity" \
           -vvv \
           --build \
           --follow 0 \
           --os "${OS}" \
-          --vars "${VARS}" \
-          --tags "${TAGS}" \
-          --skip-tags "${SKIP_TAGS}"
+          --vars "${ANSIBLE_VARS}" \
+          --tags "${ANSIBLE_TAGS}" \
+          --skip-tags "${ANSIBLE_SKIP_TAGS}"
 
-      # robo exec doens't convert TAGS to ANSIBLE_TAGS yet.
     - name: Install DevShop
-      env:
-        ANSIBLE_TAGS: "${{ matrix.run_tags }}"
-        ANSIBLE_SKIP_TAGS: "${{ matrix.run_skip_tags }}"
       run: |
         bin/robo exec devshop-ansible-playbook -vvv
 
