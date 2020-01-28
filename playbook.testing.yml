@@ -1,0 +1,29 @@
+##
+# DevShop: DevMaster Server with Apache
+#
+
+#
+# NOT USED until Install.sh testing is re-implemented.
+#
+
+---
+- hosts: all
+  user: root
+  roles:
+    - opendevshop.users
+    - opendevshop.apache
+    - geerlingguy.php-versions
+    - geerlingguy.php
+    - geerlingguy.php-mysql
+    - geerlingguy.composer
+    - opendevshop.devmaster
+  vars:
+
+    php_version: "7.1"
+    php_default_version_debian: "{{ php_version }}"
+
+    # Since we are running tests as a process, we don't want tasks to run in the background.
+    supervisor_started: false
+
+    ansible_python_interpreter: python3
+    devshop_makefile: "{{ devshop_cli_path }}/build-devmaster-dev.make.yml"

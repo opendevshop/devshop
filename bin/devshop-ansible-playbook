@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+DEVSHOP_PATH="$( cd "$(dirname "$0")"/.. ; pwd -P )"
+PATH="$DEVSHOP_PATH/bin:$PATH"
+
+# If /path/to/devshop/ANSIBLE_PLAYBOOK exists, use that path. Otherwise pass it directly.
+if [ -f "${DEVSHOP_PATH}/${ANSIBLE_PLAYBOOK}" ]; then
+  ANSIBLE_PLAYBOOK="${DEVSHOP_PATH}/${ANSIBLE_PLAYBOOK}"
+fi
+
+ANSIBLE_PLAYBOOK=${ANSIBLE_PLAYBOOK:-"$DEVSHOP_PATH/roles/server.playbook.yml"}
+ANSIBLE_TAGS=${ANSIBLE_TAGS:-"all"}
+ANSIBLE_SKIP_TAGS=${ANSIBLE_SKIP_TAGS:-"none"}
+ANSIBLE_EXTRA_VARS=${ANSIBLE_EXTRA_VARS:-""}
+ANSIBLE_PLAYBOOK_COMMAND_OPTIONS=${ANSIBLE_PLAYBOOK_COMMAND_OPTIONS:-}
+
+ON_FAIL=${ON_FAIL:-"systemctl status --no-pager"}
+
+devshop-logo "Running Ansible Playbook..."
+
+set -ex
+
+exec ansible-playbook $ANSIBLE_PLAYBOOK \
+    --tags=$ANSIBLE_TAGS \
+    --skip-tags=$ANSIBLE_SKIP_TAGS \
+    --extra-vars="$ANSIBLE_EXTRA_VARS" \
+    $ANSIBLE_PLAYBOOK_COMMAND_OPTIONS \
+    $* || \
+    log "Call to ansible-playbook failed. (exit $?) Running $ON_FAIL ..." && \
+    $ON_FAIL; exit $?

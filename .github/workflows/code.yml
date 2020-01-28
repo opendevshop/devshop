@@ -1,54 +1,32 @@
-name: Code Actions
-
+name: Code Quality
 on: [push]
-
-env:
-  COMPOSER_HOME: .gh-actions-composer-cache
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
 jobs:
-  composer-install:
-    name: Composer Install
-    runs-on: [ubuntu-16.04]
-
-    steps:
-    - uses: actions/checkout@v1
-
-    - name: Cache composer cache directory
-      uses: actions/cache@v1
-      with:
-        path: .gh-actions-composer-cache
-        key: 'composer-cache'
-
-    - name: Validate composer.json and composer.lock
-      run: composer validate
-
-    - name: Install dependencies
-      run: composer install --prefer-dist --no-progress --no-suggest
-
-  monorepo-split:
-    if: false
-    name: Split Git Repository
-    needs: composer-install
-
-    runs-on: [ubuntu-16.04]
+  lint:
+    name: Ansible Lint
+    runs-on: ubuntu-18.04
 
     steps:
       - uses: actions/checkout@v1
+      - uses: actions/setup-python@v1
 
-      - name: Cache composer cache directory
-        uses: actions/cache@v1
-        with:
-          path: .gh-actions-composer-cache
-          key: 'composer-cache'
+      # @TODO: Attempted to cache the pip packages, doesn't seem to work in subfolders.
+      #      - uses: actions/cache@v1
+      #        id: cache
+      #        with:
+      #          path: .cache/pip
+      #          key: ${{ runner.os }}-pip-${{ hashFiles('**/roles/opendevshop.devmaster/molecule/requirements.txt') }}
+      #          restore-keys: |
+      #                ${{ runner.os }}-test
 
-      - name: Install dependencies
-        run: composer install --prefer-dist --no-progress --no-suggest
+      - name: Install Ansible Molecule
+        if: steps.cache.outputs.cache-hit != 'true'
+        working-directory: ./roles/molecule
+        run: |
+          pwd
+          ls -la
+          python -m pip install --upgrade pip
+          pip install -r molecule-requirements.txt
 
-      - name: Create a branch for the monorepo-builder
-        run: git checkout -b $( echo ${GITHUB_REF} | sed 's/refs\/heads\///')
-
-      - run: 'echo "GITHUB_TOKEN: ${GITHUB_TOKEN}"'
-
-      - name: Split monorepo
-        run: bin/monorepo-builder split --config=monorepo-github-actions.yml
+      - name: Test Ansible Code Quality
+        working-directory: ./roles
+        run: molecule lint

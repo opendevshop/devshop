@@ -1,0 +1,15 @@
+##
+# DevShop: DevMaster Server with Apache
+#
+
+---
+- hosts: all
+  user: root
+  become: true
+  roles:
+    - opendevshop.users
+    - opendevshop.apache
+    - geerlingguy.php
+    - geerlingguy.php-mysql
+    - geerlingguy.composer
+    - opendevshop.devmaster

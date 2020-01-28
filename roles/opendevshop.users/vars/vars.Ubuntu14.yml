@@ -1,6 +1,6 @@
 ---
 
-# This has to be in the aegir-user playbook because it needs to run before geerlingguy.php to be seen by geerlingguy.php
+# This has to be in the users playbook because it needs to run before geerlingguy.php to be seen by geerlingguy.php
 
 php_default_version_debian: "5"
 
@@ -8,8 +8,6 @@ php_default_version_debian: "5"
 php_packages_extra:
   - php5-mcrypt
   - php-pear
-#  
-#   - php-apc
   - libpcre3-dev
   - libapache2-mod-php5
 

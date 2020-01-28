@@ -112,7 +112,7 @@ class DevmasterTest extends Command {
 //    $fs->dumpFile($settings_default_path, trim($output));
 
     // Run composer install
-    $process = new Process('composer install');
+    $process = new Process('composer install --no-progress --no-suggest --ansi');
     $process->setTimeout(NULL);
     $process->setWorkingDirectory($input->getOption('behat-path'));
 
@@ -123,6 +123,12 @@ class DevmasterTest extends Command {
         echo $buffer;
       }
     });
+
+    // Show git info
+    $process = new Process('git show');
+    $process->setWorkingDirectory($input->getOption('behat-path'));
+    $process->run();
+    echo $process->getOutput() . $process->getErrorOutput() ;
 
     // Run bin/behat
     $cmd = 'bin/behat --colors --format-settings=\'{"expand": true}\'';
@@ -154,6 +160,9 @@ class DevmasterTest extends Command {
     ));
 
     $process->setEnv($env);
+
+    $output->writeln(["Running $cmd with environment:"]);
+    $output->writeln(var_export($env));
 
     $process->run(function ($type, $buffer) {
       if (Process::ERR === $type) {

@@ -1,0 +1,17 @@
+#
+# docker-compose.volumes.yml
+#
+# This dockerfile is for local development only. It maps the development folders to volumes,
+#
+version: '2.2'
+services:
+  devshop:
+    volumes:
+      - ./aegir-home:/var/aegir:delegated
+      - ./devmaster:/var/aegir/devmaster-1.x/profiles/devmaster
+      - ./:/usr/share/devshop:delegated
+      - ./provision:/usr/share/drush/commands/provision:delegated
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+      - /var/lib/mysql
+      - /var/logs/aegir
+      - $HOME/.ssh:/var/aegir/.ssh

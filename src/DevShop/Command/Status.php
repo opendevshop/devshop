@@ -64,7 +64,7 @@ class Status extends Command
     // Check for provision
     $output->write("<comment>Checking for Provision...  </comment>");
 
-    if ($_SERVER['USER'] == 'aegir') {
+    if ($this->user == 'aegir') {
       $process = new Process('drush help provision-save');
     }
     else {
@@ -83,7 +83,7 @@ class Status extends Command
 
     // Check for devmaster
     $output->write("<comment>Checking for DevMaster...  </comment>");
-    if ($_SERVER['USER'] == 'aegir') {
+    if ($this->user == 'aegir') {
       $process = new Process('drush @hostmaster vget install_profile');
     }
     else {
