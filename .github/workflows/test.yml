@@ -6,8 +6,9 @@ on:
 env:
   ANSIBLE_VERBOSITY: 2
   COMPOSE_FILE: "docker-compose.yml:docker-compose.tests.yml"
-  # Modify this as needed when trying to solve problems.
-  DEBUG_FAIL_COMMAND: "bin/robo exec systemctl status --no-pager"
+
+  # DEBUG_COMMAND is run
+  DEBUG_COMMAND: "bin/robo exec systemctl status --no-pager"
 
 jobs:
   test:
@@ -53,15 +54,15 @@ jobs:
       run: |
         bin/robo test
 
+    - name: Save Assets
+      if: always()
+      run: |
+        docker ps -a > ./.github/test-assets/test-docker-ps.log && \
+        $DEBUG_COMMAND > ./.github/test-assets/test-debug-command.log && \
+        docker-compose logs > ./.github/test-assets/test-docker-compose.log
+
     - uses: actions/upload-artifact@v1
-      if: failure()
+      if: always()
       with:
         name: test-assets
         path: ./.github/test-assets
-
-    - name: Job Failed
-      if: failure()
-      run: |
-        docker ps -a && \
-        $DEBUG_FAIL_COMMAND && \
-        docker-compose logs > ./.github/test-assets/docker-compose.log

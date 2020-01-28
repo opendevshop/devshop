@@ -79,8 +79,15 @@ jobs:
       run: |
         bin/robo test
 
+    - name: Save Assets
+      if: always()
+      run: |
+        docker ps -a > ./.github/test-assets/build-docker-ps.log && \
+        $DEBUG_COMMAND > ./.github/test-assets/build-debug-command.log && \
+        docker-compose logs > ./.github/test-assets/build-docker-compose.log
+
     - uses: actions/upload-artifact@v1
-      if: failure()
+      if: always()
       with:
         name: test-assets
         path: ./.github/test-assets
