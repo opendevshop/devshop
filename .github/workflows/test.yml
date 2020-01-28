@@ -48,13 +48,13 @@ jobs:
       run: |
         docker-compose exec -T devshop service mysql start && \
         docker-compose exec -T \
-          --env ANSIBLE_TAGS=runtime \
+          --env ANSIBLE_TAGS= \
           --env ANSIBLE_SKIP_TAGS=none \
             devshop \
             devshop-ansible-playbook
 
-
     - name: Test DevShop
+      if: false
       run: |
         bin/robo test --compose-file docker-compose-tests.yml
 
