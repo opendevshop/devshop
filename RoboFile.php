@@ -447,7 +447,7 @@ class RoboFile extends \Robo\Tasks {
     'skip-source-prep' => FALSE,
     'skip-install' => FALSE,
     'os' => '',
-    'docker-image' => 'devshop/server:latest',
+    'docker-image' => 'devshop/server:local',
     'from' => 'devshop/server:latest',
     'vars' => '',
     'tags' => '',
