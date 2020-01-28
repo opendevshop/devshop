@@ -15,6 +15,8 @@
     server_hostname: "devshop.local.computer"
     server_hostname_ignore_errors: true
 
+    ansible_python_interpreter: python3
+
     # The geerlingguy.mysql and opendevshop.devmaster roles both use this
     mysql_root_password: root
 
