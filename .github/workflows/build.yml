@@ -73,7 +73,6 @@ jobs:
         ANSIBLE_TAGS: "${{ matrix.run_tags }}"
         ANSIBLE_SKIP_TAGS: "${{ matrix.run_skip_tags }}"
       run: |
-        bin/robo exec "ls -la /etc/mysql"; \
         bin/robo exec devshop-ansible-playbook
 
     - name: Test DevShop
