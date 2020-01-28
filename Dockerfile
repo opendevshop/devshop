@@ -289,4 +289,7 @@ VOLUME /var/log/aegir
 # When a single "
 CMD ["date"]
 
+# The command to run after the docker CMD.
+ENV DOCKER_COMMAND_POST "echo Docker container launch complete! TIP: Set DOCKER_COMMAND_POST environment variable to run another command."
+
 ENTRYPOINT ["docker-entrypoint"]
