@@ -14,6 +14,6 @@ devshop_prerequisite_packages:
   - systemd
   - systemd-cron
   - sudo
-  - iproute
+  - iproute2
   - wget
   - openssh-client
