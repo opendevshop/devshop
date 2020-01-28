@@ -283,5 +283,10 @@ VOLUME /var/aegir
 VOLUME /var/lib/mysql
 VOLUME /var/log/aegir
 
-CMD ["devshop-ansible-playbook"]
+# CMD ["devshop-ansible-playbook"]
+# Our docker-entrypoint script runs systemd, but before it does, it runs the "command" for the container.
+
+# When a single "
+CMD ["date"]
+
 ENTRYPOINT ["docker-entrypoint"]

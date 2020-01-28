@@ -8,7 +8,7 @@ devshop-logo "Docker Entrypoint"
 
 # Set ANSIBLE_TAGS from environment variable ANSIBLE_TAGS, or use ANSIBLE_TAGS_RUNTIME.
 ANSIBLE_TAGS=${ANSIBLE_TAGS:-runtime}
-DOCKER_COMMAND=${@:-devshop-ansible-playbook}
+DOCKER_COMMAND=${@:-date}
 DOCKER_COMMAND_POST=${DOCKER_COMMAND_POST:-"echo 'Docker command $DOCKER_COMMAND complete!'"}
 INIT_COMMAND=${INIT_COMMAND:-docker-systemd}
 
