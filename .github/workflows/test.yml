@@ -5,7 +5,10 @@ on:
 
 env:
   ANSIBLE_VERBOSITY: 2
-  FROM_IMAGE_ARG: devshop/server:latest
+  COMPOSE_FILE: "docker-compose.yml:docker-compose.tests.yml"
+
+  # DEBUG_COMMAND is run
+  DEBUG_COMMAND: "docker-compose exec -T devshop systemctl status --no-pager"
 
 jobs:
   test:
@@ -37,29 +40,31 @@ jobs:
           --follow 0 \
           --vars "devshop_danger_remove_devmaster=true" \
           --tags "rebuild-devmaster" \
-          --skip-tags "none" \
-          --compose-file docker-compose-tests.yml
+          --from "devshop/server:latest" \
+          --skip-tags "none"
 
     - name: Install DevShop
+      if: false
       env:
-        COMPOSE_FILE: "docker-compose-tests.yml"
-      # @TODO: Seems like env above is not making it's way to the container and devshop-ansible-playbook command: https://github.com/opendevshop/devshop/pull/487/checks?check_run_id=400001612#step:7:10
-      # Once the problem is discovered, remove either 'env' or the --env options below.
+        ANSIBLE_TAGS: all
       run: |
         docker-compose exec -T devshop service mysql start && \
-        docker-compose exec -T \
-          --env ANSIBLE_TAGS=runtime \
-          --env ANSIBLE_SKIP_TAGS=none \
-            devshop \
-            devshop-ansible-playbook
-
+        bin/robo exec devshop-ansible-playbook
 
     - name: Test DevShop
+      if: false
       run: |
-        bin/robo test --compose-file docker-compose-tests.yml
+        bin/robo test
+
+    - name: Save Assets
+      if: always()
+      run: |
+        docker ps -a > ./.github/test-assets/test-docker-ps.log && \
+        $DEBUG_COMMAND > ./.github/test-assets/test-debug-command.log && \
+        docker-compose logs > ./.github/test-assets/test-docker-compose.log
 
     - uses: actions/upload-artifact@v1
-      if: failure()
+      if: always()
       with:
         name: test-assets
         path: ./.github/test-assets

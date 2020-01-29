@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 DEVSHOP_PATH="$( cd "$(dirname "$0")"/.. ; pwd -P )"
-PATH="$DEVSHOP_PATH/bin:$PATH"
+export PATH="$DEVSHOP_PATH/bin:$PATH"
 
 set -e
 
@@ -8,8 +8,8 @@ devshop-logo "Docker Entrypoint"
 
 # Set ANSIBLE_TAGS from environment variable ANSIBLE_TAGS, or use ANSIBLE_TAGS_RUNTIME.
 ANSIBLE_TAGS=${ANSIBLE_TAGS:-runtime}
-DOCKER_COMMAND=${@:-devshop-ansible-playbook}
-DOCKER_COMMAND_POST=${DOCKER_COMMAND_POST:-"echo 'Docker command $DOCKER_COMMAND complete!'"}
+DOCKER_COMMAND=${@:-date}
+DOCKER_COMMAND_POST=${DOCKER_COMMAND_POST:-"echo No DOCKER_COMMAND_POST variable set. Which should never happen, because it is in the Dockerfile. Probably means you are running this outside of a container."}
 INIT_COMMAND=${INIT_COMMAND:-docker-systemd}
 
 DEBUG_ENVIRONMENT=${DEBUG_ENVIRONMENT:-ANSIBLE_}
@@ -32,14 +32,21 @@ echo "DOCKER_COMMAND:      $DOCKER_COMMAND"
 echo "DOCKER_COMMAND_POST: $DOCKER_COMMAND_POST"
 echo "DOCKER_COMMAND_LOGS: $DOCKER_COMMAND_LOGS"
 devshop-line
-echo "Container Environment:"
+
+devshop-logo "Container Environment:"
+[ -f /etc/centos-release ]  && log Contents of /etc/centos-release  && cat /etc/centos-release
+[ -f /etc/os-release ]      && log Contents of /etc/os-release      && cat /etc/os-release
+
+devshop-line
+
+log "Environment: (Filtered by $DEBUG_ENVIRONMENT)"
 env | grep "${DEBUG_ENVIRONMENT}" || echo "No Variables with a name containing '${DEBUG_ENVIRONMENT}' found."
 echo 'TIP: Set the $DEBUG_ENVIRONMENT environment variable to a variable name (or partial string) to print out values.'
 devshop-line
 
 log "Launching Docker Commands in a new process..."
 ((sleep 3 && \
-  devshop-logo "System Status" && systemctl status --no-pager && \
+  devshop-logo "System Status: systemctl status --no-pager" && systemctl status --no-pager && \
   devshop-logo "Running DOCKER_COMMAND: $DOCKER_COMMAND ..." && $DOCKER_COMMAND &&
   devshop-logo "Running DOCKER_COMMAND_POST: $DOCKER_COMMAND_POST ..." && $DOCKER_COMMAND_POST && \
     # If successful

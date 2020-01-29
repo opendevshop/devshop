@@ -140,7 +140,7 @@ RUN \
     if [ -d $DEVSHOP_PATH ]; then   \
         $LINE; \
         echo " Checking $DEVSHOP_PATH: ! Pre-existing DevShop found !"; \
-        cat $DEVSHOP_PATH/.git/HEAD; git status; git log -1; \
+        ls -la $DEVSHOP_PATH; cat $DEVSHOP_PATH/.git/HEAD; git status; git log -1; \
         echo "Deleting $DEVSHOP_PATH and /var/aegir/* ...";  \
         rm -rf $DEVSHOP_PATH /var/aegir/* /var/aegir/.* 2> /dev/null; \
     else      \
@@ -220,9 +220,11 @@ RUN mkdir -p /var/log/aegir/ && \
 ENV DEVSHOP_ENTRYPOINT_LOG_FILES="/var/log/aegir/*"
 ENV DEVSHOP_TESTS_ASSETS_PATH="${DEVSHOP_PATH}/.github/test-assets"
 
+# Set devshop_install_phase runtime here, since the Dockerfile is ALWAYS buildtime.
 ENV ANSIBLE_BUILD_COMMAND="devshop-ansible-playbook \
-    -e aegir_user_uid=$DEVSHOP_USER_UID \
-    -e aegir_user_gid=$DEVSHOP_USER_UID \
+    --extra-vars aegir_user_uid=$DEVSHOP_USER_UID \
+    --extra-vars aegir_user_gid=$DEVSHOP_USER_UID \
+    --extra-vars devshop_install_phase=buildtime \
 "
 
 RUN \
@@ -276,5 +278,18 @@ ENV ANSIBLE_SKIP_TAGS 'none'
 
 EXPOSE 80 443 3306 8025
 WORKDIR /var/aegir
-CMD ["devshop-ansible-playbook"]
+
+VOLUME /var/aegir
+VOLUME /var/lib/mysql
+VOLUME /var/log/aegir
+
+# CMD ["devshop-ansible-playbook"]
+# Our docker-entrypoint script runs systemd, but before it does, it runs the "command" for the container.
+
+# When a single "
+CMD ["date"]
+
+# The command to run after the docker CMD.
+ENV DOCKER_COMMAND_POST "echo Docker container launch complete! TIP: Set DOCKER_COMMAND_POST environment variable to run another command."
+
 ENTRYPOINT ["docker-entrypoint"]

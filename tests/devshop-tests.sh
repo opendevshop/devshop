@@ -4,6 +4,7 @@ DEVSHOP_PATH="$( cd "$(dirname "$0")"/../bin ; pwd -P )"
 PATH="$DEVSHOP_PATH:$PATH"
 
 devshop-logo "Running DevShop Tests"
+log echo "Path: $PATH"
 devshop status
 
 # Print the lines and exit if a failure happens.

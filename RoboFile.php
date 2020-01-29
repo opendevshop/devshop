@@ -50,12 +50,6 @@ class RoboFile extends \Robo\Tasks {
   protected $devshopInstall = "ansible-playbook /usr/share/devshop/docker/playbook.server.yml --tags install-devmaster --extra-vars \"devmaster_skip_install=false\"";
   protected $devshopUsername = "aegir";
 
-  /**
-   * @var int Ansible verbosity. Passed from robo verbosity.
-   */
-  protected $ansibleVerbosity = 0;
-  protected $verbosity = 0;
-
   use \Robo\Common\IO;
 
   /**
@@ -63,25 +57,84 @@ class RoboFile extends \Robo\Tasks {
    */
   private $devshop_root_path;
 
+  /**
+   * Map of $opts keys to $_SERVER variables.
+   *
+   * SERVER vars are set for the "docker-compose" process.
+   *
+   * @var array
+   */
+  private $serverOptionsMap = [
+    'verbose' => 'ANSIBLE_VERBOSITY',
+    'vars' => 'ANSIBLE_EXTRA_VARS',
+    'tags' => 'ANSIBLE_TAGS',
+    'skip-tags' => 'ANSIBLE_SKIP_TAGS',
+    'playbook' => 'ANSIBLE_PLAYBOOK',
+    'roles-path' => 'ANSIBLE_ROLES_PATH',
+    'config' => 'ANSIBLE_CONFIG',
+
+    // Used in docker compose image.
+    'docker-image' => 'DEVSHOP_DOCKER_IMAGE',
+    'from' => 'FROM_IMAGE',
+    'os' => 'OS_VERSION',
+  ];
 
   /**
-   * Pass robo -v to Ansible -v.
+   * Map of Symfony Console verbosity to Ansible Verbosity value.
+   * @var array
    */
-  private function setVerbosity() {
-    switch ($this->output->getVerbosity()) {
-      case OutputInterface::VERBOSITY_VERBOSE:
-        $this->ansibleVerbosity = 1;
-        break;
-      case OutputInterface::VERBOSITY_VERY_VERBOSE:
-        $this->ansibleVerbosity = 2;
-        break;
-      case OutputInterface::VERBOSITY_DEBUG:
-        $this->ansibleVerbosity = 3;
-        break;
-      default:
-        $this->ansibleVerbosity = 0;
-        break;
+  private $ansibleVerbosityMap = [
+    OutputInterface::VERBOSITY_NORMAL => 0,
+    OutputInterface::VERBOSITY_VERBOSE => 1,
+    OutputInterface::VERBOSITY_VERY_VERBOSE => 2,
+    OutputInterface::VERBOSITY_DEBUG => 3,
+  ];
+
+  /**
+   * Merge robo $opts and $_SERVER environment vars into the runtime environment
+   * of the docker-compose calls.
+   *
+   * @param array $opts
+   */
+
+  /**
+   * @param array $opts The robo options array.
+   * @param array $env The initial environment.
+   *
+   * @return array
+   */
+  private function generateEnvironment(array $opts, array $env = []) {
+    $env += $this->optionsToArray($opts['environment']);
+    $env['ANSIBLE_VERBOSITY'] = $this->ansibleVerbosityMap[$this->output()->getVerbosity()];
+
+    foreach ($this->serverOptionsMap as $opt_name => $var_name) {
+      // Use $_SERVER var if it exists...
+      $env[$var_name] = !empty($_SERVER[$var_name])? $_SERVER[$var_name]:
+        // or use --options value if it exists.
+        // If not, set to empty string.
+        (!empty($opts[$opt_name])? $opts[$opt_name]: '');
     }
+    return $env;
+  }
+
+  /**
+   * Append _ARG to all variable names of an environment vars array.
+   * @param bool new Set to "true" to reset environment with only the new _ARG values.
+   * @return array
+   */
+  private function generateEnvironmentArgs(array $opts, $new = false) {
+
+    // Convert opts to environment vars.
+    $environment = $this->generateEnvironment($opts);
+
+    // Load default environment, either empty or from existing.
+    $return_env = $new? []: $environment;
+
+    // Append _ARG to all environment variable names.
+    foreach ($environment as $name => $value) {
+      $return_env["{$name}_ARG"] = $value;
+    }
+    return $return_env;
   }
 
   public function  __construct()
@@ -288,34 +341,28 @@ class RoboFile extends \Robo\Tasks {
    * @option $tags Ansible tags to pass to --tags option.
    * @option $skip_tags Ansible tags to pass to --skip-tags option.
    * @option $playbook Ansible tags to pass to ansible-playbook command.
+   * @option install-at-runtime Launch bare containers and then install devshop.
    */
   public function prepareContainers($user_uid = NULL, $hostname = 'devshop.local.computer', $opts = [
-      'tag' => 'local',
-      'from' => 'devshop/server:latest',
+      'docker-image' => 'devshop/server:local',
+      'from' => NULL,
       'dockerfile' => 'Dockerfile',
-      'os' => '',
+      'os' => 'ubuntu1804',
       'vars' => '',
       'tags' => '',
       'skip-tags' => '',
       'playbook' => 'roles/server.playbook.yml',
-      'compose-file' => 'docker-compose.yml',
       'environment' => [],
+      'roles-path' => '/usr/share/devshop/roles',
+      'config' => '/usr/share/devshop/ansible.cfg',
+      'install-at-runtime' => FALSE,
   ]) {
 
-    $this->setVerbosity();
-
-    // Environment variables at build time: AKA Build Args.
-    $env_build = $this->optionsToArray($opts['environment']);
-
-    // Determine current UID.
-    if (is_null($user_uid)) {
-      $env_build['DEVSHOP_USER_UID_ARG'] = trim(shell_exec('id -u'));
-    }
-
-    // Set FROM_IMAGE. If os is set, generate the name.
-    // If os is the default, set FROM to latest.
-    if (!empty($opts['os'])) {
+    // Define docker-image (name for the "image" in docker-compose)
+    // Set FROM_IMAGE and DEVSHOP_DOCKER_IMAGE if --os option is used. (and --from was not used)
+    if (empty($opts['from']) && !empty($opts['os'])) {
       $opts['from'] = "geerlingguy/docker-{$opts['os']}-ansible";
+      $opts['docker-image'] = 'devshop/server:local-' . $opts['os'];
     }
 
     // Append the absolute path in the container.
@@ -323,27 +370,28 @@ class RoboFile extends \Robo\Tasks {
 
     $this->yell('Building DevShop Container from: ' . $opts['from'], 40, 'blue');
 
-    // @TODO: Document how  ENV vars in the process running `robo` are passed to
-    // the `docker-compose build` command, which, if they are listed in docker-compose.yml,
-    // will get passed into the containers.
+    // Block anything from running on build.
+    // @TODO: Figure out why centos can't enable service in build phase.
+    if ($opts['os'] == 'centos7' || $opts['install-at-runtime']) {
+      $opts['tags'] = $_SERVER['ANSIBLE_TAGS'] = 'none';
+      $opts['skip-tags'] = $_SERVER['ANSIBLE_SKIP_TAGS'] = '';
 
-    $env_build['DEVSHOP_DOCKER_TAG'] = $opts['tag'];
+      if ($opts['os'] == 'centos7') {
+        $this->yell('CENTOS DETECTED in RUNTIME. Running full playbook in container.', 40, 'red');
+      }
+      else {
+        $this->yell('--install-at-runtime option detected. Skipping build in container.', 40, 'red');
+      }
 
-    // Set FROM using --from option.
-    // @TODO: Tell users FROM _IMAGE env var doesn't work for prepare:containers?
-    $env_build['FROM_IMAGE_ARG'] = $opts['from'];
-    $env_build['ANSIBLE_CONFIG_ARG'] = '/usr/share/devshop/ansible.cfg';
-    $env_build['ANSIBLE_VERBOSITY_ARG'] = $this->ansibleVerbosity;
-    $env_build['ANSIBLE_EXTRA_VARS_ARG'] = $opts['vars'];
-    $env_build['ANSIBLE_TAGS_ARG'] = $opts['tags'];
-    $env_build['ANSIBLE_SKIP_TAGS_ARG'] = $opts['skip-tags'];
+      $this->yell('CENTOS DETECTED in BUILDTIME. Skipping playbook run in image build.', 40, 'red');
+    }
 
-    // Pass `robo --playbook` option to Dockerfile.
-    $env_build['ANSIBLE_PLAYBOOK_ARG'] = $opts['playbook'];
-    $env_build['COMPOSE_FILE_ARG'] = $opts['compose-file'];
+    // Runtime Environment for the docker-compose build command.
+    $env_build = $this->generateEnvironmentArgs($opts);
 
-    if ($this->ansibleVerbosity > 0) {
-      $this->say("Custom Build Environment: " . print_r($env_build, 1));
+    // Determine current UID.
+    if (is_null($user_uid)) {
+      $env_build['DEVSHOP_USER_UID_ARG'] = trim(shell_exec('id -u'));
     }
 
     $provision_io = new \ProvisionOps\Tools\Style($this->input(), $this->output());
@@ -392,8 +440,10 @@ class RoboFile extends \Robo\Tasks {
    * @option $build Run `robo prepare:containers` to rebuild the container first.
    * @option os-version An OS "slug" for any of the geerlingguy/docker-*-ansible images: https://hub.docker.com/u/geerlingguy/
    * @option environment pass an environment variable to docker-compose in the form --environment NAME=VALUE
+   * @option volumes Set to TRUE to use the docker-compose.volumes.yml file to map local folders into the container.
+   * @option install-at-runtime Launch bare containers and then install devshop.
    */
-  public function up($docker_command = null, $opts = [
+  public function up($docker_command = 'devshop-ansible-playbook', $opts = [
     'follow' => 1,
     'test' => FALSE,
     'test-upgrade' => FALSE,
@@ -407,21 +457,31 @@ class RoboFile extends \Robo\Tasks {
     'build' => FALSE,
     'skip-source-prep' => FALSE,
     'skip-install' => FALSE,
-    'os' => '',
-    'from' => 'devshop/server:latest',
+    'os' => 'ubuntu1804',
+    'docker-image' => 'devshop/server:local',
+    'from' => NULL,
     'vars' => '',
     'tags' => '',
     'skip-tags' => '',
     'file' => 'Dockerfile',
     'playbook' => 'roles/server.playbook.yml',
-    'compose-file' => 'docker-compose.yml',
+    'roles-path' => '/usr/share/devshop/roles',
+    'config' => '/usr/share/devshop/ansible.cfg',
     'local' => FALSE,
     'environment' => [],
+    'volumes' => FALSE,
+    'install-at-runtime' => FALSE,
   ]) {
+
+    // Define docker-image (name for the "image" in docker-compose.
+    // Set FROM_IMAGE and DEVSHOP_DOCKER_IMAGE if --os option is used. (and --from was not used)
+    if (empty($opts['from']) && !empty($opts['os'])) {
+      $opts['from'] = "geerlingguy/docker-{$opts['os']}-ansible";
+      $opts['docker-image'] = 'devshop/server:local-' . $opts['os'];
+    }
 
     // Check for tools
     $this->prepareHost();
-    $this->setVerbosity();
 
     if (empty($this->devshop_root_path)) {
       $this->devshop_root_path = __DIR__;
@@ -443,70 +503,57 @@ class RoboFile extends \Robo\Tasks {
       $opts['user-uid'] = trim(shell_exec('id -u'));
     }
 
-    // Build the container if desired.
-    if ($opts['build']) {
-      // @TODO: Make the playbook a CLI option and figure out a better way to do this.
-      // $playbook = (!empty($opts['test']) || !empty($opts['test-upgrade']))? 'playbook.testing.yml': 'docker/playbook.server.yml';
-      $playbook = $opts['playbook'];
-      $this->say("Preparing containers with playbook: $playbook");
-      $opts['tag'] = 'local';
+    // Build the image if --build option specified, or if the image doesn't exist yet locally.
+    // If we don't, docker-compose up will automatically build it, but without these options.
+    // Run a "docker-compose pull" here confirms that the remote container by this name exists, and gets us a local copy.
+    $docker_image_exists_remotely = $this->_exec("docker pull {$opts['docker-image']}")->wasSuccessful();
 
-      // If --local is also specified, set "os" option so container is built from scratch.
-      if (empty($opts['os']) && $opts['local']) {
-        $opts['os'] = 'ubuntu1804';
-      }
+    // The image was just pulled, so this should always be true if $docker_image_exists_remotely is true.
+    $docker_image_exists_locally = $this->_exec("docker inspect {$opts['docker-image']} > /dev/null")->wasSuccessful();
 
+    // If --build option is used, or if docker image does not exist anywhere, build it with "local-$OS" tag
+    if ($opts['build'] || !$docker_image_exists_remotely && !$docker_image_exists_locally) {
+      $this->yell("Docker Image {$opts['docker-image']} was not found on this system or on docker hub. Building it...");
       $this->prepareContainers($opts['user-uid'], 'devshop.local.computer', $opts);
     }
-    elseif ($opts['local']) {
-      // If the --local option was specified, use 'devshop/server:local' tag for the image name.
-      $opts['tag'] = 'local';
+    // Warn the user that this container is not being built.
+    elseif (!$opts['build'] && $docker_image_exists_locally) {
+      $this->yell("Docker image {$opts['docker-image']} was found locally. Launching that container image. Use --build to rebuild it.", 40, "yellow");
     }
-    else {
-      // If the --build or --local options were not specified, use 'devshop/server:local'
-      // tag for the image name and pull the containers first.
-      // If we don't, `docker-compose up` will BUILD and tag the image even if
-      // it exists on docker hub.
-      $this->say("Pulling containers before docker-compose up...");
-      $cmd[] = "docker-compose pull --quiet";
-      $opts['tag'] = 'latest';
+
+    // @TODO: Figure out why centos can't enable service in build phase.
+    if ($opts['os'] == 'centos7' || $opts['install-at-runtime']) {
+      // Set tags to all so it does a full install at runtime.
+      $opts['tags'] = $_SERVER['ANSIBLE_TAGS'] = 'all';
+      $opts['skip-tags'] = $_SERVER['ANSIBLE_SKIP_TAGS'] = 'none';
+
+      if ($opts['os'] == 'centos7') {
+        $this->yell('CENTOS DETECTED in RUNTIME. Running full playbook in container.', 40, 'red');
+      }
+      else {
+        $this->yell('--install-at-runtime option detected. Running full playbook in container.', 40, 'red');
+      }
     }
 
     if ($opts['mode'] == 'docker-compose') {
 
-      if ($opts['test'] || $opts['test-upgrade'] || $opts['compose-file'] == 'docker-compose-tests.yml') {
-        $this->yell("Test Environment Requested: Using docker-compose-tests.yml.", 40, 'cyan');
-        $this->say("No docker volumes are enabled using this mode.");
-
-        if (!$opts['build']) {
-          $this->say("The --build option was not specified: The latest code may not be in the container.");
-        }
-
-        $compose_file = 'docker-compose-tests.yml';
-      }
-      else {
-        $this->yell("Local Development Environment Requested: Using {$opts['compose-file']}", 40, 'cyan');
-        $this->say('Volumes will be mounted for:');
+      // Volumes
+      if ($opts['volumes']) {
+        $this->yell('Volume mounts requested. Adding docker-compose.volumes.yml');
         $this->say(' - ' . __DIR__ . '/aegir-home to /var/aegir');
         $this->say(' - ' . __DIR__ . '/devmaster to /var/aegir/devmaster-1.x/profiles/devmaster');
 
-        $compose_file = $opts['compose-file'];
+        // Set COMPOSE_FILE to include volumes.
+        putenv('COMPOSE_FILE=docker-compose.yml:docker-compose.volumes.yml');
 
-        if (!file_exists('aegir-home/.drush') && !$opts['skip-source-prep']) {
+        if (!file_exists('aegir-home/devmaster-' . $this::DEVSHOP_LOCAL_VERSION) && !$opts['skip-source-prep']) {
+          $this->io()->warning('The aegir-home folder not present. Running prepare source code command.');
           $this->prepareSourcecode($opts);
-        }
-        elseif ($opts['skip-source-prep']) {
-          $this->say("Source code prep skipped because --skip-source-prep option was used.");
-        }
-        elseif (file_exists('aegir-home/.drush')) {
-          $this->say("Source code prep skipped because 'aegir-home/.drush' folder already exists.");
         }
       }
 
-      $cmd[] = 'echo "Running docker-compose up with COMPOSE_FILE=$COMPOSE_FILE"... ';
       $cmd[] = "docker-compose up --detach --force-recreate";
 
-      // Run final playbook to install devshop.
       // Test commands must be run as application user.
       // The `--test` command is run in GitHub Actions.
       $test_command = '';
@@ -529,28 +576,16 @@ class RoboFile extends \Robo\Tasks {
         }
       }
 
-      //Environment variables at run time: AKA Environment variables.
-      $env_run = $this->optionsToArray($opts['environment']);
-      $env_run['DEVSHOP_DOCKER_TAG'] = $opts['tag'];
-      $env_run['ANSIBLE_CONFIG'] = '/usr/share/devshop/ansible.cfg';
-      $env_run['COMPOSE_FILE'] = $compose_file;
-      $env_run['ANSIBLE_VERBOSITY'] = $this->ansibleVerbosity;
-      $env_run['ANSIBLE_TAGS'] = $opts['tags'];
-      $env_run['ANSIBLE_SKIP_TAGS'] = $opts['skip-tags'];
-      $env_run['ANSIBLE_PLAYBOOK'] = '/usr/share/devshop/' . $opts['playbook'];
-      $env_run['ANSIBLE_ROLES_PATH'] = '/usr/share/devshop/roles';
+      // Runtime Environment for the $cmd list.
+      $env_run = $this->generateEnvironmentArgs($opts);
 
-      // Run a secondary command alongside the docker command.
+      // Run a secondary command after the docker command.
       if ($test_command) {
         $env_run['DOCKER_COMMAND_POST'] = $test_command;
       }
 
-      // Override the docker commmand:
+      // Override the docker commmand.
       $env_run['DOCKER_COMMAND'] = $docker_command;
-
-      if ($this->ansibleVerbosity > 0) {
-        $this->say("Custom Run Environment: " . print_r($env_run, 1));
-      }
 
       if (!empty($cmd)) {
         foreach ($cmd as $command) {
@@ -600,7 +635,7 @@ class RoboFile extends \Robo\Tasks {
 //        ->publish(80,80)
 //        ->detached()
 //        ->privileged()
-//        ->env('COMPOSE_FILE', 'docker-compose-tests.yml')
+//        ->env('COMPOSE_FILE', 'docker-compose.tests.yml')
 //        ->env('GITHUB_TOKEN', $_SERVER['GITHUB_TOKEN']?: '')
 //        ->env('TERM', 'xterm')
 //        ->env('GITHUB_REF', $_SERVER['GITHUB_REF'])
@@ -760,13 +795,24 @@ class RoboFile extends \Robo\Tasks {
    *
    * @return array
    */
-  function optionsToArray($options_list) {
+  private function optionsToArray($options_list) {
     $vars = [];
     foreach ($options_list as $options_string) {
       list($name, $value) = explode("=", $options_string);
       $vars[$name] = $value;
     }
     return $vars;
+  }
+
+  /**
+   * Run a command in the devshop container.
+   */
+  public function exec($cmd = "devshop-ansible-playbook") {
+    return $this->_exec("docker-compose exec -T \
+      --env ANSIBLE_TAGS \
+      --env ANSIBLE_SKIP_TAGS \
+      --env ANSIBLE_VARS \
+      devshop $cmd")->getExitCode();
   }
 
   /**

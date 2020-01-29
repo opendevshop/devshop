@@ -105,3 +105,8 @@ hosting_queue_runner_bin_path: "{{ devshop_cli_bin_path }}/hosting-queue-runner"
 
 # Triggers the removal of devshop_devmaster_path: `rm -rf {{ devshop_devmaster_path }}`
 devshop_danger_remove_devmaster: false
+
+# By default, devshop assumes it is being installed at "runtime" (like on a running server).
+# In the Dockerfile, "devshop_install_phase: buildtime" ansible vars is set.
+# If building other kinds of server images, where data won't be installed yet, use this variable.
+devshop_install_phase: runtime
