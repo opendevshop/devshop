@@ -64,7 +64,6 @@
     - role: geerlingguy.mysql
       tags: [geerlingguy, mysql]
 
-    - geerlingguy.mysql
     - geerlingguy.php-versions
     - geerlingguy.php
     - geerlingguy.php-mysql

@@ -283,5 +283,13 @@ VOLUME /var/aegir
 VOLUME /var/lib/mysql
 VOLUME /var/log/aegir
 
-CMD ["devshop-ansible-playbook"]
+# CMD ["devshop-ansible-playbook"]
+# Our docker-entrypoint script runs systemd, but before it does, it runs the "command" for the container.
+
+# When a single "
+CMD ["date"]
+
+# The command to run after the docker CMD.
+ENV DOCKER_COMMAND_POST "echo Docker container launch complete! TIP: Set DOCKER_COMMAND_POST environment variable to run another command."
+
 ENTRYPOINT ["docker-entrypoint"]

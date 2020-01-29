@@ -30,7 +30,7 @@ services:
     #    By using the non-docker-hub image "devshop/server:local" in this docker-compose file, we force the
     #    the developer to finish that first build before any container can be launched.
     #
-    image: ${DEVSHOP_DOCKER_IMAGE:-devshop/server:latest}
+    image: ${DEVSHOP_DOCKER_IMAGE:-devshop/server:local}
     command: ${DOCKER_COMMAND:-}
     build:
       context: '.'
@@ -71,7 +71,8 @@ services:
       - FROM_IMAGE
       - OS_VERSION
       - DEVSHOP_USER_UID
-      - DOCKER_COMMAND_POST
+      # @TODO: Figure a way for the  "devshop server roles" to maintain their own commands.
+      - DOCKER_COMMAND_POST=devshop login
 
       # Change to use a different database host.
       - DATABASE_HOST=localhost
@@ -89,5 +90,5 @@ services:
     privileged: true
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
-      - /var/lib/mysql
+      # - /var/lib/mysql
       - /var/logs/aegir

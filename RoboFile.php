@@ -341,12 +341,13 @@ class RoboFile extends \Robo\Tasks {
    * @option $tags Ansible tags to pass to --tags option.
    * @option $skip_tags Ansible tags to pass to --skip-tags option.
    * @option $playbook Ansible tags to pass to ansible-playbook command.
+   * @option install-at-runtime Launch bare containers and then install devshop.
    */
   public function prepareContainers($user_uid = NULL, $hostname = 'devshop.local.computer', $opts = [
       'docker-image' => 'devshop/server:local',
-      'from' => 'devshop/server:latest',
+      'from' => NULL,
       'dockerfile' => 'Dockerfile',
-      'os' => '',
+      'os' => 'ubuntu1804',
       'vars' => '',
       'tags' => '',
       'skip-tags' => '',
@@ -354,11 +355,12 @@ class RoboFile extends \Robo\Tasks {
       'environment' => [],
       'roles-path' => '/usr/share/devshop/roles',
       'config' => '/usr/share/devshop/ansible.cfg',
+      'install-at-runtime' => FALSE,
   ]) {
 
-    // Set FROM_IMAGE. If os is set, generate the name.
-    // If os is the default, set FROM to latest.
-    if (!empty($opts['os'])) {
+    // Define docker-image (name for the "image" in docker-compose)
+    // Set FROM_IMAGE and DEVSHOP_DOCKER_IMAGE if --os option is used. (and --from was not used)
+    if (empty($opts['from']) && !empty($opts['os'])) {
       $opts['from'] = "geerlingguy/docker-{$opts['os']}-ansible";
       $opts['docker-image'] = 'devshop/server:local-' . $opts['os'];
     }
@@ -368,11 +370,19 @@ class RoboFile extends \Robo\Tasks {
 
     $this->yell('Building DevShop Container from: ' . $opts['from'], 40, 'blue');
 
+    // Block anything from running on build.
     // @TODO: Figure out why centos can't enable service in build phase.
-    if ($opts['os'] == 'centos7') {
-      // Block anything from running on build.
+    if ($opts['os'] == 'centos7' || $opts['install-at-runtime']) {
       $opts['tags'] = $_SERVER['ANSIBLE_TAGS'] = 'none';
       $opts['skip-tags'] = $_SERVER['ANSIBLE_SKIP_TAGS'] = '';
+
+      if ($opts['os'] == 'centos7') {
+        $this->yell('CENTOS DETECTED in RUNTIME. Running full playbook in container.', 40, 'red');
+      }
+      else {
+        $this->yell('--install-at-runtime option detected. Skipping build in container.', 40, 'red');
+      }
+
       $this->yell('CENTOS DETECTED in BUILDTIME. Skipping playbook run in image build.', 40, 'red');
     }
 
@@ -431,8 +441,9 @@ class RoboFile extends \Robo\Tasks {
    * @option os-version An OS "slug" for any of the geerlingguy/docker-*-ansible images: https://hub.docker.com/u/geerlingguy/
    * @option environment pass an environment variable to docker-compose in the form --environment NAME=VALUE
    * @option volumes Set to TRUE to use the docker-compose.volumes.yml file to map local folders into the container.
+   * @option install-at-runtime Launch bare containers and then install devshop.
    */
-  public function up($docker_command = null, $opts = [
+  public function up($docker_command = 'devshop-ansible-playbook', $opts = [
     'follow' => 1,
     'test' => FALSE,
     'test-upgrade' => FALSE,
@@ -446,9 +457,9 @@ class RoboFile extends \Robo\Tasks {
     'build' => FALSE,
     'skip-source-prep' => FALSE,
     'skip-install' => FALSE,
-    'os' => '',
-    'docker-image' => 'devshop/server:latest',
-    'from' => 'devshop/server:latest',
+    'os' => 'ubuntu1804',
+    'docker-image' => 'devshop/server:local',
+    'from' => NULL,
     'vars' => '',
     'tags' => '',
     'skip-tags' => '',
@@ -459,7 +470,15 @@ class RoboFile extends \Robo\Tasks {
     'local' => FALSE,
     'environment' => [],
     'volumes' => FALSE,
+    'install-at-runtime' => FALSE,
   ]) {
+
+    // Define docker-image (name for the "image" in docker-compose.
+    // Set FROM_IMAGE and DEVSHOP_DOCKER_IMAGE if --os option is used. (and --from was not used)
+    if (empty($opts['from']) && !empty($opts['os'])) {
+      $opts['from'] = "geerlingguy/docker-{$opts['os']}-ansible";
+      $opts['docker-image'] = 'devshop/server:local-' . $opts['os'];
+    }
 
     // Check for tools
     $this->prepareHost();
@@ -484,48 +503,37 @@ class RoboFile extends \Robo\Tasks {
       $opts['user-uid'] = trim(shell_exec('id -u'));
     }
 
-    // Define docker-image.
-    // Set from and tag if --os option is used.  (except for ubuntu1804)
-    if (!empty($opts['os'])) {
-      $opts['from'] = "geerlingguy/docker-{$opts['os']}-ansible";
-
-      // Change docker-image, but only if it was not set to something other than the default.
-      $opts['docker-image'] = $opts['docker-image'] == 'devshop/server:latest'? 'devshop/server:local-'. $opts['os']: $opts['docker-image'];
-    }
-
-    // If --local is also specified, set "os" option so container is built from scratch.
-    if (empty($opts['os']) && $opts['local']) {
-      $opts['os'] = 'ubuntu1804';
-      // Set docker-image again to include 'os' change above, but only if it was not set to something other than the default.
-      $opts['docker-image'] = $opts['docker-image'] == 'devshop/server:latest'? 'devshop/server:local-'. $opts['os']: $opts['docker-image'];
-    }
-
     // Build the image if --build option specified, or if the image doesn't exist yet locally.
     // If we don't, docker-compose up will automatically build it, but without these options.
     // Run a "docker-compose pull" here confirms that the remote container by this name exists, and gets us a local copy.
     $docker_image_exists_remotely = $this->_exec("docker pull {$opts['docker-image']}")->wasSuccessful();
+
+    // The image was just pulled, so this should always be true if $docker_image_exists_remotely is true.
     $docker_image_exists_locally = $this->_exec("docker inspect {$opts['docker-image']} > /dev/null")->wasSuccessful();
 
     // If --build option is used, or if docker image does not exist anywhere, build it with "local-$OS" tag
     if ($opts['build'] || !$docker_image_exists_remotely && !$docker_image_exists_locally) {
       $this->yell("Docker Image {$opts['docker-image']} was not found on this system or on docker hub. Building it...");
-      $opts['docker-image'] ='devshop/server:local-'. $opts['os'];
       $this->prepareContainers($opts['user-uid'], 'devshop.local.computer', $opts);
     }
-    elseif ($opts['local'] || !empty($opts['os'])) {
-      // If the --local option was specified, use 'devshop/server:local' tag for the image name, but only if it was not set to something other than the default.
-      // @TODO: This may not be needed because it is set on line 489 now.
-      $opts['docker-image'] = $opts['docker-image'] == 'devshop/server:latest'? 'devshop/server:local-'. $opts['os']: $opts['docker-image'];
+    // Warn the user that this container is not being built.
+    elseif (!$opts['build'] && $docker_image_exists_locally) {
+      $this->yell("Docker image {$opts['docker-image']} was found locally. Launching that container image. Use --build to rebuild it.", 40, "yellow");
     }
 
     // @TODO: Figure out why centos can't enable service in build phase.
-    if ($opts['os'] == 'centos7') {
+    if ($opts['os'] == 'centos7' || $opts['install-at-runtime']) {
       // Set tags to all so it does a full install at runtime.
       $opts['tags'] = $_SERVER['ANSIBLE_TAGS'] = 'all';
       $opts['skip-tags'] = $_SERVER['ANSIBLE_SKIP_TAGS'] = 'none';
-      $this->yell('CENTOS DETECTED in RUNTIME. Running full playbook in container.', 40, 'red');
-    }
 
+      if ($opts['os'] == 'centos7') {
+        $this->yell('CENTOS DETECTED in RUNTIME. Running full playbook in container.', 40, 'red');
+      }
+      else {
+        $this->yell('--install-at-runtime option detected. Running full playbook in container.', 40, 'red');
+      }
+    }
 
     if ($opts['mode'] == 'docker-compose') {
 
@@ -538,7 +546,7 @@ class RoboFile extends \Robo\Tasks {
         // Set COMPOSE_FILE to include volumes.
         putenv('COMPOSE_FILE=docker-compose.yml:docker-compose.volumes.yml');
 
-        if (!file_exists('aegir-home/config') && !$opts['skip-source-prep']) {
+        if (!file_exists('aegir-home/devmaster-' . $this::DEVSHOP_LOCAL_VERSION) && !$opts['skip-source-prep']) {
           $this->io()->warning('The aegir-home folder not present. Running prepare source code command.');
           $this->prepareSourcecode($opts);
         }

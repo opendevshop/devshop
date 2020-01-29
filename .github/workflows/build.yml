@@ -9,6 +9,7 @@ env:
   # Set ANSIBLE_VERBOSITY to 1,2 or 3 when needed for development.
   ANSIBLE_VERBOSITY: 0
   COMPOSE_FILE: "docker-compose.yml:docker-compose.tests.yml"
+  DEBUG_COMMAND: "docker-compose exec -T devshop systemctl status --no-pager"
 
 jobs:
   build:
@@ -40,6 +41,11 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
 
+    - name: Prepare CI (ubuntu)
+      if: matrix.os == 'ubuntu1804'
+      run: |
+        echo "::set-env name=ANSIBLE_TAGS::mysql"
+
     - uses: actions/checkout@v1
     - name: Get Composer Cache Directory
       id: composer-cache
@@ -60,7 +66,7 @@ jobs:
     # They are added to the command here for visibility.
     - name: Launch Server Container (${{ matrix.os }})
       run: |
-        bin/robo up "sleep infinity" \
+        bin/robo up \
           --build \
           --follow 0 \
           --os "${OS}" \
