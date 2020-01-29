@@ -31,6 +31,9 @@ jobs:
           - 'centos7'
         vars:
           - 'php_version: 7.2'
+        include:
+          - os: ubuntu1804
+          - build_tags: mysql
 
     env:
       ANSIBLE_TAGS: "${{ matrix.build_tags }}"
