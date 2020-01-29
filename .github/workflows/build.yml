@@ -9,6 +9,7 @@ env:
   # Set ANSIBLE_VERBOSITY to 1,2 or 3 when needed for development.
   ANSIBLE_VERBOSITY: 0
   COMPOSE_FILE: "docker-compose.yml:docker-compose.tests.yml"
+  DEBUG_COMMAND: bin/robo exec "systemctl status --no-pager"
 
 jobs:
   build:
