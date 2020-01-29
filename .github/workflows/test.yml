@@ -1,0 +1,70 @@
+name: Test
+
+on: 
+ push:
+
+env:
+  ANSIBLE_VERBOSITY: 2
+  COMPOSE_FILE: "docker-compose.yml:docker-compose.tests.yml"
+
+  # DEBUG_COMMAND is run
+  DEBUG_COMMAND: "docker-compose exec -T devshop systemctl status --no-pager"
+
+jobs:
+  test:
+    name: Test DevShop
+
+    runs-on: ubuntu-18.04
+    steps:
+
+    - uses: actions/checkout@v1
+    - name: Get Composer Cache Directory
+      id: composer-cache
+      run: |
+        echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+    - uses: actions/cache@v1
+      with:
+        path: ${{ steps.composer-cache.outputs.dir }}
+        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-composer-
+
+    - name: Install Composer dependencies
+      run: composer install --prefer-dist --no-progress --no-suggest
+
+    - name: Build and Launch pre-built DevShop Server Image FROM devshop/server
+      run: |
+        bin/robo up "sleep infinity" \
+          --build \
+          --follow 0 \
+          --vars "devshop_danger_remove_devmaster=true" \
+          --tags "rebuild-devmaster" \
+          --from "devshop/server:latest" \
+          --skip-tags "none"
+
+    - name: Install DevShop
+      if: false
+      env:
+        ANSIBLE_TAGS: all
+      run: |
+        docker-compose exec -T devshop service mysql start && \
+        bin/robo exec devshop-ansible-playbook
+
+    - name: Test DevShop
+      if: false
+      run: |
+        bin/robo test
+
+    - name: Save Assets
+      if: always()
+      run: |
+        docker ps -a > ./.github/test-assets/test-docker-ps.log && \
+        $DEBUG_COMMAND > ./.github/test-assets/test-debug-command.log && \
+        docker-compose logs > ./.github/test-assets/test-docker-compose.log
+
+    - uses: actions/upload-artifact@v1
+      if: always()
+      with:
+        name: test-assets
+        path: ./.github/test-assets

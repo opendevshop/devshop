@@ -1,0 +1,24 @@
+---
+- name: Ensure GitHub user accounts are present.
+  user:
+    name: "{{ item.name | default(item) }}"
+    shell: /bin/bash
+    createhome: yes
+    groups: "{{ item.groups | default(omit) }}"
+    home: /home/{{ item.name | default(item) }}
+    state: present
+  with_items: "{{ github_users }}"
+
+- name: Ensure authorized_keys for GitHub user accounts are present.
+  authorized_key:
+    user: "{{ item.name | default(item) }}"
+    key: "{{ github_url }}/{{ item.name | default(item) }}.keys"
+    manage_dir: yes
+    exclusive: "{{ github_users_authorized_keys_exclusive }}"
+  with_items: "{{ github_users }}"
+
+- name: Ensure user accounts in github_users_absent are absent.
+  user:
+    name: "{{ item.name | default(item) }}"
+    state: absent
+  with_items: "{{ github_users_absent }}"

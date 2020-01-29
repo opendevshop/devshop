@@ -1,0 +1,14 @@
+skip_list:
+  - '302'
+  - '303'
+  - '306'
+exclude_paths:
+   - ./geerlingguy.apache
+   - ./geerlingguy.composer
+   - ./geerlingguy.git
+   - ./geerlingguy.mysql
+   - ./geerlingguy.php
+   - ./geerlingguy.php-mysql
+   - ./geerlingguy.php-versions
+   - ./geerlingguy.supervisor
+   - ./molecule

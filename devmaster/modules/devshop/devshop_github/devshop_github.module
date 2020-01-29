@@ -53,40 +53,35 @@ function devshop_github_token_is_valid($token = NULL) {
 }
 
 /**
- * Grab an authenticated GitHub client.
+ * Get a GitHub client.
  *
  * If a devshop_github_token is not found, it will attempt to use the Public API.
  *
- * @param bool $public
- *   Set to TRUE to skip authentication.
+ * @param bool $must_authenticate
+ *   Set to TRUE if the client must authenticate with a token. If TRUE and token
+ *   is not present, an Exception will be thrown.
  *
  * @return \Github\Client
  * @throws Exception
  */
-function devshop_github_client($public = FALSE) {
+function devshop_github_client($must_authenticate = FALSE) {
   $client = new \Github\Client();
 
   $github_token = devshop_github_token();
 
-  // Check for missing token. Set $public to TRUE.
-  if (empty($github_token)) {
-    $public = variable_get('devshop_github_use_public_api_if_no_token', TRUE);
+  // If caller requires authentication, throw exception if token is missing.
+  if ($must_authenticate && empty($github_token)) {
+    throw new \Exception(t('There is no GitHub Token set, but is required for this action.'));
   }
 
-  // If not public...
-  if (!$public) {
-
-    // Throw exception if token is missing.
-    if (empty($github_token)) {
-      throw new \Exception(t('There is no GitHub Token set.'));
-    }
+  // If a token is found, authenticate.
+  if (!empty($github_token)) {
 
     // Set token in client.
     $client->authenticate($github_token, Github\Client::AUTH_HTTP_TOKEN);
     try {
       // If currentUser()->show() worked, we know we are authenticated.
       $client->currentUser()->show();
-      return $client;
     }
     catch (Exception $e) {
       // If error, set_message and throw the exception upstream.
@@ -94,10 +89,8 @@ function devshop_github_client($public = FALSE) {
       throw $e;
     }
   }
-  else {
-    // return an unauthenticated client, use for public requests.
-    return $client;
-  }
+
+  return $client;
 }
 
 
@@ -158,8 +151,14 @@ function devshop_github_form_project_node_form_alter(&$form, &$form_state, $form
   );
   $form['project']['settings']['deploy']['default_hooks']['#weight'] = -9;
 
+
   // If Pull Requests were found in the environment, enable PR environments by default.
-  $prs = devshop_github_client()->pullRequests()->all($node->project->github_owner, $node->project->github_repo);
+  if (!empty(variable_get('devshop_github_token', ''))) {
+    $prs = devshop_github_client()->pullRequests()->all($node->project->github_owner, $node->project->github_repo);
+  }
+  else {
+    $prs = [];
+  }
   $pr_count = count($prs);
   if ($pr_count > 0) {
     $form['project']['settings']['github']['found_prs'] = array(
@@ -303,7 +302,9 @@ function devshop_github_form_hosting_task_confirm_form_alter_submit($form, &$for
 function devshop_github_form_site_node_form_alter(&$form, &$form_state, $form_id) {
 
   $project = $form_state['project'];
-  if (arg(1) == 'add' && $project->git_provider == 'github'){
+
+  // Don't try to load PRs if there isn't even a token.
+  if (!empty(variable_get('devshop_github_token', '')) && arg(1) == 'add' && $project->git_provider == 'github'){
     try {
       $prs = devshop_github_client()->pullRequests()->all($project->github_owner, $project->github_repo);
     }
@@ -719,6 +720,11 @@ function devshop_github_create_project_form_set_values($element, &$form_state, &
  */
 function devshop_github_form_devshop_project_create_step_environments_alter(&$form, &$form_state, $form_id) {
 
+  // Don't try to load PRs if there isn't even a token.
+  if (empty(variable_get('devshop_github_token', ''))) {
+    return;
+  }
+
   $project = &$form_state['project'];
   $form['pr_environments'] = array(
     '#type' => 'container',
@@ -961,6 +967,7 @@ function devshop_github_form_devshop_project_create_step_sites_alter(&$form, &$f
   $repo = $project->github_owner . '/' . $project->github_repo;
   $repo_url = "http://github.com/" . $repo;
 
+  // @TODO: Check that the API key has write access before offering to do this.
   $form['github_webhook'] = array(
     '#title' => t('Setup GitHub Webhook'),
     '#description' => t('Leave this box checked to automatically add a webhook to your GitHub Repository !link.', array(
@@ -1849,11 +1856,11 @@ function devshop_github_create_all_pr_environments($project_node) {
 
     // Get PR ID, if it already has one.
     if (!empty($environment->github_pull_request->number)) {
-      $environment_pr_id = $environment->github_pull_request->number;
-      $environment_pr_slug = "pr{$environment_pr_id}";
+      $environment_pr_number = $environment->github_pull_request->number;
+      $environment_pr_slug = "pr{$environment_pr_number}";
     }
     else {
-      $environment_pr_id = NULL;
+      $environment_pr_number = NULL;
       $environment_pr_slug = NULL;
     }
 
@@ -1861,12 +1868,12 @@ function devshop_github_create_all_pr_environments($project_node) {
     drush_log("Checking $environment->name... [$site_url]");
 
     // If no PR data in environment and no PR exists with this environments name, it is not a PR environment. Move on.
-    if ($environment->site_status != HOSTING_SITE_DELETED && empty($environment->github_pull_request->pull_request_object->id) && empty($prs[$environment_pr_slug])) {
+    if ($environment->site_status != HOSTING_SITE_DELETED && empty($environment->github_pull_request) && empty($prs[$environment_pr_slug])) {
       continue;
     }
     // If no PR data, but the environment name matches a PR's slug, update data.
     // Handles the edge case where a pr123 environment lost it's github PR info.
-    elseif (!$environment_pr_id && !empty($prs[$environment->name])) {
+    elseif (!$environment_pr_number && !empty($prs[$environment->name])) {
       devshop_github_save_pr_env_data($prs[$environment->name], $environment);
       drush_log(
         "Environment found with the name '$environment->name'. Assuming it is a PR environment. Updating it with PR data and removing it from the list of environments to create. [$site_url]",
@@ -1875,7 +1882,7 @@ function devshop_github_create_all_pr_environments($project_node) {
       unset($prs_to_create_environments_for[$environment->name]);
     }
     // If there IS PR data in the environment and the PR exists on GitHub, update the PR data.
-    elseif ($environment_pr_id && !empty($prs[$environment_pr_slug])) {
+    elseif ($environment_pr_number && !empty($prs[$environment_pr_slug])) {
       devshop_github_save_pr_env_data($prs[$environment_pr_slug], $environment);
       drush_log("PR environment found and updated: $environment->name [$site_url]", "ok");
 
@@ -1886,8 +1893,8 @@ function devshop_github_create_all_pr_environments($project_node) {
     }
 
     // If there IS PR data on this environment but the PR does NOT exist, queue the site for deletion.
-    elseif ($environment_pr_id && empty($prs[$environment_pr_slug])) {
-      drush_log("PR $environment_pr_id environment $environment->name exists but PR has been closed. [$site_url] [PR Slug $environment_pr_slug]", "ok");
+    elseif ($environment_pr_number && empty($prs[$environment_pr_slug])) {
+      drush_log("PR $environment_pr_number environment $environment->name exists but PR has been closed. [$site_url] [PR Slug $environment_pr_slug]", "ok");
       if ($project->settings->github['pull_request_environments_delete'] && empty($environment->tasks['delete'])) {
         drush_log("PR environment scheduled for deletion: $environment->name [$site_url]", "ok");
         hosting_add_task($environment->site, 'delete', array('force' => 1));

@@ -18,12 +18,11 @@ devshop_cli_repo: http://github.com/opendevshop/devshop.git
 devshop_cli_update: true
 devshop_cli_path: /usr/share/devshop
 devshop_cli_bin_path: "{{ devshop_cli_path }}/bin"
-
 devshop_cli_composer_install_command: "install"
 
 drush_bin_path: "{{ devshop_cli_bin_path }}/drush"
 
-composer_project_path: {{ devshop_cli_path }}
+composer_project_path: "{{ devshop_cli_path }}"
 composer_add_project_to_path: true
 
 devshop_devmaster_path: "{{ aegir_user_home }}/devmaster-{{ devshop_version }}"
@@ -38,7 +37,15 @@ mysql_root_password_update: false
 aegir_db_host: localhost
 aegir_client_name: admin
 aegir_logs_path: /var/log/aegir
+
 hosting_queue_runner_log_path: "{{ aegir_logs_path }}/hosting-queue-runner.log"
+
+# These files are created if they don't exist.
+# Useful when using the Docker containers and customizing DEVSHOP_ENTRYPOINT_LOG_FILES
+aegir_log_files_touch:
+  - "{{ hosting_queue_runner_log_path }}"
+  - "{{ aegir_logs_path }}/hostmaster.error.log"
+  - "{{ aegir_logs_path }}/hostmaster.access.log"
 
 drush_dl_method: wget
 
@@ -75,7 +82,8 @@ devmaster_install_command: "{{ drush_bin_path }} hostmaster-install -y --strict=
                                 {{ devshop_working_copy }} \
 "
 
-devmaster_upgrade_command: "{{ devshop_cli_bin_path }}/devshop devmaster:upgrade {{ devshop_version }} --makefile={{ devshop_makefile }} -n --run-from-playbooks"
+devmaster_upgrade_command: |
+  {{ devshop_cli_bin_path }}/devshop devmaster:upgrade {{ devshop_version }} --makefile={{ devshop_makefile }} -n --run-from-playbooks
 
 devmaster_test_command: "{{ devshop_cli_path }}/tests/devshop-tests.sh"
 
@@ -87,6 +95,7 @@ devmaster_skip_upgrade: false
 
 # If your system does not allow root user in "sudo" group, change this to "su"
 ansible_become_method_aegir: sudo
+ansible_share_path: /usr/share/ansible
 
 # Server Options
 php_memory_limit: "512M"
@@ -96,3 +105,11 @@ devshop_support_license_key: ""
 
 # The path to the script to use for the Hosting Task Queue Runner. See opendevshop/devshop/bin/hosting-queue-runner
 hosting_queue_runner_bin_path: "{{ devshop_cli_bin_path }}/hosting-queue-runner"
+
+# Triggers the removal of devshop_devmaster_path: `rm -rf {{ devshop_devmaster_path }}`
+devshop_danger_remove_devmaster: false
+
+# By default, devshop assumes it is being installed at "runtime" (like on a running server).
+# In the Dockerfile, "devshop_install_phase: buildtime" ansible vars is set.
+# If building other kinds of server images, where data won't be installed yet, use this variable.
+devshop_install_phase: runtime

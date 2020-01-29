@@ -1,17 +1,9 @@
 ---
 
-
-- name: Install Apache2 PHP Mod.
+- name: DevShop | Ensure PHP packages are installed.
   apt:
-    name: 'libapache2-mod-php'
-    state: present
-  when: ansible_distribution == 'Ubuntu' and ansible_distribution_major_version != '14'
-
-- name: Install Apache2 PHP Mod (Ubuntu 14).
-  apt:
-    name: 'libapache2-mod-php5'
-    state: present
-  notify:
-    - restart webserver
-    - restart php-fpm
-  when: ansible_distribution == 'Ubuntu' and ansible_distribution_major_version == '14'
+    name: "{{ php_packages }}"
+    state: "{{ php_packages_state }}"
+    install_recommends: "{{ php_install_recommends }}"
+  register: php_package_install
+  notify: restart webserver

@@ -1,78 +1,32 @@
-name: Code
-
+name: Code Quality
 on: [push]
-
 jobs:
-  composer-install:
-    name: Composer Install
-    runs-on: [ubuntu-16.04]
-
-    steps:
-    - uses: actions/checkout@v1
-
-    - name: Get Composer Cache Directory
-      id: composer-cache
-      run: |
-        echo "::set-output name=dir::$(composer config cache-files-dir)"
-
-    - uses: actions/cache@v1
-      with:
-        path: ${{ steps.composer-cache.outputs.dir }}
-        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-composer-
-
-    - name: Validate composer.json and composer.lock
-      run: composer validate
-
-    - name: Install Composer dependencies
-      run: composer install --prefer-dist --no-progress --no-suggest
-
-  monorepo-split:
-    name: Split Git Repositories
-    needs: composer-install
-
-    runs-on: [ubuntu-16.04]
+  lint:
+    name: Ansible Lint
+    runs-on: ubuntu-18.04
 
     steps:
       - uses: actions/checkout@v1
+      - uses: actions/setup-python@v1
 
-      - uses: fregante/setup-git-token@v1
-        with:
-          token: ${{ secrets.INPUT_GITHUB_TOKEN }}
-          name: devshopbot
-          email: jon@thinkdrop.net
+      # @TODO: Attempted to cache the pip packages, doesn't seem to work in subfolders.
+      #      - uses: actions/cache@v1
+      #        id: cache
+      #        with:
+      #          path: .cache/pip
+      #          key: ${{ runner.os }}-pip-${{ hashFiles('**/roles/opendevshop.devmaster/molecule/requirements.txt') }}
+      #          restore-keys: |
+      #                ${{ runner.os }}-test
 
-      - name: Get Composer Cache Directory
-        id: composer-cache
+      - name: Install Ansible Molecule
+        if: steps.cache.outputs.cache-hit != 'true'
+        working-directory: ./roles/molecule
         run: |
-          echo "::set-output name=dir::$(composer config cache-files-dir)"
+          pwd
+          ls -la
+          python -m pip install --upgrade pip
+          pip install -r molecule-requirements.txt
 
-      - uses: actions/cache@v1
-        with:
-          path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-composer-
-
-      - name: Cache git split database file.
-        uses: actions/cache@v1
-        with:
-          path: $RUNNER_WORKSPACE/devshop/.git/splitsh.db
-          key: 'splitsh-cache'
-
-      - name: Install Composer dependencies
-        run: composer install --prefer-dist --no-progress --no-suggest
-
-      - name: Create a branch for the monorepo-builder
-        run: git checkout -b $( echo ${GITHUB_REF} | sed 's/refs\/heads\///')
-
-      - name: Debug environment
-        run: env
-
-      - run: mkdir $HOME/.ssh
-      - name: Authorize GitHub.com as a known_host
-        run: ssh-keyscan github.com > $HOME/.ssh/known_hosts
-      
-      - name: Split monorepo
-        run: composer split
+      - name: Test Ansible Code Quality
+        working-directory: ./roles
+        run: molecule lint

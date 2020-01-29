@@ -1,7 +1,5 @@
 # Ansible Role: DevShop Devmaster
 
-[![Build Status](https://travis-ci.org/opendevshop/ansible-role-devmaster.svg?branch=master)](https://travis-ci.org/opendevshop/ansible-role-devmaster)
-
 Prepares a server for hosting Drupal with the DevShop system.
 
 Devmaster is the Drupal install profile that serves as the web and REST interface for DevShop.

@@ -1,0 +1,72 @@
+###
+# DevShop Server
+#
+# All-in-one DevShop. Includes all services required to run on one instance.
+#
+# Container name: devshop/server
+#
+###
+---
+- hosts: all
+  become: true
+
+  vars:
+    # Hostname must be set when container is launched, which "hostname" option.
+    server_hostname: "devshop.local.computer"
+    server_hostname_ignore_errors: true
+
+    # The geerlingguy.mysql and opendevshop.devmaster roles both use this
+    mysql_root_password: root
+
+    # @TODO: Install multiple versions per-container: https://github.com/oerdnj/deb.sury.org/wiki/Managing-Multiple-Versions
+    php_version: "7.2"
+
+    php_default_version_debian: "{{ php_version }}"
+
+    # Needs to be set to false when developing so your code doesn't get updated inside the container on build.
+    # Code gets copied using the Dockerfile
+    # @TODO: This may not be needed now that the "ancestor" check is in place.
+    devshop_cli_update: false
+
+    # This is set to TRUE to ensure the playbooks don't try to run the devmaster upgade every time they run (aka on robo up).
+    devmaster_skip_upgrade: true
+
+    # @TODO: Remove this once we figure out how to not require it.
+    # ansible_python_interpreter: python3
+
+    # Supervisor will start when the container and systemd start.
+    supervisor_started: false
+
+    # @TODO: Make a cleaner separation between playbooks and makefiles for docker hub, playbooks for CI testing, and local development.s
+    # Use local dev makefile because it copies the files directly from this repo.
+    # build-devmaster.make is designed for standalone use, and always downloads 1.x until release.
+    devshop_makefile: "{{ devshop_cli_path }}/build-devmaster-dev.make.yml"
+
+  pre_tasks:
+    - name: Set variables
+      when:
+        - ansible_os_family == 'RedHat'
+        - devshop_install_phase == 'buildtime'
+      set_fact:
+        apache_state: stopped
+
+  roles:
+    - role: geerlingguy.repo-remi
+      when: ansible_os_family == 'RedHat'
+      tags: [geerlingguy, apache]
+
+    - role: opendevshop.apache
+      tags: [opendevshop, opendevshop.apache]
+
+    - role: geerlingguy.apache
+      tags: [geerlingguy, apache]
+
+    - role: geerlingguy.mysql
+      tags: [geerlingguy, mysql]
+
+    - geerlingguy.php-versions
+    - geerlingguy.php
+    - geerlingguy.php-mysql
+
+    - geerlingguy.composer
+    - opendevshop.devmaster

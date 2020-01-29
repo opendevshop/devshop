@@ -13,5 +13,4 @@ extra_packages:
   - cronie
   - openssl
   - mod_ssl
-
-php_mysql_package: php-mysqlnd
+  - zip

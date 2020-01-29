@@ -1,0 +1,5 @@
+---
+script:
+  - echo "Tests passed at https://github.com/opendevshop/devshop!"
+notifications:
+  webhooks: https://galaxy.ansible.com/api/v1/notifications/

@@ -1,46 +1,53 @@
 ---
 
 - name: Get Devmaster root
-  shell: '{{ drush_bin_path }} @hostmaster status --fields="root" --field-labels=0 2>/dev/null | tr "\n" " " | sed -e "s/^[[:space:]]*//g" -e "s/[[:space:]]*\$//g"'
-  register: devmaster_site_root
+  command: "{{ devshop_cli_bin_path }}/devshop-site-info @hostmaster root"
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
   ignore_errors: true
-  tags: [install-devmaster]
+  register: devmaster_site_root
+  changed_when: "devmaster_site_root.stdout != empty_string"
+  tags: [runtime]
 
 - name: Get Devmaster URI
-  shell: '{{ drush_bin_path }} @hostmaster status --fields="uri" --field-labels=0 2>/dev/null | tr "\n" " " | sed -e "s/^[[:space:]]*//g" -e "s/[[:space:]]*\$//g"'
-  register: devmaster_site_uri
+  command: "{{ devshop_cli_bin_path }}/devshop-site-info @hostmaster uri"
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
   ignore_errors: true
-  tags: [install-devmaster]
+  register: devmaster_site_uri
+  changed_when: "devmaster_site_uri.stdout != empty_string"
+  tags: [runtime]
 
-- set_fact:
-    devmaster_site_root: "{{ devmaster_site_root.stdout }}"
-    devmaster_site_uri: "{{ devmaster_site_uri.stdout }}"
-  tags: [install-devmaster]
+- name: Set devmaster_site_root and devmaster_site_uri variables
+  set_fact:
+    devmaster_site_root: "{{ devmaster_site_root.stdout | trim }}"
+    devmaster_site_uri: "{{ devmaster_site_uri.stdout | trim }}"
+  tags: [runtime]
 
 - name: Devmaster Root
   debug:
     msg: "{{ devmaster_site_root }}"
-  tags: [install-devmaster]
+  tags: [runtime]
 
 - name: Devmaster URI
   debug:
     msg: "{{ devmaster_site_uri }}"
-  tags: [install-devmaster]
+  tags: [runtime]
 
 - name: Devmaster Install Command
   debug:
     msg: "{{ devmaster_install_command }}"
-  tags: [install-devmaster]
+  tags: [runtime]
 
 - name: Wait for MySQL Server to be ready.
-  command: mysql-wait
-  tags: [install-devmaster]
+  command: "{{ devshop_cli_bin_path }}/wait-mysql"
+  changed_when: true
+  tags: [runtime]
+  environment:
+    MYSQL_ROOT_PASSWORD: "{{ mysql_root_password }}"
+    DATABASE_HOST: "{{ aegir_db_host }}"
 
 - name: Install Devmaster
   become: true
@@ -48,29 +55,32 @@
   become_method: "{{ ansible_become_method_aegir }}"
   command: "{{ devmaster_install_command }}"
   when:
-    - devmaster_site_uri == ""
-  tags: [install-devmaster]
+    - devmaster_site_uri == empty_string
+  tags: [runtime]
 
 - name: Devmaster Upgrade Command
   debug:
     msg: "{{ devmaster_upgrade_command }}"
-  tags: [install-devmaster]
+  tags: [runtime]
 
 - name: "Upgrade Devmaster to {{ devshop_version }}"
   command: "{{ devmaster_upgrade_command }}"
   when:
-    - devmaster_site_uri != ""
-    - devmaster_skip_upgrade == false
-  tags: [install-devmaster]
+    - devmaster_site_uri != empty_string
+    - not devmaster_skip_upgrade
+  tags: [runtime]
 
 - name: Clear the drush cache.
   command: "{{ drush_bin_path }} cc drush"
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
-  tags: [install-devmaster]
+  register: drush_cache_clear
+  changed_when: "drush_cache_clear.stdout != empty_string"
+  tags: [runtime]
 
 - name: restart supervisor
   debug:
-  tags: [install-devmaster]
+  tags: [runtime]
+  when: supervisor_started
   notify: restart supervisor

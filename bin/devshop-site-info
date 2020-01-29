@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+# wait-site
+#
+# @author Jon Pugh
+#
+# Uses the wait-for command to pause execution until a Drupal site is active.
+#
+#
+
+# Document usage
+usage() {
+  cat << EOF
+Usage:
+  drush-site-info @alias [field]
+
+  Print out "drush core-status", or a specific field from drush site status.
+
+  For available fields, run "drush status --help".
+  Set field to "all" or leave blank to just run "drush core-status".
+EOF
+}
+
+# Set Environment
+set -e
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+PATH="$DIR:$PATH"
+
+# Prepare arguments and options.
+ALIAS=$1
+FIELD=$2
+
+# Check for required variables
+if [ -z "${ALIAS}" ]; then
+  usage
+  exit 1
+fi
+
+if [ -z "${FIELD}" ] || [ "${FIELD}" == "all" ]; then
+  drush ${ALIAS} status --format=yaml
+else
+  drush ${ALIAS} status --fields=${FIELD} --field-labels=0 | tr "\n" " " | sed -e "s/^[[:space:]]*//g" -e "s/[[:space:]]*\$//g"
+fi
+
+echo ""

@@ -13,9 +13,10 @@
 
 # About DevShop
 
-Version | Status | Aegir | Hosts      | DevMaster | Install & CLI 
---------|--------|-------|------------|-----------|-----
-1.x     | Stable | 3.x   | D6, D7, D8 |  [![DevMaster 1.x Status](https://travis-ci.org/opendevshop/devmaster.svg?branch=1.x)](https://travis-ci.org/opendevshop/devmaster) |  [![DevShop 1.x Status](https://travis-ci.org/opendevshop/devshop.svg?branch=1.x)](https://travis-ci.org/opendevshop/devshop) 
+Version | Status | Aegir | Hosts      | Status
+--------|--------|-------|------------|----------
+1.x     | Stable | 3.x   | D6, D7, D8 | [![Test Status](https://github.com/opendevshop/devshop/workflows/Tests/badge.svg)](https://github.com/opendevshop/devshop/actions)
+
 
 [![Backers on Open Collective](https://opencollective.com/devshop/backers/badge.svg)](#backers)
  [![Sponsors on Open Collective](https://opencollective.com/devshop/sponsors/badge.svg)](#sponsors) 
