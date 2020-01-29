@@ -42,7 +42,7 @@ jobs:
     steps:
 
     - name: Prepare CI (ubuntu)
-      if: ${{ matrix.os == "ubuntu1804" }}
+      if: matrix.os == 'ubuntu1804'
       run: |
         echo "::set-env name=ANSIBLE_TAGS::mysql"
 
