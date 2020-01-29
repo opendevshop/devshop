@@ -5,6 +5,10 @@
  * Modifies the UI of Aegir to be more friendly and conducive to DevShop.
  */
 
+// We have to just hack it in right now.
+include("src/DevShop/Environment.php");
+include("src/DevShop/EnvironmentGitInfo.php");
+
 /**
  * Implements hook_help()
  * @param $path
