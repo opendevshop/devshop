@@ -104,6 +104,12 @@
     register: composer_install
   changed_when: "'Nothing to install or update' not in composer_install.stdout"
 
+- name: Remove Custom DevShop Path file
+  file:
+    dest: /etc/profile.d/devshop-cli-path.sh
+    state: absent
+  when: "{{ lookup('file', '/etc/profile.d/devshop-cli-path.sh') }}" != empty_string
+
 - name: Debug environment
   command: "env"
   become: true
