@@ -104,12 +104,6 @@
     register: composer_install
   changed_when: "'Nothing to install or update' not in composer_install.stdout"
 
-# @TODO: Just set the geerlingguy.composer variables to do this. We will have to keep a step here to delete the file for upgrades.
-- name: Add DevShop bin directory to Path
-  copy:
-    dest: /etc/profile.d/devshop-cli-path.sh
-    content: 'PATH=$PATH:{{ devshop_cli_path }}/bin'
-
 - name: Debug environment
   command: "env"
   become: true
