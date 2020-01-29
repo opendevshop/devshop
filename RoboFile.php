@@ -523,7 +523,7 @@ class RoboFile extends \Robo\Tasks {
         // Set COMPOSE_FILE to include volumes.
         putenv('COMPOSE_FILE=docker-compose.yml:docker-compose.volumes.yml');
 
-        if (!file_exists('aegir-home/config') && !$opts['skip-source-prep']) {
+        if (!file_exists('aegir-home/devmaster-' . $this::DEVSHOP_LOCAL_VERSION) && !$opts['skip-source-prep']) {
           $this->io()->warning('The aegir-home folder not present. Running prepare source code command.');
           $this->prepareSourcecode($opts);
         }
