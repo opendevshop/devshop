@@ -45,19 +45,3 @@ if [ ! -d .drush ]; then
     cd ../..
 fi
 
-# Clone ansible roles.
-cd $VAGRANT_HOME
-if [ ! -d ../roles ]; then
-    mkdir ../roles
-    ansible-galaxy install -r ../requirements.yml -p ../roles
-    cd ../roles
-
-    # Overwrite the roles installed by galaxy with git clones of Our Roles
-    rm -rf opendevshop.users opendevshop.apache opendevshop.aegir-nginx opendevshop.devmaster opendevshop.devshop
-    git clone git@github.com:opendevshop/ansible-role-users.git opendevshop.users
-    git clone git@github.com:opendevshop/ansible-role-apache.git opendevshop.apache
-    git clone git@github.com:opendevshop/ansible-role-aegir-nginx.git opendevshop.aegir-nginx
-    git clone git@github.com:opendevshop/ansible-role-devmaster.git opendevshop.devmaster
-    git clone git@github.com:opendevshop/ansible-role-devshop.git opendevshop.devshop
-
-fi

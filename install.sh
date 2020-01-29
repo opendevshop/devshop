@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 usage() {
 
@@ -39,14 +39,13 @@ usage() {
 
   Options:
     --hostname           The desired fully qualified domain name to set as this machine\''s hostname (Default: Current hostname)
-    --install-path       The path to install the main devshop source code including CLI, makefile, requirements.yml (Default: /usr/share/devshop)
+    --install-path       The path to install the main devshop source code. (Default: /usr/share/devshop)
     --server-webserver   Set to 'nginx' if you want to use the Aegir NGINX packages. (Default: apache)
     --makefile           The makefile to use to build the front-end site. (Default: {install-path}/build-devmaster.make)
     --playbook           The Ansible playbook.yml file to use other than the included playbook.yml. (Default: {install-path}/playbook.yml)
     --email              The email address to use for User 1. Enter your email to receive notification when the install is complete.
     --aegir-uid          The UID to use for creating the `aegir` user (Default: 12345)
     --ansible-default-host-list  If your server is using a different ansible default host, specify it here. Default: /etc/ansible/hosts*
-    --force-ansible-role-install   Specify option to pass the "--force" option to the `ansible-galaxy install` command, causing the script to overwrite existing roles. (Default: False)
     --license            The devshop.support license key for this server.
     --help               Displays this help message and exits
 
@@ -102,7 +101,6 @@ SERVER_WEBSERVER=apache
 MAKEFILE_PATH=''
 AEGIR_USER_UID=${AEGIR_USER_UID:-12345}
 ANSIBLE_VERBOSITY="";
-ANSIBLE_GALAXY_OPTIONS=""
 ANSIBLE_DEFAULT_HOST_LIST="/etc/ansible/hosts"
 DEVSHOP_SUPPORT_LICENSE_KEY=""
 
@@ -178,10 +176,6 @@ while [ $# -gt 0 ]; do
       ;;
     -vvvv|--debug)
       ANSIBLE_VERBOSITY="-vvvv"
-      shift # past argument
-      ;;
-    --force-ansible-role-install)
-      ANSIBLE_GALAXY_OPTIONS="$ANSIBLE_GALAXY_OPTIONS --force"
       shift # past argument
       ;;
     --license=*)
@@ -316,10 +310,6 @@ if [ $OS == 'ubuntu' ] || [ $OS == 'debian' ]; then
   apt-get update
   apt-get install git -y -qq
 
-  if [ $VERSION == '14.04' ]; then
-      ANSIBLE_GALAXY_OPTIONS="$ANSIBLE_GALAXY_OPTIONS --ignore-certs"
-  fi
-
 elif [ $OS == 'centos' ] || [ $OS == 'redhat' ] || [ $OS == 'fedora'  ]; then
     yum install epel-release -y
     yum install git -y
@@ -335,7 +325,7 @@ else
   echo $MYSQL_ROOT_PASSWORD > /tmp/mysql_root_password
 fi
 
-# Clone the installer code if a playbook path was not set.
+# Clone the installer if $DEVSHOP_INSTALL_PATH does not exist yet.
 if [ ! -d "$DEVSHOP_INSTALL_PATH" ]; then
     git clone $DEVSHOP_GIT_REPO $DEVSHOP_INSTALL_PATH
     cd $DEVSHOP_INSTALL_PATH
@@ -352,7 +342,7 @@ echo $LINE
 echo " Hostname: $HOSTNAME_FQDN"
 echo " MySQL Root Password: $MYSQL_ROOT_PASSWORD"
 echo " Playbook: $DEVSHOP_INSTALL_PATH/$DEVSHOP_PLAYBOOK "
-echo " Roles: $DEVSHOP_INSTALL_PATH/requirements.yml "
+echo " Roles: $DEVSHOP_INSTALL_PATH/roles/"
 echo " Makefile: $MAKEFILE_PATH "
 echo $LINE
 
@@ -414,7 +404,8 @@ ANSIBLE_EXTRA_VARS+=("server_hostname: ${HOSTNAME_FQDN}")
 ANSIBLE_EXTRA_VARS+=("devshop_cli_path: ${DEVSHOP_INSTALL_PATH}")
 ANSIBLE_EXTRA_VARS+=("playbook_path: ${DEVSHOP_INSTALL_PATH}")
 ANSIBLE_EXTRA_VARS+=("aegir_server_webserver: ${SERVER_WEBSERVER}")
-ANSIBLE_EXTRA_VARS+=("devshop_version: ${DEVSHOP_VERSION}")
+# @TODO: Remove this var? a vars file gets created from this. We don't want old "devshop_version" vars around.
+# ANSIBLE_EXTRA_VARS+=("devshop_version: ${DEVSHOP_VERSION}")
 ANSIBLE_EXTRA_VARS+=("aegir_user_uid: ${AEGIR_USER_UID}")
 ANSIBLE_EXTRA_VARS+=("devshop_github_token: ${GITHUB_TOKEN}")
 
@@ -439,8 +430,16 @@ done
 
 echo $LINE
 echo "Wrote group variables file for devmaster to $ANSIBLE_VARS_GROUP_PATH"
-echo " Installing ansible roles from $DEVSHOP_INSTALL_PATH/requirements.yml in the ansible-galaxy default location..."
-ansible-galaxy install --force --ignore-errors --role-file "$DEVSHOP_INSTALL_PATH/requirements.yml" $ANSIBLE_GALAXY_OPTIONS
+echo $LINE
+
+ANSIBLE_VARS_GROUP_MYSQL_PATH="$ANSIBLE_CONFIG_PATH/group_vars/mysql"
+echo "# This variables file is written by devshop's install.sh script and 'devshop upgrade' command. Do not edit." > $ANSIBLE_VARS_GROUP_MYSQL_PATH
+echo "# You may add variables to the host_vars file located at $ANSIBLE_VARS_HOSTNAME_PATH" >> $ANSIBLE_VARS_GROUP_MYSQL_PATH
+echo "---" >> $ANSIBLE_VARS_GROUP_MYSQL_PATH
+echo "mysql_root_password: $MYSQL_ROOT_PASSWORD" >> $ANSIBLE_VARS_GROUP_MYSQL_PATH
+
+echo $LINE
+echo "Wrote database secrets file for devmaster to $ANSIBLE_VARS_GROUP_MYSQL_PATH"
 echo $LINE
 
 # Run the playbook.
@@ -454,7 +453,7 @@ if [[ ! `ansible-playbook --syntax-check ${PLAYBOOK_PATH}` ]]; then
     exit 1
 fi
 
-ansible-playbook $PLAYBOOK_PATH --connection=local $ANSIBLE_VERBOSITY
+ansible-playbook $PLAYBOOK_PATH --connection=local --limit $HOSTNAME_FQDN $ANSIBLE_VERBOSITY
 
 # Run devshop status, return exit code.
 su - aegir -c "devshop status"

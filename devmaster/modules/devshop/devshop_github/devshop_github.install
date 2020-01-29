@@ -81,7 +81,7 @@ function devshop_github_schema() {
  */
 function devshop_github_install() {
 
-    // Push devshop_github's system weight to 1.
+    // Push devshop_github system weight to 1.
     db_update('system')
         ->fields(array(
             'weight' => 2
@@ -90,8 +90,8 @@ function devshop_github_install() {
         ->execute();
 
     // Load the token from ENV variable if there is one.
-    if ($token = devshop_github_token()) {
-
+    $token = devshop_github_token();
+    if (!empty($token)) {
       if (devshop_github_token_is_valid($token)) {
         variable_set('devshop_github_token', $token);
         drupal_set_message(t('GitHub token was found and saved. Visit !link to check settings.', array(

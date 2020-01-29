@@ -1,0 +1,18 @@
+#
+# docker-compose.tests.yml
+#
+# This dockerfile is CI only. It maps the test assets folder only and adds a CI environment var.
+#
+version: '2.2'
+services:
+  devshop:
+    build:
+      args:
+      - CI=CI
+
+    environment:
+    - GITHUB_TOKEN
+    - CI=CI
+
+    volumes:
+      - ./.github/.test-assets:/usr/share/devshop/.github/test-assets

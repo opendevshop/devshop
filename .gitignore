@@ -1,6 +1,7 @@
 
 # devshop repos
-aegir-home
+aegir-home/*
+!aegir-home/.ssh/.gitkeep
 aegir-dockerfiles
 aegir-tests
 dockerfiles
@@ -9,23 +10,18 @@ hosting
 hostmaster
 provision
 
-# @TODO: Now that devshop roles are in this repo, should we organize by core/contrib?
-roles/geerlingguy.*
-roles/arknoll.selenium/
-roles/franklinkim.newrelic/
-roles/thom8.php-upload-progress/
-
-
 # Local config
 .vagrant
 devmaster_id_rsa.pub
 
 # Config
 bin/*
-~bin/devshop
+!bin/devshop*
+!bin/branch-or-tag
+!bin/docker*
 !bin/hosting-queue-runner
-!bin/mysql-wait
-!bin/docker-entrypoint
+!bin/wait-*
+!bin/tail-file
 
 # Symfony code
 vendor
@@ -35,6 +31,7 @@ vendor
 
 # Ansible inventory file.
 inventory
+playbook.retry
 
 # PHPStorm files
 .idea

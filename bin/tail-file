@@ -1,0 +1,14 @@
+#!/usr/bin/env sh
+set -e
+
+##
+# tail-file
+#
+# Same as "tail", but prints the filename at the beginning of the line.
+#
+##
+TAIL_COMMAND=$@
+
+tail $TAIL_COMMAND |
+    awk '/^==> / {a=substr($0, 5, length-8); next}
+        {print a":"$0}'

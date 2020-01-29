@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+usage() {
+  echo -n "${scriptName} [OPTION]... [FILE]...
+
+Prints the branch or tag of a git repository.
+
+  -t, --type    Print the git reference type ('branch' or 'tag').
+
+If PWD is tracking a branch, print "branch".
+If PWD is in a DETACHED HEAD state, and there is a tag for the SHA, print "tag".
+If the PWD is in a DETACHED HEAD state, and there is no tag, exit with an error.
+"
+}
+
+BRANCH=`git symbolic-ref --quiet --short HEAD 2> /dev/null`
+TAG=`git describe --tags --exact-match 2> /dev/null`
+
+# Set up options for --type and --help.
+while [ $# -gt 0 ]; do
+  case "$1" in
+    -t|--type)
+        if [[ -n $BRANCH ]]; then
+          echo "branch"
+        elif [[ -n $TAG ]]; then
+          echo "tag"
+        else
+          exit 1
+        fi
+
+        exit 0
+      ;;
+    -h|--help) usage >&2; exit 0;;
+    *)
+      echo "Invalid option: $1"
+      exit 1
+  esac
+  shift
+done
+
+# Print the branch or tag name
+if [[ -n $BRANCH ]]; then
+  echo $BRANCH
+elif [[ -n $TAG ]]; then
+  echo $TAG
+else
+  exit 1
+fi
+

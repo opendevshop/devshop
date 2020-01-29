@@ -1,0 +1,33 @@
+---
+- name: Enable remi repo for PHP 7.2.
+  set_fact: php_enablerepo="remi,remi-php72"
+  when: php_version == "7.2"
+
+- name: Enable remi repo for PHP 7.3.
+  set_fact: php_enablerepo="remi,remi-php73"
+  when: php_version == "7.3"
+
+- name: Enable remi repo for PHP 7.4.
+  set_fact: php_enablerepo="remi,remi-php74"
+  when: php_version == "7.4"
+
+# See: https://github.com/ansible/ansible/issues/64852
+- block:
+
+  - name: Ensure dnf-plugins are installed on CentOS 8+.
+    yum:
+      name: dnf-plugins-core
+      state: present
+
+  - name: Enable DNF module for CentOS 8+.
+    shell: |
+      dnf config-manager --set-enabled PowerTools
+      dnf module enable -y php:remi-{{ php_version }}
+    args:
+      warn: false
+    register: dnf_module_enable
+    changed_when: "'Nothing to do' not in dnf_module_enable.stdout"
+
+  when:
+    - ansible_os_family == 'RedHat'
+    - ansible_distribution_major_version | int >= 8
