@@ -31,9 +31,6 @@ jobs:
           - 'centos7'
         vars:
           - 'php_version: 7.2'
-        include:
-          - os: ubuntu1804
-          - build_tags: mysql
 
     env:
       ANSIBLE_TAGS: "${{ matrix.build_tags }}"
@@ -43,6 +40,11 @@ jobs:
 
     runs-on: ubuntu-18.04
     steps:
+
+    - name: Prepare CI (ubuntu)
+      if: ${{ matrix.os }} == "ubuntu1804"
+      run: |
+        echo "::set-env name=ANSIBLE_TAGS::mysql"
 
     - uses: actions/checkout@v1
     - name: Get Composer Cache Directory
