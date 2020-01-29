@@ -22,9 +22,6 @@ devshop_cli_composer_install_command: "install"
 
 drush_bin_path: "{{ devshop_cli_bin_path }}/drush"
 
-composer_project_path: "{{ devshop_cli_path }}"
-composer_add_project_to_path: true
-
 devshop_devmaster_path: "{{ aegir_user_home }}/devmaster-{{ devshop_version }}"
 
 devshop_makefile: "{{ devshop_cli_path }}/build-devmaster.make"
@@ -33,6 +30,10 @@ devshop_working_copy: --working-copy
 
 aegir_server_webserver: apache
 mysql_root_password_update: false
+
+composer_project_path: "{{ devshop_cli_bin_path }}"
+composer_add_project_to_path: true
+composer_keep_updated: true
 
 aegir_db_host: localhost
 aegir_client_name: admin
