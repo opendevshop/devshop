@@ -8,7 +8,7 @@ env:
   COMPOSE_FILE: "docker-compose.yml:docker-compose.tests.yml"
 
   # DEBUG_COMMAND is run
-  DEBUG_COMMAND: bin/robo exec "systemctl status --no-pager"
+  DEBUG_COMMAND: "docker-compose exec devshop systemctl status --no-pager"
 
 jobs:
   test:
