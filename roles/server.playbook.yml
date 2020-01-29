@@ -55,16 +55,15 @@
       when: ansible_os_family == 'RedHat'
       tags: [geerlingguy, apache]
 
+    - role: geerlingguy.mysql
+      tags: [geerlingguy, mysql]
+
     - role: opendevshop.apache
       tags: [opendevshop, opendevshop.apache]
 
     - role: geerlingguy.apache
       tags: [geerlingguy, apache]
 
-    - role: geerlingguy.mysql
-      tags: [geerlingguy, mysql]
-
-    - geerlingguy.mysql
     - geerlingguy.php-versions
     - geerlingguy.php
     - geerlingguy.php-mysql
