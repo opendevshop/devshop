@@ -108,7 +108,6 @@
   file:
     dest: /etc/profile.d/devshop-cli-path.sh
     state: absent
-  when: "{{ lookup('file', '/etc/profile.d/devshop-cli-path.sh') }}" != empty_string
 
 - name: Debug environment
   command: "env"
