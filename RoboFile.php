@@ -432,7 +432,7 @@ class RoboFile extends \Robo\Tasks {
    * @option environment pass an environment variable to docker-compose in the form --environment NAME=VALUE
    * @option volumes Set to TRUE to use the docker-compose.volumes.yml file to map local folders into the container.
    */
-  public function up($docker_command = null, $opts = [
+  public function up($docker_command = 'devshop-ansible-playbook', $opts = [
     'follow' => 1,
     'test' => FALSE,
     'test-upgrade' => FALSE,
