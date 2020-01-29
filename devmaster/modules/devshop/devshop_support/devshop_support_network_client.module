@@ -624,7 +624,12 @@ function devshop_support_network_client_support_status() {
   ];
   $links[] = drupal_render($support_link);
 
-  if (empty($license_key)) {
+  // If there is no license key, and if the status is active, set to none. Don't change other states.
+  if (empty($license_key) && $license_key_status == 'active') {
+    $license_key_status = 'none';
+  }
+
+  if (empty($license_key) || $license_key_status != 'active') {
     $inactive_support_license_links[] = [
       '#type' => 'link',
       '#title' => '<i class="fa fa-rocket"></i> ' . t('Activate Support', [
@@ -641,51 +646,50 @@ function devshop_support_network_client_support_status() {
     ];
 
     $links[] = drupal_render($inactive_support_license_links);
-
     $links[] = '<div class="alert text-warning small"><div class=" pull-left"><i class="fa fa-warning"></i></div> <p class="block" style="margin-left: 16px;">' . t('Your DevShop server is currently unsupported.') . '</p></div>';
   }
-  else {
 
-    switch ($license_key_status) {
-      case 'active': $license_class = 'success'; break;
-      case 'none': $license_class = 'info'; break;
-      case 'suspended': $license_class = 'warning'; break;
-      case 'cancelled': $license_class = 'danger'; break;
-    }
-
-    $active_support_license_links['config'] = [
-      '#type' => 'link',
-      '#title' => '<i class="fa fa-life-ring"></i> ' . t('License Status: <label class="label label-!label_class">@status</label>', [
-          '@status' => ucfirst($license_key_status),
-          '!label_class' => $license_class,
-        ]),
-      '#href' => variable_get('devshop_support_api_url', 'https://devshop.support') . '/server/' .  $_SERVER['HTTP_HOST'],
-      '#options' => [
-        'html' => TRUE,
-        'attributes' => [
-          'class' => ['text-muted'],
-        ],
-      ],
-    ];
-    $links[] = drupal_render($active_support_license_links);
+  switch ($license_key_status) {
+    case 'active': $license_class = 'success'; break;
+    case 'none': $license_class = 'warning'; break;
+    case 'suspended': $license_class = 'warning'; break;
+    case 'cancelled': $license_class = 'danger'; break;
+    case 'pending': $license_class = 'info'; break;
+    default: $license_class = 'info'; break;
   }
 
-    $blocks = [
-        'content' => [
-            'links' => [
-                '#theme' => 'item_list',
-                '#prefix' => '<div class="devshop-support-block">',
-                '#title' => t('DevShop.Support'),
-                '#items' => array_filter($links),
-                '#attributes' => [
-                    'class' => ['nav nav-pills nav-stacked'],
-                    'id' => ['devshop-support-status-block'],
-                ],
-                "#suffix" => "</div>",
-            ]
-        ],
-    ];
-    return $blocks;
+  $active_support_license_links['config'] = [
+    '#type' => 'link',
+    '#title' => '<i class="fa fa-life-ring"></i> ' . t('License Status: <label class="label label-!label_class">@status</label>', [
+        '@status' => ucfirst($license_key_status),
+        '!label_class' => $license_class,
+      ]),
+    '#href' => variable_get('devshop_support_api_url', 'https://devshop.support') . '/server/' .  $_SERVER['HTTP_HOST'],
+    '#options' => [
+      'html' => TRUE,
+      'attributes' => [
+        'class' => ['text-muted'],
+      ],
+    ],
+  ];
+  $links[] = drupal_render($active_support_license_links);
+
+  $blocks = [
+      'content' => [
+          'links' => [
+              '#theme' => 'item_list',
+              '#prefix' => '<div class="devshop-support-block">',
+              '#title' => t('DevShop.Support'),
+              '#items' => array_filter($links),
+              '#attributes' => [
+                  'class' => ['nav nav-pills nav-stacked'],
+                  'id' => ['devshop-support-status-block'],
+              ],
+              "#suffix" => "</div>",
+          ]
+      ],
+  ];
+  return $blocks;
 }
 
 
