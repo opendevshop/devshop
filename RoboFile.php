@@ -341,6 +341,7 @@ class RoboFile extends \Robo\Tasks {
    * @option $tags Ansible tags to pass to --tags option.
    * @option $skip_tags Ansible tags to pass to --skip-tags option.
    * @option $playbook Ansible tags to pass to ansible-playbook command.
+   * @option install-at-runtime Launch bare containers and then install devshop.
    */
   public function prepareContainers($user_uid = NULL, $hostname = 'devshop.local.computer', $opts = [
       'docker-image' => 'devshop/server:local',
@@ -354,6 +355,7 @@ class RoboFile extends \Robo\Tasks {
       'environment' => [],
       'roles-path' => '/usr/share/devshop/roles',
       'config' => '/usr/share/devshop/ansible.cfg',
+      'install-at-runtime' => FALSE,
   ]) {
 
     // Define docker-image (name for the "image" in docker-compose)
@@ -368,11 +370,19 @@ class RoboFile extends \Robo\Tasks {
 
     $this->yell('Building DevShop Container from: ' . $opts['from'], 40, 'blue');
 
+    // Block anything from running on build.
     // @TODO: Figure out why centos can't enable service in build phase.
-    if ($opts['os'] == 'centos7') {
-      // Block anything from running on build.
+    if ($opts['os'] == 'centos7' || $opts['install-at-runtime']) {
       $opts['tags'] = $_SERVER['ANSIBLE_TAGS'] = 'none';
       $opts['skip-tags'] = $_SERVER['ANSIBLE_SKIP_TAGS'] = '';
+
+      if ($opts['os'] == 'centos7') {
+        $this->yell('CENTOS DETECTED in RUNTIME. Running full playbook in container.', 40, 'red');
+      }
+      else {
+        $this->yell('--install-at-runtime option detected. Skipping build in container.', 40, 'red');
+      }
+
       $this->yell('CENTOS DETECTED in BUILDTIME. Skipping playbook run in image build.', 40, 'red');
     }
 
@@ -431,6 +441,7 @@ class RoboFile extends \Robo\Tasks {
    * @option os-version An OS "slug" for any of the geerlingguy/docker-*-ansible images: https://hub.docker.com/u/geerlingguy/
    * @option environment pass an environment variable to docker-compose in the form --environment NAME=VALUE
    * @option volumes Set to TRUE to use the docker-compose.volumes.yml file to map local folders into the container.
+   * @option install-at-runtime Launch bare containers and then install devshop.
    */
   public function up($docker_command = 'devshop-ansible-playbook', $opts = [
     'follow' => 1,
@@ -459,6 +470,7 @@ class RoboFile extends \Robo\Tasks {
     'local' => FALSE,
     'environment' => [],
     'volumes' => FALSE,
+    'install-at-runtime' => FALSE,
   ]) {
 
     // Define docker-image (name for the "image" in docker-compose.
@@ -506,17 +518,22 @@ class RoboFile extends \Robo\Tasks {
     }
     // Warn the user that this container is not being built.
     elseif (!$opts['build'] && $docker_image_exists_locally) {
-      $this->yell("Docker image {$opts['docker-image']} was found locally. Launching that container image. Use --build to rebuild it.", 30, "yellow");
+      $this->yell("Docker image {$opts['docker-image']} was found locally. Launching that container image. Use --build to rebuild it.", 40, "yellow");
     }
 
     // @TODO: Figure out why centos can't enable service in build phase.
-    if ($opts['os'] == 'centos7') {
+    if ($opts['os'] == 'centos7' || $opts['install-at-runtime']) {
       // Set tags to all so it does a full install at runtime.
       $opts['tags'] = $_SERVER['ANSIBLE_TAGS'] = 'all';
       $opts['skip-tags'] = $_SERVER['ANSIBLE_SKIP_TAGS'] = 'none';
-      $this->yell('CENTOS DETECTED in RUNTIME. Running full playbook in container.', 40, 'red');
-    }
 
+      if ($opts['os'] == 'centos7') {
+        $this->yell('CENTOS DETECTED in RUNTIME. Running full playbook in container.', 40, 'red');
+      }
+      else {
+        $this->yell('--install-at-runtime option detected. Running full playbook in container.', 40, 'red');
+      }
+    }
 
     if ($opts['mode'] == 'docker-compose') {
 
