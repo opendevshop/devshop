@@ -1,1 +1,17 @@
 ---
+
+# This has to be in the aegir-user playbook because it needs to run before geerlingguy.php to be seen by geerlingguy.php
+
+# Ensure extra tools are installed so that server installs match container installs.
+# See https://github.com/geerlingguy/docker-ubuntu1604-ansible/blob/master/Dockerfile
+devshop_prerequisite_packages:
+  - locales
+  - python-software-properties
+  - software-properties-common
+  - python-setuptools
+  - wget
+  - rsyslog
+  - systemd
+  - systemd-cron
+  - sudo
+  - iproute

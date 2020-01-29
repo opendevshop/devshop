@@ -5,7 +5,10 @@ on:
 
 env:
   ANSIBLE_VERBOSITY: 2
-  FROM_IMAGE: devshop/server:latest
+  COMPOSE_FILE: "docker-compose.yml:docker-compose.tests.yml"
+
+  # DEBUG_COMMAND is run
+  DEBUG_COMMAND: "docker-compose exec -T devshop systemctl status --no-pager"
 
 jobs:
   test:
@@ -30,21 +33,38 @@ jobs:
     - name: Install Composer dependencies
       run: composer install --prefer-dist --no-progress --no-suggest
 
-    - name: Install DevShop
+    - name: Build and Launch pre-built DevShop Server Image FROM devshop/server
       run: |
-        bin/robo up \
-          --tags=rebuild-devmaster \
-          --vars=devshop_danger_remove_devmaster=true \
-          --follow=0 \
-          --compose-file=docker-compose-tests.yml \
-          --skip-source-prep
+        bin/robo up "sleep infinity" \
+          --build \
+          --follow 0 \
+          --vars "devshop_danger_remove_devmaster=true" \
+          --tags "rebuild-devmaster" \
+          --from "devshop/server:latest" \
+          --skip-tags "none"
+
+    - name: Install DevShop
+      if: false
+      env:
+        ANSIBLE_TAGS: all
+      run: |
+        docker-compose exec -T devshop service mysql start && \
+        bin/robo exec devshop-ansible-playbook
 
     - name: Test DevShop
+      if: false
       run: |
         bin/robo test
 
+    - name: Save Assets
+      if: always()
+      run: |
+        docker ps -a > ./.github/test-assets/test-docker-ps.log && \
+        $DEBUG_COMMAND > ./.github/test-assets/test-debug-command.log && \
+        docker-compose logs > ./.github/test-assets/test-docker-compose.log
+
     - uses: actions/upload-artifact@v1
-      if: failure()
+      if: always()
       with:
         name: test-assets
         path: ./.github/test-assets

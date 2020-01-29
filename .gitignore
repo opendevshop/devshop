@@ -20,7 +20,8 @@ bin/*
 !bin/branch-or-tag
 !bin/docker*
 !bin/hosting-queue-runner
-!bin/mysql-wait
+!bin/wait-*
+!bin/tail-file
 
 # Symfony code
 vendor
@@ -30,6 +31,7 @@ vendor
 
 # Ansible inventory file.
 inventory
+playbook.retry
 
 # PHPStorm files
 .idea
