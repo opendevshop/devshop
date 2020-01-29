@@ -495,12 +495,18 @@ class RoboFile extends \Robo\Tasks {
     // If we don't, docker-compose up will automatically build it, but without these options.
     // Run a "docker-compose pull" here confirms that the remote container by this name exists, and gets us a local copy.
     $docker_image_exists_remotely = $this->_exec("docker pull {$opts['docker-image']}")->wasSuccessful();
+
+    // The image was just pulled, so this should always be true if $docker_image_exists_remotely is true.
     $docker_image_exists_locally = $this->_exec("docker inspect {$opts['docker-image']} > /dev/null")->wasSuccessful();
 
     // If --build option is used, or if docker image does not exist anywhere, build it with "local-$OS" tag
     if ($opts['build'] || !$docker_image_exists_remotely && !$docker_image_exists_locally) {
       $this->yell("Docker Image {$opts['docker-image']} was not found on this system or on docker hub. Building it...");
       $this->prepareContainers($opts['user-uid'], 'devshop.local.computer', $opts);
+    }
+    // Warn the user that this container is not being built.
+    elseif (!$opts['build'] && $docker_image_exists_locally) {
+      $this->yell("Docker image {$opts['docker-image']} was found locally. Launching that container image. Use --build to rebuild it.", 30, "yellow");
     }
 
     // @TODO: Figure out why centos can't enable service in build phase.
