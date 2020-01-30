@@ -48,6 +48,9 @@
         "pre-update-cmd": [
             "DevShop\\Composer::installBins",
             "DevShop\\Composer::updateRoles"
+        ],
+        "update-roles": [
+            "DevShop\\Composer::updateRoles"
         ]
     }
 }
