@@ -123,6 +123,14 @@
   become_method: "{{ ansible_become_method_aegir }}"
   changed_when: true
 
+- name: Ensure /var/aegir is owned by aegir user.
+  file:
+    state: directory
+    path: "{{ aegir_user_home }}"
+    group: "{{ aegir_user_name }}"
+    owner: "{{ aegir_user_name }}"
+  tags: [runtime]
+
 - name: Create /var/aegir/.drush
   file:
     path: "{{ aegir_user_home }}/.drush"
