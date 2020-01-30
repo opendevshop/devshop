@@ -39,6 +39,7 @@
   yum:
     name: "{{ devshop_prerequisite_packages }}"
     state: present
+    enablerepo: "{{ devshop_prerequisite_enablerepo }}"
 
 - name: Populate service facts
   service_facts:

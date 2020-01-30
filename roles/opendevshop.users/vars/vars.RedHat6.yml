@@ -6,3 +6,7 @@ mysql_supports_innodb_large_prefix: true
 devshop_prerequisite_packages:
   - openssh-clients
   - python-pip
+
+# Pass in a comma-separated list of repos to use (e.g. "remi,epel"). Used only
+# for RHEL/CentOS.
+devshop_prerequisite_enablerepo: "{{ php_enablerepo }}"
