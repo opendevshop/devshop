@@ -69,6 +69,10 @@
     group: "{{ aegir_user_name }}"
     owner: "{{ aegir_user_name }}"
 
+- name: Ensure /var/aegir has correct permissions.
+  command: chmod 755 {{ aegir_user_home }}
+  when: ansible_os_family == "RedHat"
+
 - name: Create aegir's config folder
   file:
     path: "{{ aegir_user_home }}/config"
