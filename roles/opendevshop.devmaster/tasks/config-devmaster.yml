@@ -13,7 +13,7 @@
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
-  command: "{{ drush_bin_path }} @hostmaster hosting-tasks"
+  command: "{{ drush_bin_path }} @hostmaster hosting-tasks --force"
   register: devshop_ansible_command_output
   changed_when: "devshop_ansible_command_output.stdout != empty_string"
   tags: [runtime]
