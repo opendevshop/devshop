@@ -69,12 +69,6 @@
     group: "{{ aegir_user_name }}"
     owner: "{{ aegir_user_name }}"
 
-# @TODO: Determine WHY centos needs this.
-# Aegir"s CentOS installation requires this.
-- name: Set appropriate permissions for Aegir"s home folder.
-  command: chmod -R 755 {{ aegir_user_home }}
-  when: ansible_os_family == "RedHat"
-
 - name: Create aegir's config folder
   file:
     path: "{{ aegir_user_home }}/config"
