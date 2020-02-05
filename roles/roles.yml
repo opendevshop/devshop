@@ -16,6 +16,7 @@
 
 - name: geerlingguy.apache
 - name: geerlingguy.composer
+- name: geerlingguy.drupal
 - name: geerlingguy.drush
 - name: geerlingguy.git
 - name: geerlingguy.github-users

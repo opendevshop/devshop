@@ -74,6 +74,10 @@ jobs:
           --tags "${ANSIBLE_TAGS}" \
           --skip-tags "${ANSIBLE_SKIP_TAGS}"
 
+    - name: Wait for yum
+      if: matrix.os == 'centos7'
+      run: sleep 4
+
     - name: Install DevShop
       env:
         ANSIBLE_TAGS: "${{ matrix.run_tags }}"
