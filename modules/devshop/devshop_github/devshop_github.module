@@ -1839,7 +1839,7 @@ function devshop_public_key_valid_fingerprint() {
  */
 function devshop_github_save_pr_env_data($pr, $environment) {
   $info = new stdClass();
-  $info->site = $environment->site;
+  $info->site_nid = $environment->site;
   $info->id = $pr->id;
   $info->number = $pr->number;
   $info->pull_request_object = serialize($pr);
