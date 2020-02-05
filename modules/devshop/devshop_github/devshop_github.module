@@ -1100,7 +1100,10 @@ function devshop_github_node_load($nodes, $types) {
   foreach ($nodes as $nid => &$node) {
     if ($node->type == 'project') {
       // Look for a pull request object.
-      $pull_requests = db_query('SELECT * FROM {hosting_devshop_github_pull_requests} WHERE project_nid = :project_nid', array(':project_nid' => $nid));
+      $pull_requests = db_query('SELECT prs.*, e.name AS environment_name 
+        FROM {hosting_devshop_github_pull_requests} prs 
+        LEFT JOIN {hosting_devshop_project_environment} e ON prs.site_nid = e.site 
+        WHERE project_nid = :project_nid', array(':project_nid' => $nid));
       foreach ($pull_requests as $pull_request) {
         if (!empty($pull_request->pull_request_object)) {
           $pull_request->pull_request_object = unserialize($pull_request->pull_request_object);
@@ -1705,10 +1708,9 @@ function devshop_github_webhook($project_node) {
 
             // Update the PR record
             $info = new stdClass();
+            $info->site_nid = $environment->site;
             $info->id = $data->pull_request->id;
             $info->number = $data->pull_request->number;
-            $info->project_nid = $project->nid;
-            $info->environment_name = $environment_name;
             $info->pull_request_object = serialize($data->pull_request);
 
             // Save environment record.
@@ -1837,10 +1839,9 @@ function devshop_public_key_valid_fingerprint() {
  */
 function devshop_github_save_pr_env_data($pr, $environment) {
   $info = new stdClass();
+  $info->site = $environment->site;
   $info->id = $pr->id;
   $info->number = $pr->number;
-  $info->project_nid = $environment->project_nid;
-  $info->environment_name = $environment->name;
   $info->pull_request_object = serialize($pr);
 
   // Last minute check for existing PR info
