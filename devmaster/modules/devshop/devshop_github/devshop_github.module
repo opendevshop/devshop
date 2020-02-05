@@ -315,6 +315,7 @@ function devshop_github_form_site_node_form_alter(&$form, &$form_state, $form_id
       return;
     }
 
+    // @TODO: Use the new function devshop_github_pr_options().
     $pr_options = array();
     $existing_options = $form['git_ref']['#options'];
 
@@ -348,6 +349,42 @@ function devshop_github_form_site_node_form_alter(&$form, &$form_state, $form_id
 }
 
 /**
+ * Look up all PRs and return an array for a select form.
+ *
+ * @param $project
+ *
+ * @return array
+ */
+function devshop_github_pr_options($project, $prs = array()) {
+  $pr_options = array();
+
+  if (empty($prs)) {
+    try {
+      $prs = devshop_github_client()->pullRequests()->all($project->github_owner, $project->github_repo);
+    }
+    catch (\Exception $e) {
+      drupal_set_message(t('Unable to reach GitHub API to load Pull Request Data. [Error: %error]', array(
+        '%error' => $e->getMessage(),
+      )), 'error');
+      drupal_set_message(l(t('Check your GitHub Settings'), 'admin/devshop/github'), 'error');
+      return $pr_options;
+    }
+  }
+
+  foreach ($prs as $pr) {
+    $pr_description = implode(' - ', array(
+      "PR {$pr['number']}",
+      $pr['head']['ref'],
+      $pr['user']['login'],
+      $pr['title'],
+    ));
+    $option_name =  $pr['id'];
+    $pr_options[$option_name] = $pr_description;
+  }
+  return $pr_options;
+}
+
+/**
  * Submit handler for site/environment settings page.
  */
 function devshop_github_environment_create_submit($form, &$form_state) {
@@ -365,6 +402,8 @@ function devshop_github_environment_create_submit($form, &$form_state) {
 function devshop_github_form_site_node_form_validate_pr($element, &$form_state, $form)
 {
   // If PR found for this branch, put the PR data into form_state.
+
+  // @TODO: Load PR based on number.
   if (!empty($form_state['pull_requests'][$element['#value']])) {
     $form_state['values']['pull_request'] = $pr = convert_to_object($form_state['pull_requests'][$element['#value']]);
 
