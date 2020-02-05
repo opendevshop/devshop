@@ -355,7 +355,7 @@ function devshop_github_form_site_node_form_alter(&$form, &$form_state, $form_id
  *
  * @return array
  */
-function devshop_github_pr_options($project, $prs = array()) {
+function devshop_github_pr_options($project, $key = 'id', $prs = array()) {
   $pr_options = array();
 
   if (empty($prs)) {
@@ -378,7 +378,12 @@ function devshop_github_pr_options($project, $prs = array()) {
       $pr['user']['login'],
       $pr['title'],
     ));
-    $option_name =  $pr['id'];
+    // If user wants "ref" for key, it's in "head" array.
+    $pr['ref'] = $pr['head']['ref'];
+    if (!isset($pr[$key])) {
+      throw new \Exception("Item '$key' not found in \$pr array. The PR keys are: " . implode(',', array_keys($pr)));
+    }
+    $option_name = $pr[$key];
     $pr_options[$option_name] = $pr_description;
   }
   return $pr_options;
