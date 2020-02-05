@@ -280,6 +280,20 @@ class RoboFile extends \Robo\Tasks {
       }
     }
 
+    // Populate devmaster install profile with contrib code.
+    $make_destination = '.';
+    $makefile_path = 'drupal-org.make';
+    if (file_exists('devmaster/modules/contrib')) {
+      $this->say("Path 'devmaster/modules/contrib' already exists.");
+    }
+    else {
+      $this->yell("Populating devmaster profile with contrib code from $makefile_path ...");
+      $result = $this->_exec("cd devmaster && drush make {$makefile_path} {$make_destination} --working-copy --no-gitinfofile --no-core --contrib-destination=.");
+      if (!$result->wasSuccessful()) {
+        throw new \RuntimeException("Drush make failed with the exit code " . $result->getExitCode());
+      }
+    }
+
     // Set git remote urls
     if ($opts['no-dev'] == FALSE) {
       $devshop_ssh_git_url = "git@github.com:opendevshop/devshop.git";
