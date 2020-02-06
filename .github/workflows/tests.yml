@@ -33,6 +33,7 @@ jobs:
     - name: Run Yaml Tests
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        PROVISION_PROCESS_OUTPUT: direct
       run: |
         ./yaml-tests --ansi -v --hostname=github.com
 
