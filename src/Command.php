@@ -392,15 +392,14 @@ class Command extends BaseCommand
                 $process->setTimeout(null);
                 $process->setIo($this->io);
 
-                $process->setEnv($_SERVER);
-
                 // Set some environment variables to indicate YAML_TESTS is running.
-                $process->setEnv([
-                  'YAML_TESTS' => 1,
-                  'YAML_TESTS_NAME' => $test_name,
-                  'YAML_TESTS_COMMAND' => $command,
-                  'YAML_TESTS_DESCRIPTION' => $test['description'],
-                ]);
+                $env = $_SERVER;
+                $env['YAML_TESTS'] = 1;
+                $env['YAML_TESTS_NAME'] = $test_name;
+                $env['YAML_TESTS_COMMAND'] = $command;
+                $env['YAML_TESTS_DESCRIPTION'] = $test['description'];
+
+                $process->setEnv($env);
 
                 $title = "Running test <fg=white>$test_name</>";
 
