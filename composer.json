@@ -9,10 +9,9 @@
             "email": "jon@thinkdrop.net"
         }
     ],
-    "minimum-stability": "dev",
     "require": {
-        "consolidation/robo": "^2.0@alpha",
-        "symfony/process": "^4"
+        "symfony/process": "^4",
+        "consolidation/robo": "^2.0"
     },
     "autoload": {
         "psr-4": {
