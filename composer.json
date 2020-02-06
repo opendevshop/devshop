@@ -28,7 +28,6 @@
         "class": "ProvisionOps\\YamlTests\\Plugin"
     },
     "require-dev": {
-        "composer/composer": "^1.9@dev",
         "squizlabs/php_codesniffer": "~2"
     },
     "config": {
@@ -39,6 +38,5 @@
     },
     "bin": [
         "yaml-tests"
-    ],
-    "minimum-stability": "dev"
+    ]
 }
