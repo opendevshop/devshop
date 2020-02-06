@@ -10,7 +10,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Composer\Command\BaseCommand;
+use Symfony\Component\Console\Command\Command as BaseCommand;
 use Symfony\Component\Yaml\Yaml;
 use TQ\Git\Repository\Repository;
 
@@ -171,7 +171,12 @@ class Command extends BaseCommand
         $this->gitRepo = Repository::open($this->workingDir);
         $this->gitRepo->getCurrentCommit();
 
-        $this->config = $this->getComposer()->getPackage()->getConfig();
+        $composer_json = $this->workingDir . '/composer.json';
+        if (!is_readable($composer_json)) {
+            throw new \Exception("Unable to read composer data from $composer_json");
+        }
+
+        $this->config = json_decode(file_get_contents($this->workingDir . '/composer.json'));
 
         $this->testsFile = $input->getOption('tests-file');
         $this->testsFilePath = realpath($this->testsFile);
