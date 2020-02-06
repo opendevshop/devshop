@@ -28,6 +28,8 @@ jobs:
       run: composer install --prefer-dist --no-progress --no-suggest
 
     - name: Run Yaml Tests
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         ./yaml-tests --ansi -v --hostname=github.com
 
