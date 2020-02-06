@@ -34,13 +34,6 @@ $version = 'dev';
 $application = new Application('yaml-tests', $version);
 
 $command = new YamlTestsCommand();
-$composer = new \Composer\Composer();
-
-$package = new \Composer\Package\RootPackage("provision-ops/yaml-tests", $version, "Development");
-$composer->setPackage($package);
-
-$command->setComposer($composer);
-
 $application->add($command);
 $application->setDefaultCommand($command->getName(), true);
 
