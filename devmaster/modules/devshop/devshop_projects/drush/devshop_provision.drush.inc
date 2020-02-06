@@ -381,78 +381,12 @@ function devshop_fqdn($host = NULL) {
   return strtolower(gethostbyaddr(gethostbyname($host)));
 }
 
-//
-//if (!function_exists('provision_autoload_register_prefix')) {
-//  /**
-//   * Register a PECL style prefix with the provision autoloader.
-//   *
-//   * @param string $prefix
-//   *   The class prefix to register.
-//   * @param string $dir
-//   *   The directory to search for the classes in.
-//   * @param bool $prepend
-//   *   If the directory should be searched first for the classes in the given
-//   *   prefix, set this to TRUE, otherwise, the default, FALSE, is fine.
-//   */
-//  function provision_autoload_register_prefix($prefix, $dir, $prepend = FALSE) {
-//
-//    // Get any current directories set for this prefix.
-//    $current_prefixes = provision_autoload()->getPrefixes();
-//    if (isset($current_prefixes[$prefix])) {
-//      $dirs = $current_prefixes[$prefix];
-//    }
-//    else {
-//      $dirs = array();
-//    }
-//
-//    // Now add the new one.
-//    if ($prepend) {
-//      array_unshift($dirs, $dir);
-//    }
-//    else {
-//      array_push($dirs, $dir);
-//    }
-//
-//    // Set the prefixes.
-//    provision_autoload()->addPrefix($prefix, $dirs);
-//  }
-//}
-//
-//if (!function_exists('provision_autoload')) {
-//  /**
-//   * Return an instance of the provision autoloader.
-//   *
-//   * This will instiatate an instance if it needs to.
-//   */
-//  function provision_autoload() {
-//    static $instance = NULL;
-//
-//    if (is_null($instance)) {
-//      $instance = new ClassLoader();
-//      // Activate the autoloader.
-//      $instance->register();
-//    }
-//
-//    return $instance;
-//  }
-//}
-
-/**
- * Implementation of drush_hook_provision_pre_COMMAND()
- * Calls drush_devshop_provision_pre_provision_verify()
- */
-function drush_devshop_provision_pre_provision_deploy() {
-  drush_devshop_provision_pre_provision_verify();
-}
-
 /**
  * Implementation of drush_hook_provision_pre_COMMAND()
  * for Verify tasks: Writes easier to use drush aliases for each project.
  */
-function drush_devshop_provision_pre_provision_verify() {
-  if (d()->type === 'project' || (!empty(d()->project) && d()->type === 'site' || d()->type === 'platform')) {
+function drush_devshop_provision_provision_install_validate() {
 
-  }
 }
 
 /**

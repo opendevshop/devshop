@@ -32,6 +32,7 @@ function hosting_create_environment($project, $new_environment_name, $new_enviro
 
   // Attach a new platform node.
   $site->platform_node = devshop_prepare_platform_node($project, $new_environment_name, $new_environment_branch, $settings->web_server, $git_remote_url);
+  $site->platform_node->no_verify = TRUE;
 
   // Set db server to the project default, if none was set.
   if (empty($settings->db_server) && !empty($project->settings->default_environment['db_server'])) {
