@@ -34,7 +34,7 @@ services:
     command: ${DOCKER_COMMAND:-}
     build:
       context: '.'
-      dockerfile: 'Dockerfile'
+      dockerfile: ${DOCKERFILE:-Dockerfile}
       args:
       # If a value for local development should be different than docker hub image,
       # set a default here.

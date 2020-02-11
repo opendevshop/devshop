@@ -77,6 +77,7 @@ class RoboFile extends \Robo\Tasks {
     'docker-image' => 'DEVSHOP_DOCKER_IMAGE',
     'from' => 'FROM_IMAGE',
     'os' => 'OS_VERSION',
+    'dockerfile' => 'DOCKERFILE',
   ];
 
   /**
