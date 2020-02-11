@@ -1,0 +1,17 @@
+###
+# DevShop Base Playbook
+#
+# Container name: devshop/ansible
+#
+###
+---
+- hosts: all
+  become: true
+
+  vars:
+    devshop_role_name: DevShop Base
+    devshop_role_playbook: 'playbook.base.yml'
+  pre_tasks:
+    - name: DevShop Base Playbook
+      debug:
+        msg: devshop_role_name
