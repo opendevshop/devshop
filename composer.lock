@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3534d57cb518dee1d50abe4f0aa89378",
+    "content-hash": "46b1619dfb1a4459f9545e5d110bf7a7",
     "packages": [
         {
             "name": "asm/php-ansible",
