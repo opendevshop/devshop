@@ -1,4 +1,4 @@
-![DevShop Logo](./assets/logo-new.png)
+![DevShop Logo](./assets/logo-new-light-bg.png)
 
 [DevShop][1] is an **Open Source DevOps Framework** for web applications like Drupal, and a 
 set of reusable **components**. It is written in PHP, Ansible, & Drupal, allowing extensive customization.
