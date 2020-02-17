@@ -27,8 +27,7 @@
   },
   "autoload": {
     "psr-4": {
-      "DevShop\\Component\\GitTools\\": "",
-      "DevShop\\Component\\GitTools\\Composer\\": ""
+      "DevShop\\Component\\GitTools\\": ""
     }
   },
   "bin": [

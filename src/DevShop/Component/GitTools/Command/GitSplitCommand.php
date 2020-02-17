@@ -19,14 +19,14 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\Console\Command\Command;
+use Composer\Composer\BaseCommand;
 
 /**
  * GitSplitCommand runs splitsh-lite script.
  *
  * @author Jon Pugh <jon@thinkdrop.net>
  */
-class GitSplitCommand extends Command
+class GitSplitCommand extends BaseCommand
 {
 
   private $command;

@@ -61,7 +61,7 @@ class Plugin implements PluginInterface, Capable, EventSubscriberInterface
       ];
       $binDir = $event->getComposer()->getConfig()->get('bin-dir');
       $config = $event->getComposer()->getConfig()->get('devshop');
-      $input = $event->getComposer()->getInput();
+      //$input = $event->getInput();
 
       // @TODO: Read repos list from composer.json config
       $repos = Splitter::REPOS;
