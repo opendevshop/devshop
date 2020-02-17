@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "46b1619dfb1a4459f9545e5d110bf7a7",
+    "content-hash": "a6b98f9785ce05f8c9fa9887aa5d95bc",
     "packages": [
         {
             "name": "asm/php-ansible",
@@ -550,6 +550,50 @@
                 "git wrapper"
             ],
             "time": "2019-04-28T22:31:09+00:00"
+        },
+        {
+            "name": "devshop/git-tools",
+            "version": "dev-dev/composer/plugins",
+            "dist": {
+                "type": "path",
+                "url": "src/DevShop/Component/GitTools",
+                "reference": "da8b5ab6a2aacf4c1dbcd513c068bccdcefa04b8"
+            },
+            "require": {
+                "composer-plugin-api": "^1.1",
+                "php": "^7.1"
+            },
+            "require-dev": {
+                "symfony/console": "^4.4|^5.0"
+            },
+            "bin": [
+                "bin/git-split",
+                "bin/splitsh-lite"
+            ],
+            "type": "composer-plugin",
+            "extra": {
+                "class": "DevShop\\Component\\GitTools\\Plugin"
+            },
+            "autoload": {
+                "psr-4": {
+                    "DevShop\\Component\\GitTools\\": ""
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jon Pugh",
+                    "email": "jon@thinkdrop.net"
+                },
+                {
+                    "name": "DevShop Community",
+                    "homepage": "https://github.com/opendevshop/devshop/graphs/contributors"
+                }
+            ],
+            "description": "Commands for git management such as git:split, git:import.",
+            "homepage": "https://getdevshop.com"
         },
         {
             "name": "dflydev/dot-access-data",

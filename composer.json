@@ -21,13 +21,25 @@
         "cpliakas/git-wrapper": "2.*",
         "asm/php-ansible": "^2.0",
         "mouf/nodejs-installer": "^1.0",
-        "provision-ops/power-process": "^1.3"
+        "provision-ops/power-process": "^1.3",
+        "devshop/git-tools": "*"
     },
     "require-dev": {
     },
     "autoload": {
-        "psr-0": { "DevShop": "src/" }
+        "psr-0": { "DevShop": "src/" },
+        "autoload": {
+            "psr-4": {
+                "DevShop\\Component\\": "src/DevShop/Component/"
+            }
+        }
     },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "src/DevShop/Component/GitTools"
+        }
+    ],
     "bin": [
         "scripts/devshop",
         "scripts/branch-or-tag"
