@@ -23,7 +23,7 @@
     "symfony/console": "^4.4|^5.0"
   },
   "extra": {
-    "class": "DevShop\\Component\\GitTools\\Plugin"
+    "class": "DevShop\\Component\\GitTools\\Composer\\Plugin"
   },
   "autoload": {
     "psr-4": {
