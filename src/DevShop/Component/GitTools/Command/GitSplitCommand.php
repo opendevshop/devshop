@@ -75,6 +75,8 @@ EOF
    */
   public function initialize(InputInterface $input, OutputInterface $output) {
     $this->io = new SymfonyStyle($input, $output);
+
+    $this->io->warning('IO Initialized.');
   }
 
   /**

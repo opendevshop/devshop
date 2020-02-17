@@ -16,11 +16,11 @@ class Splitter {
   /**
    * Install splitsh-lite script.
    */
-  static function installBins() {
+  static function installBins($bin_dir = 'bin') {
     foreach (self::BIN_FILES as $name => $url) {
 
       // @TODO: Load BIN path from composer project bin path.
-      $bin_path = "bin/{$name}";
+      $bin_path = "{$bin_dir}/{$name}";
       if (file_exists($bin_path)) {
         echo "- Script found at $bin_path \n";
         continue;

@@ -42,22 +42,38 @@ class Plugin implements PluginInterface, Capable, EventSubscriberInterface
      */
     public static function getSubscribedEvents()
     {
-        return array(
-            PluginEvents::INIT => 'pluginDemoMethod'
-        );
+      return array(
+        ScriptEvents::POST_INSTALL_CMD => array(
+          array('onPostUpdateInstall', 1),
+        ),
+        ScriptEvents::POST_UPDATE_CMD => array(
+          array('onPostUpdateInstall', 1),
+        ),
+      );
     }
 
-    public function getCapabilities()
+    /**
+     * Script callback; Acted on after install or update.
+     */
+    public function onPostUpdateInstall(Event $event) {
+      $settings = [
+        'targetDir' => 'vendor/splitsh/lite',
+      ];
+      $binDir = $event->getComposer()->getConfig()->get('bin-dir');
+      $config = $event->getComposer()->getConfig()->get('devshop');
+      $input = $event->getComposer()->getInput();
+
+      // @TODO: Read repos list from composer.json config
+      $repos = Splitter::REPOS;
+
+      Splitter::installBins();
+      Splitter::splitRepos($repos, $input->getOption('progress'));
+    }
+
+  public function getCapabilities()
     {
         return array(
             'Composer\Plugin\Capability\CommandProvider' => 'DevShop\Component\GitTools\Composer\CommandProvider',
         );
-    }
-
-    /**
-     * @param Event $event
-     */
-    public function pluginDemoMethod(Event $event)
-    {
     }
 }
