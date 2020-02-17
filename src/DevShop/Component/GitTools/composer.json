@@ -1,0 +1,37 @@
+{
+  "name": "devshop/git-tools",
+  "type": "composer-plugin",
+  "description": "Commands for git management such as git:split, git:import.",
+  "keywords": [],
+  "homepage": "https://getdevshop.com",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Jon Pugh",
+      "email": "jon@thinkdrop.net"
+    },
+    {
+      "name": "DevShop Community",
+      "homepage": "https://github.com/opendevshop/devshop/graphs/contributors"
+    }
+  ],
+  "require": {
+    "php": "^7.1"
+  },
+  "require-dev": {
+    "symfony/console": "^4.4|^5.0"
+  },
+  "extra": {
+    "class": "DevShop\\Component\\GitTools\\Plugin"
+  },
+  "autoload": {
+    "psr-4": {
+      "DevShop\\Component\\GitTools\\": ""
+    }
+  },
+  "bin": [
+    "bin/git-split",
+    "bin/splitsh-lite"
+  ],
+  "minimum-stability": "dev"
+}
