@@ -3,7 +3,7 @@
 /*
  * This file is part of the DevShop package.
  *
- * (c) Jon Pugh <jon@thinkdrop.net
+ * (c) Jon Pugh <jon@thinkdrop.net>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -24,7 +24,7 @@ use Symfony\Component\Console\Command\Command;
 /**
  * GitSplitCommand runs splitsh-lite script.
  *
- * @author Fabien Potencier <fabien@symfony.com>
+ * @author Jon Pugh <jon@thinkdrop.net>
  */
 class GitSplitCommand extends Command
 {
