@@ -11,6 +11,7 @@
 
 namespace DevShop\Component\GitTools\Composer;
 
+use DevShop\Component\GitTools\Splitter;
 use Composer\Composer;
 use Composer\EventDispatcher\Event;
 use Composer\EventDispatcher\EventSubscriberInterface;
@@ -56,18 +57,7 @@ class Plugin implements PluginInterface, Capable, EventSubscriberInterface
      * Script callback; Acted on after install or update.
      */
     public function onPostUpdateInstall(Event $event) {
-      $settings = [
-        'targetDir' => 'vendor/splitsh/lite',
-      ];
-      $binDir = $event->getComposer()->getConfig()->get('bin-dir');
-      $config = $event->getComposer()->getConfig()->get('devshop');
-      //$input = $event->getInput();
-
-      // @TODO: Read repos list from composer.json config
-      $repos = Splitter::REPOS;
-
-      Splitter::installBins();
-      Splitter::splitRepos($repos, $input->getOption('progress'));
+      Splitter::installBins($event->getComposer()->getConfig()->get('bin-dir'));
     }
 
   public function getCapabilities()
