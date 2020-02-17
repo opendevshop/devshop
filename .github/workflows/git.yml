@@ -31,4 +31,4 @@ jobs:
         run: ssh-keyscan github.com > $HOME/.ssh/known_hosts
       
       - name: Split monorepo
-        run: composer split
+        run: bin/git-split
