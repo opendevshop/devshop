@@ -57,7 +57,9 @@ class Plugin implements PluginInterface, Capable, EventSubscriberInterface
      * Script callback; Acted on after install or update.
      */
     public function onPostUpdateInstall(Event $event) {
-      Splitter::installBins($event->getComposer()->getConfig()->get('bin-dir'));
+      $git_tools_bin_dir = $event->getComposer()->getConfig()->get('bin-dir');
+      $this->io->write("Installing <info>splitsh-lite</info> to $git_tools_bin_dir");
+      Splitter::install($git_tools_bin_dir);
     }
 
   public function getCapabilities()

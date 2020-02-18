@@ -9,6 +9,8 @@ namespace DevShop\Component\GitTools;
  */
 class Splitter {
 
+  const SPLITSH_NAME = 'splitsh-lite';
+  const SPLITSH_URL = 'https://github.com/splitsh/lite/releases/download/v1.0.1/lite_linux_amd64.tar.gz';
   const BIN_FILES = array(
     'splitsh-lite' => 'https://github.com/splitsh/lite/releases/download/v1.0.1/lite_linux_amd64.tar.gz',
   );
@@ -16,14 +18,16 @@ class Splitter {
   /**
    * Install splitsh-lite script.
    */
-  static function installBins($bin_dir = 'bin') {
-    foreach (self::BIN_FILES as $name => $url) {
+  static function install($bin_dir = 'bin') {
+
+      $name = self::SPLITSH_NAME;
+      $url = self::SPLITSH_URL;
 
       // @TODO: Load BIN path from composer project bin path.
       $bin_path = "{$bin_dir}/{$name}";
       if (file_exists($bin_path)) {
-        echo "- Script found at $bin_path \n";
-        continue;
+        echo "- $name already installed at $bin_path \n";
+        return;
       }
 
       if (strpos($url, 'tar.gz') !== FALSE) {
@@ -44,7 +48,6 @@ class Splitter {
       chmod($bin_path, 0755);
       echo "- Installed $url to $bin_path \n";
     }
-  }
 
   /**
    * Run the splitsh script on each repo.

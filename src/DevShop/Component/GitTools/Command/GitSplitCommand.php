@@ -89,7 +89,7 @@ EOF
     $pwd = getcwd();
     $this->io->writeln(["Working Directory: $pwd"]);
 
-    Splitter::installBins();
+    Splitter::install();
     // @TODO: Read this from composer config.
     Splitter::splitRepos(self::REPOS, $input->getOption('progress'));
 
