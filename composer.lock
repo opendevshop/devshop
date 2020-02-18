@@ -572,7 +572,7 @@
             "dist": {
                 "type": "path",
                 "url": "src/DevShop/Component/GitTools",
-                "reference": "17c417328a33fa2db2149ffc09eb9bfb36f988d8"
+                "reference": "b0a68bc90ed71b1c550e0eb87792871745d6bb2b"
             },
             "require": {
                 "composer-plugin-api": "^1.1",
@@ -582,8 +582,7 @@
                 "symfony/console": "^4.4|^5.0"
             },
             "bin": [
-                "bin/git-split",
-                "bin/splitsh-lite"
+                "bin/git-split"
             ],
             "type": "composer-plugin",
             "extra": {
