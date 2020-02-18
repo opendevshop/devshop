@@ -1,6 +1,8 @@
 <div class="environment-tasks-alert alert-<?php print $task->status_class ?>" id="task-display-<?php print $task->nid; ?>">
     <div class="task-text">
-        <a href="<?php print $task->url; ?>" class="alert-link">
+          <?php foreach ($environment->domains as $domain): ?>
+            <a href="<?php print 'http://' . $domain; ?>" target="_blank" class="btn btn-link"><?php print 'http://' . $domain; ?></a>
+          <?php endforeach; ?>
             <i class="fa fa-<?php print $task->icon ?>"></i>
             <span class="type-name"><?php print $task->type_name ?></span>
             <span class="status-name small"><?php if ($task->task_status != HOSTING_TASK_QUEUED && $task->task_status != HOSTING_TASK_PROCESSING) print $task->status_name ?></span>
