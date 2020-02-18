@@ -19,14 +19,14 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Composer\Composer\BaseCommand;
+use Symfony\Component\Console\Command\Command;
 
 /**
  * GitSplitCommand runs splitsh-lite script.
  *
  * @author Jon Pugh <jon@thinkdrop.net>
  */
-class GitSplitCommand extends BaseCommand
+class GitSplitCommand extends Command
 {
 
   private $command;
@@ -75,8 +75,6 @@ EOF
    */
   public function initialize(InputInterface $input, OutputInterface $output) {
     $this->io = new SymfonyStyle($input, $output);
-
-    $this->io->warning('IO Initialized.');
   }
 
   /**

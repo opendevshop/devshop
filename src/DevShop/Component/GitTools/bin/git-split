@@ -17,6 +17,7 @@
  */
 
 use Symfony\Component\Console\Application;
+use Composer\Composer;
 use DevShop\Component\GitTools\Command\GitSplitCommand;
 
 function includeIfExists(string $file): bool
@@ -38,7 +39,14 @@ if (!class_exists(Application::class)) {
   exit(1);
 }
 
-(new Application())->add($command = new GitSplitCommand())
+if (!class_exists(Composer::class)) {
+  $command = new GitSplitComposerCommand();
+}
+else {
+  $command = new GitSplitCommand();
+}
+
+(new Application())->add($command)
   ->getApplication()
   ->setDefaultCommand($command->getName(), true)
   ->run()

@@ -13,13 +13,14 @@ namespace DevShop\Component\GitTools\Composer;
 
 use DevShop\Component\GitTools\Command\GitSplitCommand;
 use Composer\Plugin\Capability\CommandProvider as CommandProviderCapability;
+use DevShop\Component\GitTools\Command\GitSplitComposerCommand;
 
 class CommandProvider implements CommandProviderCapability
 {
     public function getCommands()
     {
         return array(
-          new GitSplitCommand()
+          new GitSplitComposerCommand()
         );
     }
 }

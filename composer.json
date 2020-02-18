@@ -25,6 +25,7 @@
         "devshop/git-tools": "*"
     },
     "require-dev": {
+        "composer/composer": "^1.9"
     },
     "autoload": {
         "psr-0": { "DevShop": "src/" },
