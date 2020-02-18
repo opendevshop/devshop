@@ -31,8 +31,7 @@
     }
   },
   "bin": [
-    "bin/git-split",
-    "bin/splitsh-lite"
+    "bin/git-split"
   ],
   "minimum-stability": "dev"
 }
