@@ -252,11 +252,11 @@ function devshop_github_form_project_node_form_alter(&$form, &$form_state, $form
 //        ),
 //      ),
 //  );
-  $form['project']['settings']['github']['pull_request_install_method'] = devshop_environment_install_method_form($node->project, 'project[settings][github][pull_request_install_method]');
+  $form['project']['settings']['github']['pull_request_install_method'] = devshop_environment_install_method_form($node->project, $node->project->settings->github['pull_request_install_method'], 'project[settings][github][pull_request_install_method]');
   $form['project']['settings']['github']['pull_request_install_method']['#weight'] = 10;
   $form['project']['settings']['github']['pull_request_install_method']['#title'] = t('Pull Request Environment Installation Method');
   $form['project']['settings']['github']['pull_request_install_method']['#description'] = t('Select the method for installing all Pull Request environments.');
-  $form['project']['settings']['github']['pull_request_install_method']['#default_value'] = isset($node->project->settings->github)? $node->project->settings->github['pull_request_install_method'] : 'devshop__github__install';
+
   $form['project']['settings']['github']['pull_request_install_method']['#states'] = array(
     'visible' => array(
       ':input[name="project[settings][github][pull_request_environments]"]' => array('checked' => TRUE),

@@ -1038,6 +1038,7 @@ function devshop_projects_create_environment_form(&$form, &$form_state, $form_id
   );
 
   $form['install_method'] = devshop_environment_install_method_form($project);
+  $form['install_method']['#weight'] = -99;
 
   $form['server_stack'] = array(
     '#type' => 'fieldset',
@@ -1140,10 +1141,9 @@ function devshop_projects_create_environment_form_validate_name($element, &$form
   }
 }
 
-function devshop_environment_install_method_form($project, $parent_element = 'install_method') {
+function devshop_environment_install_method_form($project, $values = array(), $parent_element = 'install_method') {
   $form = array(
     '#type' => 'fieldset',
-    '#weight' => -99,
     '#tree' => TRUE,
     '#attributes' => array(
       'class' => array('clearfix'),
@@ -1161,7 +1161,7 @@ function devshop_environment_install_method_form($project, $parent_element = 'in
       'manual' => t('Empty Database'),
       'import' => t('Import Database'),
     ),
-    '#default_value' => 'clone',
+    '#default_value' => $values['method']?: 'clone',
   );
 
   $form['none'] = array(
@@ -1203,6 +1203,7 @@ function devshop_environment_install_method_form($project, $parent_element = 'in
   $form['profile_other'] = array(
     '#type' => 'textfield',
     '#title' => t('Other Install Profile'),
+    '#default_value' => $values['profile_other'],
     '#title_display' => 'invisible',
     '#description' => t('Enter the exact name the install profile to use. It must already exist in your git branch or tag.'),
     '#element_validate' => array(
@@ -1258,7 +1259,7 @@ function devshop_environment_install_method_form($project, $parent_element = 'in
       '#weight' => -98,
       '#required' => TRUE,
       '#options' => $environment_options,
-      '#default_value' => key($environment_options),
+      '#default_value' => $values['clone_source'],
       '#states' => array(
         'visible' => array(
          ":input[name='{$parent_element}[method]']" => array('value' => 'clone'),
@@ -1295,6 +1296,7 @@ function devshop_environment_install_method_form($project, $parent_element = 'in
   $form['clone_source_drush'] = array(
     '#type' => 'textfield',
     '#title' => t('Drush Alias'),
+    '#default_value' => $values['clone_source_drush'],
     '#description' => t('Enter a Drush alias you would like to Sync your database and files from. It must already exist on the server.'),
     '#element_validate' => array(
       'devshop_projects_create_environment_form_validate_clone_source'
@@ -1314,6 +1316,7 @@ function devshop_environment_install_method_form($project, $parent_element = 'in
   $form['import'] = array(
     '#type' => 'textfield',
     '#title' => t('Path to SQL'),
+    '#default_value' => $values['import'],
     '#description' =>
       t('Enter either a remote MySQL address (such as mysql://username:password@host/database), or an absolute path to an SQL dump (such as /var/aegir/site-backup.sql).') .
       '<span class="text-danger">' . t('This string is stored in plain text. Use with caution.') . '</span>'
