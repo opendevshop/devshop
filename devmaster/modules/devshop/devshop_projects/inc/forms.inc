@@ -1037,193 +1037,7 @@ function devshop_projects_create_environment_form(&$form, &$form_state, $form_id
     ),
   );
 
-  $form['install_method'] = array(
-    '#type' => 'fieldset',
-    '#weight' => -99,
-    '#tree' => TRUE,
-    '#attributes' => array(
-      'class' => array('clearfix'),
-    ),
-  );
-  $form['install_method']['method'] = array(
-    '#type' => 'radios',
-    '#required' => TRUE,
-    '#title' => t('Install Method'),
-    '#process' => array('devshop_environment_method_process'),
-    '#weight' => -99,
-    '#options' => array(
-      'clone' => t('Clone Environment'),
-      'profile' => t('Drupal Profile'),
-      'manual' => t('Empty Database'),
-      'import' => t('Import Database'),
-    ),
-    '#default_value' => 'clone',
-  );
-
-  $form['install_method']['none'] = array(
-    '#type' => 'container',
-    '#weight' => -98,
-    '#states' => array(
-      'visible' => array(
-        ':input[name="install_method[method]"]' => array('value' => 'manual'),
-      ),
-    ),
-    'note' => array(
-      '#markup' => t('An empty database will be created. You can install Drupal manually by visiting install.php, by using Drush, or you can manually import a database.'),
-    ),
-  );
-
-  $form['install_method']['profile'] = array(
-    '#type' => 'radios',
-    '#title' => t('Drupal Install Profile'),
-    '#description' => t('These install profiles were found in other environments in this project. If you choose an install profile that does not exist in the codebase, the "Standard" profile will be used.'),
-    '#description_display' => 'before',
-    '#weight' => -98,
-    '#required' => TRUE,
-    '#options' => devshop_environment_add_form_profile_options($project),
-    '#states' => array(
-      'visible' => array(
-        ':input[name="install_method[method]"]' => array('value' => 'profile'),
-      ),
-    ),
-  );
-
-  // Set default profile.
-  if (count($form['install_method']['profile']['#options']) == 1 || empty($project->install_profile)) {
-    $form['install_method']['profile']['#default_value'] = '_other';
-  }
-  else {
-    $form['install_method']['profile']['#default_value'] = $project->install_profile;
-  }
-
-  $form['install_method']['profile_other'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Other Install Profile'),
-    '#title_display' => 'invisible',
-    '#description' => t('Enter the exact name the install profile to use. It must already exist in your git branch or tag.'),
-    '#element_validate' => array(
-      'devshop_projects_create_environment_form_validate_profile'
-    ),
-    '#attributes' => array(
-      'placeholder' => t('Profile Name'),
-    ),
-    '#weight' => -97,
-    '#states' => array(
-      'visible' => array(
-        ':input[name="install_method[method]"]' => array('value' => 'profile'),
-        ':input[name="install_method[profile]"]' => array('value' => '_other'),
-      ),
-    ),
-  );
-
-  // Generate environments options.
-  foreach ($project->environments as $e => $environment) {
-    $link = l(' <i class="fa fa-external-link"></i> ' . $environment->uri,  $environment->url, array(
-      'html' => TRUE,
-      'attributes' => array(
-        'target' => '_blank',
-        'class' => array('btn-text'),
-      ),
-    )) . '</small>';
-    $git_ref = $environment->git_ref;
-    $icon = $environment->git_ref_type == 'tag'? 'tag': 'code-fork';
-    $environment_options[$environment->system_alias] = "<span>{$environment->name}</span> <small class='git-ref text-muted'><i class='fa fa-$icon'></i> $git_ref</small> <small>$link</small>";
-  }
-
-  // Add other aliases to the clone source.
-  if (isset($project->settings->aliases)) {
-    foreach ($project->settings->aliases as $alias => $data) {
-      $link = l('<i class="fa fa-external-link"></i> ' . $data['uri'], 'http://' . $data['uri'], array(
-          'html' => TRUE,
-          'attributes' => array(
-            'target' => '_blank',
-            'class' => array('btn-text'),
-          ),
-        )) . '</small>';
-      $remote = t('Unknown');
-      $environment_options["@{$project->name}.{$alias}"] = "<span>{$alias}</span> <small class='git-ref text-muted'><i class='fa fa-globa'></i> $remote</small> <small>$link</small>";
-    }
-  }
-
-  $environment_options['_other'] = t('Other Drush Alias');
-
-  if (count($environment_options)) {
-    $form['install_method']['clone_source'] = array(
-      '#type' => 'radios',
-      '#title' => t('Environment to clone'),
-      '#weight' => -98,
-      '#required' => TRUE,
-      '#options' => $environment_options,
-      '#default_value' => key($environment_options),
-      '#states' => array(
-        'visible' => array(
-          ':input[name="install_method[method]"]' => array('value' => 'clone'),
-        ),
-      ),
-    );
-  }
-
-  // Detect clone link. Set defaults.
-  if (arg(4) == 'clone') {
-    $environment_to_clone = arg(5);
-    $form['install_method']['method']['#default_value'] = 'clone';
-    $form['install_method']['clone_source']['#default_value'] = $project->environments[$environment_to_clone]->system_alias;
-    $form['git_ref']['#default_value'] = $project->environments[$environment_to_clone]->git_ref;
-  }
-
-  // Detect fork link.
-  // @TODO: Get "forking" back in place for the next beta.
-//  if (arg(4) == 'fork') {
-//    $environment_to_clone = arg(5);
-//    $form['install_method']['method']['#default_value'] = 'clone';
-//    $form['install_method']['clone_source']['#default_value'] = $project->environments[$environment_to_clone]->system_alias;
-//    $form['git_ref']['#default_value'] = $project->environments[$environment_to_clone]->git_ref;
-//    $form['git_ref']['#title'] = t('Base Branch or Tag');
-//    $form['git_ref']['#description'] = t('The git reference you want to create a new branch from.');
-//
-//    $form['git_ref_new'] = array(
-//      '#title' => t('New branch name'),
-//      '#description' => t('New branch name'),
-//    );
-//  }
-
-
-  $form['install_method']['clone_source_drush'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Drush Alias'),
-    '#description' => t('Enter a Drush alias you would like to Sync your database and files from. It must already exist on the server.'),
-    '#element_validate' => array(
-      'devshop_projects_create_environment_form_validate_clone_source'
-    ),
-    '#weight' => -98,
-    '#attributes' => array(
-      'placeholder' => t('@drush.alias'),
-    ),
-    '#states' => array(
-      'visible' => array(
-        ':input[name="install_method[clone_source]"]' => array('value' => '_other'),
-        ':input[name="install_method[method]"]' => array('value' => 'clone'),
-      ),
-    ),
-  );
-
-  $form['install_method']['import'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Path to SQL'),
-    '#description' =>
-      t('Enter either a remote MySQL address (such as mysql://username:password@host/database), or an absolute path to an SQL dump (such as /var/aegir/site-backup.sql).') .
-      '<span class="text-danger">' . t('This string is stored in plain text. Use with caution.') . '</span>'
-    ,
-    '#weight' => -98,
-    '#states' => array(
-      'visible' => array(
-        ':input[name="install_method[method]"]' => array('value' => 'import'),
-      ),
-    ),
-    '#element_validate' => array(
-      'devshop_projects_create_environment_form_validate_import'
-    ),
-  );
+  $form['install_method'] = devshop_environment_install_method_form($project);
 
   $form['server_stack'] = array(
     '#type' => 'fieldset',
@@ -1324,6 +1138,198 @@ function devshop_projects_create_environment_form_validate_name($element, &$form
     form_set_value($form['platform'], 0, $form_state);
 
   }
+}
+
+function devshop_environment_install_method_form($project, $parent_element = 'install_method') {
+  $form = array(
+    '#type' => 'fieldset',
+    '#weight' => -99,
+    '#tree' => TRUE,
+    '#attributes' => array(
+      'class' => array('clearfix'),
+    ),
+  );
+  $form['method'] = array(
+    '#type' => 'radios',
+    '#required' => TRUE,
+    '#title' => t('Install Method'),
+    '#process' => array('devshop_environment_method_process'),
+    '#weight' => -99,
+    '#options' => array(
+      'clone' => t('Clone Environment'),
+      'profile' => t('Drupal Profile'),
+      'manual' => t('Empty Database'),
+      'import' => t('Import Database'),
+    ),
+    '#default_value' => 'clone',
+  );
+
+  $form['none'] = array(
+    '#type' => 'container',
+    '#weight' => -98,
+    '#states' => array(
+      'visible' => array(
+        ":input[name='{$parent_element}[method]']" => array('value' => 'manual'),
+      ),
+    ),
+    'note' => array(
+      '#markup' => t('An empty database will be created. You can install Drupal manually by visiting install.php, by using Drush, or you can manually import a database.'),
+    ),
+  );
+
+  $form['profile'] = array(
+    '#type' => 'radios',
+    '#title' => t('Drupal Install Profile'),
+    '#description' => t('These install profiles were found in other environments in this project. If you choose an install profile that does not exist in the codebase, the "Standard" profile will be used.'),
+    '#description_display' => 'before',
+    '#weight' => -98,
+    '#required' => TRUE,
+    '#options' => devshop_environment_add_form_profile_options($project),
+    '#states' => array(
+      'visible' => array(
+       ":input[name='{$parent_element}[method]']" => array('value' => 'profile'),
+      ),
+    ),
+  );
+
+  // Set default profile.
+  if (count($form['profile']['#options']) == 1 || empty($project->install_profile)) {
+    $form['profile']['#default_value'] = '_other';
+  }
+  else {
+    $form['profile']['#default_value'] = $project->install_profile;
+  }
+
+  $form['profile_other'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Other Install Profile'),
+    '#title_display' => 'invisible',
+    '#description' => t('Enter the exact name the install profile to use. It must already exist in your git branch or tag.'),
+    '#element_validate' => array(
+      'devshop_projects_create_environment_form_validate_profile'
+    ),
+    '#attributes' => array(
+      'placeholder' => t('Profile Name'),
+    ),
+    '#weight' => -97,
+    '#states' => array(
+      'visible' => array(
+       ":input[name='{$parent_element}[method]']" => array('value' => 'profile'),
+        ':input[name="install_method[profile]"]' => array('value' => '_other'),
+      ),
+    ),
+  );
+
+  // Generate environments options.
+  foreach ($project->environments as $e => $environment) {
+    $link = l(' <i class="fa fa-external-link"></i> ' . $environment->uri,  $environment->url, array(
+        'html' => TRUE,
+        'attributes' => array(
+          'target' => '_blank',
+          'class' => array('btn-text'),
+        ),
+      )) . '</small>';
+    $git_ref = $environment->git_ref;
+    $icon = $environment->git_ref_type == 'tag'? 'tag': 'code-fork';
+    $environment_options[$environment->system_alias] = "<span>{$environment->name}</span> <small class='git-ref text-muted'><i class='fa fa-$icon'></i> $git_ref</small> <small>$link</small>";
+  }
+
+  // Add other aliases to the clone source.
+  if (isset($project->settings->aliases)) {
+    foreach ($project->settings->aliases as $alias => $data) {
+      $link = l('<i class="fa fa-external-link"></i> ' . $data['uri'], 'http://' . $data['uri'], array(
+          'html' => TRUE,
+          'attributes' => array(
+            'target' => '_blank',
+            'class' => array('btn-text'),
+          ),
+        )) . '</small>';
+      $remote = t('Unknown');
+      $environment_options["@{$project->name}.{$alias}"] = "<span>{$alias}</span> <small class='git-ref text-muted'><i class='fa fa-globa'></i> $remote</small> <small>$link</small>";
+    }
+  }
+
+  $environment_options['_other'] = t('Other Drush Alias');
+
+  if (count($environment_options)) {
+    $form['clone_source'] = array(
+      '#type' => 'radios',
+      '#title' => t('Environment to clone'),
+      '#weight' => -98,
+      '#required' => TRUE,
+      '#options' => $environment_options,
+      '#default_value' => key($environment_options),
+      '#states' => array(
+        'visible' => array(
+         ":input[name='{$parent_element}[method]']" => array('value' => 'clone'),
+        ),
+      ),
+    );
+  }
+
+  // Detect clone link. Set defaults.
+  if (arg(4) == 'clone') {
+    $environment_to_clone = arg(5);
+    $form['method']['#default_value'] = 'clone';
+    $form['clone_source']['#default_value'] = $project->environments[$environment_to_clone]->system_alias;
+    $form['git_ref']['#default_value'] = $project->environments[$environment_to_clone]->git_ref;
+  }
+
+  // Detect fork link.
+  // @TODO: Get "forking" back in place for the next beta.
+  //  if (arg(4) == 'fork') {
+  //    $environment_to_clone = arg(5);
+  //    $form['method']['#default_value'] = 'clone';
+  //    $form['clone_source']['#default_value'] = $project->environments[$environment_to_clone]->system_alias;
+  //    $form['git_ref']['#default_value'] = $project->environments[$environment_to_clone]->git_ref;
+  //    $form['git_ref']['#title'] = t('Base Branch or Tag');
+  //    $form['git_ref']['#description'] = t('The git reference you want to create a new branch from.');
+  //
+  //    $form['git_ref_new'] = array(
+  //      '#title' => t('New branch name'),
+  //      '#description' => t('New branch name'),
+  //    );
+  //  }
+
+
+  $form['clone_source_drush'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Drush Alias'),
+    '#description' => t('Enter a Drush alias you would like to Sync your database and files from. It must already exist on the server.'),
+    '#element_validate' => array(
+      'devshop_projects_create_environment_form_validate_clone_source'
+    ),
+    '#weight' => -98,
+    '#attributes' => array(
+      'placeholder' => t('@drush.alias'),
+    ),
+    '#states' => array(
+      'visible' => array(
+        ":input[name='{$parent_element}[clone_source]']" => array('value' => '_other'),
+        ":input[name='{$parent_element}[method]']" => array('value' => 'clone'),
+      ),
+    ),
+  );
+
+  $form['import'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Path to SQL'),
+    '#description' =>
+      t('Enter either a remote MySQL address (such as mysql://username:password@host/database), or an absolute path to an SQL dump (such as /var/aegir/site-backup.sql).') .
+      '<span class="text-danger">' . t('This string is stored in plain text. Use with caution.') . '</span>'
+  ,
+    '#weight' => -98,
+    '#states' => array(
+      'visible' => array(
+       ":input[name='{$parent_element}[method]']" => array('value' => 'import'),
+      ),
+    ),
+    '#element_validate' => array(
+      'devshop_projects_create_environment_form_validate_import'
+    ),
+  );
+
+  return $form;
 }
 
 /**
