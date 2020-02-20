@@ -307,6 +307,7 @@ function devshop_github_form_site_node_form_alter(&$form, &$form_state, $form_id
   if (!empty(variable_get('devshop_github_token', '')) && arg(1) == 'add' && $project->git_provider == 'github'){
     try {
       $prs = devshop_github_client()->pullRequests()->all($project->github_owner, $project->github_repo);
+      $default_branch = devshop_github_client()->repo()->show($project->github_owner, $project->github_repo)['default_branch'];
     }
     catch (\Exception $e) {
       drupal_set_message(t('Unable to reach GitHub API to load Pull Request Data. [Error: %error]', array(
@@ -314,6 +315,7 @@ function devshop_github_form_site_node_form_alter(&$form, &$form_state, $form_id
       )), 'warning');
       return;
     }
+
 
     // @TODO: Use the new function devshop_github_pr_options().
     $pr_options = array();
@@ -333,10 +335,19 @@ function devshop_github_form_site_node_form_alter(&$form, &$form_state, $form_id
       }
 
       $form['git_ref']['#title'] = t('Branch, Tag, or Pull Request');
-
     }
 
-    $form['git_ref']['#options'] = array_merge($pr_options, $existing_options);
+    $default_branch_option = array(
+      t('Default Branch') => array(
+        $default_branch => $default_branch . ' (' . t('Default Branch') . ')',
+      ),
+    );
+
+    unset($existing_options[t('Branches')][$default_branch]);
+
+    $form['git_ref']['#options'] = array_merge($default_branch_option, $pr_options, $existing_options);
+    $form['git_ref']['#default_value'] = $default_branch;
+
     $form['git_ref']['#element_validate'] = array(
       'devshop_github_form_site_node_form_validate_pr'
     );
