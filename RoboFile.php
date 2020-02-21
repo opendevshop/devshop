@@ -283,7 +283,7 @@ class RoboFile extends \Robo\Tasks {
     elseif ($opts['make'] == 'drupal') {
 
       // Run drush make to build the devmaster stack.
-      $makefile_path = $opts['no-dev']? 'devmaster/build-devmaster.make': "devmaster/build-devmaster-dev.make.yml";
+      $makefile_path = $opts['no-dev']? 'build-devmaster.make': "build-devmaster-dev.make.yml";
       $make_destination = $this->devshop_root_path . "/aegir-home/devmaster-" . $opts['devshop-version'];
 
       // Append the desired devshop root path.
