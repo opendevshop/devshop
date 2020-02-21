@@ -15,7 +15,7 @@
  * @param $new_environment_branch
  *   What git branch to track. If FALSE, will not fork.
  * @param $source_environment
- *   If desired, the environment to clone. (Copy the database and create a new branch from)
+ *   If desired, the environment to clone. (Copy the database and create a new branch from) Can be the environment name or a full drush alias, as long as it is within the project.
  */
 function hosting_create_environment($project, $new_environment_name, $new_environment_branch = NULL, $source_environment = NULL, $settings = NULL, $action = 'create', $git_remote_url = NULL) {
   $settings = (object) $settings;
@@ -70,6 +70,15 @@ function hosting_create_environment($project, $new_environment_name, $new_enviro
 //  else {
 //    $branch = $new_environment_branch;
 //  }
+
+  // Allow source environment param to be a drush alias.
+  if (strpos($source_environment, '@') === 0) {
+    foreach ($project->environments as $e) {
+      if ($source_environment == $e->system_alias) {
+        $source_environment = $e->name;
+      }
+    }
+  }
 
   // If $source_environment is set, and the environment by that name exists, create a new environment.
   if (isset($project->environments[$source_environment])) {
