@@ -54,7 +54,7 @@ class GitSplitComposerCommand extends BaseCommand
    */
   protected function configure()
   {
-    $this->command = new GitSplitCommand();
+    $this->command = new GitSplitConsoleCommand();
     $this->command->configure();
     $this
        ->setName($this->command->getName())

@@ -11,7 +11,7 @@
 
 namespace DevShop\Component\GitTools\Composer;
 
-use DevShop\Component\GitTools\Command\GitSplitCommand;
+use DevShop\Component\GitTools\Command\GitSplitConsoleCommand;
 use Composer\Plugin\Capability\CommandProvider as CommandProviderCapability;
 use DevShop\Component\GitTools\Command\GitSplitComposerCommand;
 

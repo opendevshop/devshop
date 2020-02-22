@@ -22,11 +22,11 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Console\Command\Command;
 
 /**
- * GitSplitCommand runs splitsh-lite script.
+ * GitSplitConsoleCommand runs splitsh-lite script.
  *
  * @author Jon Pugh <jon@thinkdrop.net>
  */
-class GitSplitCommand extends Command
+class GitSplitConsoleCommand extends Command
 {
 
   private $command;
