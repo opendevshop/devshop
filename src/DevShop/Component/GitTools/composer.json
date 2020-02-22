@@ -1,7 +1,7 @@
 {
-  "name": "devshop/git-tools",
+  "name": "devshop/git-split",
   "type": "composer-plugin",
-  "description": "Commands for git management such as git:split, git:import.",
+  "description": "DevShop GitSplit Component",
   "keywords": [],
   "homepage": "https://getdevshop.com",
   "license": "MIT",
