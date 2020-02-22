@@ -29,6 +29,23 @@ jobs:
       - run: mkdir $HOME/.ssh
       - name: Authorize GitHub.com as a known_host
         run: ssh-keyscan github.com > $HOME/.ssh/known_hosts
-      
+
+      - uses: actions/checkout@v1
+      - name: Get Composer Cache Directory
+        id: composer-cache
+        run: |
+          echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+      - uses: actions/cache@v1
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --no-progress --no-suggest
+
+      # @TODO: Our plugin could be coded to output the commands needed to run splitsh-lite.sh directly. This would shorten CI runs because we wouldn't need composer install for the Git Split job.
       - name: Split monorepo
         run: bin/git-split
