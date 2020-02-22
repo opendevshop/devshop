@@ -12,9 +12,7 @@
 namespace DevShop\Component\GitTools\Command;
 
 use DevShop\Component\GitTools\Splitter;
-use Robo\Common\TaskIO;
-use Symfony\Component\Console\Helper\DescriptorHelper;
-use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Exception\InvalidOptionException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -37,6 +35,11 @@ class GitSplitConsoleCommand extends Command
   protected $io;
 
   /**
+   * @var array List of secondary repos, with path as key, repo URL as value.
+   */
+  protected $gitRepos = [];
+
+  /**
    * {@inheritdoc}
    */
   protected function configure()
@@ -44,20 +47,29 @@ class GitSplitConsoleCommand extends Command
     $this
       ->setName('git:split')
       ->setDefinition([
-        new InputArgument('path', InputArgument::OPTIONAL, 'The path to sub repository. If not specified, all paths listed in composer.json config.git-split.repos will be split.'),
-        new InputArgument('remote', InputArgument::OPTIONAL, 'The git remote to push to.'),
-        new InputOption('progress', null, InputOption::VALUE_NONE, 'Print splitsh-lite progress.'),
+        new InputOption(
+          'repo',
+          'r',
+          InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED,
+          'The path and repo to split to. Use the format "$PATH=$REPO". Multiple "--repo" options may be used.'
+        ),
+        new InputOption(
+          'progress',
+          'p',
+          InputOption::VALUE_NONE,
+          'Print splitsh-lite progress.'
+        ),
       ])
-      ->setDescription('Split a folder into a separate git repo.')
+      ->setDescription('Split folders into separate git repos.')
       ->setHelp(<<<'EOF'
 The <info>%command.name%</info> is a wrapper for the "splitsh-lite" command. 
 It is used to push folders of a git repo into a separate second git repo. 
 
-  <info>php %command.full_name% git:split path/to/component https://githost.com/split/component.git</info>
+  <info>php %command.full_name% git:split --repo path/to/component=https://githost.com/split/component.git</info>
 
 You can also output progress from splitsh-lite by using the <comment>--progress</comment> option:
 
-  <info>php %command.full_name% --progress git:split</info>
+  <info>php %command.full_name% --progress git:split --repo path/to/component=https://githost.com/split/component.git</info>
 
 See https://github.com/splitsh/lite for more information.
 EOF
@@ -75,6 +87,23 @@ EOF
    */
   public function initialize(InputInterface $input, OutputInterface $output) {
     $this->io = new SymfonyStyle($input, $output);
+
+    // Console command only loads options from command line.
+    if (!empty($input->getOption('repo'))) {
+      foreach ($input->getOption('repo') as &$value) {
+        try {
+          [$path, $repo] = explode('=', $value);
+          $this->gitRepos[$path] = $repo;
+        }
+        catch (\ErrorException $e) {
+          $this->io->note("Invalid --repo option. Use the format PATH=REPO_URL. Unable to parse '$value'.");
+        }
+      }
+    }
+
+    if (!count($this->gitRepos)) {
+      throw new InvalidOptionException('No valid repos found.');
+    }
   }
 
   /**
@@ -83,26 +112,19 @@ EOF
   protected function execute(InputInterface $input, OutputInterface $output)
   {
     $this->io->title('Git Split');
-
     $pwd = getcwd();
-    $this->io->writeln(["Working Directory: $pwd"]);
+    $this->io->writeln(" Working Directory: $pwd");
+
+    # Output a list of paths to split.
+    foreach ($this->gitRepos as $path => $gitRepo) {
+      $rows[] = [$path, $gitRepo];
+    }
+    $this->io->table(['Paths to Split', 'Git Repository'], $rows);
 
     Splitter::install();
-    // @TODO: Read this from composer config.
-    Splitter::splitRepos(self::REPOS, $input->getOption('progress'));
+    Splitter::splitRepos($this->gitRepos, $input->getOption('progress'));
 
-    $this->io->warning('This code is not yet functional!');
-    return 1;
+    # Always return 0 (Success) if we got this far. Splitter::splitRepos() will throw exceptions or exit 1
+    return 0;
   }
-
-  /**
-   * @var array The list of folders to split into sub repos.
-   * @TODO: Read this from composer config.
-   */
-  const REPOS = array(
-    'devmaster' => 'https://$INPUT_GITHUB_TOKEN@github.com/opendevshop/devmaster.git',
-    'roles/opendevshop.apache' => 'https://$INPUT_GITHUB_TOKEN@github.com/opendevshop/ansible-role-apache.git',
-    'roles/opendevshop.devmaster' => 'https://$INPUT_GITHUB_TOKEN@github.com/opendevshop/ansible-role-devmaster.git',
-    'roles/opendevshop.users' => 'https://$INPUT_GITHUB_TOKEN@github.com/opendevshop/ansible-role-users.git'
-  );
 }
