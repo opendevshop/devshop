@@ -20,7 +20,48 @@ To add a new component follow these steps:
 4. Add a the component code. This folder will become a standalone Composer package.
 5. Follow the direction of the [symfony/symfony](https://github.com/symfony/symfony) repository. See the [Process Component](https://github.com/symfony/symfony/tree/5.0/src/Symfony/Component/Process) for an example of best practices.
 6. Create a git repository on GitHub: https://github.com/new
-  1. Select `opendevshop` as the owner
+  1. Select `devshop-packages` as the owner.
+  2. Add the same purpose statement from the `README.md` to the **Description** field.
+  2. Format the repository name by converting CamelCase ComponentName to `component-name`.
+  3. Set it to Public.
+  4. **DO NOT SELECT** *Initialize this repository with a README*, *Add .gitigire* or *Add a license*. The GitSplit tool will populate this repo.
+  5. Press "Create Repository" to create the new git repo.
+6. Add the package name to the `replace` section of [`devshop/composer.json`](../composer.json). If the component is required by the `devshop` CLI, add it to `require` instead as `"devshop/component-name": "*"`.
+
+7. Add the Secondary Repository information to the `config.git-split.repos` section of the main [`devshop/composer.json`](../composer.json) file.
+ 
+    Use the path within the `opendevshop/devshop` repo to the component as the key of the array element, and the git repo URL as the value. 
+ 
+    It should look something like this:
+
+    ```json
+    "extra": {
+            "git-split-repos": {
+                "devmaster": "git@github.com:opendevshop/devmaster.git",
+                "roles/opendevshop.apache": "git@github.com:opendevshop/ansible-role-apache.git",
+                "roles/opendevshop.devmaster": "git@github.com:opendevshop/ansible-role-devmaster.git",
+                "roles/opendevshop.users": "git@github.com:opendevshop/ansible-role-user.git"
+                "src/DevShop/Component/ComponentName": "git@github.com:devshop-packages/ansible-role-user.git"
+            }
+        },
+    ```    
+
+9. Create a new branch from `develop` and push it:
+
+        $ git checkout -b component/php/component-name
+        $ git push -u origin component/php/component-name
+    
+    Use the branch naming convention `component/php/git-split`.
+    
+    *NOTE:* GitHub now provides a direct link to the "Create Pull Request" page after you push a new branch. Look for this in the output of the first `git push` command on a new branch.
+
+## GitHub Actions: Automated Git Split
+    
+As soon as you push this new branch, (even before you submit a pull request), 
+GitHub Actions will run our workflows on your branch. Check the [GitHub Actions 
+page on the DevShop Repo](https://github.com/opendevshop/devshop/actions) for the *Git Management* workflow results.
+
+9. Once you feel your component is read for review by the DevShop Team, submit a Pull Request!
 
 ### List of Components
 
