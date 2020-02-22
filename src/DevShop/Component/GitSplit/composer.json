@@ -23,11 +23,11 @@
     "symfony/console": "^4.4|^5.0"
   },
   "extra": {
-    "class": "DevShop\\Component\\GitTools\\Composer\\Plugin"
+    "class": "DevShop\\Component\\GitSplit\\Composer\\Plugin"
   },
   "autoload": {
     "psr-4": {
-      "DevShop\\Component\\GitTools\\": ""
+      "DevShop\\Component\\GitSplit\\": ""
     }
   },
   "bin": [

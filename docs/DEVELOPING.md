@@ -36,14 +36,16 @@ To add a new component follow these steps:
 
     ```json
     "extra": {
-            "git-split-repos": {
+        "git-split": {
+            "repos": {
+                "src/DevShop/Component/GitSplit": "git@github.com:devshop-packages/git-split.git",
                 "devmaster": "git@github.com:opendevshop/devmaster.git",
                 "roles/opendevshop.apache": "git@github.com:opendevshop/ansible-role-apache.git",
                 "roles/opendevshop.devmaster": "git@github.com:opendevshop/ansible-role-devmaster.git",
                 "roles/opendevshop.users": "git@github.com:opendevshop/ansible-role-user.git"
-                "src/DevShop/Component/ComponentName": "git@github.com:devshop-packages/ansible-role-user.git"
             }
-        },
+        }
+    },
     ```    
 
 9. Create a new branch from `develop` and push it:
@@ -67,6 +69,6 @@ page on the DevShop Repo](https://github.com/opendevshop/devshop/actions) for th
 
 This list is changing rapidly. We'll try to keep it up to date with status.
 
-#### Component: GitTools
+#### Component: GitSplit
 
 1. GitSplit - Composer command and bin script to run splitsh-lite. This is used to split the monorepo.

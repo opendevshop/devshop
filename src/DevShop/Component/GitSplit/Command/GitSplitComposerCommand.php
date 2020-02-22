@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace DevShop\Component\GitTools\Command;
+namespace DevShop\Component\GitSplit\Command;
 
 use Composer\Command\BaseCommand;
 use Symfony\Component\Console\Input\InputInterface;

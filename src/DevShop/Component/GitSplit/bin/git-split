@@ -18,8 +18,8 @@
 
 use Symfony\Component\Console\Application;
 use Composer\Composer;
-use DevShop\Component\GitTools\Command\GitSplitConsoleCommand;
-use DevShop\Component\GitTools\Command\GitSplitComposerCommand;
+use DevShop\Component\GitSplit\Command\GitSplitConsoleCommand;
+use DevShop\Component\GitSplit\Command\GitSplitComposerCommand;
 
 function includeIfExists(string $file): bool
 {

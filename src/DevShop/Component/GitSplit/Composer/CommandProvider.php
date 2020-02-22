@@ -9,11 +9,11 @@
  * file that was distributed with this source code.
  */
 
-namespace DevShop\Component\GitTools\Composer;
+namespace DevShop\Component\GitSplit\Composer;
 
-use DevShop\Component\GitTools\Command\GitSplitConsoleCommand;
+use DevShop\Component\GitSplit\Command\GitSplitConsoleCommand;
 use Composer\Plugin\Capability\CommandProvider as CommandProviderCapability;
-use DevShop\Component\GitTools\Command\GitSplitComposerCommand;
+use DevShop\Component\GitSplit\Command\GitSplitComposerCommand;
 
 class CommandProvider implements CommandProviderCapability
 {
