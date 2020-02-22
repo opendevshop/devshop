@@ -35,6 +35,11 @@ class GitSplitComposerCommand extends BaseCommand
   protected $io;
 
   /**
+   * @var \Composer\Composer
+   */
+  protected $composer;
+
+  /**
    * @throws LogicException When the command name is empty
    */
   public function __construct()
@@ -70,6 +75,7 @@ class GitSplitComposerCommand extends BaseCommand
   public function initialize(InputInterface $input, OutputInterface $output) {
     $this->io = new SymfonyStyle($input, $output);
     $this->command->initialize($input, $output);
+    $this->composer = $this->getComposer();
   }
 
   /**
