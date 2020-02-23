@@ -16,7 +16,7 @@ The main branch of DevShop is now `develop`. Many changes are going into this br
 as soon as possible, such as:
 
 1. Composer Tools & Plugins to be merged into Monorepo and redistributed to Packagist:
-    1. `devshop/git-tools`: Git Split & Import tools.
+    1. (`devshop/git-split`)[https://github.com/devshop-packages/git-split]: Git Split & Import tools.
     2. `devshop/bash-tools`: DevShop Bash Tools. New scripts in `./bin` that are useful for all machines.
     3. `devshop/power-process`: Migrated from `provision-ops/power-process`.
     4. `devshop/yaml-commands`: Migrated from `provision-ops/yaml-tests`. 
