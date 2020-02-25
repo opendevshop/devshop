@@ -42,6 +42,10 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
     '#tree' => FALSE,
     '#weight' => -11,
   );
+
+  $form['project']['codebase']['status'] = $form['options']['status'];
+  unset($form['options']);
+
   $form['project']['codebase']['git_url'] = array(
     '#type' => 'textfield',
     '#title' => t('Default Git Repository URL'),
@@ -451,7 +455,12 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
     unset($form['menu']);
     unset($form['revision_information']);
     unset($form['author']);
-    unset($form['options']);
+
+    // Move Published checkbox to General Settings group.
+    $form['options']['status']['#group'] = 'codebase';
+    $form['options']['status']['#title'] = t('Active');
+    $form['options']['status']['#description'] = t('Uncheck this box to hide the project from the main dashboard. Users who have permission to "view unpublished nodes" will still be able to view inactive projects.');
+
     unset($form['actions']['delete']);
     unset($form['actions']['preview']);
     if (isset($form['retry']['#value'])) {
