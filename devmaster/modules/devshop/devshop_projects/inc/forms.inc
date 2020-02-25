@@ -969,6 +969,11 @@ function devshop_projects_create_environment_form(&$form, &$form_state, $form_id
   }
   $project = $project_node->project;
 
+  if ($project_node->status != NODE_PUBLISHED) {
+    drupal_set_message(t('This project is not active. You may still create environments but non-admin users will not see the project or sites. Visit !settings to reactivate the project.', array(
+      '!settings' => l(t('Project Settings'), "node/{$project->nid}/edit"),
+    )), 'warning');
+  }
   // Wrap the form in a container so we can use grid
   $form['#prefix'] = '<div class="container add-environment-container">';
   $form['#suffix'] = '</div>';
