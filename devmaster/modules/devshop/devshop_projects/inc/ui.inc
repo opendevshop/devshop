@@ -37,8 +37,8 @@ function devshop_projects_projects_page() {
 
       // Link to Project page
       $url = url("node/$project->nid");
-      $title = t('View dashboard for !project project.', array(
-        ''
+      $title = t('View dashboard for @project project', array(
+        '@project' => $project_node->title
       ));
       $first_col = <<<HTML
 
