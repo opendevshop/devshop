@@ -18,7 +18,7 @@ projects[hosting][download][branch] = 7.x-3.180-devshop
 projects[eldir][type] = theme
 projects[eldir][version] = "3.180"
 
-projects[hosting_git][vesrion] = "3.181"
+projects[hosting_git][version] = "3.181"
 
 projects[hosting_https][version] = "3.182"
 
