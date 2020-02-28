@@ -9,7 +9,7 @@ devshop_version:              1.x
 server_hostname: vagrant.devshop.local.computer
 
 # Needed on Ubuntu 16
-ansible_python_interpreter: /usr/bin/python3
+ansible_python_interpreter: /usr/lib/python3
 
 # Set `vagrant_development` to TRUE if you wish to prepare a development environment.
 # You may also add a file to this folder called ".development_mode".  If this file is present, development mode will always be enabled.
