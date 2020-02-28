@@ -123,7 +123,7 @@ EOF
       // @TODO: Is there a way to do this for SSH urls?
       // @TODO: Figure out why this is needed even though we are using the fregante/setup-git-token@v1 github action.
       if (!empty($_SERVER['GITSPLIT_GITHUB_TOKEN']) && strpos($gitRepo, 'https://') === 0) {
-        $gitRepo = str_replace('https://', "https://{$_SERVER['GITSPLIT_GITHUB_TOKEN']}@", $gitRepo);
+        $gitRepo = str_replace('https://', 'https://$GITSPLIT_GITHUB_TOKEN@', $gitRepo);
       }
     }
     $this->io->table(['Paths to Split', 'Git Repository'], $rows);
