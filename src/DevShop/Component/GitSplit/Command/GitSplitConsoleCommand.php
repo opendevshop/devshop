@@ -115,9 +115,16 @@ EOF
     $pwd = getcwd();
     $this->io->writeln(" Working Directory: $pwd");
 
-    # Output a list of paths to split.
-    foreach ($this->gitRepos as $path => $gitRepo) {
+    // Output a list of paths to split.
+    foreach ($this->gitRepos as $path => &$gitRepo) {
       $rows[] = [$path, $gitRepo];
+
+      // Rewrite git remote URL with GitHub Token so pushes will authenticate with the token.
+      // @TODO: Is there a way to do this for SSH urls?
+      // @TODO: Figure out why this is needed even though we are using the fregante/setup-git-token@v1 github action.
+      if (!empty($_SERVER['GITSPLIT_GITHUB_TOKEN']) && strpos($gitRepo, 'https://') === 0) {
+        $gitRepo = str_replace('https://', "https://{$_SERVER['GITSPLIT_GITHUB_TOKEN']}@", $gitRepo);
+      }
     }
     $this->io->table(['Paths to Split', 'Git Repository'], $rows);
 

@@ -76,12 +76,6 @@ class Splitter {
     foreach ($repos as $folder => $remote) {
       echo "\n\n- Splitting $folder for git reference $current_ref to $remote ... \n";
 
-      // @TODO: Make this a config option or something so the plugin stays portable.
-      // Inject github token into url.
-      if (!empty($_SERVER['GITHUB_TOKEN']) && strpos($remote, 'https://') === 0) {
-        $remote = str_replace('https://', "https://{$_SERVER['GITHUB_TOKEN']}@", $remote);
-      }
-      // @TODO: Is there a way to do this for SSH urls?
 
       // Use a different local target branch so we dont break local installs by reassigning the current branch to the new commit.
       $target = "refs/splits/$folder";
