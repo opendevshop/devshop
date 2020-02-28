@@ -63,3 +63,5 @@ jobs:
       # @TODO: Our plugin could be coded to output the commands needed to run splitsh-lite.sh directly. This would shorten CI runs because we wouldn't need composer install for the Git Split job.
       - name: Split monorepo
         run: composer git:split
+        env:
+          GITHUB_TOKEN: ${{ secrets.INPUT_GITHUB_TOKEN }}
