@@ -1,5 +1,9 @@
 name: Git Management
 on: [push]
+env:
+  GITHUB_USERNAME: devshopbot
+  GITHUB_TOKEN: ${{ secrets.INPUT_GITHUB_TOKEN }}
+
 jobs:
   monorepo-split:
     name: Split Git Repositories
@@ -7,6 +11,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v1
+
+      - name: Confirm repo access
+        run: |
+          curl -u $GITHUB_USERNAME:$GITHUB_TOKEN https://api.github.com/repos/opendevshop/devshop/collaborators/$GITHUB_USERNAME/permission
+          curl -u $GITHUB_USERNAME:$GITHUB_TOKEN https://api.github.com/orgs/devshop-packages/members/$GITHUB_USERNAME
 
       - uses: fregante/setup-git-token@v1
         with:
