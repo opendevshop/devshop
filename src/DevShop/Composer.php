@@ -30,6 +30,33 @@ class Composer {
   }
 
   /**
+   * Install binary files.
+   */
+  static function installBins() {
+    foreach (self::BIN_FILES as $name => $url) {
+      $bin_path = "bin/{$name}";
+
+      if (strpos($url, 'tar.gz') !== FALSE) {
+        $filename = sys_get_temp_dir() . "/$name";
+        $filename_tar = "$filename.tar";
+        $filename_tar_gz = "$filename_tar.gz";
+
+        echo "- Downloading to $filename_tar_gz \n";
+        copy($url, $filename_tar_gz);
+
+        passthru("tar zxf $filename_tar_gz");
+        rename("./" . $name, $bin_path);
+      }
+      else {
+        copy($url, $bin_path);
+      }
+
+      chmod($bin_path, 0755);
+      echo "- Installed $url to $bin_path \n";
+    }
+  }
+
+  /**
    * Print the command then run it.
    * @param $command
    *
