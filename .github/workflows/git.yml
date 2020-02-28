@@ -28,8 +28,8 @@ jobs:
       - uses: fregante/setup-git-token@v1
         with:
           token: ${{ secrets.INPUT_GITHUB_TOKEN }}
-          name: jonpugh
-          email: jon@thinkdrop.net
+          name: devshopbot
+          email: bot@devshop.cloud
 
       - name: Cache git split database file.
         uses: actions/cache@v1
