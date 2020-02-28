@@ -78,7 +78,7 @@ class Splitter {
 
       // Inject github token into url.
       if (!empty($_SERVER['GITHUB_TOKEN']) && strpos($remote, 'https://') === 0) {
-        $remote = str_replace('https://', "https://{$_SERVER['GITHUB_TOKEN']}", $remote);
+        $remote = str_replace('https://', "https://{$_SERVER['GITHUB_TOKEN']}@", $remote);
       }
       // @TODO: Is there a way to do this for SSH urls?
 
