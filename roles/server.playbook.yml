@@ -31,8 +31,8 @@
     # This is set to TRUE to ensure the playbooks don't try to run the devmaster upgade every time they run (aka on robo up).
     devmaster_skip_upgrade: true
 
-    # @TODO: Remove this once we figure out how to not require it.
-    # ansible_python_interpreter: python3
+    # @TODO: Looks like ubuntu 18 requires this, but having this breaks centOS? will confirm in CI.
+    ansible_python_interpreter: python3
 
     # Supervisor will start when the container and systemd start.
     supervisor_started: false
