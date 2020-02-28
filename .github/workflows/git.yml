@@ -1,5 +1,11 @@
 name: Git Management
 on: [push]
+env:
+  GITHUB_USERNAME: devshopbot
+  GITHUB_TOKEN: ${{ secrets.INPUT_GITHUB_TOKEN }}
+  DEVSHOP_REPO: opendevshop/devshop
+  DEVSHOP_PACKAGES_REPO: devshop-packages/git-split
+
 jobs:
   monorepo-split:
     name: Split Git Repositories
@@ -7,6 +13,17 @@ jobs:
 
     steps:
       - uses: actions/checkout@v1
+
+      - name: Confirm write access to $DEVSHOP_REPO
+        run: |
+          curl -u $GITHUB_USERNAME:$GITHUB_TOKEN https://api.github.com/repos/$DEVSHOP_REPO/collaborators/$GITHUB_USERNAME/permission | grep "permission" | grep "admin
+          write"
+
+      - name: Confirm write access to $DEVSHOP_PACKAGES_REPO.
+        run: |
+          curl -u $GITHUB_USERNAME:$GITHUB_TOKEN https://api.github.com/repos/$DEVSHOP_PACKAGES_REPO/collaborators/$GITHUB_USERNAME/permission | grep "permission" | grep "admin
+          write"
+
 
       - uses: fregante/setup-git-token@v1
         with:
