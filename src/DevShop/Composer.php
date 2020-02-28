@@ -63,7 +63,8 @@ class Composer {
       'devmaster' => 'https://$INPUT_GITHUB_TOKEN@github.com/opendevshop/devmaster.git',
       'roles/opendevshop.apache' => 'https://$INPUT_GITHUB_TOKEN@github.com/opendevshop/ansible-role-apache.git',
       'roles/opendevshop.devmaster' => 'https://$INPUT_GITHUB_TOKEN@github.com/opendevshop/ansible-role-devmaster.git',
-      'roles/opendevshop.users' => 'https://$INPUT_GITHUB_TOKEN@github.com/opendevshop/ansible-role-users.git'
+      'roles/opendevshop.users' => 'https://$INPUT_GITHUB_TOKEN@github.com/opendevshop/ansible-role-users.git',
+      'tests/test-repo' => 'https://$INPUT_GITHUB_TOKEN@github.com/devshop-packages/test-repo.git'
   );
 
   /**
