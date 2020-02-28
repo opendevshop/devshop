@@ -32,7 +32,7 @@
     devmaster_skip_upgrade: true
 
     # @TODO: Looks like ubuntu 18 requires this, but having this breaks centOS? will confirm in CI.
-    ansible_python_interpreter: python3
+    ansible_python_interpreter: /usr/bin/python3
 
     # Supervisor will start when the container and systemd start.
     supervisor_started: false
