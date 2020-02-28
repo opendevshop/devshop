@@ -12,7 +12,7 @@ jobs:
     runs-on: [ubuntu-latest]
 
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
 
       - name: Confirm write access to $DEVSHOP_REPO
         run: |
@@ -28,8 +28,6 @@ jobs:
       - uses: fregante/setup-git-token@v1
         with:
           token: ${{ secrets.INPUT_GITHUB_TOKEN }}
-          name: devshopbot
-          email: bot@devshop.cloud
 
       - name: Cache git split database file.
         uses: actions/cache@v1
