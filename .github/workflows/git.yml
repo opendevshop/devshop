@@ -44,7 +44,6 @@ jobs:
       - name: Authorize GitHub.com as a known_host
         run: ssh-keyscan github.com > $HOME/.ssh/known_hosts
 
-      - uses: actions/checkout@v1
       - name: Get Composer Cache Directory
         id: composer-cache
         run: |
