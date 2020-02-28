@@ -12,7 +12,7 @@ jobs:
     runs-on: [ubuntu-latest]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v1
 
       - name: Confirm write access to $DEVSHOP_REPO
         run: |
@@ -24,9 +24,9 @@ jobs:
           curl -u $GITHUB_USERNAME:$GITSPLIT_GITHUB_TOKEN https://api.github.com/repos/$DEVSHOP_PACKAGES_REPO/collaborators/$GITHUB_USERNAME/permission | grep "permission" | grep "admin
           write"
 
-#      - uses: fregante/setup-git-token@v1
-#        with:
-#          token: ${{ secrets.INPUT_GITHUB_TOKEN }}
+      - uses: fregante/setup-git-token@v1
+        with:
+          token: ${{ secrets.GITSPLIT_GITHUB_TOKEN }}
 
       - name: Cache git split database file.
         uses: actions/cache@v1
@@ -37,8 +37,8 @@ jobs:
       - name: Show Git Information
         run: env | grep GITHUB
 
-      - name: Show git status
-        run: git status
+      - name: Create a branch for the splitsh
+        run: git checkout -b $( echo ${GITHUB_REF} | sed 's/refs\/heads\///')
 
       - run: mkdir $HOME/.ssh
       - name: Authorize GitHub.com as a known_host
