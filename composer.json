@@ -55,7 +55,7 @@
     "extra": {
         "git-split": {
             "repos": {
-                "tests/test-repo": "https://$INPUT_GITHUB_TOKEN@github.com/devshop-packages/test-repo.git",
+                "tests/test-repo": "https://github.com/devshop-packages/test-repo.git",
                 "devmaster": "https://github.com/opendevshop/devmaster.git",
                 "roles/opendevshop.apache": "https://github.com/opendevshop/ansible-role-apache.git",
                 "roles/opendevshop.devmaster": "https://github.com/opendevshop/ansible-role-devmaster.git",
