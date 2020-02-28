@@ -24,9 +24,9 @@ jobs:
           curl -u $GITHUB_USERNAME:$GITSPLIT_GITHUB_TOKEN https://api.github.com/repos/$DEVSHOP_PACKAGES_REPO/collaborators/$GITHUB_USERNAME/permission | grep "permission" | grep "admin
           write"
 
-      - uses: fregante/setup-git-token@v1
-        with:
-          token: ${{ secrets.INPUT_GITHUB_TOKEN }}
+#      - uses: fregante/setup-git-token@v1
+#        with:
+#          token: ${{ secrets.INPUT_GITHUB_TOKEN }}
 
       - name: Cache git split database file.
         uses: actions/cache@v1
