@@ -2032,13 +2032,10 @@ function devshop_github_create_all_pr_environments($project_node) {
     // If PR has different remote URL, set it.
     if ($pr->head->repo->fork) {
       // Try to match project URL scheme
-      if (strpos($project->git_url, 'https://') === 0) {
-        $remote_url = $pr->head->repo->clone_url;
-      }
-      elseif (strpos($project->git_url->git_url, 'git://') === 0){
+      if (strpos($project->git_url, 'git://') === 0){
         $remote_url = $pr->head->repo->git_url;
       }
-      elseif (strpos($project->git_url->git_url, 'git@') === 0){
+      elseif (strpos($project->git_url, 'git@') === 0){
         $remote_url = $pr->head->repo->ssh_url;
       }
       else {
