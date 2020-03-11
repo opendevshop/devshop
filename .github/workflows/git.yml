@@ -2,7 +2,7 @@ name: Git Management
 on: [push]
 env:
   GITHUB_USERNAME: devshopbot
-  GITHUB_TOKEN: ${{ secrets.INPUT_GITHUB_TOKEN }}
+  GITSPLIT_GITHUB_TOKEN: ${{ secrets.INPUT_GITHUB_TOKEN }}
   DEVSHOP_REPO: opendevshop/devshop
   DEVSHOP_PACKAGES_REPO: devshop-packages/git-split
 
@@ -16,20 +16,17 @@ jobs:
 
       - name: Confirm write access to $DEVSHOP_REPO
         run: |
-          curl -u $GITHUB_USERNAME:$GITHUB_TOKEN https://api.github.com/repos/$DEVSHOP_REPO/collaborators/$GITHUB_USERNAME/permission | grep "permission" | grep "admin
+          curl -u $GITHUB_USERNAME:$GITSPLIT_GITHUB_TOKEN https://api.github.com/repos/$DEVSHOP_REPO/collaborators/$GITHUB_USERNAME/permission | grep "permission" | grep "admin
           write"
 
       - name: Confirm write access to $DEVSHOP_PACKAGES_REPO.
         run: |
-          curl -u $GITHUB_USERNAME:$GITHUB_TOKEN https://api.github.com/repos/$DEVSHOP_PACKAGES_REPO/collaborators/$GITHUB_USERNAME/permission | grep "permission" | grep "admin
+          curl -u $GITHUB_USERNAME:$GITSPLIT_GITHUB_TOKEN https://api.github.com/repos/$DEVSHOP_PACKAGES_REPO/collaborators/$GITHUB_USERNAME/permission | grep "permission" | grep "admin
           write"
-
 
       - uses: fregante/setup-git-token@v1
         with:
           token: ${{ secrets.INPUT_GITHUB_TOKEN }}
-          name: devshopbot
-          email: jon@thinkdrop.net
 
       - name: Cache git split database file.
         uses: actions/cache@v1
@@ -46,6 +43,22 @@ jobs:
       - run: mkdir $HOME/.ssh
       - name: Authorize GitHub.com as a known_host
         run: ssh-keyscan github.com > $HOME/.ssh/known_hosts
-      
+
+      - name: Get Composer Cache Directory
+        id: composer-cache
+        run: |
+          echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+      - uses: actions/cache@v1
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --no-progress --no-suggest
+
+      # @TODO: Our plugin could be coded to output the commands needed to run splitsh-lite.sh directly. This would shorten CI runs because we wouldn't need composer install for the Git Split job.
       - name: Split monorepo
-        run: composer split
+        run: composer git:split
