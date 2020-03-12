@@ -149,6 +149,8 @@ function devshop_dothooks_run_hook($hook, $site) {
   $env['DEVSHOP_PROJECT'] = $environment->project_name;
   $env['DEVSHOP_ENVIRONMENT'] = $environment->name;
   $env['DRUSH_ALIAS'] = $environment->system_alias;
+  $env['URL'] = $environment->url;
+  $env['ROOT'] = $environment->repo_path;
 
   // Prepare and run each command.
   foreach ($hooks as $hook_line) {
