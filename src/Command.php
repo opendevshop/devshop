@@ -737,7 +737,8 @@ BODY;
     /**
      * Return the target URL used in the GitHub "Details" link, using either param, command line option, or the ENV var.
      */
-    protected function getTargetUrl($alternate_url = null) {
+    protected function getTargetUrl($alternate_url = null)
+    {
         // Return the alternate URL if it is present. If not, the command line option. (which defaults to the ENV var.)
         return $alternate_url?: $this->input->getOption('status-url');
     }
