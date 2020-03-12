@@ -531,7 +531,9 @@ BODY;
                                 $this->successLite("Comment Created: {$comment_response['html_url']}");
 
                                 // @TODO: Set Target URL from yaml-test options.
-                                $params->target_url = $this->getTargetUrl($comment_response['html_url']);
+                                // $params->target_url = $this->getTargetUrl($comment_response['html_url']);
+                                // Always use the main target url... If this is overridable, it should be configurable by the user in their tests.yml.
+                                $params->target_url = $this->getTargetUrl();
                             } catch (\Github\Exception\RuntimeException $e) {
                                 $this->errorLite("Unable to create GitHub Commit Comment: " . $e->getMessage() . ': ' . $e->getCode());
                             }
