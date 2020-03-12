@@ -49,6 +49,16 @@ class Command extends BaseCommand
     protected $io;
 
     /**
+     * @var InputInterface
+     */
+    protected $input;
+
+    /**
+     * @var OutputInterface
+     */
+    protected $output;
+
+    /**
      * The directory containing composer.json. Loaded from composer option --working-dir.
      *
      * @var String
@@ -148,6 +158,14 @@ class Command extends BaseCommand
             InputOption::VALUE_OPTIONAL,
             'The hostname to use in the status description. Use if automatically detected hostname is not desired.',
             gethostname()
+        );
+        $this->addOption(
+            'status-url',
+            null,
+            InputOption::VALUE_OPTIONAL,
+            'The url to send to users via the "Details" link on GitHub.com.',
+            // @TODO: Is this needed? Shouldn't symfony console commands get ENV vars automatically?
+            $_SERVER['YAML_TASKS_STATUS_URL']
         );
         $this->addArgument(
             'filter',
@@ -346,7 +364,7 @@ class Command extends BaseCommand
                     // Set a commit status for this REF
                     $params = new \stdClass();
                     $params->state = 'pending';
-                    $params->target_url = 'https:///path/to/file';
+                    $params->target_url = $this->getTargetUrl();
                     $params->description = implode(
                         ' — ',
                         array(
@@ -418,7 +436,7 @@ class Command extends BaseCommand
                 // Set a commit status for this REF
                 $params = new \stdClass();
                 $params->state = 'pending';
-                $params->target_url = 'https:///';
+                $params->target_url = $this->getTargetUrl();
                 $params->description = implode(
                     ' — ',
                     array(
@@ -513,7 +531,9 @@ BODY;
                                 $this->successLite("Comment Created: {$comment_response['html_url']}");
 
                                 // @TODO: Set Target URL from yaml-test options.
-                                $params->target_url = $comment_response['html_url'];
+                                // $params->target_url = $this->getTargetUrl($comment_response['html_url']);
+                                // Always use the main target url... If this is overridable, it should be configurable by the user in their tests.yml.
+                                $params->target_url = $this->getTargetUrl();
                             } catch (\Github\Exception\RuntimeException $e) {
                                 $this->errorLite("Unable to create GitHub Commit Comment: " . $e->getMessage() . ': ' . $e->getCode());
                             }
@@ -523,11 +543,6 @@ BODY;
 
                 if ($test['show-output'] == false) {
                     $this->warningLite("Output was hidden, as configured in " . $this->testsFile);
-                }
-
-                // If TRAVIS_JOB_WEB_URL is present and the target_url was not changed, use that as the target_url.
-                if ($params->target_url == 'https:///' && !empty($_SERVER['TRAVIS_JOB_WEB_URL'])) {
-                    $params->target_url = $_SERVER['TRAVIS_JOB_WEB_URL'];
                 }
 
                 if (!$input->getOption('dry-run')) {
@@ -717,5 +732,14 @@ BODY;
         if ($newLine) {
             $this->io->newLine();
         }
+    }
+
+    /**
+     * Return the target URL used in the GitHub "Details" link, using either param, command line option, or the ENV var.
+     */
+    protected function getTargetUrl($alternate_url = null)
+    {
+        // Return the alternate URL if it is present. If not, the command line option. (which defaults to the ENV var.)
+        return $alternate_url?: $this->input->getOption('status-url');
     }
 }
