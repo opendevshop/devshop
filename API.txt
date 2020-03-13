@@ -1,0 +1,13 @@
+DevShop Provision API
+=====================
+
+Document in Progress.
+
+Drush Hooks
+-----------
+
+You can add drush hooks to act before or after devshop tasks.
+
+An example of a post-deploy hook is in the file deploy_hooks_examples/devshop.drush.inc
+
+Copy this file to sites/all/drush and use it for your specific site.

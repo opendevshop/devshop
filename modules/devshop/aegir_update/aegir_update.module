@@ -1,0 +1,84 @@
+<?php
+
+/**
+ * Implements hook_hosting_tasks().
+ */
+function aegir_update_hosting_tasks() {
+    $tasks['site']['update_drupal'] = array(
+        'title' => t('Update Drupal'),
+        'description' => t('Upgrades drupal core and contrib to the latest versions.'),
+        'dialog' => TRUE,
+        'icon' => 'wrench'
+    );
+    return $tasks;
+}
+
+/**
+ * Implements hook_permission().
+ * @return array
+ */
+function aegir_update_permission() {
+  return array(
+    'create update_drupal task' => array(
+      'title' => t('create update_drupal task'),
+      'description' => t('Create "Update Drupal" task.'),
+    ),
+  );
+}
+
+/**
+ * @return mixed
+ */
+function hosting_task_update_drupal_form() {
+    $form = array();
+    $form['note'] = array(
+      '#markup' => t('This will run the command <code>drush pm-update</code> on your Drupal site.'),
+      '#prefix' => '<p>',
+      '#suffix' => '</p>',
+    );
+    $form['warning'] = array(
+      '#markup' => t('Running this task may have unexpected consequences. It is not recommended to run on a production site.'),
+      '#prefix' => '<div class="alert alert-warning"><i class="fa fa-warning"></i> ',
+      '#suffix' => '</div>',
+    );
+    $form['commit'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Commit & Push all changes'),
+      '#description' => t('After running the update, commit and push all changes.'),
+      '#default_value' => 1,
+    );
+    return $form;
+}
+
+/**
+ * Implements hook_post_hosting_TASK_TYPE_task().
+ *
+ * Trigger a verify task for the site and the platform.
+ */
+function aegir_update_post_hosting_update_drupal_task($task, $data) {
+
+  $account = user_load($task->uid);
+  if (isset($task->task_args['commit']) && $task->task_args['commit']) {
+      hosting_add_task($task->ref->nid, 'commit', array(
+        'push' => 1,
+        'name' => $account->name,
+        'mail' => $account->mail,
+      ));
+  }
+
+  hosting_add_task($task->ref->platform, 'verify');
+  hosting_add_task($task->ref->nid, 'verify');
+}
+
+/**
+ * Implements hook_devshop_environment_menu().
+ *
+ * Defines the list of tasks that appear under the gear icon.
+ */
+function aegir_update_devshop_environment_menu($environment) {
+
+    if ($environment->site && $environment->site_status == HOSTING_SITE_ENABLED) {
+        $items[] = 'update_drupal';
+    }
+    return $items;
+}
