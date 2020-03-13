@@ -71,7 +71,7 @@ function hosting_create_environment($project, $new_environment_name, $new_enviro
 //    $branch = $new_environment_branch;
 //  }
 
-  // If cloning or forking, check if source environment exists...
+  // If $source_environment is set, and the environment by that name exists, create a new environment.
   if (isset($project->environments[$source_environment])) {
     $source_environment = $project->environments[$source_environment];
 
@@ -88,9 +88,20 @@ function hosting_create_environment($project, $new_environment_name, $new_enviro
     $environment->settings->locked = 0;
     $environment->settings->pull_disabled = 0;
 
-    // Save clone source from source_environment's drush alias.
-    $environment->settings->install_method['method'] = 'clone';
-    $environment->settings->install_method['clone_source'] = $source_environment->system_alias;
+    // If the source environment was installed from a profile, we have to change
+    // "install_method" so that it installs by cloning the source site, not by
+    // the "profile" install_method.
+    if ($source_environment->settings->install_method['method'] == 'profile') {
+      $environment->settings->install_method = array(
+        'method' => 'clone',
+        'clone_source' => $source_environment->system_alias
+      );
+    }
+    else {
+
+      // Use same install configuration as the source environment.
+      $environment->settings->install_method = $source_environment->settings->install_method;
+    }
 
     if ($action == 'fork') {
       $environment->settings->branch_to_fork = $source_environment->git_ref;

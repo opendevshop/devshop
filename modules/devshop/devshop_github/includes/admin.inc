@@ -5,7 +5,8 @@
  * @return array()
  */
 function devshop_github_settings_form($form, &$form_state) {
-  $token = variable_get('devshop_github_token', '');
+  $token = devshop_github_token();
+
   $token_exists = !empty($token);
 
   $ssh_key = variable_get('devshop_public_key', '');
@@ -167,25 +168,6 @@ function devshop_github_settings_form_validate_token($element, &$form_state, $fo
   else {
     variable_set('devshop_github_token', $token);
     devshop_github_refresh_repositories();
-  }
-}
-
-function devshop_github_token_is_valid($token = NULL) {
-
-  if (empty($token)) {
-    $token = variable_get('devshop_github_token');
-  }
-
-  $client = new \Github\Client();
-  $client->authenticate($token, Github\Client::AUTH_HTTP_TOKEN);
-
-  try {
-    $show = $client->currentUser()->show();
-    return TRUE;
-  }
-    // Happens when user has no public keys.
-  catch (Exception $e) {
-    return $e;
   }
 }
 

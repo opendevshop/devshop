@@ -20,6 +20,7 @@ include_once('tasks/create.inc');
 include_once('tasks/pull.inc');
 include_once('tasks/deploy.inc');
 
+use Symfony\Component\Yaml\Yaml;
 
 /**
  * Implements hook_init().
@@ -900,4 +901,16 @@ function devshop_projects_load_by_name($name) {
     ->fetchField();
 
   return node_load($nid);
+}
+
+/**
+ * Helper to normalize arrays to objects.
+ *
+ * @param $array
+ * @return mixed
+ */
+function convert_to_object($thing) {
+  $yml = Yaml::dump($thing, 2, 2, Yaml::DUMP_OBJECT_AS_MAP);
+  $object = Yaml::parse($yml, Yaml::PARSE_OBJECT_FOR_MAP);
+  return $object;
 }
