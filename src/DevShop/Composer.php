@@ -61,6 +61,7 @@ class Composer {
    */
   const REPOS = array(
       'devmaster' => 'https://$INPUT_GITHUB_TOKEN@github.com/opendevshop/devmaster.git',
+      'src/DevShop/Templates/DevmasterTemplate' => 'https://$INPUT_GITHUB_TOKEN@github.com/devshop-packages/devmaster-template.git',
       'roles/opendevshop.apache' => 'https://$INPUT_GITHUB_TOKEN@github.com/opendevshop/ansible-role-apache.git',
       'roles/opendevshop.devmaster' => 'https://$INPUT_GITHUB_TOKEN@github.com/opendevshop/ansible-role-devmaster.git',
       'roles/opendevshop.users' => 'https://$INPUT_GITHUB_TOKEN@github.com/opendevshop/ansible-role-users.git'
