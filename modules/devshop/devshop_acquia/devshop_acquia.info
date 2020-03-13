@@ -1,5 +1,0 @@
-name = DevShop Acquia Integration
-description = Allows for Acquia Cloud Hooks to be used as deploy hooks in DevShop.
-core = 7.x
-package = DevShop
-dependencies[] = devshop_hosting
