@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "4f7075403fbbc07dc69265367bd787dd",
+    "content-hash": "055df9af7b41afca054067a808952b24",
     "packages": [
         {
             "name": "clue/stream-filter",
@@ -322,10 +322,7 @@
             },
             "type": "composer-plugin",
             "extra": {
-                "class": "cweagans\\Composer\\Patches",
-                "patches_applied": {
-                    "Call the preserve paths hooks": "https://github.com/SebCorbin/composer-patches/commit/1cb9bacba51f8bba0c5f3f322c3bb61e4ceae974.patch"
-                }
+                "class": "cweagans\\Composer\\Patches"
             },
             "autoload": {
                 "psr-4": {
@@ -351,12 +348,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/opendevshop/devmaster.git",
-                "reference": "7131ccdf669186754fd614e04f36cbf065966a29"
+                "reference": "34ec9e41ceb74237bb233e2d3f23a7c1c39a7f33"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/opendevshop/devmaster/zipball/7131ccdf669186754fd614e04f36cbf065966a29",
-                "reference": "7131ccdf669186754fd614e04f36cbf065966a29",
+                "url": "https://api.github.com/repos/opendevshop/devmaster/zipball/34ec9e41ceb74237bb233e2d3f23a7c1c39a7f33",
+                "reference": "34ec9e41ceb74237bb233e2d3f23a7c1c39a7f33",
                 "shasum": ""
             },
             "require": {
@@ -389,7 +386,6 @@
                     ]
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "GPL-2.0-or-later"
             ],
@@ -405,7 +401,11 @@
                 }
             ],
             "description": "The DevShop web interface.",
-            "time": "2020-03-13T00:34:44+00:00"
+            "support": {
+                "source": "https://github.com/opendevshop/devmaster/tree/component/composer/devmaster",
+                "issues": "https://github.com/opendevshop/devmaster/issues"
+            },
+            "time": "2020-03-13T02:01:07+00:00"
         },
         {
             "name": "drupal-composer/preserve-paths",
@@ -1902,7 +1902,7 @@
     "stability-flags": {
         "devshop/devmaster": 20
     },
-    "prefer-stable": true,
+    "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
         "php": ">=5.3.3",

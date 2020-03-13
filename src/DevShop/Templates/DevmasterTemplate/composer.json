@@ -13,6 +13,10 @@
         {
             "type": "composer",
             "url": "https://packages.drupal.org/7"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/opendevshop/devmaster"
         }
     ],
     "require": {
@@ -37,7 +41,6 @@
         "drupal/core": "8.*"
     },
     "minimum-stability": "dev",
-    "prefer-stable": true,
     "config": {
         "sort-packages": true
     },
