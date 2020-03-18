@@ -1,5 +1,18 @@
 # Power Process Changelog
 
+## 2.x - March 17 2020
+
+### Branch: `master`
+
+Bumping version to 2.x for Symfony 4 support.
+
+## 1.x - March 17 2020
+
+### Branch: `1.x`
+
+- New branch created to support Symfony 2 and 3.x.
+- README.md updated to explain why 2 branches must be maintained.
+
 ## 1.2.0 - 9 December 2019
 
 - Use symfony console 3 - 4de0a0f
