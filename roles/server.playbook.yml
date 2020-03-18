@@ -53,7 +53,7 @@
     - name: Set CentOS7 to use python 2
       when:
         - ansible_os_family == 'RedHat'
-        - "{{ansible_distribution_major_version}}" == "7"
+        - ansible_distribution_major_version == 7
       set_fact:
         ansible_python_interpreter: python2
 
