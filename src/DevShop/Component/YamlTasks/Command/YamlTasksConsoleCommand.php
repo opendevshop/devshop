@@ -506,7 +506,8 @@ BODY;
                                     //                              $comment_response = $client->pullRequest()->comments()->create($this->repoOwner, $this->repoName, $this->pullRequest['number'], $comment);
 
                                     $comment_response = $client->repos()->comments()->create($this->repoOwner, $this->repoName, $this->repoSha, $comment);
-                                } // If the branch is not yet a PR, we will just post a commit comment.
+                                }
+                                // If the branch is not yet a PR, we will just post a commit comment.
                                 else {
                                     $comment_response = $client->repos()->comments()->create($this->repoOwner, $this->repoName, $this->repoSha, $comment);
                                 }
@@ -571,13 +572,16 @@ BODY;
                 $test = array(
                     'command' => $commands
                 );
-            } // test.command is a string
+            }
+            // test.command is a string
             elseif (is_array($test) && isset($test['command']) && is_string($test['command'])) {
                 $commands[] = $test['command'];
-            } // test is an array of commands
+            }
+            // test is an array of commands
             elseif (!isset($test['command']) && is_array($test)) {
                 $commands += $test;
-            } // test.command is an array
+            }
+            // test.command is an array
             elseif (is_array($test) && is_array($test['command'])) {
                 $commands += $test['command'];
             }

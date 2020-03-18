@@ -51,7 +51,7 @@ class YamlTasksComposerCommand extends BaseCommand
   /**
    * {@inheritdoc}
    */
-    function isProxyCommand()
+    public function isProxyCommand()
     {
         return true;
     }
