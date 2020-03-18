@@ -24,6 +24,9 @@
         "provision-ops/power-process": "^1.4",
         "vlucas/phpdotenv": "~2"
     },
+    "require-dev": {
+        "composer/composer": "^1.10"
+    },
     "extra": {
         "class": "DevShop\\Component\\YamlTasks\\Composer\\Plugin"
     },
