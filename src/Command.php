@@ -165,7 +165,7 @@ class Command extends BaseCommand
             InputOption::VALUE_OPTIONAL,
             'The url to send to users via the "Details" link on GitHub.com.',
             // @TODO: Is this needed? Shouldn't symfony console commands get ENV vars automatically?
-            $_SERVER['YAML_TASKS_STATUS_URL']
+            $_SERVER['YAML_TASKS_STATUS_URL']?: ''
         );
         $this->addArgument(
             'filter',
