@@ -60,7 +60,6 @@ class YamlTasksComposerCommand extends BaseCommand
   protected function configure()
   {
     $this->command = new YamlTasksConsoleCommand();
-    $this->command->configure();
     $this
        ->setName($this->command->getName())
        ->setDefinition($this->command->getDefinition())
@@ -75,22 +74,6 @@ class YamlTasksComposerCommand extends BaseCommand
   public function initialize(InputInterface $input, OutputInterface $output) {
     $this->composer = $this->getComposer();
     $this->io = new SymfonyStyle($input, $output);
-
-    // If no repos found anywhere, throw an error.
-    if (empty($input->getOption('repo')) && empty($this->getComposer()->getPackage()->getExtra()['git-split']['repos'])) {
-      throw new \LogicException('No repos found in composer.json "extras.git-split" section and there was no --repo option. Nothing to do.');
-    }
-    // If CLI --repo option was not used, and there are repos in the composer.json file, use those.
-    elseif (empty($input->getOption('repo')) && !empty($this->getComposer()->getPackage()->getExtra()['git-split']['repos'])) {
-      // Set the repo option with the data from composer.json.
-      // Reformat repo_options in a format $input->setOption() expects them.
-      foreach ($this->getComposer()->getPackage()->getExtra()['git-split']['repos'] as $path => $repo) {
-        $repo_options[] = "{$path}={$repo}";
-      }
-      $input->setOption('repo', $repo_options);
-    }
-
-    // Initialize the Console command with input output from this command.
     $this->command->initialize($input, $output);
   }
 

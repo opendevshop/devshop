@@ -103,7 +103,7 @@ class YamlTasksConsoleCommand extends BaseCommand
 
     protected function configure()
     {
-        $this->setName('yaml-tests');
+        $this->setName('yaml-tasks');
         $this->setDescription('Read tests.yml and runs all commands in it, passing results to GitHub Commit Status API.');
 
         $this->addOption(
