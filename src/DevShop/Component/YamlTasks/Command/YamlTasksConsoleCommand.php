@@ -99,19 +99,19 @@ class YamlTasksConsoleCommand extends BaseCommand
     /** @var \Github\Client */
     protected $githubClient;
 
-    private $addTokenUrl = "https://github.com/settings/tokens/new?description=yaml-tests&scopes=repo:status,public_repo";
+    private $addTokenUrl = "https://github.com/settings/tokens/new?description=yaml-tasks&scopes=repo:status,public_repo";
 
     protected function configure()
     {
         $this->setName('yaml-tasks');
-        $this->setDescription('Read tests.yml and runs all commands in it, passing results to GitHub Commit Status API.');
+        $this->setDescription('Read tasks,yml and runs all commands in it, passing results to GitHub Commit Status API.');
 
         $this->addOption(
-            'tests-file',
+            'tasks-file',
             null,
             InputOption::VALUE_OPTIONAL,
             'Relative path to a yml file to run.',
-            'tests.yml'
+            'tasks,yml'
         );
         $this->addOption(
             'github-token',
@@ -123,13 +123,13 @@ class YamlTasksConsoleCommand extends BaseCommand
             'ignore-dirty',
             null,
             InputOption::VALUE_NONE,
-            'Allow testing even if git working copy is dirty (has modified files).'
+            'Allow running tasks even if git working copy is dirty (has modified files).'
         );
         $this->addOption(
             'dry-run',
             null,
             InputOption::VALUE_NONE,
-            'Run tests but do not post to GitHub.'
+            'Run tasks but do not post to GitHub.'
         );
         $this->addOption(
             'ignore-ssl',
@@ -153,7 +153,7 @@ class YamlTasksConsoleCommand extends BaseCommand
         $this->addArgument(
             'filter',
             InputArgument::IS_ARRAY,
-            'A list of strings to filter tests by.'
+            'A list of strings to filter tasks by.'
         );
     }
 
@@ -179,14 +179,14 @@ class YamlTasksConsoleCommand extends BaseCommand
 
         $this->config = json_decode(file_get_contents($this->workingDir . '/composer.json'));
 
-        $this->testsFile = $input->getOption('tests-file');
-        $this->testsFilePath = realpath($this->testsFile);
-        if (!file_exists($this->testsFilePath) || empty($this->testsFilePath)) {
-            throw new \Exception("Specified tests file does not exist at {$this->workingDir}/{$this->testsFile}");
+        $this->tasksFile = $input->getOption('tasks-file');
+        $this->tasksFilePath = realpath($this->tasksFile);
+        if (!file_exists($this->tasksFilePath) || empty($this->tasksFilePath)) {
+            throw new \Exception("Specified tasks file does not exist at {$this->workingDir}/{$this->tasksFile}");
         }
 
         // Validate YML
-        $this->loadTestsYml();
+        $this->loadTasksYml();
 
         // Load Environment variables
         $dotenv = new \Dotenv\Dotenv(__DIR__);
@@ -195,7 +195,7 @@ class YamlTasksConsoleCommand extends BaseCommand
             // Current user's home directory
             isset($_SERVER['HOME'])? $_SERVER['HOME']: '',
 
-            // Git repo holding the tests file.
+            // Git repo holding the tasks file.
             dirname($this->gitRepo->getRepositoryPath()),
 
             // Current directory
@@ -213,7 +213,7 @@ class YamlTasksConsoleCommand extends BaseCommand
         $this->repoSha = $this->gitRepo->getCurrentCommit();
 
         // Detect a TRAVIS_PULL_REQUEST_SHA
-        // Travis tests from a commit created from master and our commit.
+        // Travis runs from a commit created from master and our commit.
         // It's not the same commit as the pull request branch.
         if (!empty($_SERVER['TRAVIS_PULL_REQUEST_SHA']) && $this->gitRepo->getRepositoryPath() == $_SERVER['TRAVIS_BUILD_DIR']) {
             $this->repoSha = $_SERVER['TRAVIS_PULL_REQUEST_SHA'];
@@ -244,7 +244,7 @@ class YamlTasksConsoleCommand extends BaseCommand
             $this->repoName = '';
         }
 
-        $this->io->title("Yaml Tests Initialized");
+        $this->io->title("Yaml Tasks Initialized");
 
         // Force dry run if there is no token set.
         if (empty($token)) {
@@ -258,7 +258,7 @@ class YamlTasksConsoleCommand extends BaseCommand
         $this->say("Composer working directory: <comment>{$this->workingDir}</comment>");
         $this->say("Git Repository directory: <comment>{$this->workingDir}</comment>");
         $this->say("Git Commit: <comment>{$this->gitRepo->getCurrentCommit()}</comment>");
-        $this->say("Tests File: <comment>{$this->testsFilePath}</comment>");
+        $this->say("Tasks File: <comment>{$this->tasksFilePath}</comment>");
 
         // @TODO: Dry run could still read info from the repo.
         if (!$input->getOption('dry-run')) {
@@ -274,7 +274,7 @@ class YamlTasksConsoleCommand extends BaseCommand
             try {
                 $commit = $this->githubClient->repository()->commits()->show($this->repoOwner, $this->repoName, $this->repoSha);
             } catch (RuntimeException $exception) {
-                throw new RuntimeException("Commit not found in the remote repository. Yaml-tests cannot post commit status until the commits are pushed to the remote repository.");
+                throw new RuntimeException("Commit not found in the remote repository. YamlTasks cannot post commit status until the commits are pushed to the remote repository.");
             }
 
             $this->say("GitHub Commit URL: <comment>" . $commit['html_url'] . "</>");
@@ -294,39 +294,39 @@ class YamlTasksConsoleCommand extends BaseCommand
             ));
 
             if (empty($prs)) {
-                $this->warningLite("No pull requests were found using the current local branch <comment>{$this->gitRepo->getCurrentBranch()}</comment>. Make sure a Pull Request has been created in addition to the branch being pushed. Errors will be sent as comments on the Commit, instead of on the Pull Request. This means error logs will appear on any Pull Request that contains the commit being tested.");
+                $this->warningLite("No pull requests were found using the current local branch <comment>{$this->gitRepo->getCurrentBranch()}</comment>. Make sure a Pull Request has been created in addition to the branch being pushed. Errors will be sent as comments on the Commit, instead of on the Pull Request. This means error logs will appear on any Pull Request that contains the commit being tasked.");
             } else {
                 $this->pullRequest = $prs[0];
             }
         }
 
-        $this->io->table(array("Tests found in " . $this->testsFile), $this->testsToTableRows());
+        $this->io->table(array("Tasks found in " . $this->tasksFile), $this->tasksToTableRows());
 
-        // If there are filters, shorten the list of tests to run.
+        // If there are filters, shorten the list of tasks to run.
         $filters = $input->getArgument('filter');
         $filter_string = implode(' ', $filters);
         if (count($filters)) {
-            foreach ($this->yamlTests as $name => $test) {
-                $run_the_test = false;
+            foreach ($this->yamlTasks as $name => $task) {
+                $run_the_task = false;
                 foreach ($filters as $filter) {
-                    // If the filter string was found in the test name, run the test.
+                    // If the filter string was found in the task name, run the task.
                     if (strpos($name, $filter) !== false) {
-                        $run_the_test = true;
+                        $run_the_task = true;
                     }
                 }
 
-                if (!$run_the_test) {
-                    unset($this->yamlTests[$name]);
+                if (!$run_the_task) {
+                    unset($this->yamlTasks[$name]);
                 }
             }
         }
 
         // If there are no matches
-        if (count($filters) && count($this->yamlTests) > 0) {
-            $this->io->table(array("Tests to run based on filter '$filter_string'"), $this->testsToTableRows());
+        if (count($filters) && count($this->yamlTasks) > 0) {
+            $this->io->table(array("Tasks to run based on filter '$filter_string'"), $this->tasksToTableRows());
         } elseif (count($filters)) {
-            // If there are filters but tests were NOT removed, show a warning.
-            $this->warningLite("The filter '$filter_string' was specified but it did not match any tests.");
+            // If there are filters but tasks were NOT removed, show a warning.
+            $this->warningLite("The filter '$filter_string' was specified but it did not match any tasks.");
             exit(1);
         }
     }
@@ -337,13 +337,13 @@ class YamlTasksConsoleCommand extends BaseCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $tests_failed = false;
+        $tasks_failed = false;
 
         try {
             if (!$input->getOption('dry-run')) {
                 $client = $this->githubClient;
 
-                foreach ($this->yamlTests as $test_name => $test) {
+                foreach ($this->yamlTasks as $task_name => $task) {
                     // Set a commit status for this REF
                     $params = new \stdClass();
                     $params->state = 'pending';
@@ -352,10 +352,10 @@ class YamlTasksConsoleCommand extends BaseCommand
                         ' — ',
                         array(
                             $input->getOption('hostname'),
-                            !empty($test['description'])? $test['description']: $test_name
+                            !empty($task['description'])? $task['description']: $task_name
                         )
                     );
-                    $params->context = $test_name;
+                    $params->context = $task_name;
 
                     $params->description = substr($params->description, 0, self::GITHUB_STATUS_DESCRIPTION_MAX_SIZE - 3) . '...';
 
@@ -365,13 +365,13 @@ class YamlTasksConsoleCommand extends BaseCommand
                          * @var Response $response
                          */
                         $response = $client->getHttpClient()->post("/repos/{$this->repoOwner}/{$this->repoName}/statuses/$this->repoSha", json_encode($params));
-                        $this->commitStatusMessage($response, $test_name, $test, $params->state);
+                        $this->commitStatusMessage($response, $task_name, $task, $params->state);
                     } catch (\Exception $e) {
                         if ($e->getCode() == 404) {
                             throw new \Exception('Unable to reach commit status API. Check the allowed scopes of your GitHub Token. Skip github interaction with --dry-run, or create a new token with the right scopes at ' . $this->addTokenUrl);
                         }
                     }
-                    $tests[] = $test_name;
+                    $tasks[] = $task_name;
                 }
             } else {
                 $this->warningLite('Skipping commit status posting, dry-run enabled.');
@@ -380,12 +380,12 @@ class YamlTasksConsoleCommand extends BaseCommand
             $this->io->newLine();
             $rows = array();
 
-            foreach ($this->yamlTests as $test_name => $test) {
-                $command = implode(" && ", $test['command']);
-                $command_view = implode("\n", $test['command']);
+            foreach ($this->yamlTasks as $task_name => $task) {
+                $command = implode(" && ", $task['command']);
+                $command_view = implode("\n", $task['command']);
 
                 $results_row = array(
-                    $test_name,
+                    $task_name,
                     $command_view,
                 );
 
@@ -393,24 +393,24 @@ class YamlTasksConsoleCommand extends BaseCommand
                 $process->setTimeout(null);
                 $process->setIo($this->io);
 
-                // Set some environment variables to indicate YAML_TESTS is running.
+                // Set some environment variables to indicate YAML_TASKS is running.
                 $env = $_SERVER;
-                $env['YAML_TESTS'] = 1;
-                $env['YAML_TESTS_NAME'] = $test_name;
-                $env['YAML_TESTS_COMMAND'] = $command;
-                $env['YAML_TESTS_DESCRIPTION'] = $test['description'];
+                $env['YAML_TASKS'] = 1;
+                $env['YAML_TASKS_NAME'] = $task_name;
+                $env['YAML_TASKS_COMMAND'] = $command;
+                $env['YAML_TASKS_DESCRIPTION'] = $task['description'];
 
                 $process->setEnv($env);
 
-                $title = "Running test <fg=white>$test_name</>";
+                $title = "Running task <fg=white>$task_name</>";
 
-                if (!empty($test['description'])) {
-                    $title .= ": <fg=white>{$test['description']}</>";
+                if (!empty($task['description'])) {
+                    $title .= ": <fg=white>{$task['description']}</>";
                 }
 
                 $this->io->section($title);
 
-                if ($test['show-output'] == false) {
+                if ($task['show-output'] == false) {
                     $process->disableOutput();
                 }
 
@@ -424,23 +424,23 @@ class YamlTasksConsoleCommand extends BaseCommand
                     ' — ',
                     array(
                         $input->getOption('hostname'),
-                        !empty($test['description'])? $test['description']: $test_name
+                        !empty($task['description'])? $task['description']: $task_name
                     )
                 );
-                $params->context = $test_name;
+                $params->context = $task_name;
 
                 if ($exit == 0) {
                     $results_row[] = '<info>✔</info> Passed';
                     $params->state = 'success';
                 } else {
-                    // If the test has the ignore failure flag, ignore it.
-                    if (!empty($test['ignore-failure'])) {
+                    // If the task has the ignore failure flag, ignore it.
+                    if (!empty($task['ignore-failure'])) {
                         $results_row[] = '<fg=red>✘</> Failed (Ignoring)';
                         $params->state = 'success';
-                        $params->description .= ' | TEST FAILED but is set to ignore.';
+                        $params->description .= ' | TASK FAILED but is set to ignore.';
                     } else {
                         $results_row[] = '<fg=red>✘</> Failed';
-                        $tests_failed = true;
+                        $tasks_failed = true;
                         $params->state = 'failure';
                     }
 
@@ -453,10 +453,10 @@ class YamlTasksConsoleCommand extends BaseCommand
                         $comment['commit_id'] = $this->repoSha;
                         $comment['position'] = 1;
 
-                        // @TODO: Allow tests.yml to define the path to post.
+                        // @TODO: Allow tasks,yml to define the path to post.
                         $comment['body'] = <<<BODY
 <details>
-    <summary>:x: Test Failed: <code>$test_name</code></summary>
+    <summary>:x: Task Failed: <code>$task_name</code></summary>
     <pre>$command</pre>
    
 ```
@@ -495,14 +495,14 @@ BODY;
                             throw new \Exception('Comment body is STILL too long... the math must be wrong.');
                         }
 
-                        if (isset($test['post-errors']) && $test['post-errors'] == false) {
-                            $this->warningLite("Skipped post of errors to GitHub, as configured in " . $this->testsFile);
+                        if (isset($task['post-errors']) && $task['post-errors'] == false) {
+                            $this->warningLite("Skipped post of errors to GitHub, as configured in " . $this->tasksFile);
                         } else {
                             try {
                                 // @TODO: If this branch is a PR, we will submit a Review or a PR comment. Neither work yet.
                                 if (!empty($this->pullRequest)) {
                                     // @TODO: This is NOT working. I can't get a PR Comment to submit.
-                                    // $comment['path'] = $input->getOption('tests-file');
+                                    // $comment['path'] = $input->getOption('tasks-file');
                                     //                              $comment_response = $client->pullRequest()->comments()->create($this->repoOwner, $this->repoName, $this->pullRequest['number'], $comment);
 
                                     $comment_response = $client->repos()->comments()->create($this->repoOwner, $this->repoName, $this->repoSha, $comment);
@@ -514,9 +514,9 @@ BODY;
 
                                 $this->successLite("Comment Created: {$comment_response['html_url']}");
 
-                                // @TODO: Set Target URL from yaml-test options.
+                                // @TODO: Set Target URL from yaml-task options.
                                 // $params->target_url = $this->getTargetUrl($comment_response['html_url']);
-                                // Always use the main target url... If this is overridable, it should be configurable by the user in their tests.yml.
+                                // Always use the main target url... If this is overridable, it should be configurable by the user in their tasks,yml.
                                 $params->target_url = $this->getTargetUrl();
                             } catch (\Github\Exception\RuntimeException $e) {
                                 $this->errorLite("Unable to create GitHub Commit Comment: " . $e->getMessage() . ': ' . $e->getCode());
@@ -525,14 +525,14 @@ BODY;
                     }
                 }
 
-                if ($test['show-output'] == false) {
-                    $this->warningLite("Output was hidden, as configured in " . $this->testsFile);
+                if ($task['show-output'] == false) {
+                    $this->warningLite("Output was hidden, as configured in " . $this->tasksFile);
                 }
 
                 if (!$input->getOption('dry-run')) {
                     $params->description = substr($params->description, 0, self::GITHUB_STATUS_DESCRIPTION_MAX_SIZE - 3) . '...';
                     $response = $client->getHttpClient()->post("/repos/$this->repoOwner/$this->repoName/statuses/$this->repoSha", json_encode($params));
-                    $this->commitStatusMessage($response, $test_name, $test, $params->state);
+                    $this->commitStatusMessage($response, $task_name, $task, $params->state);
                 }
 
                 $this->io->newLine();
@@ -550,56 +550,56 @@ BODY;
         }
 
 
-        $this->io->title("Executed all tests");
-        $this->io->table(array('Test Results'), $rows);
+        $this->io->title("Executed all tasks");
+        $this->io->table(array('Task Results'), $rows);
 
-        if ($tests_failed) {
+        if ($tasks_failed) {
             exit(1);
         }
     }
 
-    private function loadTestsYml()
+    private function loadTasksYml()
     {
-        $this->yamlTests = Yaml::parse(file_get_contents($this->testsFilePath));
+        $this->yamlTasks = Yaml::parse(file_get_contents($this->tasksFilePath));
 
         // Set Defaults
-        foreach ($this->yamlTests as $name => $test) {
+        foreach ($this->yamlTasks as $name => $task) {
             $commands = array();
 
-            // test is a string
-            if (is_string($test)) {
-                $commands[] = $test;
-                $test = array(
+            // task is a string
+            if (is_string($task)) {
+                $commands[] = $task;
+                $task = array(
                     'command' => $commands
                 );
 
-            // test.command is a string
-            } elseif (is_array($test) && isset($test['command']) && is_string($test['command'])) {
-                $commands[] = $test['command'];
+            // task.command is a string
+            } elseif (is_array($task) && isset($task['command']) && is_string($task['command'])) {
+                $commands[] = $task['command'];
 
-            // test is an array of commands
-            } elseif (!isset($test['command']) && is_array($test)) {
-                $commands += $test;
+            // task is an array of commands
+            } elseif (!isset($task['command']) && is_array($task)) {
+                $commands += $task;
 
-            // test.command is an array
-            } elseif (is_array($test) && is_array($test['command'])) {
-                $commands += $test['command'];
+            // task.command is an array
+            } elseif (is_array($task) && is_array($task['command'])) {
+                $commands += $task['command'];
             }
 
-            $test['command'] = $commands;
-            $test['description'] = isset($test['description'])? $test['description']: true;
-            $test['post-errors'] = isset($test['post-errors'])? $test['post-errors']: true;
-            $test['show-output'] = isset($test['show-output'])? $test['show-output']: true;
+            $task['command'] = $commands;
+            $task['description'] = isset($task['description'])? $task['description']: true;
+            $task['post-errors'] = isset($task['post-errors'])? $task['post-errors']: true;
+            $task['show-output'] = isset($task['show-output'])? $task['show-output']: true;
 
-            $this->yamlTests[$name] = $test;
+            $this->yamlTasks[$name] = $task;
         }
     }
 
-    private function testsToTableRows()
+    private function tasksToTableRows()
     {
         $rows = array();
-        foreach ($this->yamlTests as $test_name => $test) {
-            $rows[] = array($test_name,  implode("\n", $test['command']));
+        foreach ($this->yamlTasks as $task_name => $task) {
+            $rows[] = array($task_name,  implode("\n", $task['command']));
         }
         return $rows;
     }
@@ -616,13 +616,13 @@ BODY;
         return preg_replace('#\\x1b[[][^A-Za-z]*[A-Za-z]#', '', $string);
     }
 
-    protected function commitStatusMessage(Response $response, $test_name, $test, $state)
+    protected function commitStatusMessage(Response $response, $task_name, $task, $state)
     {
         $message = implode(
             ': ',
             array(
                 'GitHub Status',
-                $test_name,
+                $task_name,
                 $state
             )
         );
