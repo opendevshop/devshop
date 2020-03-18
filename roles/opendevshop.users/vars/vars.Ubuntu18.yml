@@ -7,9 +7,6 @@
 devshop_prerequisite_packages:
   - apt-utils
   - locales
-# @TODO: Testing if these are breaking ubuntu install:
-#  - python3-setuptools
-#  - python3-pip
   - software-properties-common
   - rsyslog
   - systemd
