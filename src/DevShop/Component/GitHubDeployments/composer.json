@@ -1,0 +1,38 @@
+{
+  "name": "devshop/github-deployments",
+  "type": "composer-plugin",
+  "description": "Composer commands and scripts to interact with GitHub Deployments API.",
+  "keywords": [
+    "composer",
+    "github",
+    "deployment"
+  ],
+  "homepage": "https://getdevshop.com",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Jon Pugh",
+      "email": "jon@thinkdrop.net"
+    },
+    {
+      "name": "DevShop Community",
+      "homepage": "https://github.com/opendevshop/devshop/graphs/contributors"
+    }
+  ],
+  "require": {
+    "php": "^7.1"
+  },
+  "require-dev": {
+  },
+  "extra": {
+  },
+  "autoload": {
+    "psr-4": {
+      "DevShop\\Component\\GitHubDeployments\\": ""
+    }
+  },
+  "bin": [
+    "bin/x"
+  ],
+  "minimum-stability": "dev"
+}
