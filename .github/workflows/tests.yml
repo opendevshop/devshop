@@ -56,7 +56,7 @@ jobs:
     - name: Test Power Process with Symfony 3
       working-directory: ./tests
       run: |
-        ./run composer install --prefer-dist --no-progress --no-suggest
+        ./bin/run composer install --prefer-dist --no-progress --no-suggest
         ./demo.php
 
 
