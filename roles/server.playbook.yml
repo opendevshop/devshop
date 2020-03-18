@@ -51,6 +51,16 @@
       set_fact:
         apache_state: stopped
 
+    # @TODO: I was unable to get ubuntu18 installs to properly detect and install the 'mysql_python_package_debian' packages.
+    # https://github.com/opendevshop/devshop/pull/518/checks?check_run_id=517865257#step:7:523
+    # By default, geerlingguy.mysql loads this automatically. However, in the automated tests for the role, Jeff DOES force set the variable:
+    - name: Set all Debian systems to use python3-mysqldb for mysql_python_package_debian.
+      when:
+        - ansible_os_family == 'Debian'
+      set_fact:
+        mysql_python_package_debian: python3-mysqldb
+      tags: [mysql]
+
   roles:
     - role: geerlingguy.repo-remi
       when: ansible_os_family == 'RedHat'
