@@ -11,8 +11,8 @@
     ],
     "require": {
         "php": ">=5.6.0",
-        "symfony/process": "^3",
-        "consolidation/robo": "^1"
+        "symfony/process": "^3 | ^4",
+        "consolidation/robo": "^1 | ^2"
     },
     "autoload": {
         "psr-4": {
