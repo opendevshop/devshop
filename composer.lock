@@ -666,7 +666,7 @@
             "dist": {
                 "type": "path",
                 "url": "src/DevShop/Component/YamlTasks",
-                "reference": "89794eee2bbf85ef093838a650921b99a7cce0e4",
+                "reference": "60f5abc79d37d8a3b68f53780c9aeb7319ff6dab",
                 "shasum": null
             },
             "require": {
