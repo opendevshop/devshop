@@ -1,4 +1,4 @@
-name: "Component: YamlTasks"
+name: "Components"
 
 on: [push]
 
