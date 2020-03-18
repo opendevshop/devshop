@@ -13,7 +13,8 @@
 
 devshop_prerequisite_packages:
   - openssh-clients
-  - python3-pip
+# @TODO: Testing if these are breaking ubuntu install:
+#  - python3-pip
 
 # Pass in a comma-separated list of repos to use (e.g. "remi,epel"). Used only
 # for RHEL/CentOS.
