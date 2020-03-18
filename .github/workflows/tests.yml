@@ -12,9 +12,6 @@ jobs:
         - '5.6'
         - '7.1'
 
-      steps:
-        - name: Checkout
-          uses: actions/checkout@v2
     name: Test on PHP ${{ matrix.php-versions }}
     steps:
     - uses: actions/checkout@v1
