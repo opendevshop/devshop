@@ -5,7 +5,7 @@ namespace DevShop\Component\YamlTasks\Command;
 use Github\Exception\RuntimeException;
 use ProvisionOps\Tools\PowerProcess as Process;
 use ProvisionOps\Tools\Style;
-use GuzzleHttp\Psr7\Response;
+use Guzzle\Http\Message\Response;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
