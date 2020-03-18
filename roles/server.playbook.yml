@@ -33,7 +33,7 @@
 
     # @TODO: Figure out the best way to set `ansible_python_interpreter` for different OS.
     # CentOS 7 overrides this variable below.
-    ansible_python_interpreter: /usr/bin/python3
+    # ansible_python_interpreter: /usr/bin/python3
 
     # Supervisor will start when the container and systemd start.
     supervisor_started: false
@@ -50,13 +50,6 @@
         - devshop_install_phase == 'buildtime'
       set_fact:
         apache_state: stopped
-
-    - name: Set CentOS7 to use python 2
-      when:
-        - ansible_os_family == 'RedHat'
-        - ansible_distribution_major_version == 7
-      set_fact:
-        ansible_python_interpreter: python2
 
   roles:
     - role: geerlingguy.repo-remi
