@@ -12,8 +12,9 @@ The Symfony Process component has different typehints in the parameters of sever
 
 | PowerProcess Branch | Symfony Versions | PHP Versions
 | ------------ | ---------------- | ------------
-| master (2.x) | ^4               | 7.1+
-| 1.x          | ^2 \| ^3         | 5.6+
+| master (1.x) | ^2 \| ^3         | 5.6+
+
+NOTE: A Symfony 4 compatible component will be released at some point.
 
 *Big thanks to @g1a and the consolidation team for this block of text, and setting an example of a Process-based component.*
 
