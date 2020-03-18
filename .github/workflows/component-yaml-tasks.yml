@@ -47,6 +47,7 @@ jobs:
         PROVISION_PROCESS_OUTPUT: direct
       run: |
         chmod +x yaml-tasks
-        ./yaml-tasks --ansi -v --hostname=github.com --status-url=https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}?check_suite_focus=true
+        ./yaml-tasks  --ansi -v --hostname=github.com --status-url=https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}?check_suite_focus=true
+        ./yaml-tasks --tasks-file tests.yml --ansi -v --hostname=github.com --status-url=https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}?check_suite_focus=true
 
 
