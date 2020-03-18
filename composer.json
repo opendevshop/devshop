@@ -10,6 +10,7 @@
         }
     ],
     "require": {
+        "php": ">=7.1.3",
         "symfony/process": "^4",
         "consolidation/robo": "^2.0"
     },

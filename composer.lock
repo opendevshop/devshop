@@ -1,10 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "63feb91c7261f72a3cdd5d7e059a6b2e",
+    "content-hash": "dd299a9aaa42fbb4faa37b8df50d3878",
     "packages": [
         {
             "name": "consolidation/annotated-command",
@@ -1412,7 +1412,9 @@
     "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
-    "platform": [],
+    "platform": {
+        "php": ">=7.1.3"
+    },
     "platform-dev": [],
     "platform-overrides": {
         "php": "7.1.3"
