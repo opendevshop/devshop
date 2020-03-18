@@ -1,9 +1,12 @@
 <?php
 
-namespace DevShop\Component\YamlTasks;
+namespace DevShop\Component\YamlTasks\Composer;
 
 use Symfony\Component\Console\Style\SymfonyStyle;
 
+/**
+ * @TODO: move to a devshop standard style.
+ */
 class Style extends SymfonyStyle
 {
     

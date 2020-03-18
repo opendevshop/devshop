@@ -1,6 +1,6 @@
 <?php
 
-namespace DevShop\Component\YamlTasks;
+namespace DevShop\Component\YamlTasks\Command;
 
 use Github\Exception\RuntimeException;
 use ProvisionOps\Tools\PowerProcess as Process;

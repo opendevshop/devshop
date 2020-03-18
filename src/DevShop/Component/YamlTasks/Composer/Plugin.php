@@ -1,6 +1,6 @@
 <?php
 
-namespace DevShop\Component\YamlTasks;
+namespace DevShop\Component\YamlTasks\Composer;
 
 use Composer\Composer;
 use Composer\EventDispatcher\Event;
