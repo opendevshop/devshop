@@ -17,7 +17,7 @@ use TQ\Git\Repository\Repository;
 /**
  * Class Command
  */
-class Command extends BaseCommand
+class YamlTasksConsoleCommand extends BaseCommand
 {
     const GITHUB_COMMENT_MAX_SIZE = 65536;
     const GITHUB_STATUS_DESCRIPTION_MAX_SIZE = 140;
@@ -192,14 +192,14 @@ class Command extends BaseCommand
         $dotenv = new \Dotenv\Dotenv(__DIR__);
         $dotenv->safeLoad(array(
 
-          // Current user's home directory
-          isset($_SERVER['HOME'])? $_SERVER['HOME']: '',
+            // Current user's home directory
+            isset($_SERVER['HOME'])? $_SERVER['HOME']: '',
 
-          // Git repo holding the tests file.
-          dirname($this->gitRepo->getRepositoryPath()),
+            // Git repo holding the tests file.
+            dirname($this->gitRepo->getRepositoryPath()),
 
-          // Current directory
-          getcwd(),
+            // Current directory
+            getcwd(),
         ));
 
         // Look for token.
@@ -228,10 +228,10 @@ class Command extends BaseCommand
         $remote_url = strtr(
             $remote_url,
             array(
-            'git@' => 'https://',
-            'git://' => 'https://',
-            '.git' => '',
-            'github.com:' => 'github.com/',
+                'git@' => 'https://',
+                'git://' => 'https://',
+                '.git' => '',
+                'github.com:' => 'github.com/',
             )
         );
 
@@ -290,7 +290,7 @@ class Command extends BaseCommand
             // Lookup Pull Request, if there is one.
             $string = $this->repoOwner . ':' .  $this->gitRepo->getCurrentBranch();
             $prs = $this->githubClient->pullRequests()->all($this->repoOwner, $this->repoName, array(
-              'head' => $string,
+                'head' => $string,
             ));
 
             if (empty($prs)) {
@@ -351,8 +351,8 @@ class Command extends BaseCommand
                     $params->description = implode(
                         ' — ',
                         array(
-                        $input->getOption('hostname'),
-                        !empty($test['description'])? $test['description']: $test_name
+                            $input->getOption('hostname'),
+                            !empty($test['description'])? $test['description']: $test_name
                         )
                     );
                     $params->context = $test_name;
@@ -423,8 +423,8 @@ class Command extends BaseCommand
                 $params->description = implode(
                     ' — ',
                     array(
-                    $input->getOption('hostname'),
-                    !empty($test['description'])? $test['description']: $test_name
+                        $input->getOption('hostname'),
+                        !empty($test['description'])? $test['description']: $test_name
                     )
                 );
                 $params->context = $test_name;
@@ -492,7 +492,7 @@ BODY;
 
                         // Catch ourselves if our math is wrong.
                         if (strlen($comment['body']) > self::GITHUB_COMMENT_MAX_SIZE) {
-                            throw new \Exception('Comment body is STILL too long... the math in yaml-tests/src/Command.php must be wrong.');
+                            throw new \Exception('Comment body is STILL too long... the math must be wrong.');
                         }
 
                         if (isset($test['post-errors']) && $test['post-errors'] == false) {
@@ -501,9 +501,9 @@ BODY;
                             try {
                                 // @TODO: If this branch is a PR, we will submit a Review or a PR comment. Neither work yet.
                                 if (!empty($this->pullRequest)) {
-                                  // @TODO: This is NOT working. I can't get a PR Comment to submit.
-                                  // $comment['path'] = $input->getOption('tests-file');
-    //                              $comment_response = $client->pullRequest()->comments()->create($this->repoOwner, $this->repoName, $this->pullRequest['number'], $comment);
+                                    // @TODO: This is NOT working. I can't get a PR Comment to submit.
+                                    // $comment['path'] = $input->getOption('tests-file');
+                                    //                              $comment_response = $client->pullRequest()->comments()->create($this->repoOwner, $this->repoName, $this->pullRequest['number'], $comment);
 
                                     $comment_response = $client->repos()->comments()->create($this->repoOwner, $this->repoName, $this->repoSha, $comment);
                                 } // If the branch is not yet a PR, we will just post a commit comment.
@@ -565,11 +565,11 @@ BODY;
         foreach ($this->yamlTests as $name => $test) {
             $commands = array();
 
-          // test is a string
+            // test is a string
             if (is_string($test)) {
                 $commands[] = $test;
                 $test = array(
-                'command' => $commands
+                    'command' => $commands
                 );
             } // test.command is a string
             elseif (is_array($test) && isset($test['command']) && is_string($test['command'])) {
@@ -617,9 +617,9 @@ BODY;
         $message = implode(
             ': ',
             array(
-            'GitHub Status',
-            $test_name,
-            $state
+                'GitHub Status',
+                $test_name,
+                $state
             )
         );
 
