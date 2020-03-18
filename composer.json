@@ -10,8 +10,8 @@
         }
     ],
     "require": {
-        "symfony/process": "^4",
-        "consolidation/robo": "^2.0"
+        "symfony/process": "^3 || ^4",
+        "consolidation/robo": "^1 || ^2"
     },
     "autoload": {
         "psr-4": {
