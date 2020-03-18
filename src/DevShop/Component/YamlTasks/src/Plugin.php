@@ -1,6 +1,6 @@
 <?php
 
-namespace ProvisionOps\YamlTests;
+namespace DevShop\Component\YamlTasks;
 
 use Composer\Composer;
 use Composer\EventDispatcher\Event;
@@ -40,7 +40,7 @@ class Plugin implements PluginInterface, Capable, EventSubscriberInterface
     public function getCapabilities()
     {
         return array(
-            'Composer\Plugin\Capability\CommandProvider' => 'ProvisionOps\YamlTests\CommandProvider',
+            'Composer\Plugin\Capability\CommandProvider' => 'DevShop\Component\YamlTasks\CommandProvider',
         );
     }
 

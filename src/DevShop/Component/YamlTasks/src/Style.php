@@ -1,6 +1,6 @@
 <?php
 
-namespace ProvisionOps\YamlTests;
+namespace DevShop\Component\YamlTasks;
 
 use Symfony\Component\Console\Style\SymfonyStyle;
 

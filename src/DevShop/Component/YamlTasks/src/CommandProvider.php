@@ -1,6 +1,6 @@
 <?php
 
-namespace ProvisionOps\YamlTests;
+namespace DevShop\Component\YamlTasks;
 
 use Composer\Plugin\Capability\CommandProvider as CommandProviderCapability;
 
