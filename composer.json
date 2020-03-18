@@ -10,8 +10,9 @@
         }
     ],
     "require": {
-        "symfony/process": "^3 || ^4",
-        "consolidation/robo": "^1 || ^2"
+        "php": ">=5.6.0",
+        "symfony/process": "^3",
+        "consolidation/robo": "^1"
     },
     "autoload": {
         "psr-4": {

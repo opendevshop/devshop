@@ -6,6 +6,19 @@ It gives a more user friendly interface for apps that want to show users what pr
 
 This library is used by Provision Yaml Tests and will be used in the Provision CLI project.
 
+## Symfony 4	
+
+The Symfony Process component has different typehints in the parameters of several APIs in Symfony 4 than Symfony 3 does. This is due to the fact that Symfony 4 requires PHP 7.1.3 or later, which supports a number of typehints not permitted in earlier PHP versions. This difference is minor for most clients, but presents problems for code that subclasses Process, as it is not possible to be compatible with both the Symofny 3 and the Symfony 4 typehints at the same time.	
+
+| PowerProcess Branch | Symfony Versions | PHP Versions
+| ------------ | ---------------- | ------------
+| master (2.x) | ^4               | 7.1+
+| 1.x          | ^2 \| ^3         | 5.6+
+
+*Big thanks to @g1a and the consolidation team for this block of text, and setting an example of a Process-based component.*
+
+See https://github.com/consolidation/site-process/compare/2.x...master as an example on maintaining 2 branches.
+
 ## Usage
 
 Usage extends the [Symfony Process](https://symfony.com/doc/current/components/process.html) component.

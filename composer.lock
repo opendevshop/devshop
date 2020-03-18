@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "aa5d005c5e66867dbe475b71a729fe91",
+    "content-hash": "442b2f6bb5b857dbb91673d113fa0580",
     "packages": [
         {
             "name": "consolidation/annotated-command",
@@ -260,35 +260,35 @@
         },
         {
             "name": "consolidation/robo",
-            "version": "2.0.3",
+            "version": "1.4.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/consolidation/Robo.git",
-                "reference": "7bbc66f9485736e64df6fc946bee1b1deb722667"
+                "reference": "eb45606f498b3426b9a98b7c85e300666a968e51"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/consolidation/Robo/zipball/7bbc66f9485736e64df6fc946bee1b1deb722667",
-                "reference": "7bbc66f9485736e64df6fc946bee1b1deb722667",
+                "url": "https://api.github.com/repos/consolidation/Robo/zipball/eb45606f498b3426b9a98b7c85e300666a968e51",
+                "reference": "eb45606f498b3426b9a98b7c85e300666a968e51",
                 "shasum": ""
             },
             "require": {
-                "consolidation/annotated-command": "^4.1",
+                "consolidation/annotated-command": "^2.11.0|^4.1",
                 "consolidation/config": "^1.2.1",
                 "consolidation/log": "^1.1.1|^2",
-                "consolidation/output-formatters": "^4.1",
+                "consolidation/output-formatters": "^3.1.13|^4.1",
                 "consolidation/self-update": "^1.1.5",
                 "grasmash/yaml-expander": "^1.4",
                 "league/container": "^2.4.1",
-                "php": ">=7.1.3",
-                "symfony/console": "^4.4.3",
-                "symfony/event-dispatcher": "^4.4.3",
-                "symfony/filesystem": "^4.4.3",
-                "symfony/finder": "^4.4.3",
-                "symfony/process": "^4.4.3"
+                "php": ">=5.5.0",
+                "symfony/console": "^2.8|^3|^4",
+                "symfony/event-dispatcher": "^2.5|^3|^4",
+                "symfony/filesystem": "^2.5|^3|^4",
+                "symfony/finder": "^2.5|^3|^4",
+                "symfony/process": "^2.5|^3|^4"
             },
-            "conflict": {
-                "codegyre/robo": "*"
+            "replace": {
+                "codegyre/robo": "< 1.0"
             },
             "require-dev": {
                 "g1a/composer-test-scenarios": "^3",
@@ -296,13 +296,12 @@
                 "patchwork/jsqueeze": "^2",
                 "pear/archive_tar": "^1.4.4",
                 "php-coveralls/php-coveralls": "^1",
-                "phpdocumentor/reflection-docblock": "^4.3.2",
-                "phpunit/phpunit": "^6.5.14",
+                "phpunit/phpunit": "^5.7.27",
                 "squizlabs/php_codesniffer": "^3"
             },
             "suggest": {
                 "henrikbjorn/lurker": "For monitoring filesystem changes in taskWatch",
-                "natxet/cssmin": "For minifying CSS files in taskMinify",
+                "natxet/CssMin": "For minifying CSS files in taskMinify",
                 "patchwork/jsqueeze": "For minifying JS files in taskMinify",
                 "pear/archive_tar": "Allows tar archives to be created and extracted in taskPack and taskExtract, respectively."
             },
@@ -312,23 +311,38 @@
             "type": "library",
             "extra": {
                 "scenarios": {
-                    "php71": {
+                    "symfony4": {
                         "require": {
-                            "phpunit/phpunit": "^6",
-                            "nikic/php-parser": "^2"
+                            "symfony/console": "^4"
                         },
-                        "remove": [
-                            "codeception/phpunit-wrapper"
-                        ],
                         "config": {
                             "platform": {
                                 "php": "7.1.3"
                             }
                         }
+                    },
+                    "symfony2": {
+                        "require": {
+                            "symfony/console": "^2.8"
+                        },
+                        "require-dev": {
+                            "phpunit/phpunit": "^4.8.36"
+                        },
+                        "remove": [
+                            "php-coveralls/php-coveralls"
+                        ],
+                        "config": {
+                            "platform": {
+                                "php": "5.5.9"
+                            }
+                        },
+                        "scenario-options": {
+                            "create-lockfile": "false"
+                        }
                     }
                 },
                 "branch-alias": {
-                    "dev-master": "2.x-dev"
+                    "dev-master": "1.x-dev"
                 }
             },
             "autoload": {
@@ -347,7 +361,7 @@
                 }
             ],
             "description": "Modern task runner",
-            "time": "2020-02-19T01:58:49+00:00"
+            "time": "2020-02-18T17:31:26+00:00"
         },
         {
             "name": "consolidation/self-update",
@@ -1226,25 +1240,25 @@
         },
         {
             "name": "symfony/process",
-            "version": "v4.4.5",
+            "version": "v3.4.38",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/process.git",
-                "reference": "bf9166bac906c9e69fb7a11d94875e7ced97bcd7"
+                "reference": "b03b02dcea26ba4c65c16a73bab4f00c186b13da"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/process/zipball/bf9166bac906c9e69fb7a11d94875e7ced97bcd7",
-                "reference": "bf9166bac906c9e69fb7a11d94875e7ced97bcd7",
+                "url": "https://api.github.com/repos/symfony/process/zipball/b03b02dcea26ba4c65c16a73bab4f00c186b13da",
+                "reference": "b03b02dcea26ba4c65c16a73bab4f00c186b13da",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.1.3"
+                "php": "^5.5.9|>=7.0.8"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "4.4-dev"
+                    "dev-master": "3.4-dev"
                 }
             },
             "autoload": {
@@ -1271,7 +1285,7 @@
             ],
             "description": "Symfony Process Component",
             "homepage": "https://symfony.com",
-            "time": "2020-02-07T20:06:44+00:00"
+            "time": "2020-02-04T08:04:52+00:00"
         },
         {
             "name": "symfony/service-contracts",
@@ -1397,7 +1411,9 @@
     "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
-    "platform": [],
+    "platform": {
+        "php": ">=5.6.0"
+    },
     "platform-dev": [],
     "platform-overrides": {
         "php": "7.1.3"
