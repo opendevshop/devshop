@@ -36,6 +36,7 @@ jobs:
       ANSIBLE_TAGS: "${{ matrix.build_tags }}"
       ANSIBLE_SKIP_TAGS: "${{ matrix.build_skip_tags }}"
       ANSIBLE_VARS: "${{ matrix.vars }}"
+      ANSIBLE_PYTHON_INTERPRETER: python2
       OS: "${{ matrix.os }}"
 
     runs-on: ubuntu-18.04
