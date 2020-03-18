@@ -9,7 +9,7 @@ jobs:
 
     # Set working directory for entire file. https://github.community/t5/GitHub-Actions/use-working-directory-for-entire-job/td-p/36759
     env:
-      working-directory: src/DevShop/Components/YamlTasks
+      working-directory: ./src/DevShop/Components/YamlTasks
 
     steps:
     - uses: actions/checkout@v1
