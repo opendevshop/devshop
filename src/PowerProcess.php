@@ -27,7 +27,7 @@ class PowerProcess extends BaseProcess {
 
     /**
      * PowerProcess constructor.
-     * @param $commandline
+     * @param string $commandline
      * @param Style $io
      * @param null $cwd
      * @param array|null $env
@@ -38,6 +38,12 @@ class PowerProcess extends BaseProcess {
     public function __construct($commandline, $io, $cwd = null, array $env = null, $input = null, $timeout = 60, array $options = array())
     {
         $this->setIo($io);
+
+        // Detect Symfony Process 4.x and up: if so, make $commandline an array.
+        if (property_exists(BaseProcess::class, 'STATUS_READY')) {
+            // @TODO: What is better? a single item array? or should we explode by spaces?
+            $commandline = [$commandline];
+        }
         parent::__construct($commandline, $cwd, $env, $input, $timeout, $options);
     }
 
