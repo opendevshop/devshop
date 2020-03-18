@@ -59,7 +59,7 @@ class YamlTasksComposerCommand extends BaseCommand
    */
   protected function configure()
   {
-    $this->command = new YamlTaksConsoleCommand();
+    $this->command = new YamlTasksConsoleCommand();
     $this->command->configure();
     $this
        ->setName($this->command->getName())
