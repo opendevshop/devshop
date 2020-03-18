@@ -111,7 +111,7 @@ class YamlTasksConsoleCommand extends BaseCommand
             null,
             InputOption::VALUE_OPTIONAL,
             'Relative path to a yml file to run.',
-            'tasks,yml'
+            'tasks.yml'
         );
         $this->addOption(
             'github-token',
