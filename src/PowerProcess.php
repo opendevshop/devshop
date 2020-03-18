@@ -62,7 +62,7 @@ class PowerProcess extends BaseProcess {
      *
      * @final
      */
-    public function run(callable $callback = null, array $env = []): int
+    public function run($callback = null, array $env = [])
     {
         $this->io->writeln(" <comment>$</comment> {$this->getCommandLine()} <fg=black>Output:/path/to/file</>");
 
