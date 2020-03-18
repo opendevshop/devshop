@@ -49,4 +49,14 @@ jobs:
         ./run composer install --prefer-dist --no-progress --no-suggest
         ./demo.php
 
+    - name: Install dependencies with Symfony 3
+      working-directory: ./tests
+      run: composer install --prefer-dist --no-progress --no-suggest
+
+    - name: Test Power Process with Symfony 3
+      working-directory: ./tests
+      run: |
+        ./run composer install --prefer-dist --no-progress --no-suggest
+        ./demo.php
+
 
