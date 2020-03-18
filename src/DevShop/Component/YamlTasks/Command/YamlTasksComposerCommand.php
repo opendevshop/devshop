@@ -16,6 +16,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+
 /**
  * YamlTasksComposerCommand runs the commands in a tasks.yml file.
  *
@@ -27,61 +28,63 @@ class YamlTasksComposerCommand extends BaseCommand
   /**
    * @var Symfony\Component\Console\Command\Command;
    */
-  protected $command;
+    protected $command;
 
   /**
    * @var SymfonyStyle
    */
-  protected $io;
+    protected $io;
 
   /**
    * @var \Composer\Composer
    */
-  protected $composer;
+    protected $composer;
 
   /**
    * @throws LogicException When the command name is empty
    */
-  public function __construct()
-  {
-    parent::__construct('git:split');
-  }
+    public function __construct()
+    {
+        parent::__construct('git:split');
+    }
 
   /**
    * {@inheritdoc}
    */
-  function isProxyCommand() {
-    return TRUE;
-  }
+    function isProxyCommand()
+    {
+        return true;
+    }
 
   /**
    * {@inheritdoc}
    */
-  protected function configure()
-  {
-    $this->command = new YamlTasksConsoleCommand();
-    $this
-       ->setName($this->command->getName())
-       ->setDefinition($this->command->getDefinition())
-       ->setDescription($this->command->getDescription())
-       ->setHelp($this->command->getHelp())
-     ;
-  }
+    protected function configure()
+    {
+        $this->command = new YamlTasksConsoleCommand();
+        $this
+         ->setName($this->command->getName())
+         ->setDefinition($this->command->getDefinition())
+         ->setDescription($this->command->getDescription())
+         ->setHelp($this->command->getHelp())
+        ;
+    }
 
   /**
    * {@inheritdoc}
    */
-  public function initialize(InputInterface $input, OutputInterface $output) {
-    $this->composer = $this->getComposer();
-    $this->io = new SymfonyStyle($input, $output);
-    $this->command->initialize($input, $output);
-  }
+    public function initialize(InputInterface $input, OutputInterface $output)
+    {
+        $this->composer = $this->getComposer();
+        $this->io = new SymfonyStyle($input, $output);
+        $this->command->initialize($input, $output);
+    }
 
   /**
    * {@inheritdoc}
    */
-  protected function execute(InputInterface $input, OutputInterface $output)
-  {
-    $this->command->execute($input, $output);
-  }
+    protected function execute(InputInterface $input, OutputInterface $output)
+    {
+        $this->command->execute($input, $output);
+    }
 }
