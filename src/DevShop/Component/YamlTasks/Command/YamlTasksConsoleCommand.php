@@ -364,7 +364,7 @@ class YamlTasksConsoleCommand extends BaseCommand
                         /**
                          * @var Response $response
                          */
-                        $response = $client->getHttpClient()->post("/repos/{$this->repoOwner}/{$this->repoName}/statuses/$this->repoSha", [], json_encode($params));
+                        $response = $client->getHttpClient()->post("/repos/{$this->repoOwner}/{$this->repoName}/statuses/$this->repoSha", json_encode($params));
                         $this->commitStatusMessage($response, $test_name, $test, $params->state);
                     } catch (\Exception $e) {
                         if ($e->getCode() == 404) {
@@ -530,7 +530,7 @@ BODY;
 
                 if (!$input->getOption('dry-run')) {
                     $params->description = substr($params->description, 0, self::GITHUB_STATUS_DESCRIPTION_MAX_SIZE - 3) . '...';
-                    $response = $client->getHttpClient()->post("/repos/$this->repoOwner/$this->repoName/statuses/$this->repoSha", [], json_encode($params));
+                    $response = $client->getHttpClient()->post("/repos/$this->repoOwner/$this->repoName/statuses/$this->repoSha", json_encode($params));
                     $this->commitStatusMessage($response, $test_name, $test, $params->state);
                 }
 
