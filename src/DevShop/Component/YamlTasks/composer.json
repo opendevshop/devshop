@@ -39,5 +39,5 @@
         "bin-dir": "bin",
         "sort-packages": true
     },
-    "minimum-stability": "rc"
+    "minimum-stability": "RC"
 }
