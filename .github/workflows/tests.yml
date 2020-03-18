@@ -6,9 +6,29 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-versions:
+        - '5.6'
+        - '7.1'
 
+      steps:
+        - name: Checkout
+          uses: actions/checkout@v2
+    name: Test on PHP ${{ matrix.php-versions }}
     steps:
     - uses: actions/checkout@v1
+
+    - name: Install PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ matrix.php-versions }}
+#            extensions: intl #optional
+#            ini-values: "post_max_size=256M" #optional
+
+    - name: Check PHP Version
+      run: php -v
+
     - name: Get Composer Cache Directory
       id: composer-cache
       run: |
