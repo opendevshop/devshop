@@ -9,7 +9,7 @@ jobs:
     strategy:
       matrix:
         php-versions:
-        - '5.6'
+        # - '5.6'
         - '7.1'
 
     name: Test on PHP ${{ matrix.php-versions }}
