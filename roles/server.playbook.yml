@@ -44,7 +44,7 @@
     devshop_makefile: "{{ devshop_cli_path }}/build-devmaster-dev.make.yml"
 
   pre_tasks:
-    - name: Set variables
+    - name: Set variables ({{ ansible_os_family}} {{ansible_distribution_major_version}})
       when:
         - ansible_os_family == 'RedHat'
         - devshop_install_phase == 'buildtime'
