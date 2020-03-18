@@ -65,6 +65,19 @@ page on the DevShop Repo](https://github.com/opendevshop/devshop/actions) for th
 
 9. Once you feel your component is read for review by the DevShop Team, submit a Pull Request!
 
+### Merging in external repos
+
+If a component repo exists already, you can merge it in with the `git subtree` command. 
+
+Create a new branch from `develop` first, then pull in the tree: 
+
+        git checkout -b component/TYPE/NAME develop
+        git subtree add --prefix=$PATH_IN_REPO https://$GIT_URL $BRANCH
+
+Then submit a PR against `develop` branch.
+
+See https://www.jvt.me/posts/2018/06/01/git-subtree-monorepo/ for a good explanation.
+
 ### List of Components
 
 This list is changing rapidly. We'll try to keep it up to date with status.
