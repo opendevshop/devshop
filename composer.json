@@ -64,7 +64,8 @@
                 "roles/opendevshop.apache": "https://github.com/opendevshop/ansible-role-apache.git",
                 "roles/opendevshop.devmaster": "https://github.com/opendevshop/ansible-role-devmaster.git",
                 "roles/opendevshop.users": "https://github.com/opendevshop/ansible-role-user.git",
-                "src/DevShop/Component/GitSplit": "https://github.com/devshop-packages/git-split.git"
+                "src/DevShop/Component/GitSplit": "https://github.com/devshop-packages/git-split.git",
+                "src/DevShop/Component/YamlTasks": "https://github.com/devshop-packages/yaml-tasks.git"
             }
         }
     },
