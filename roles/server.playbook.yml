@@ -44,15 +44,6 @@
     devshop_makefile: "{{ devshop_cli_path }}/build-devmaster-dev.make.yml"
 
   pre_tasks:
-    - name: System Information
-      debug:
-        msg: "System Information
-      ==========================================
-      ansible_os_family: {{ ansible_os_family }}
-      ansible_distribution_major_version: {{ ansible_distribution_major_version }}
-      ansible_python_interpreter: {{ ansible_python_interpreter }}
-    "
-
     - name: Set variables ({{ ansible_os_family}} {{ansible_distribution_major_version}})
       when:
         - ansible_os_family == 'RedHat'
