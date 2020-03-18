@@ -1,8 +1,20 @@
 {
-    "name": "provision-ops/yaml-tests",
-    "description": "Plugin to run commands from a YML file and pass to GitHub commit status API.",
+    "name": "devshop/yaml-tasks",
     "type": "composer-plugin",
+    "description": "Plugin to run commands from a YML file and pass to GitHub commit status API.",
+    "keywords": [],
+    "homepage": "https://getdevshop.com",
     "license": "MIT",
+    "authors": [
+        {
+            "name": "Jon Pugh",
+            "email": "jon@thinkdrop.net"
+        },
+        {
+            "name": "DevShop Community",
+            "homepage": "https://github.com/opendevshop/devshop/graphs/contributors"
+        }
+    ],
     "require": {
         "composer-plugin-api": "^1.1",
         "teqneers/php-stream-wrapper-for-git": "^2.0",
@@ -12,30 +24,20 @@
         "provision-ops/power-process": "1.4.0-rc2",
         "vlucas/phpdotenv": "~2"
     },
+    "extra": {
+        "class": "DevShop\\Component\\YamlTasks\\Composer\\Plugin"
+    },
     "autoload": {
         "psr-4": {
-            "ProvisionOps\\YamlTests\\": "src/"
-        }
-    },
-    "authors": [
-        {
-            "name": "Jon Pugh",
-            "email": "jon@thinkdrop.net"
-        }
-    ],
-    "extra": {
-        "class": "ProvisionOps\\YamlTests\\Plugin"
-    },
-    "require-dev": {
-        "squizlabs/php_codesniffer": "~2"
-    },
-    "config": {
-        "bin-dir": "bin",
-        "platform": {
-            "php":"7.1.3"
+            "DevShop\\Component\\YamlTasks\\": ""
         }
     },
     "bin": [
-        "yaml-tests"
-    ]
+        "yaml-tasks"
+    ],
+    "config": {
+        "bin-dir": "bin",
+        "sort-packages": true
+    },
+    "minimum-stability": "dev"
 }
