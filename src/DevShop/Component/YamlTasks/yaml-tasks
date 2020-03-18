@@ -1,40 +1,54 @@
 #!/usr/bin/env php
 <?php
 
-/**
- * This file is a standalone command that allows the "yaml-tasks" script to be
- * run where composer may not be installed. For example, if an artifact is built
- * from your application and vendor directories, the artifact could be deployed
- * to a server that does not have global composer installed, and you would still
- * be able to run `./bin/yaml-tests`.
+/*
+ * This file is part of the DevShop package.
+ *
+ * (c) Jon Pugh <jon@thinkdrop.net
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
-// Thanks to g1a/starter for providing a standard autoloader.
-// If we're running from phar load the phar autoload file.
-$pharPath = \Phar::running(true);
-if ($pharPath) {
-  $autoloaderPath = "$pharPath/vendor/autoload.php";
-} else {
-  if (file_exists(__DIR__.'/vendor/autoload.php')) {
-    $autoloaderPath = __DIR__.'/vendor/autoload.php';
-  } elseif (file_exists(__DIR__.'/../../autoload.php')) {
-    $autoloaderPath = __DIR__ . '/../../autoload.php';
-  } else {
-    die("Could not find autoloader. Run 'composer install'.");
-  }
-}
-$classLoader = require $autoloaderPath;
+/**
+ * Runs the yaml-tasks command.
+ *
+ * @author Jon Pugh <jon@thinkdrop.net
+ */
 
-use DevShop\Component\YamlTasks\Command as YamlTaskssCommand;
 use Symfony\Component\Console\Application;
-use Symfony\Component\Console\Input\ArgvInput;
-use Symfony\Component\Console\Output\ConsoleOutput;
+use Composer\Composer;
+use DevShop\Component\YamlTasks\Command\YamlTasksConsoleCommand;
+use DevShop\Component\YamlTasks\Command\YamlTasksComposerCommand;
 
-$version = 'dev';
-$application = new Application('yaml-tests', $version);
+function includeIfExists(string $file): bool
+{
+    return file_exists($file) && include $file;
+}
 
-$command = new YamlTaskssCommand();
-$application->add($command);
-$application->setDefaultCommand($command->getName(), true);
+if (
+    !includeIfExists(__DIR__ . '/../../autoload.php') &&
+    !includeIfExists(__DIR__ . '/vendor/autoload.php') &&
+    !includeIfExists(__DIR__ . '/../../../../vendor/autoload.php')
+) {
+    fwrite(STDERR, 'Install dependencies using Composer.'.PHP_EOL);
+    exit(1);
+}
 
-$application->run();
+if (!class_exists(Application::class)) {
+    fwrite(STDERR, 'You need the "symfony/console" component in order to run the git-split.'.PHP_EOL);
+    exit(1);
+}
+
+if (!class_exists(Composer::class)) {
+    $command = new YamlTasksComposerCommand();
+}
+else {
+    $command = new YamlTasksConsoleCommand();
+}
+
+(new Application())->add($command)
+    ->getApplication()
+    ->setDefaultCommand($command->getName(), true)
+    ->run()
+;
