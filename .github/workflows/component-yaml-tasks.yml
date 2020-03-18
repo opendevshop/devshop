@@ -46,6 +46,6 @@ jobs:
         # YAML_TASKS_STATUS_URL: https://github.com/${GITHUB_REPOSITORY}/runs/${GITHUB_RUN_ID}?check_suite_focus=true
         PROVISION_PROCESS_OUTPUT: direct
       run: |
-        ./yaml-tests --ansi -v --hostname=github.com --status-url=https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}?check_suite_focus=true
+        ./yaml-tasks --ansi -v --hostname=github.com --status-url=https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}?check_suite_focus=true
 
 
