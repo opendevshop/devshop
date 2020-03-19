@@ -20,7 +20,7 @@
         "composer-plugin-api": "^1.1",
         "knplabs/github-api": "^1.4",
         "php-http/guzzle6-adapter": "^1.1",
-        "provision-ops/power-process": "^1.4",
+        "provision-ops/power-process": "^1.4@RC",
         "teqneers/php-stream-wrapper-for-git": "^2.0",
         "vlucas/phpdotenv": "~2"
     },
