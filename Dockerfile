@@ -160,6 +160,8 @@ RUN \
   devshop-logo " Contents of ${DEVSHOP_PATH} after copy"; \
   git status; git log -1; $LINE
 
+RUN ansible --version
+
 RUN devshop-logo "Preparing Docker Container Environment..."
 
 #
@@ -282,6 +284,7 @@ WORKDIR /var/aegir
 VOLUME /var/aegir
 VOLUME /var/lib/mysql
 VOLUME /var/log/aegir
+VOLUME /usr/share/devshop
 
 # CMD ["devshop-ansible-playbook"]
 # Our docker-entrypoint script runs systemd, but before it does, it runs the "command" for the container.
