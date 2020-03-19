@@ -1,5 +1,8 @@
 name: Code Quality
-on: [push]
+on:
+  push:
+  pull_request:
+    types: [opened, synchronize]
 jobs:
   lint:
     name: Ansible Lint
