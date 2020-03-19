@@ -109,8 +109,9 @@ class PowerProcess extends BaseProcess {
      * Provides compatibility with Process 3.x.
      * @inheritDoc
      */
-    public function mustRun($callback = null, array $env = []) {
-      parent::mustRun($callback, $env);
+    public function mustRun($callback = null /*, array $env = []*/) {
+        $env = 1 < \func_num_args() ? func_get_arg(1) : null;
+        parent::mustRun($callback, $env);
     }
 
     /**
