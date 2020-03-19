@@ -1004,7 +1004,7 @@ function devshop_projects_create_environment_form(&$form, &$form_state, $form_id
   $form['environment_name'] = array(
     '#title' => t('Environment Name'),
     '#type' => 'textfield',
-    '#description' => t('Enter a system name for your environment.  For consistency, you might want to match the branch name.'),
+    '#description' => t('Enter a unique name for your environment. It will be used to generate a domain name. You can add additional domain names later.'),
     '#required' => TRUE,
     '#field_prefix' => '<div class="input-group"><div class="input-group-addon">http://' . $labels[0] . '</div>',
     '#field_suffix' => '<div class="input-group-addon input-group-addon-url">' . $labels[1] .'</div>
@@ -1014,6 +1014,7 @@ function devshop_projects_create_environment_form(&$form, &$form_state, $form_id
     '#weight' => -101,
     '#attributes' => array(
       'data-placement' => 'bottom',
+      'placeholder' => t('name'),
     ),
     '#element_validate' => array(
       'devshop_projects_create_environment_form_validate_name'

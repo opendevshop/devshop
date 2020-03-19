@@ -31,8 +31,9 @@
     # This is set to TRUE to ensure the playbooks don't try to run the devmaster upgade every time they run (aka on robo up).
     devmaster_skip_upgrade: true
 
-    # @TODO: Remove this once we figure out how to not require it.
-    # ansible_python_interpreter: python3
+    # @TODO: Figure out the best way to set `ansible_python_interpreter` for different OS.
+    # CentOS 7 overrides this variable below.
+    # ansible_python_interpreter: /usr/bin/python3
 
     # Supervisor will start when the container and systemd start.
     supervisor_started: false
@@ -43,12 +44,22 @@
     devshop_makefile: "{{ devshop_cli_path }}/build-devmaster-dev.make.yml"
 
   pre_tasks:
-    - name: Set variables
+    - name: Set variables ({{ ansible_os_family}} {{ansible_distribution_major_version}})
       when:
         - ansible_os_family == 'RedHat'
         - devshop_install_phase == 'buildtime'
       set_fact:
         apache_state: stopped
+
+    # @TODO: I was unable to get ubuntu18 installs to properly detect and install the 'mysql_python_package_debian' packages.
+    # https://github.com/opendevshop/devshop/pull/518/checks?check_run_id=517865257#step:7:523
+    # By default, geerlingguy.mysql loads this automatically. However, in the automated tests for the role, Jeff DOES force set the variable:
+    - name: Set all Debian systems to use python3-mysqldb for mysql_python_package_debian.
+      when:
+        - ansible_os_family == 'Debian'
+      set_fact:
+        mysql_python_package_debian: python3-mysqldb
+      tags: [mysql]
 
   roles:
     - role: geerlingguy.repo-remi

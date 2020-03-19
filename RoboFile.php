@@ -77,6 +77,7 @@ class RoboFile extends \Robo\Tasks {
     'docker-image' => 'DEVSHOP_DOCKER_IMAGE',
     'from' => 'FROM_IMAGE',
     'os' => 'OS_VERSION',
+    'dockerfile' => 'DOCKERFILE',
   ];
 
   /**
@@ -211,11 +212,13 @@ class RoboFile extends \Robo\Tasks {
    *
    * @option no-dev Use build-devmaster.make instead of the development makefile.
    * @option devshop-version The directory to put the
+   * @option make Defaults to "profile" to populate the makefile into the ./devmaster folder. Use --make=drupal to build the entire ./aegir-home/devmaster-1.x folder.
    */
   public function prepareSourcecode($opts = [
     'no-dev' => FALSE,
     'devshop-version' => '1.x',
-    'test-upgrade' => FALSE
+    'test-upgrade' => FALSE,
+    'make' => 'profile',
   ]) {
 
     if (empty($this->git_ref)) {
@@ -260,37 +263,43 @@ class RoboFile extends \Robo\Tasks {
       }
     }
 
-    // Run drush make to build the devmaster stack.
-    $make_destination = $this->devshop_root_path . "/aegir-home/devmaster-" . $opts['devshop-version'];
-    $makefile_path = $opts['no-dev']? 'build-devmaster.make': "build-devmaster-dev.make.yml";
-
-    // Append the desired devshop root path.
-    $makefile_path = $this->devshop_root_path . '/' . $makefile_path;
-
-    if (file_exists($make_destination)) {
-      $this->say("Path {$make_destination} already exists.");
-    }
-    else {
-
-      $this->yell("Building devmaster from makefile $makefile_path to $make_destination");
-
-      $result = $this->_exec("bin/drush make {$makefile_path} {$make_destination} --working-copy --no-gitinfofile");
-      if (!$result->wasSuccessful()) {
-        throw new \RuntimeException("Drush make failed with the exit code " . $result->getExitCode());
+    // If we want to just populate modules into /devmaster folder...
+    if ($opts['make'] == 'profile') {
+      // Populate devmaster install profile with contrib code.
+      $makefile_path = 'devmaster/drupal-org.make';
+      $make_destination = 'devmaster/';
+      if (file_exists('devmaster/modules/contrib')) {
+        $this->say("Path 'devmaster/modules/contrib' already exists.");
+      }
+      else {
+        $this->yell("Populating devmaster profile with contrib code from $makefile_path ...");
+        $result = $this->_exec("bin/drush make {$makefile_path} {$make_destination} --working-copy --no-gitinfofile --no-core --contrib-destination=.");
+        if (!$result->wasSuccessful()) {
+          throw new \RuntimeException("Drush make failed with the exit code " . $result->getExitCode());
+        }
       }
     }
+    // Or if a whole Drupal build is needed.
+    elseif ($opts['make'] == 'drupal') {
 
-    // Populate devmaster install profile with contrib code.
-    $make_destination = '.';
-    $makefile_path = 'drupal-org.make';
-    if (file_exists('devmaster/modules/contrib')) {
-      $this->say("Path 'devmaster/modules/contrib' already exists.");
-    }
-    else {
-      $this->yell("Populating devmaster profile with contrib code from $makefile_path ...");
-      $result = $this->_exec("cd devmaster && drush make {$makefile_path} {$make_destination} --working-copy --no-gitinfofile --no-core --contrib-destination=.");
-      if (!$result->wasSuccessful()) {
-        throw new \RuntimeException("Drush make failed with the exit code " . $result->getExitCode());
+      // Run drush make to build the devmaster stack.
+      $makefile_path = $opts['no-dev']? 'build-devmaster.make': "build-devmaster-dev.make.yml";
+      $make_destination = $this->devshop_root_path . "/aegir-home/devmaster-" . $opts['devshop-version'];
+
+      // Append the desired devshop root path.
+      $makefile_path = $this->devshop_root_path . '/' . $makefile_path;
+
+      if (file_exists($make_destination)) {
+        $this->say("Path {$make_destination} already exists.");
+      }
+      else {
+
+        $this->yell("Building devmaster from makefile $makefile_path to $make_destination");
+
+        $result = $this->_exec("bin/drush make {$makefile_path} {$make_destination} --working-copy --no-gitinfofile");
+        if (!$result->wasSuccessful()) {
+          throw new \RuntimeException("Drush make failed with the exit code " . $result->getExitCode());
+        }
       }
     }
 
