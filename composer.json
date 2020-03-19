@@ -19,11 +19,11 @@
     "require": {
         "php": "^7.1",
         "knplabs/github-api": "^1.4",
-        "cpliakas/git-wrapper": "2.*",
-        "asm/php-ansible": "^2.0",
         "mouf/nodejs-installer": "^1.0",
-        "provision-ops/power-process": "^1.3",
-        "devshop/git-split": "*"
+        "devshop/yaml-tasks": "*",
+        "devshop/git-split": "*",
+        "cpliakas/git-wrapper": "^1.0",
+        "drush/drush": "^8"
     },
     "require-dev": {
         "composer/composer": "^1.9"
@@ -40,6 +40,10 @@
         {
             "type": "path",
             "url": "src/DevShop/Component/GitSplit"
+        },
+        {
+            "type": "path",
+            "url": "src/DevShop/Component/YamlTasks"
         }
     ],
     "bin": [
@@ -61,15 +65,14 @@
                 "roles/opendevshop.apache": "https://github.com/opendevshop/ansible-role-apache.git",
                 "roles/opendevshop.devmaster": "https://github.com/opendevshop/ansible-role-devmaster.git",
                 "roles/opendevshop.users": "https://github.com/opendevshop/ansible-role-user.git",
-                "src/DevShop/Component/GitSplit": "https://github.com/devshop-packages/git-split.git"
+                "src/DevShop/Component/GitSplit": "https://github.com/devshop-packages/git-split.git",
+                "src/DevShop/Component/YamlTasks": "https://github.com/devshop-packages/yaml-tasks.git"
             }
         }
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
     "scripts": {
-        "bin-install": [
-        ],
         "post-install-cmd": [
         ],
         "pre-update-cmd": [
