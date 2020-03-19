@@ -8,7 +8,6 @@
   vars:
     php_version: '7.2'
     php_default_version_debian: '7.2'
-    ansible_python_interpreter: python3
 
   roles:
     - role: geerlingguy.repo-remi

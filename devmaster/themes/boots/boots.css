@@ -962,6 +962,9 @@ div.hosting-task-retry form, div.hosting-task-retry form input {
 .ansi_color_bg_black {
     background: #262626;
 }
+#hosting-task-confirm-form {
+    padding-bottom: 4em;
+}
 
 #hosting-task-confirm-form .form-checkboxes .form-item span {
     width: 6em;
