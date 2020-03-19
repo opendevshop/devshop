@@ -1,0 +1,11 @@
+---
+
+# Override geerlingguy.mysql packages list, because his RedHat-6.yml only includes mysql and mysql-server.
+mysql_supports_innodb_large_prefix: true
+
+devshop_prerequisite_packages:
+  - openssh-clients
+
+# Pass in a comma-separated list of repos to use (e.g. "remi,epel"). Used only
+# for RHEL/CentOS.
+devshop_prerequisite_enablerepo: "{{ php_enablerepo }}"

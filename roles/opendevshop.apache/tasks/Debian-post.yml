@@ -1,0 +1,27 @@
+---
+
+- name: Symbolic link to Aegir's Apache Config
+  file:
+    src: "{{ aegir_user_home }}/config/apache.conf"
+    # For Debian, apache_conf_path == '/etc/apache2'
+    dest: "{{ apache_conf_path }}/conf-enabled/{{ aegir_user_name }}.conf"
+    state: link
+    force: true
+
+- name: Set version of PHP CLI to {{ php_version }} [variable 'php_version']
+  command: "update-alternatives --set php /usr/bin/php{{ php_version }}"
+
+- name: Disable Apache mods.
+  file:
+    path: "{{ php_versions_available | reject('search', 'php' ~ php_version) | list }}"
+    state: absent
+  with_items: "{{ apache_mods_disabled }}"
+  notify: restart apache
+
+- name: Enable Apache mods.
+  file:
+    src: "{{ apache_server_root }}/mods-available/{{ item }}"
+    dest: "{{ apache_server_root }}/mods-enabled/{{ item }}"
+    state: link
+  with_items: "{{ apache_mods_enabled }}"
+  notify: restart apache

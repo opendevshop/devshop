@@ -1,0 +1,33 @@
+<?php
+/**
+ * @file
+ *   Install, update and uninstall for Devshop Remotes
+ */
+
+/**
+ * Implements hook_install()
+ */
+function devshop_remotes_install() {
+
+  // Push devshop_projects's system weight to 1.
+  db_update('system')
+    ->fields(array(
+      'weight' => 2
+    ))
+    ->condition('name', 'devshop_remotes')
+    ->execute();
+}
+
+/**
+ * Set the weight of this module higher than devshop_projects.module.
+ */
+function devshop_remotes_update_7001() {
+
+  // Push devshop_projects's system weight to 1.
+  db_update('system')
+    ->fields(array(
+      'weight' => 2
+    ))
+    ->condition('name', 'devshop_remotes')
+    ->execute();
+}

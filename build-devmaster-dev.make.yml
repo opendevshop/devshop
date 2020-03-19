@@ -1,77 +1,86 @@
-
 # DevShop Development Makefile
 core: "7.x"
 api: "2"
 
 defaults:
   projects:
-    subdir: "aegir"
+    subdir: "contrib"
 
 projects:
   drupal:
     type: core
-    version: 7.67
+    version: 7.69
 
   # DEVELOPERS: If submitting a Pull Request, CHANGE THE URL or BRANCH here, if you need to test devshop and devmaster repos.
   devmaster:
     type: profile
     subdir: ''
     download:
-      type: git
-      branch: 7.x-1.x
-      url: https://github.com/opendevshop/devmaster.git
+      type: copy
+      url: devmaster
 
   devel:
     version: 1
 
+  # The modules listed below override the settings in devmaster/drupal-org.make
+  # Each module is downloaded and checked out to the version specified here.
+  # These
   hosting:
     download:
       type: git
-      branch: 7.x-3.x-devshop
+      tag: 7.x-3.180-devshop
 
   hosting_git:
     download:
       type: git
-      branch: 7.x-3.x
+      tag: 7.x-3.181
 
   hosting_remote_import:
     download:
       type: git
-      branch: 7.x-3.x
+      tag: 7.x-3.180
 
   hosting_site_backup_manager:
     download:
       type: git
-      branch: 7.x-3.x
+      tag: 7.x-3.180
 
   hosting_tasks_extra:
     download:
       type: git
-      branch: 7.x-3.x
+      tag: 7.x-3.180
+
   hosting_filemanager:
     download:
       type: git
       branch: 7.x-1.x
+
   hosting_logs:
     download:
       type: git
-      branch: 7.x-3.x
+      tag: 7.x-3.181
+
   hosting_https:
     download:
       type: git
-      branch: 7.x-3.x
+      tag: 7.x-3.182
+
   aegir_ssh:
     download:
       type: git
-      branch: 7.x-1.x
+      tag: 7.x-1.0
+
   aegir_config:
     download:
       type: git
-      branch: 7.x-1.x
+      tag: 7.x-1.00-beta1
+
+  # @TODO: Tag releases of submodules.
   aegir_ansible:
     download:
       type: git
       branch: 7.x-1.x
+
   aegir_cloud:
     download:
       type: git
@@ -81,6 +90,139 @@ projects:
     download:
       type: git
       branch: 7.x-1.x
+
+  admin_menu:
+    download:
+      type: git
+      tag: 7.x-3.0-rc6
+
+  adminrole:
+    download:
+      type: git
+      tag: 7.x-1.1
+
+  betterlogin:
+    download:
+      type: git
+      tag: 7.x-1.5
+
+  bootstrap:
+    type: theme
+    download:
+      type: git
+      tag: 7.x-3.26
+
+  cas:
+    download:
+      type: git
+      tag: 7.x-1.7
+    patch:
+      - https://www.drupal.org/files/issues/2018-12-13/3020349-cas-library-path.patch
+
+  cas_attributes:
+    download:
+      type: git
+      tag: 7.x-1.0-rc3
+
+  chosen:
+    download:
+      type: git
+      tag: 7.x-2.1
+
+  composer_manager:
+    download:
+      type: git
+      tag: 7.x-1.8
+
+  ctools:
+    download:
+      type: git
+      tag: 7.x-1.15
+
+  entity:
+    download:
+      type: git
+      tag: 7.x-1.9
+
+  features:
+    download:
+      type: git
+      tag: 7.x-2.11
+
+  hosting_statsd:
+    download:
+      type: git
+      tag: 7.x-1.0-beta1
+
+  intercomio:
+    download:
+      type: git
+      tag: 7.x-1.0-beta2
+
+  jquery_update:
+    download:
+      type: git
+      tag: 7.x-3.0-alpha5
+
+  libraries:
+    download:
+      type: git
+      tag: 7.x-2.5
+
+  module_filter:
+    download:
+      type: git
+      tag: 7.x-2.2
+
+  navbar:
+    download:
+      type: git
+      tag: 7.x-1.7
+
+  openidadmin:
+    download:
+      type: git
+      tag: 7.x-1.0
+
+  overlay_paths:
+    download:
+      type: git
+      tag: 7.x-1.3
+
+  r4032login:
+    download:
+      type: git
+      tag: 7.x-1.8
+
+  sshkey:
+    download:
+      type: git
+      tag: 7.x-2.0
+
+  statsd:
+    download:
+      type: git
+      tag: 7.x-1.1
+
+  timeago:
+    download:
+      type: git
+      tag: 7.x-2.3
+
+  token:
+    download:
+      type: git
+      tag: 7.x-1.7
+
+  views:
+    download:
+      type: git
+      tag: 7.x-3.23
+
+  views_bulk_operations:
+    download:
+      type: git
+      tag: 7.x-3.5
 
 libraries:
 

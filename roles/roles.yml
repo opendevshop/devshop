@@ -1,0 +1,32 @@
+---
+#
+# Ansible Galaxy Roles
+#
+# This file defines what Ansible roles from Ansible Galaxy are available in the OpenDevShop repo by default.
+#
+# For syntax documentation, see https://galaxy.ansible.com/docs/using/installing.html#installing-multiple-roles-from-a-file
+#
+# Tips:
+#
+# - The `composer update` command will update the roles! Nothing extra needed.
+# - Do not include version numbers, unless specifically needed. The
+#  `ansible-galaxy install` command will download the latest version by default.
+#   Otherwise, you will have to manually check if the version shown here is the latest version.
+#
+
+- name: geerlingguy.apache
+- name: geerlingguy.composer
+- name: geerlingguy.drupal
+- name: geerlingguy.drush
+- name: geerlingguy.git
+- name: geerlingguy.github-users
+- name: geerlingguy.security
+- name: geerlingguy.mysql
+- name: geerlingguy.php-mysql
+- name: geerlingguy.php-versions
+- name: geerlingguy.repo-remi
+
+# Forked for compatibility with AmazonLinux (Centos6)
+- name: geerlingguy.supervisor
+  version: AmazonLinux
+  src: http://github.com/opendevshop/ansible-role-supervisor.git  # Pull Request: https://github.com/geerlingguy/ansible-role-supervisor/pull/36

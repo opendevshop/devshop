@@ -1,23 +1,31 @@
 {
-    "name": "devshop/cli",
-    "description": "Command Line interface for DevShop",
-    "require": {
-        "symfony/console": "^2.7",
-        "symfony/process": "^2.7",
-        "knplabs/github-api": "^1.4",
-        "symfony/filesystem": "^2.7",
-        "cpliakas/git-wrapper": "1.*",
-        "asm/php-ansible": "v1.2.0",
-        "consolidation/robo": "^1",
-        "drush/drush": "~8.1",
-        "mouf/nodejs-installer": "^1.0"
-    },
-    "repositories": [
+    "name": "devshop/devshop",
+    "type": "library",
+    "description": "The DevShop DevOps Framework",
+    "keywords": ["framework", "devops", "platform", "hosting"],
+    "homepage": "https://getdevshop.com",
+    "license": "MIT",
+    "authors": [
         {
-            "type": "vcs",
-            "url": "https://github.com/opendevshop/php-ansible"
+            "name": "Jon Pugh",
+            "email": "jon@thinkdrop.net",
+            "role": "Author"
+        },
+        {
+            "name": "DevShop Community",
+            "homepage": "https://github.com/opendevshop/devshop/graphs/contributors"
         }
     ],
+    "require": {
+        "knplabs/github-api": "^1.4",
+        "cpliakas/git-wrapper": "2.*",
+        "asm/php-ansible": "^2.0",
+        "mouf/nodejs-installer": "^1.0",
+        "php": "^7.1",
+        "provision-ops/power-process": "^1.3"
+    },
+    "require-dev": {
+    },
     "authors": [
         {
             "name": "Jon Pugh",
@@ -28,12 +36,33 @@
         "psr-0": { "DevShop": "src/" }
     },
     "bin": [
-        "devshop"
+        "scripts/devshop",
+        "scripts/branch-or-tag"
     ],
     "config": {
+        "bin-dir": "bin",
         "platform": {
-            "php": "5.5.38"
+            "php": "7.1.3"
         },
-        "bin-dir": "bin"
+        "sort-packages:": "true"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "scripts": {
+        "bin-install": [
+            "DevShop\\Composer::installBins"
+        ],
+        "split": [
+            "DevShop\\Composer::installBins",
+            "DevShop\\Composer::splitRepos"
+        ],
+        "post-install-cmd": [
+            "DevShop\\Composer::installBins"
+        ],
+        "pre-update-cmd": [
+        ],
+        "update-roles": [
+            "DevShop\\Composer::updateRoles"
+        ]
     }
 }

@@ -1,0 +1,28 @@
+---
+# Used to set the devshop sudo configuration file and "aegir server restart command".
+apache_control: /usr/sbin/apache2ctl
+apache_user: www-data
+
+php_versions_available:
+  - "7.1"
+  - "7.2"
+  - "7.3"
+  - "7.4"
+
+php_packages_extra:
+  - libapache2-mod-php7.1
+  - libapache2-mod-php7.2
+  - libapache2-mod-php7.3
+  - libapache2-mod-php7.4
+
+# opendevshop.apache/tasks/main.yml disables all the mods, then enables these.
+apache_mods_enabled:
+  - "php{{ php_version }}.conf"
+  - "php{{ php_version }}.load"
+
+apache_mods_disabled:
+  - "php7.0"
+  - "php7.1"
+  - "php7.2"
+  - "php7.3"
+  - "php7.4"

@@ -1,0 +1,9 @@
+---
+
+# @TODO: Move these to defaults yml files. If in vars, they are forced.
+
+# Enable php opcache.
+php_opcache_enabled_in_ini: true
+php_apc_enabled_in_ini: true
+
+php_default_version_debian: "{{ php_version }}"

@@ -1,0 +1,223 @@
+---
+- name: Set Server Hostname
+  hostname:
+    name: "{{ server_hostname }}"
+  when: server_hostname != empty_string
+  ignore_errors: "{{ server_hostname_ignore_errors }}"
+  tags: [runtime]
+
+# This is done so the roles will be visible when ansible config is the default.
+# There are too many ways to configure the roles path. If we just put the files
+# here, the DEFAULT_ROLES_PATH value will find devshop roles.
+- name: Create Ansible Share folder
+  file:
+    path: "{{ ansible_share_path }}"
+    state: directory
+
+- name: Install Ansible Roles
+  file:
+    src: "{{ devshop_cli_path }}/roles"
+    dest: "{{ ansible_share_path }}/roles"
+    state: link
+    force: true
+
+- name: Include version specific variables for Debian OS Family
+  include_vars: "vars.{{ ansible_os_family }}.yml"
+  when: ansible_os_family == "Debian"
+
+- name: Include version specific variables for RedHat OS Family
+  include_vars: "vars.{{ ansible_os_family }}{{ ansible_distribution_major_version }}.yml"
+  when: ansible_os_family == "RedHat"
+
+- name: Include OS-specific variables.
+  include_vars: "vars.{{ ansible_os_family }}.yml"
+  when: ansible_os_family == "Debian"
+
+- name: Install extra packages
+  apt:
+    pkg: '{{ extra_packages }}'
+    state: present
+    update_cache: true
+  when: ansible_os_family == "Debian"
+
+- name: Install extra packages
+  yum:
+    name: '{{ extra_packages }}'
+    state: present
+  when: ansible_os_family == "RedHat"
+
+- name: Detect currently installed version of DevShop.
+  command: "{{ devshop_cli_path }}/bin/branch-or-tag"
+  register: __devshop_version_installed
+  changed_when: true
+  ignore_errors: true
+  args:
+    chdir: "{{ devshop_cli_path }}"
+
+- name: "Detect if desired version {{ devshop_version }} is an ancestor of the installed version {{ __devshop_version_installed.stdout }}"
+  command: "git merge-base --is-ancestor {{ __devshop_version_installed.stdout | quote }} {{ devshop_version | quote }}"
+  register: __devshop_is_version_ancestor
+  changed_when: true
+  ignore_errors: true
+  args:
+    chdir: "{{ devshop_cli_path }}"
+  when:
+    - not __devshop_version_installed.failed
+
+- name: "Stopping Upgrade: Specified devshop_version is not a descendant of {{ __devshop_version_installed.stdout }}"
+  set_fact:
+    devshop_cli_update: false
+    devmaster_skip_upgrade: true
+  when:
+    # Only run when devshop is already installed and the ancestor check failed.
+    - not __devshop_version_installed.failed
+    - __devshop_is_version_ancestor is defined
+    - __devshop_is_version_ancestor.failed
+
+- name: "Setting Variables for existing DevShop install (Version {{ __devshop_version_installed.stdout }})"
+  set_fact:
+    devshop_cli_upgrade_or_install: "Upgrade"
+    devshop_version_installed: "{{ __devshop_version_installed.stdout }}"
+  when:
+    - not __devshop_version_installed.failed
+
+- name: "Setting Variables for new DevShop install (Version {{ devshop_version }})"
+  set_fact:
+    devshop_cli_upgrade_or_install: "Install"
+    devshop_version_installed: false
+  when:
+    - __devshop_version_installed.failed
+
+- name: "{{ __devshop_cli_upgrade_or_install }} DevShop CLI version {{ devshop_cli_version }} in {{ devshop_cli_path }}"
+  git:
+    repo: "{{ devshop_cli_repo }}"
+    version: "{{ devshop_cli_version }}"
+    update: "{{ devshop_cli_update }}"
+    dest: "{{ devshop_cli_path }}"
+    force: true
+  when: devshop_cli_update
+
+- name: Install DevShop CLI Dependencies with Composer
+  command: "{{ php_executable }} {{ composer_path }} {{ devshop_cli_composer_install_command }}"
+  # Changed: true is so we don't fail ansible lint.
+  changed_when: true
+  args:
+    chdir: "{{ devshop_cli_path }}"
+
+- name: Add DevShop bin directory to Path
+  copy:
+    dest: /etc/profile.d/devshop-cli-path.sh
+    content: 'PATH=$PATH:{{ devshop_cli_path }}/bin'
+
+- name: Debug environment
+  command: "env"
+  become: true
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
+  changed_when: true
+
+- name: Check drush status
+  command: "{{ drush_bin_path }} status"
+  become: true
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
+  changed_when: true
+
+- name: Ensure /var/aegir is owned by aegir user.
+  file:
+    state: directory
+    path: "{{ aegir_user_home }}"
+    group: "{{ aegir_user_name }}"
+    owner: "{{ aegir_user_name }}"
+  tags: [runtime]
+
+- name: Create /var/aegir/.drush
+  file:
+    path: "{{ aegir_user_home }}/.drush"
+    owner: "{{ aegir_user_name }}"
+    group: "{{ aegir_user_name }}"
+    mode: 0744
+    state: directory
+  tags: [runtime]
+
+- name: Install required drush packages.
+  command: |
+    {{ drush_bin_path }} dl {{ item.key }}-{{ item.value }} --destination={{ aegir_user_home }}/.drush/commands --package-handler={{ drush_dl_method }} -y
+  with_dict: "{{ devshop_drush_packages }}"
+  changed_when: true
+  become: true
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
+  tags: [runtime]
+
+- name: Setup Drush Bash Enhancements
+  command: "{{ drush_bin_path }} init --yes"
+  changed_when: true
+  become: true
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
+  tags: [runtime]
+
+- name: "Remove existing Devmaster Source Code from {{ devshop_devmaster_path }} before installing, if requested."
+  when: devshop_danger_remove_devmaster
+  file:
+    path: "{{ devshop_devmaster_path }}"
+    state: absent
+  tags: [never, remove-devmaster, rebuild-devmaster]
+
+- name: "Prepare DevShop Web Interface Source Code: {{ devmaster_make_command }}"
+  become: true
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
+  command: "{{ devmaster_make_command }}"
+  changed_when: true
+  args:
+    creates: "{{ devshop_devmaster_path }}/index.php"
+    chdir: "{{ devshop_cli_path }}"
+  tags: [rebuild-devmaster]
+
+- name: Clear the drush cache.
+  command: "{{ drush_bin_path }} cc drush"
+  changed_when: true
+  become: true
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
+  tags: [runtime]
+
+- name: "Install DevShop Web Interface"
+  include_tasks: "install-devmaster.yml"
+  tags: [runtime]
+  when: not devmaster_skip_install|bool
+
+- name: Configure DevShop Web Interface
+  tags: [runtime]
+  include_tasks: "config-devmaster.yml"
+  when: not devmaster_skip_install|bool
+
+- name: Ensure privacy of SSH Keys
+  file: path=/var/aegir/{{ item.path }} mode={{ item.mode }}
+  with_items:
+    - {path: '.ssh', mode: '0700'}
+    - {path: '.ssh/id_rsa', mode: '600'}
+    - {path: '.ssh/id_rsa.pub', mode: '644'}
+
+- name: Create aegir's logs files
+  file:
+    path: "{{ item }}"
+    owner: "{{ aegir_user_name }}"
+    group: "{{ aegir_user_name }}"
+    state: touch
+    mode: 0755
+  with_items: "{{ aegir_log_files_touch }}"
+
+- name: Confirm PHP version {{ php_version }} is installed
+  shell: php -v | grep -F '{{ php_version }}'
+  changed_when: false
+
+# CentOS started failing tests because the PHP CLI was throwing Warnings about date.timezone missing.
+# @TODO: Investigate php.ini for CLI on all OS
+# - name: 'RedHat: Set timezone in PHP.ini for CLI.'
+#  lineinfile:
+#    dest: '{{ php_cli_ini_path }}'
+#    line: 'date.timezone = America/Chicago'
+#  when: ansible_os_family == "RedHat"

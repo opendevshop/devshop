@@ -1,0 +1,9 @@
+---
+
+- name: Symbolic link to Aegir's Apache Config
+  file:
+    src: "{{ aegir_user_home }}/config/apache.conf"
+    # For RedHat, apache_conf_path == '/etc/httpd/conf.d'
+    dest: "{{ apache_conf_path }}/{{ aegir_user_name }}.conf"
+    state: link
+    force: true

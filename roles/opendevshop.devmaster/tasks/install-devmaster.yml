@@ -1,0 +1,86 @@
+---
+
+- name: Get Devmaster root
+  command: "{{ devshop_cli_bin_path }}/devshop-site-info @hostmaster root"
+  become: true
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
+  ignore_errors: true
+  register: devmaster_site_root
+  changed_when: "devmaster_site_root.stdout != empty_string"
+  tags: [runtime]
+
+- name: Get Devmaster URI
+  command: "{{ devshop_cli_bin_path }}/devshop-site-info @hostmaster uri"
+  become: true
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
+  ignore_errors: true
+  register: devmaster_site_uri
+  changed_when: "devmaster_site_uri.stdout != empty_string"
+  tags: [runtime]
+
+- name: Set devmaster_site_root and devmaster_site_uri variables
+  set_fact:
+    devmaster_site_root: "{{ devmaster_site_root.stdout | trim }}"
+    devmaster_site_uri: "{{ devmaster_site_uri.stdout | trim }}"
+  tags: [runtime]
+
+- name: Devmaster Root
+  debug:
+    msg: "{{ devmaster_site_root }}"
+  tags: [runtime]
+
+- name: Devmaster URI
+  debug:
+    msg: "{{ devmaster_site_uri }}"
+  tags: [runtime]
+
+- name: Devmaster Install Command
+  debug:
+    msg: "{{ devmaster_install_command }}"
+  tags: [runtime]
+
+- name: Wait for MySQL Server to be ready.
+  command: "{{ devshop_cli_bin_path }}/wait-mysql"
+  changed_when: true
+  tags: [runtime]
+  environment:
+    MYSQL_ROOT_PASSWORD: "{{ mysql_root_password }}"
+    DATABASE_HOST: "{{ database_host }}"
+
+- name: Install Devmaster
+  become: true
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
+  command: "{{ devmaster_install_command }}"
+  when:
+    - devmaster_site_uri == empty_string
+  tags: [runtime]
+
+- name: Devmaster Upgrade Command
+  debug:
+    msg: "{{ devmaster_upgrade_command }}"
+  tags: [runtime]
+
+- name: "Upgrade Devmaster to {{ devshop_version }}"
+  command: "{{ devmaster_upgrade_command }}"
+  when:
+    - devmaster_site_uri != empty_string
+    - not devmaster_skip_upgrade
+  tags: [runtime]
+
+- name: Clear the drush cache.
+  command: "{{ drush_bin_path }} cc drush"
+  become: true
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
+  register: drush_cache_clear
+  changed_when: "drush_cache_clear.stdout != empty_string"
+  tags: [runtime]
+
+- name: restart supervisor
+  debug:
+  tags: [runtime]
+  when: supervisor_started
+  notify: restart supervisor

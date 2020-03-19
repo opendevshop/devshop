@@ -1,0 +1,105 @@
+name: Build
+
+on:
+ push:
+ pull_request:
+   types: [opened, synchronize]
+ schedule:
+   - cron: "10 * * * *"
+
+env:
+  # Set ANSIBLE_VERBOSITY to 1,2 or 3 when needed for development.
+  ANSIBLE_VERBOSITY: 0
+  COMPOSE_FILE: "docker-compose.yml:docker-compose.tests.yml"
+  DEBUG_COMMAND: "docker-compose exec -T devshop systemctl status --no-pager"
+
+jobs:
+  build:
+    name: "${{ matrix.os }} / ${{ matrix.vars }}"
+    strategy:
+      fail-fast: false
+      matrix:
+        # Default build/run tags.
+        # For simpler testing, install everything at runtime here.
+        # @TODO: Add a build-time test specifically for the docker image build. (Same thing docker hub runs)
+        build_tags: ['none']
+        build_skip_tags: ['']
+        run_tags: ['all']
+        run_skip_tags: ['none']
+
+        os:
+          - 'ubuntu1804'
+          # - 'centos6'
+          - 'centos7'
+        vars:
+          - 'php_version: 7.2'
+
+    env:
+      ANSIBLE_TAGS: "${{ matrix.build_tags }}"
+      ANSIBLE_SKIP_TAGS: "${{ matrix.build_skip_tags }}"
+      ANSIBLE_VARS: "${{ matrix.vars }}"
+      OS: "${{ matrix.os }}"
+
+    runs-on: ubuntu-18.04
+    steps:
+
+    - name: Prepare CI (ubuntu)
+      if: matrix.os == 'ubuntu1804'
+      run: |
+        echo "::set-env name=ANSIBLE_TAGS::mysql"
+
+    - uses: actions/checkout@v1
+    - name: Get Composer Cache Directory
+      id: composer-cache
+      run: |
+        echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+    - uses: actions/cache@v1
+      with:
+        path: ${{ steps.composer-cache.outputs.dir }}
+        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-composer-
+
+    - name: Install Composer dependencies
+      run: composer install --prefer-dist --no-progress --no-suggest
+
+    # NOTE: The env vars shown below should be loaded into the Robo options automatically.
+    # They are added to the command here for visibility.
+    - name: Launch Server Container (${{ matrix.os }})
+      run: |
+        bin/robo up ps  \
+          --build \
+          --follow 0 \
+          --os "${OS}" \
+          --vars "${ANSIBLE_VARS}" \
+          --tags "${ANSIBLE_TAGS}" \
+          --skip-tags "${ANSIBLE_SKIP_TAGS}"
+
+    - name: Wait for yum
+      if: matrix.os == 'centos7'
+      run: sleep 4
+
+    - name: Install DevShop
+      env:
+        ANSIBLE_TAGS: "${{ matrix.run_tags }}"
+        ANSIBLE_SKIP_TAGS: "${{ matrix.run_skip_tags }}"
+      run: |
+        bin/robo exec devshop-ansible-playbook
+
+    - name: Test DevShop
+      run: |
+        bin/robo test
+
+    - name: Save Assets
+      if: always()
+      run: |
+        docker ps -a > ./.github/test-assets/build-docker-ps.log && \
+        $DEBUG_COMMAND > ./.github/test-assets/build-debug-command.log && \
+        docker-compose logs > ./.github/test-assets/build-docker-compose.log
+
+    - uses: actions/upload-artifact@v1
+      if: always()
+      with:
+        name: test-assets
+        path: ./.github/test-assets

@@ -1,0 +1,35 @@
+name: Code Quality
+on:
+  push:
+  pull_request:
+    types: [opened, synchronize]
+jobs:
+  lint:
+    name: Ansible Lint
+    runs-on: ubuntu-18.04
+
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-python@v1
+
+      # @TODO: Attempted to cache the pip packages, doesn't seem to work in subfolders.
+      #      - uses: actions/cache@v1
+      #        id: cache
+      #        with:
+      #          path: .cache/pip
+      #          key: ${{ runner.os }}-pip-${{ hashFiles('**/roles/opendevshop.devmaster/molecule/requirements.txt') }}
+      #          restore-keys: |
+      #                ${{ runner.os }}-test
+
+      - name: Install Ansible Molecule
+        if: steps.cache.outputs.cache-hit != 'true'
+        working-directory: ./roles/molecule
+        run: |
+          pwd
+          ls -la
+          python -m pip install --upgrade pip
+          pip install -r molecule-requirements.txt
+
+      - name: Test Ansible Code Quality
+        working-directory: ./roles
+        run: molecule lint

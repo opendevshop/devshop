@@ -1,6 +1,7 @@
 
 # devshop repos
-aegir-home
+aegir-home/*
+!aegir-home/.ssh/.gitkeep
 aegir-dockerfiles
 aegir-tests
 dockerfiles
@@ -8,8 +9,6 @@ documentation
 hosting
 hostmaster
 provision
-roles
-
 
 # Local config
 .vagrant
@@ -17,8 +16,12 @@ devmaster_id_rsa.pub
 
 # Config
 bin/*
-~bin/devshop
+!bin/devshop*
+!bin/branch-or-tag
+!bin/docker*
 !bin/hosting-queue-runner
+!bin/wait-*
+!bin/tail-file
 
 # Symfony code
 vendor
@@ -28,6 +31,7 @@ vendor
 
 # Ansible inventory file.
 inventory
+playbook.retry
 
 # PHPStorm files
 .idea

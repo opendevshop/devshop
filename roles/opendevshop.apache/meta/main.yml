@@ -1,0 +1,41 @@
+---
+galaxy_info:
+  author: jonpugh
+  role_name: apache
+  description: Apache Web Server for DevShop hosting system.
+  company: ThinkDrop Inc
+  github_branch: "1.x"
+
+  license: GPLv2
+  min_ansible_version: 2.4
+
+  platforms:
+    # @TODO: Once testing passes, uncomment.
+    #    - name: EL
+    #
+    #      versions:
+    #        - 7
+    #        - 6
+
+    - name: Ubuntu
+      versions:
+        - bionic
+
+  galaxy_tags:
+    - aegir
+    - apache
+    - devshop
+    - drupal
+    - hosting
+    - html
+    - httpd
+    - opendevshop
+    - web
+    - webops
+    - webserver
+
+dependencies:
+  - opendevshop.users
+  - geerlingguy.apache
+  - geerlingguy.php-versions
+  - geerlingguy.php
