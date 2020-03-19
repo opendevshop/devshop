@@ -160,6 +160,8 @@ RUN \
   devshop-logo " Contents of ${DEVSHOP_PATH} after copy"; \
   git status; git log -1; $LINE
 
+RUN ansible --version
+
 RUN devshop-logo "Preparing Docker Container Environment..."
 
 #

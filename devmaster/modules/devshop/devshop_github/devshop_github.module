@@ -307,6 +307,7 @@ function devshop_github_form_site_node_form_alter(&$form, &$form_state, $form_id
   if (!empty(variable_get('devshop_github_token', '')) && arg(1) == 'add' && $project->git_provider == 'github'){
     try {
       $prs = devshop_github_client()->pullRequests()->all($project->github_owner, $project->github_repo);
+      $default_branch = devshop_github_client()->repo()->show($project->github_owner, $project->github_repo)['default_branch'];
     }
     catch (\Exception $e) {
       drupal_set_message(t('Unable to reach GitHub API to load Pull Request Data. [Error: %error]', array(
@@ -314,6 +315,7 @@ function devshop_github_form_site_node_form_alter(&$form, &$form_state, $form_id
       )), 'warning');
       return;
     }
+
 
     // @TODO: Use the new function devshop_github_pr_options().
     $pr_options = array();
@@ -333,10 +335,19 @@ function devshop_github_form_site_node_form_alter(&$form, &$form_state, $form_id
       }
 
       $form['git_ref']['#title'] = t('Branch, Tag, or Pull Request');
-
     }
 
-    $form['git_ref']['#options'] = array_merge($pr_options, $existing_options);
+    $default_branch_option = array(
+      t('Default Branch') => array(
+        $default_branch => $default_branch . ' (' . t('Default Branch') . ')',
+      ),
+    );
+
+    unset($existing_options[t('Branches')][$default_branch]);
+
+    $form['git_ref']['#options'] = array_merge($default_branch_option, $pr_options, $existing_options);
+    $form['git_ref']['#default_value'] = $default_branch;
+
     $form['git_ref']['#element_validate'] = array(
       'devshop_github_form_site_node_form_validate_pr'
     );
@@ -1913,7 +1924,8 @@ function devshop_github_create_all_pr_environments($project_node) {
     drush_log("Checking $environment->name... [$site_url]");
 
     // If no PR data in environment and no PR exists with this environments name, it is not a PR environment. Move on.
-    if ($environment->site_status != HOSTING_SITE_DELETED && empty($environment->github_pull_request) && empty($prs[$environment_pr_slug])) {
+    if (empty($prs[$environment->name]) && $environment->site_status != HOSTING_SITE_DELETED && empty($environment->github_pull_request)) {
+      drush_log("No PR data found in Drupal database for environment [$environment->name] site NID [$environment->site]", 'warning');
       continue;
     }
     // If no PR data, but the environment name matches a PR's slug, update data.
@@ -2020,13 +2032,10 @@ function devshop_github_create_all_pr_environments($project_node) {
     // If PR has different remote URL, set it.
     if ($pr->head->repo->fork) {
       // Try to match project URL scheme
-      if (strpos($project->git_url, 'https://') === 0) {
-        $remote_url = $pr->head->repo->clone_url;
-      }
-      elseif (strpos($project->git_url->git_url, 'git://') === 0){
+      if (strpos($project->git_url, 'git://') === 0){
         $remote_url = $pr->head->repo->git_url;
       }
-      elseif (strpos($project->git_url->git_url, 'git@') === 0){
+      elseif (strpos($project->git_url, 'git@') === 0){
         $remote_url = $pr->head->repo->ssh_url;
       }
       else {

@@ -7,8 +7,6 @@
 devshop_prerequisite_packages:
   - apt-utils
   - locales
-  - python-setuptools
-  - python-pip
   - software-properties-common
   - rsyslog
   - systemd

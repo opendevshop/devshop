@@ -5,6 +5,7 @@ export PATH="$DEVSHOP_PATH/bin:$PATH"
 set -e
 
 devshop-logo "Docker Entrypoint"
+ansible --version
 
 # Set ANSIBLE_TAGS from environment variable ANSIBLE_TAGS, or use ANSIBLE_TAGS_RUNTIME.
 ANSIBLE_TAGS=${ANSIBLE_TAGS:-runtime}
