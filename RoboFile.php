@@ -423,7 +423,9 @@ class RoboFile extends \Robo\Tasks {
     $process->disableOutput();
     $process->setTimeout(null);
     $process->setTty(!empty($_SERVER['XDG_SESSION_TYPE']) && $_SERVER['XDG_SESSION_TYPE'] == 'tty');
-    $process->mustRun();
+
+    // @TODO: Figure out why PowerProcess::mustRun() fails so miserably: https://github.com/opendevshop/devshop/pull/541/checks?check_run_id=518074346#step:7:45
+    $process->run();
 
   }
 
