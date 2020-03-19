@@ -5,8 +5,6 @@ mysql_supports_innodb_large_prefix: true
 
 devshop_prerequisite_packages:
   - openssh-clients
-# @TODO: Remove once we know tests pass.
-#  - python-pip
 
 # Pass in a comma-separated list of repos to use (e.g. "remi,epel"). Used only
 # for RHEL/CentOS.

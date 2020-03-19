@@ -1,7 +1,9 @@
 name: Build
 
-on: 
+on:
  push:
+ pull_request:
+   types: [opened, synchronize]
  schedule:
    - cron: "10 * * * *"
 
