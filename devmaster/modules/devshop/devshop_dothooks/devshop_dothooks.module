@@ -108,9 +108,10 @@ HTML;
 /**
  * Runs a hook for a task.
  * @param $hook
+ * @param $site
  * @param $task
  */
-function devshop_dothooks_run_hook($hook, $site) {
+function devshop_dothooks_run_hook($hook, $site, $task = null) {
 
   if (empty($site->environment)) {
     return;
@@ -149,6 +150,11 @@ function devshop_dothooks_run_hook($hook, $site) {
   $env['DEVSHOP_PROJECT'] = $environment->project_name;
   $env['DEVSHOP_ENVIRONMENT'] = $environment->name;
   $env['DRUSH_ALIAS'] = $environment->system_alias;
+  $env['URL'] = $environment->url;
+  $env['ROOT'] = $environment->repo_path;
+
+  // Set env var for the task being run (if no task, use the site NID url.)
+  $env['DEVSHOP_TASK_URL'] = $task? url("node/{$task->nid}", array('absolute' => TRUE)): url("node/{$site->nid}", array('absolute' => TRUE));
 
   // Prepare and run each command.
   foreach ($hooks as $hook_line) {
