@@ -106,6 +106,14 @@ class PowerProcess extends BaseProcess {
     }
 
     /**
+     * Provides compatibility with Process 3.x.
+     * @inheritDoc
+     */
+    public function mustRun($callback = null, array $env = []) {
+      parent::mustRun($callback, $env);
+    }
+
+    /**
      * Convert the execution environment to table row arrays.
      */
     public function getEnvTableRows() {
