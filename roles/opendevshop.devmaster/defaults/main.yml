@@ -31,7 +31,7 @@ devshop_working_copy: --working-copy
 aegir_server_webserver: apache
 mysql_root_password_update: false
 
-aegir_db_host: localhost
+database_host: localhost
 aegir_client_name: admin
 aegir_logs_path: /var/log/aegir
 
@@ -64,7 +64,7 @@ devshop_cli_version: "{{ devshop_version }}"
 devmaster_make_command: "{{ drush_bin_path }} make {{ devshop_makefile }} {{ devshop_devmaster_path }} {{ devshop_working_copy }}"
 
 devmaster_install_command: "{{ drush_bin_path }} hostmaster-install -y --strict=0 {{ server_hostname }} \
-                                --aegir_db_host={{ aegir_db_host }} \
+                                --database_host={{ database_host }} \
                                 --aegir_db_pass={{ mysql_root_password }} \
                                 --aegir_db_port=3306 \
                                 --aegir_db_user={{ mysql_root_username }} \
