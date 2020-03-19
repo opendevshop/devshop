@@ -22,7 +22,8 @@
         "mouf/nodejs-installer": "^1.0",
         "devshop/yaml-tasks": "*",
         "devshop/git-split": "*",
-        "cpliakas/git-wrapper": "^1.0"
+        "cpliakas/git-wrapper": "^1.0",
+        "drush/drush": "^8"
     },
     "require-dev": {
         "composer/composer": "^1.9"
@@ -72,8 +73,6 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "scripts": {
-        "bin-install": [
-        ],
         "post-install-cmd": [
         ],
         "pre-update-cmd": [
