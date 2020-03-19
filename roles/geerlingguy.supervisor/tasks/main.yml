@@ -1,0 +1,45 @@
+---
+- name: Include OS-specific variables.
+  include_vars: "{{ ansible_os_family }}.yml"
+
+- name: "Include variables for Amazon Linux."
+  include_vars: "AmazonLinux.yml"
+  when:
+    - ansible_distribution == "Amazon"
+    - ansible_distribution_major_version == "NA" or ansible_distribution_major_version == "2018" or ansible_distribution_major_version == "6"
+
+- name: Ensure Supervisor is installed (specific version).
+  pip:
+    name: supervisor
+    state: present
+    version: "{{ supervisor_version }}"
+  when: supervisor_version != 'latest'
+
+- name: Ensure Supervisor is installed (latest version).
+  pip:
+    name: supervisor
+    state: present
+  when: supervisor_version == 'latest'
+
+- name: Ensure Supervisor log dir exists.
+  file:
+    path: "{{ supervisor_log_dir }}"
+    state: directory
+    mode: 0755
+
+- include: config.yml
+
+- include: init-setup.yml
+  when: supervisor_started or supervisor_enabled
+
+- name: Ensure Supervisor is started (if configured).
+  service:
+    name: supervisord
+    state: started
+  when: supervisor_started
+
+- name: Ensure Supervisor is enabled at boot (if configured).
+  service:
+    name: supervisord
+    enabled: true
+  when: supervisor_enabled

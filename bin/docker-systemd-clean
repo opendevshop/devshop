@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+set -e
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+PATH="$DIR:$PATH"
+
+if [ -f "/lib/systemd/system" ]; then
+    devshop-logo "Cleaning up SystemD"
+
+    echo "This script cleans out SystemD so it will run more reliably inside a container."
+    echo "See https://github.com/geerlingguy/docker-ubuntu1804-ansible/pull/12"
+
+    (cd /lib/systemd/system/sysinit.target.wants/; for i in *; do [ $i == systemd-tmpfiles-setup.service ] || rm -f $i; done); \
+    rm -f /lib/systemd/system/multi-user.target.wants/*;
+    rm -f /etc/systemd/system/*.wants/*;
+    rm -f /lib/systemd/system/local-fs.target.wants/*;
+    rm -f /lib/systemd/system/sockets.target.wants/*udev*;
+    rm -f /lib/systemd/system/sockets.target.wants/*initctl*;
+    rm -f /lib/systemd/system/basic.target.wants/*;
+    rm -f /lib/systemd/system/anaconda.target.wants/*;
+fi
+

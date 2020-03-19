@@ -220,20 +220,6 @@ If this is a new installation, you may select the default randomly generated pas
           throw new \Exception('Ansible not loaded. Unable to find ansible-galaxy or ansible-playbook in the PATH.');
         }
 
-        // Install devshop roles
-        $roles_file_path = realpath(dirname(dirname(dirname(dirname(__DIR__)))) . '/requirements.yml');
-        $output->writeln('Installing Ansible roles from ' . $roles_file_path . 'in the ansible-galaxy default location...');
-
-        $this->ansible->galaxy()
-          ->roleFile($roles_file_path)
-          ->force()
-          ->install()
-          ->execute(function ($type, $buffer) {
-            echo $buffer;
-          });
-
-        $this->output->writeln("<comment>Ansible Galaxy install complete.</comment>");
-
         $ansible = $this->ansible->playbook();
 
         $ansible->play($input->getOption('playbook'));

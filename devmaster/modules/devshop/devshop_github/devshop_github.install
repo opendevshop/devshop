@@ -9,6 +9,13 @@
 function devshop_github_schema() {
   $schema['hosting_devshop_github_pull_requests'] = array(
     'fields' => array(
+      'site_nid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => "The site associated with this pull request.",
+      ),
       'id' => array(
         'type' => 'int',
         'unsigned' => TRUE,
@@ -23,20 +30,6 @@ function devshop_github_schema() {
         'default' => 0,
         'description' => 'Pull Request Number',
       ),
-      'project_nid' => array(
-        'type' => 'int',
-        'unsigned' => TRUE,
-        'not null' => TRUE,
-        'default' => 0,
-        'description' => "The project's Node ID.",
-      ),
-      'environment_name' => array(
-        'type' => 'varchar',
-        'not null' => TRUE,
-        'length' => 64,
-        'default' => '',
-        'description' => 'Environment name for this pull request environment.',
-      ),
       'pull_request_object' => array(
         'type' => 'text',
         'not null' => FALSE,
@@ -44,7 +37,7 @@ function devshop_github_schema() {
         'description' => 'A serialized array of settings for this environment.',
       ),
     ),
-    'primary key' => array('id'),
+    'primary key' => array('site_nid'),
   );
   $schema['hosting_devshop_github_deployments'] = array(
     'fields' => array(
@@ -115,7 +108,7 @@ function devshop_github_install() {
 }
 
 /**
- * Set a weight higher than devshop_project so our form doesn't get obliterated by
+ * Set a weight higher than devshop_project so our form doesnt get obliterated by
  * devshop_projects_form_project_node_form_alter()
  */
 function devshop_github_update_7000() {
@@ -145,4 +138,26 @@ function devshop_github_update_7001() {
 function devshop_github_update_7003() {
   $schema = devshop_github_schema();
   db_create_table('hosting_devshop_github_deployments', $schema['hosting_devshop_github_deployments']);
+}
+
+/**
+ * Update the hosting_devshop_github_pull_requests table.
+ */
+function devshop_github_update_7004() {
+
+  // 1. Create new field site_nid.
+  db_add_field();
+
+  // 2. Update table with new site.nid based on project nid and env name.
+  db_query("\
+  UPDATE \
+    {hosting_devshop_github_pull_requests} pr JOIN \
+    {hosting_devshop_project_environment} e ON \
+        pr.environment_name = e.name AND \
+        pr.project_nid = e.project_nid \
+      SET pr.site_nid = e.site \
+  ");
+
+  // 3. Delete old project_nid and env name fields.
+
 }

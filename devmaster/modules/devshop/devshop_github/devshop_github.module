@@ -153,7 +153,12 @@ function devshop_github_form_project_node_form_alter(&$form, &$form_state, $form
 
 
   // If Pull Requests were found in the environment, enable PR environments by default.
-  $prs = devshop_github_client()->pullRequests()->all($node->project->github_owner, $node->project->github_repo);
+  if (!empty(variable_get('devshop_github_token', ''))) {
+    $prs = devshop_github_client()->pullRequests()->all($node->project->github_owner, $node->project->github_repo);
+  }
+  else {
+    $prs = [];
+  }
   $pr_count = count($prs);
   if ($pr_count > 0) {
     $form['project']['settings']['github']['found_prs'] = array(
@@ -297,9 +302,12 @@ function devshop_github_form_hosting_task_confirm_form_alter_submit($form, &$for
 function devshop_github_form_site_node_form_alter(&$form, &$form_state, $form_id) {
 
   $project = $form_state['project'];
-  if (arg(1) == 'add' && $project->git_provider == 'github'){
+
+  // Don't try to load PRs if there isn't even a token.
+  if (!empty(variable_get('devshop_github_token', '')) && arg(1) == 'add' && $project->git_provider == 'github'){
     try {
       $prs = devshop_github_client()->pullRequests()->all($project->github_owner, $project->github_repo);
+      $default_branch = devshop_github_client()->repo()->show($project->github_owner, $project->github_repo)['default_branch'];
     }
     catch (\Exception $e) {
       drupal_set_message(t('Unable to reach GitHub API to load Pull Request Data. [Error: %error]', array(
@@ -308,6 +316,8 @@ function devshop_github_form_site_node_form_alter(&$form, &$form_state, $form_id
       return;
     }
 
+
+    // @TODO: Use the new function devshop_github_pr_options().
     $pr_options = array();
     $existing_options = $form['git_ref']['#options'];
 
@@ -325,10 +335,19 @@ function devshop_github_form_site_node_form_alter(&$form, &$form_state, $form_id
       }
 
       $form['git_ref']['#title'] = t('Branch, Tag, or Pull Request');
-
     }
 
-    $form['git_ref']['#options'] = array_merge($pr_options, $existing_options);
+    $default_branch_option = array(
+      t('Default Branch') => array(
+        $default_branch => $default_branch . ' (' . t('Default Branch') . ')',
+      ),
+    );
+
+    unset($existing_options[t('Branches')][$default_branch]);
+
+    $form['git_ref']['#options'] = array_merge($default_branch_option, $pr_options, $existing_options);
+    $form['git_ref']['#default_value'] = $default_branch;
+
     $form['git_ref']['#element_validate'] = array(
       'devshop_github_form_site_node_form_validate_pr'
     );
@@ -338,6 +357,47 @@ function devshop_github_form_site_node_form_alter(&$form, &$form_state, $form_id
       $form['actions']['submit']['#submit'][] = 'devshop_github_environment_create_submit';
     }
   }
+}
+
+/**
+ * Look up all PRs and return an array for a select form.
+ *
+ * @param $project
+ *
+ * @return array
+ */
+function devshop_github_pr_options($project, $key = 'id', $prs = array()) {
+  $pr_options = array();
+
+  if (empty($prs)) {
+    try {
+      $prs = devshop_github_client()->pullRequests()->all($project->github_owner, $project->github_repo);
+    }
+    catch (\Exception $e) {
+      drupal_set_message(t('Unable to reach GitHub API to load Pull Request Data. [Error: %error]', array(
+        '%error' => $e->getMessage(),
+      )), 'error');
+      drupal_set_message(l(t('Check your GitHub Settings'), 'admin/devshop/github'), 'error');
+      return $pr_options;
+    }
+  }
+
+  foreach ($prs as $pr) {
+    $pr_description = implode(' - ', array(
+      "PR {$pr['number']}",
+      $pr['head']['ref'],
+      $pr['user']['login'],
+      $pr['title'],
+    ));
+    // If user wants "ref" for key, it's in "head" array.
+    $pr['ref'] = $pr['head']['ref'];
+    if (!isset($pr[$key])) {
+      throw new \Exception("Item '$key' not found in \$pr array. The PR keys are: " . implode(',', array_keys($pr)));
+    }
+    $option_name = $pr[$key];
+    $pr_options[$option_name] = $pr_description;
+  }
+  return $pr_options;
 }
 
 /**
@@ -358,6 +418,8 @@ function devshop_github_environment_create_submit($form, &$form_state) {
 function devshop_github_form_site_node_form_validate_pr($element, &$form_state, $form)
 {
   // If PR found for this branch, put the PR data into form_state.
+
+  // @TODO: Load PR based on number.
   if (!empty($form_state['pull_requests'][$element['#value']])) {
     $form_state['values']['pull_request'] = $pr = convert_to_object($form_state['pull_requests'][$element['#value']]);
 
@@ -713,6 +775,11 @@ function devshop_github_create_project_form_set_values($element, &$form_state, &
  */
 function devshop_github_form_devshop_project_create_step_environments_alter(&$form, &$form_state, $form_id) {
 
+  // Don't try to load PRs if there isn't even a token.
+  if (empty(variable_get('devshop_github_token', ''))) {
+    return;
+  }
+
   $project = &$form_state['project'];
   $form['pr_environments'] = array(
     '#type' => 'container',
@@ -1044,7 +1111,10 @@ function devshop_github_node_load($nodes, $types) {
   foreach ($nodes as $nid => &$node) {
     if ($node->type == 'project') {
       // Look for a pull request object.
-      $pull_requests = db_query('SELECT * FROM {hosting_devshop_github_pull_requests} WHERE project_nid = :project_nid', array(':project_nid' => $nid));
+      $pull_requests = db_query('SELECT prs.*, e.name AS environment_name 
+        FROM {hosting_devshop_github_pull_requests} prs 
+        LEFT JOIN {hosting_devshop_project_environment} e ON prs.site_nid = e.site 
+        WHERE project_nid = :project_nid', array(':project_nid' => $nid));
       foreach ($pull_requests as $pull_request) {
         if (!empty($pull_request->pull_request_object)) {
           $pull_request->pull_request_object = unserialize($pull_request->pull_request_object);
@@ -1649,10 +1719,9 @@ function devshop_github_webhook($project_node) {
 
             // Update the PR record
             $info = new stdClass();
+            $info->site_nid = $environment->site;
             $info->id = $data->pull_request->id;
             $info->number = $data->pull_request->number;
-            $info->project_nid = $project->nid;
-            $info->environment_name = $environment_name;
             $info->pull_request_object = serialize($data->pull_request);
 
             // Save environment record.
@@ -1781,10 +1850,9 @@ function devshop_public_key_valid_fingerprint() {
  */
 function devshop_github_save_pr_env_data($pr, $environment) {
   $info = new stdClass();
+  $info->site_nid = $environment->site;
   $info->id = $pr->id;
   $info->number = $pr->number;
-  $info->project_nid = $environment->project_nid;
-  $info->environment_name = $environment->name;
   $info->pull_request_object = serialize($pr);
 
   // Last minute check for existing PR info
@@ -1856,7 +1924,8 @@ function devshop_github_create_all_pr_environments($project_node) {
     drush_log("Checking $environment->name... [$site_url]");
 
     // If no PR data in environment and no PR exists with this environments name, it is not a PR environment. Move on.
-    if ($environment->site_status != HOSTING_SITE_DELETED && empty($environment->github_pull_request) && empty($prs[$environment_pr_slug])) {
+    if (empty($prs[$environment->name]) && $environment->site_status != HOSTING_SITE_DELETED && empty($environment->github_pull_request)) {
+      drush_log("No PR data found in Drupal database for environment [$environment->name] site NID [$environment->site]", 'warning');
       continue;
     }
     // If no PR data, but the environment name matches a PR's slug, update data.
@@ -1963,13 +2032,10 @@ function devshop_github_create_all_pr_environments($project_node) {
     // If PR has different remote URL, set it.
     if ($pr->head->repo->fork) {
       // Try to match project URL scheme
-      if (strpos($project->git_url, 'https://') === 0) {
-        $remote_url = $pr->head->repo->clone_url;
-      }
-      elseif (strpos($project->git_url->git_url, 'git://') === 0){
+      if (strpos($project->git_url, 'git://') === 0){
         $remote_url = $pr->head->repo->git_url;
       }
-      elseif (strpos($project->git_url->git_url, 'git@') === 0){
+      elseif (strpos($project->git_url, 'git@') === 0){
         $remote_url = $pr->head->repo->ssh_url;
       }
       else {

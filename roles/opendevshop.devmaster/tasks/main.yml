@@ -4,6 +4,22 @@
     name: "{{ server_hostname }}"
   when: server_hostname != empty_string
   ignore_errors: "{{ server_hostname_ignore_errors }}"
+  tags: [runtime]
+
+# This is done so the roles will be visible when ansible config is the default.
+# There are too many ways to configure the roles path. If we just put the files
+# here, the DEFAULT_ROLES_PATH value will find devshop roles.
+- name: Create Ansible Share folder
+  file:
+    path: "{{ ansible_share_path }}"
+    state: directory
+
+- name: Install Ansible Roles
+  file:
+    src: "{{ devshop_cli_path }}/roles"
+    dest: "{{ ansible_share_path }}/roles"
+    state: link
+    force: true
 
 - name: Include version specific variables for Debian OS Family
   include_vars: "vars.{{ ansible_os_family }}.yml"
@@ -83,8 +99,8 @@
 
 - name: Install DevShop CLI Dependencies with Composer
   command: "{{ php_executable }} {{ composer_path }} {{ devshop_cli_composer_install_command }}"
-  register: devshop_ansible_command_output
-  changed_when: devshop_ansible_command_output is not search("Nothing to install or update")
+  # Changed: true is so we don't fail ansible lint.
+  changed_when: true
   args:
     chdir: "{{ devshop_cli_path }}"
 
@@ -107,12 +123,13 @@
   become_method: "{{ ansible_become_method_aegir }}"
   changed_when: true
 
-- name: Clear drush caches
-  command: "{{ drush_bin_path }} cache-clear drush"
-  become: true
-  become_user: "{{ aegir_user_name }}"
-  become_method: "{{ ansible_become_method_aegir }}"
-  changed_when: true
+- name: Ensure /var/aegir is owned by aegir user.
+  file:
+    state: directory
+    path: "{{ aegir_user_home }}"
+    group: "{{ aegir_user_name }}"
+    owner: "{{ aegir_user_name }}"
+  tags: [runtime]
 
 - name: Create /var/aegir/.drush
   file:
@@ -121,6 +138,7 @@
     group: "{{ aegir_user_name }}"
     mode: 0744
     state: directory
+  tags: [runtime]
 
 - name: Install required drush packages.
   command: |
@@ -130,6 +148,7 @@
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
+  tags: [runtime]
 
 - name: Setup Drush Bash Enhancements
   command: "{{ drush_bin_path }} init --yes"
@@ -137,6 +156,14 @@
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
+  tags: [runtime]
+
+- name: "Remove existing Devmaster Source Code from {{ devshop_devmaster_path }} before installing, if requested."
+  when: devshop_danger_remove_devmaster
+  file:
+    path: "{{ devshop_devmaster_path }}"
+    state: absent
+  tags: [never, remove-devmaster, rebuild-devmaster]
 
 - name: "Prepare DevShop Web Interface Source Code: {{ devmaster_make_command }}"
   become: true
@@ -147,6 +174,7 @@
   args:
     creates: "{{ devshop_devmaster_path }}/index.php"
     chdir: "{{ devshop_cli_path }}"
+  tags: [rebuild-devmaster]
 
 - name: Clear the drush cache.
   command: "{{ drush_bin_path }} cc drush"
@@ -154,14 +182,15 @@
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
+  tags: [runtime]
 
 - name: "Install DevShop Web Interface"
   include_tasks: "install-devmaster.yml"
-  tags: [install-devmaster]
+  tags: [runtime]
   when: not devmaster_skip_install|bool
 
 - name: Configure DevShop Web Interface
-  tags: [install-devmaster]
+  tags: [runtime]
   include_tasks: "config-devmaster.yml"
   when: not devmaster_skip_install|bool
 
@@ -180,6 +209,10 @@
     state: touch
     mode: 0755
   with_items: "{{ aegir_log_files_touch }}"
+
+- name: Confirm PHP version {{ php_version }} is installed
+  shell: php -v | grep -F '{{ php_version }}'
+  changed_when: false
 
 # CentOS started failing tests because the PHP CLI was throwing Warnings about date.timezone missing.
 # @TODO: Investigate php.ini for CLI on all OS

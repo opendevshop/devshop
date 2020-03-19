@@ -17,6 +17,19 @@ class Composer {
   );
 
   /**
+   * Run ansible-galaxy install --force to update the Ansible roles included in DevShop.
+   */
+  static function updateRoles() {
+    $ansible_playbook_installed = `command -v ansible`;
+    if ($ansible_playbook_installed) {
+      self::exec('ansible-galaxy install -r roles/roles.yml -p roles --force');
+    }
+    else {
+      echo "Ansible not found. Skipping Ansible Galaxy Role update. \n";
+    }
+  }
+
+  /**
    * Install binary files.
    */
   static function installBins() {

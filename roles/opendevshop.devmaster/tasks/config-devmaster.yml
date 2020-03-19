@@ -7,16 +7,16 @@
   when: devshop_github_token != empty_string
   # @TODO: The "when" condition is not getting picked up, so let's ignore errors here for now. See #422.
   ignore_errors: true
-  tags: [install-devmaster]
+  tags: [runtime]
 
 - name: Devmaster | Run all outstanding tasks
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
-  command: "{{ drush_bin_path }} @hostmaster hosting-tasks"
+  command: "{{ drush_bin_path }} @hostmaster hosting-tasks --force"
   register: devshop_ansible_command_output
   changed_when: "devshop_ansible_command_output.stdout != empty_string"
-  tags: [install-devmaster]
+  tags: [runtime]
 
 - name: DevShop.Support | Save License Key
   become: true
@@ -24,7 +24,7 @@
   become_method: "{{ ansible_become_method_aegir }}"
   command: "{{ drush_bin_path }} @hostmaster vset devshop_support_license_key {{ devshop_support_license_key }}"
   when: devshop_support_license_key != empty_string
-  tags: [install-devmaster]
+  tags: [runtime]
 
 - name: DevShop.Support | Validate License Key to setup support modules.
   become: true
@@ -32,7 +32,7 @@
   become_method: "{{ ansible_become_method_aegir }}"
   command: "{{ drush_bin_path }} @hostmaster hosting-devshop_support"
   when: devshop_support_license_key != empty_string
-  tags: [install-devmaster]
+  tags: [runtime]
 
 - name: Ensure hosting-dispatch crontab is setup
   become: true
@@ -41,7 +41,7 @@
   command: "{{ drush_bin_path }} @hostmaster hosting-setup -y"
   register: devshop_ansible_command_output
   changed_when: "devshop_ansible_command_output.stdout != empty_string"
-  tags: [install-devmaster]
+  tags: [runtime]
 
 - name: Save SSH key as variable
   shell: "{{ drush_bin_path }} @hostmaster vset devshop_public_key \"$(cat ~/.ssh/id_rsa.pub)\" --yes"
@@ -50,7 +50,7 @@
   become_method: "{{ ansible_become_method_aegir }}"
   register: devshop_ansible_command_output
   changed_when: "devshop_ansible_command_output.stdout != empty_string"
-  tags: [install-devmaster]
+  tags: [runtime]
 
 - name: Clear the drush cache.
   command: "{{ drush_bin_path }} cc drush"
@@ -59,7 +59,7 @@
   become_method: "{{ ansible_become_method_aegir }}"
   register: devshop_ansible_command_output
   changed_when: "devshop_ansible_command_output.stdout != empty_string"
-  tags: [install-devmaster]
+  tags: [runtime]
 
 - name: Set git user name
   git_config:
@@ -69,7 +69,7 @@
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
-  tags: [install-devmaster]
+  tags: [runtime]
 
 - name: Set git user email
   git_config:
@@ -79,7 +79,7 @@
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
-  tags: [install-devmaster]
+  tags: [runtime]
 
 - name: Set git config push.default simple
   git_config:
@@ -89,4 +89,4 @@
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
-  tags: [install-devmaster]
+  tags: [runtime]
