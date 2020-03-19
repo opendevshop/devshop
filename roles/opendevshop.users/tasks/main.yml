@@ -39,6 +39,7 @@
   yum:
     name: "{{ devshop_prerequisite_packages }}"
     state: present
+    enablerepo: "{{ devshop_prerequisite_enablerepo }}"
 
 - name: Populate service facts
   service_facts:
@@ -68,10 +69,8 @@
     group: "{{ aegir_user_name }}"
     owner: "{{ aegir_user_name }}"
 
-# @TODO: Determine WHY centos needs this.
-# Aegir"s CentOS installation requires this.
-- name: Set appropriate permissions for Aegir"s home folder.
-  command: chmod -R 755 {{ aegir_user_home }}
+- name: Ensure /var/aegir has correct permissions.
+  command: chmod 755 {{ aegir_user_home }}
   when: ansible_os_family == "RedHat"
 
 - name: Create aegir's config folder
