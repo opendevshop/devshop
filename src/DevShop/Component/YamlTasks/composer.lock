@@ -1295,16 +1295,16 @@
         },
         {
             "name": "provision-ops/power-process",
-            "version": "1.4.0-rc3",
+            "version": "1.4.0-rc4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/provision-ops/power-process.git",
-                "reference": "85a064a4b11b6ed38ce44b788511de22fa703489"
+                "reference": "23d39b1272d5bbfb6965ec4725805d93fb89ced7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/provision-ops/power-process/zipball/85a064a4b11b6ed38ce44b788511de22fa703489",
-                "reference": "85a064a4b11b6ed38ce44b788511de22fa703489",
+                "url": "https://api.github.com/repos/provision-ops/power-process/zipball/23d39b1272d5bbfb6965ec4725805d93fb89ced7",
+                "reference": "23d39b1272d5bbfb6965ec4725805d93fb89ced7",
                 "shasum": ""
             },
             "require": {
@@ -1336,7 +1336,7 @@
                 }
             ],
             "description": "A more powerful Process component.",
-            "time": "2020-03-19T00:35:54+00:00"
+            "time": "2020-03-19T00:47:51+00:00"
         },
         {
             "name": "psr/container",
