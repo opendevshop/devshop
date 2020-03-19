@@ -1,5 +1,5 @@
-abbr -a -U -- c composer
-abbr -a -U -- dc docker-compose
-abbr -a -U -- gd 'git diff'
-abbr -a -U -- gs 'git status'
-abbr -a -U -- r bin/robo
+abbr -a -- c composer
+abbr -a  -- dc docker-compose
+abbr -a  -- gd 'git diff'
+abbr -a  -- gs 'git status'
+abbr -a  -- r bin/robo
