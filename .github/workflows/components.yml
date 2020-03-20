@@ -1,6 +1,9 @@
 name: "Components"
 
-on: [push]
+on:
+  push:
+  pull_request:
+    types: [opened, synchronize]
 
 jobs:
   yaml-tasks:
