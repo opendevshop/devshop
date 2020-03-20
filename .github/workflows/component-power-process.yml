@@ -12,6 +12,10 @@ jobs:
         # - '5.6'
         - '7.1'
 
+    # Set working directory for entire file. https://github.community/t5/GitHub-Actions/use-working-directory-for-entire-job/td-p/36759
+    env:
+      working-directory: ./src/DevShop/Component/PowerProcess
+
     name: Test on PHP ${{ matrix.php-versions }}
     steps:
     - uses: actions/checkout@v1
@@ -40,11 +44,14 @@ jobs:
 
     - name: Validate composer.json and composer.lock
       run: composer validate
+      working-directory: ${{env.working-directory}}
 
     - name: Install dependencies
       run: composer install --prefer-dist --no-progress --no-suggest
+      working-directory: ${{env.working-directory}}
 
     - name: Test Power Process
+      working-directory: ${{env.working-directory}}
       run: |
         ./run composer install --prefer-dist --no-progress --no-suggest
         ./demo.php
