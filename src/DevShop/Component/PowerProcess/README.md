@@ -35,11 +35,11 @@ $input = new \Symfony\Component\Console\Input\ArgvInput($argv);
 $output = new \Symfony\Component\Console\Output\ConsoleOutput();
 
 // Replace Style with your own to change the output style.
-$io = new ProvisionOps\Tools\Style($input, $output);
+$io = new DevShop\Component\PowerProcess\PowerProcessStyle($input, $output);
 
 // Run any command.
 $command = 'ls -la';
-$process = new ProvisionOps\Tools\PowerProcess($command, $io);
+$process = new DevShop\Component\PowerProcess\PowerProcess($command, $io);
 $process->run();
 ```
 
