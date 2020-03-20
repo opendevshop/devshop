@@ -1,12 +1,18 @@
 {
-    "name": "provision-ops/power-process",
-    "description": "A more powerful Process component.",
+    "name": "devshop/power-process",
     "type": "library",
+    "description": "Enhanced Symfony Process component.",
+    "keywords": [],
+    "homepage": "https://getdevshop.com",
     "license": "MIT",
     "authors": [
         {
             "name": "Jon Pugh",
             "email": "jon@thinkdrop.net"
+        },
+        {
+            "name": "DevShop Community",
+            "homepage": "https://github.com/opendevshop/devshop/graphs/contributors"
         }
     ],
     "require": {
