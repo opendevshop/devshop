@@ -1,9 +1,9 @@
-name: Tests
+name: "Components"
 
 on: [push]
 
 jobs:
-  build:
+  power-process:
 
     runs-on: ubuntu-latest
     strategy:
