@@ -2,6 +2,7 @@ name: "Components"
 
 on:
   push:
+    branches: 1.x
   pull_request:
     types: [opened, synchronize]
 
