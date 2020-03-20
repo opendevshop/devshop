@@ -1,0 +1,35 @@
+{
+    "name": "provision-ops/power-process",
+    "description": "A more powerful Process component.",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jon Pugh",
+            "email": "jon@thinkdrop.net"
+        }
+    ],
+    "require": {
+        "php": ">=5.5.9|>=7.0.8",
+        "symfony/process": "^3",
+        "consolidation/robo": "^1"
+    },
+    "conflict": {
+        "symfony/console": ">=4",
+        "symfony/process": ">=4"
+    },
+    "autoload": {
+        "psr-4": {
+            "ProvisionOps\\Tools\\": "src/"
+        }
+    },
+    "config": {
+        "bin-dir": "bin",
+        "platform": {
+            "php": "7.1.3"
+        }
+    },
+    "bin": [
+        "run"
+    ]
+}
