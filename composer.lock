@@ -619,10 +619,15 @@
         {
             "name": "devshop/git-split",
             "version": "dev-component/composer/yaml-tasks",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/devshop-packages/git-split.git",
+                "reference": "0e92d7471e9fe60aca4bb54fec54dd4e40b3dc9b"
+            },
             "dist": {
                 "type": "path",
-                "url": "src/DevShop/Component/GitSplit",
-                "reference": "aac368d83eeda3a5d5878bf898987c4dc3665ad2",
+                "url": "https://api.github.com/repos/devshop-packages/git-split/zipball/0e92d7471e9fe60aca4bb54fec54dd4e40b3dc9b",
+                "reference": "0e92d7471e9fe60aca4bb54fec54dd4e40b3dc9b",
                 "shasum": null
             },
             "require": {
@@ -663,10 +668,15 @@
         {
             "name": "devshop/yaml-tasks",
             "version": "dev-component/composer/yaml-tasks",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/devshop-packages/yaml-tasks.git",
+                "reference": "604288a8bf0ab11a3bd91d96a9a424392eba2bd3"
+            },
             "dist": {
                 "type": "path",
-                "url": "src/DevShop/Component/YamlTasks",
-                "reference": "34612aeb34aa965ed894f2af9529b9f83f1f837e",
+                "url": "https://api.github.com/repos/devshop-packages/yaml-tasks/zipball/604288a8bf0ab11a3bd91d96a9a424392eba2bd3",
+                "reference": "604288a8bf0ab11a3bd91d96a9a424392eba2bd3",
                 "shasum": null
             },
             "require": {
