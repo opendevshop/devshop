@@ -417,8 +417,8 @@ class RoboFile extends \Robo\Tasks {
       $env_build['DEVSHOP_USER_UID_ARG'] = trim(shell_exec('id -u'));
     }
 
-    $provision_io = new \ProvisionOps\Tools\Style($this->input(), $this->output());
-    $process = new \ProvisionOps\Tools\PowerProcess('docker-compose build --pull --no-cache', $provision_io);
+    $provision_io = new \DevShop\Component\PowerProcess\PowerProcessStyle($this->input(), $this->output());
+    $process = new \DevShop\Component\PowerProcess\PowerProcess('docker-compose build --pull --no-cache', $provision_io);
     $process->setEnv($env_build);
     $process->disableOutput();
     $process->setTimeout(null);
@@ -617,8 +617,8 @@ class RoboFile extends \Robo\Tasks {
 
       if (!empty($cmd)) {
         foreach ($cmd as $command) {
-          $provision_io = new \ProvisionOps\Tools\Style($this->input, $this->output);
-          $process = new \ProvisionOps\Tools\PowerProcess($command, $provision_io);
+          $provision_io = new \DevShop\Component\PowerProcess\PowerProcessStyle($this->input, $this->output);
+          $process = new \DevShop\Component\PowerProcess\PowerProcess($command, $provision_io);
           $process->setEnv($env_run);
           $isTty = !empty($_SERVER['XDG_SESSION_TYPE']) && $_SERVER['XDG_SESSION_TYPE'] == 'tty';
           $process->setTty($isTty);
@@ -936,8 +936,8 @@ class RoboFile extends \Robo\Tasks {
     $is_tty = !empty($_SERVER['XDG_SESSION_TYPE']) && $_SERVER['XDG_SESSION_TYPE'] == 'tty';
     $no_tty = !$is_tty? '-T': '';
     $command = "docker-compose exec $no_tty --user $user devshop /usr/share/devshop/tests/devshop-tests.sh";
-    $provision_io = new \ProvisionOps\Tools\Style($this->input, $this->output);
-    $process = new \ProvisionOps\Tools\PowerProcess($command, $provision_io);
+    $provision_io = new \DevShop\Component\PowerProcess\PowerProcessStyle($this->input, $this->output);
+    $process = new \DevShop\Component\PowerProcess\PowerProcess($command, $provision_io);
 
     $process->setTty(!empty($_SERVER['XDG_SESSION_TYPE']) && $_SERVER['XDG_SESSION_TYPE'] == 'tty');
 

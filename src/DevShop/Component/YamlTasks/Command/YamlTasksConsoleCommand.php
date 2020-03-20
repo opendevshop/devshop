@@ -3,8 +3,8 @@
 namespace DevShop\Component\YamlTasks\Command;
 
 use Github\Exception\RuntimeException;
-use ProvisionOps\Tools\PowerProcess as Process;
-use ProvisionOps\Tools\Style;
+use DevShop\Component\PowerProcess\PowerProcess as Process;
+use DevShop\Component\PowerProcess\PowerProcessStyle;
 use Guzzle\Http\Message\Response;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
