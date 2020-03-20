@@ -7,6 +7,7 @@ use Robo\Common\OutputAwareTrait;
 use Robo\Common\TimeKeeper;
 use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Process\Process as BaseProcess;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 class PowerProcess extends BaseProcess {
 
@@ -19,9 +20,9 @@ class PowerProcess extends BaseProcess {
     public $duration = '';
 
     /**
-     * @param $io PowerProcessStyle
+     * @param $io SymfonyStyle
      */
-    public function setIo(PowerProcessStyle $io) {
+    public function setIo(SymfonyStyle $io) {
         $this->io = $io;
     }
 
