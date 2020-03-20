@@ -1,6 +1,6 @@
 <?php
 
-namespace ProvisionOps\Tools;
+namespace DevShop\Component\PowerProcess;
 
 use Psr\Log\LoggerAwareTrait;
 use Robo\Common\OutputAwareTrait;
@@ -11,7 +11,7 @@ use Symfony\Component\Process\Process as BaseProcess;
 class PowerProcess extends BaseProcess {
 
     /**
-     * @var Style
+     * @var PowerProcessStyle
      */
     public $io;
     public $successMessage = 'Process Succeeded';
@@ -19,16 +19,16 @@ class PowerProcess extends BaseProcess {
     public $duration = '';
 
     /**
-     * @param $io Style
+     * @param $io PowerProcessStyle
      */
-    public function setIo(Style $io) {
+    public function setIo(PowerProcessStyle $io) {
         $this->io = $io;
     }
 
     /**
      * PowerProcess constructor.
      * @param string $commandline
-     * @param Style $io
+     * @param PowerProcessStyle $io
      * @param null $cwd
      * @param array|null $env
      * @param null $input

@@ -1,6 +1,6 @@
 <?php
 
-namespace ProvisionOps\Tools;
+namespace DevShop\Component\PowerProcess;
 
 use Drupal\Console\Core\Style\DrupalStyle;
 use Symfony\Component\Console\Formatter\OutputFormatter;
@@ -11,7 +11,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Console\Terminal;
 
-class Style extends SymfonyStyle {
+class PowerProcessStyle extends SymfonyStyle {
 
     /**
      * @var BufferedOutput
