@@ -164,7 +164,7 @@ class YamlTasksConsoleCommand extends BaseCommand
     public function initialize(InputInterface $input, OutputInterface $output)
     {
 
-        $this->io = new Style($input, $output);
+        $this->io = new SymfonyStyle($input, $output);
         $this->input = $input;
         $this->output = $input;
         $this->logger = $this->io;
