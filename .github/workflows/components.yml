@@ -5,14 +5,14 @@ on:
   pull_request:
     types: [opened, synchronize]
 
-# Set working directory for entire file. https://github.community/t5/GitHub-Actions/use-working-directory-for-entire-job/td-p/36759
-env:
-  working-directory: ./src/DevShop/Component/YamlTasks
-
 jobs:
   yaml-tasks:
 
     runs-on: ubuntu-latest
+
+    # Set working directory for entire file. https://github.community/t5/GitHub-Actions/use-working-directory-for-entire-job/td-p/36759
+    env:
+      working-directory: ./src/DevShop/Component/YamlTasks
 
     steps:
     - uses: actions/checkout@v1
