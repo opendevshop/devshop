@@ -24,6 +24,11 @@
         "symfony/console": ">=4",
         "symfony/process": ">=4"
     },
+    "extra": {
+        "branch-alias": {
+            "dev-1.x": "1.6-dev"
+        }
+    },
     "autoload": {
         "psr-4": {
             "DevShop\\Component\\PowerProcess\\": ""
@@ -37,5 +42,6 @@
     },
     "bin": [
         "run"
-    ]
+    ],
+    "minimum-stability": "dev"
 }
