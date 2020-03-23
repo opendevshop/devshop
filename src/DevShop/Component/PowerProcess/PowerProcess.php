@@ -20,9 +20,9 @@ class PowerProcess extends BaseProcess {
     public $duration = '';
 
     /**
-     * @param $io SymfonyStyle
+     * @param $io PowerProcessStyle
      */
-    public function setIo(SymfonyStyle $io) {
+    public function setIo(PowerProcessStyle $io) {
         $this->io = $io;
     }
 
@@ -36,7 +36,7 @@ class PowerProcess extends BaseProcess {
      * @param int $timeout
      * @param array $options
      */
-    public function __construct($commandline, $io, $cwd = null, array $env = null, $input = null, $timeout = 60, array $options = array())
+    public function __construct($commandline, PowerProcessStyle $io, $cwd = null, array $env = null, $input = null, $timeout = 60, array $options = array())
     {
         $this->setIo($io);
 

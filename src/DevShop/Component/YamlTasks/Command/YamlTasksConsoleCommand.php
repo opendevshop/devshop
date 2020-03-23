@@ -3,8 +3,8 @@
 namespace DevShop\Component\YamlTasks\Command;
 
 use Github\Exception\RuntimeException;
-use DevShop\Component\PowerProcess\PowerProcess as Process;
-use DevShop\Component\PowerProcess\PowerProcessStyle as Style;
+use DevShop\Component\PowerProcess\PowerProcess;
+use DevShop\Component\PowerProcess\PowerProcessStyle;
 
 use Guzzle\Http\Message\Response;
 use Symfony\Component\Console\Input\InputArgument;
@@ -31,7 +31,7 @@ class YamlTasksConsoleCommand extends BaseCommand
     protected $excludeFileTemp;
 
     /**
-     * @var SymfonyStyle
+     * @var PowerProcessStyle
      */
     protected $io;
 
@@ -165,7 +165,7 @@ class YamlTasksConsoleCommand extends BaseCommand
     public function initialize(InputInterface $input, OutputInterface $output)
     {
 
-        $this->io = new SymfonyStyle($input, $output);
+        $this->io = new PowerProcessStyle($input, $output);
         $this->input = $input;
         $this->output = $input;
         $this->logger = $this->io;
@@ -391,7 +391,7 @@ class YamlTasksConsoleCommand extends BaseCommand
                     $command_view,
                 );
 
-                $process = new Process($command, $this->io);
+                $process = new PowerProcess($command, $this->io);
                 $process->setTimeout(null);
                 $process->setIo($this->io);
 
