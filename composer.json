@@ -23,7 +23,7 @@
         "devshop/yaml-tasks": "*",
         "devshop/git-split": "*",
         "cpliakas/git-wrapper": "^1.0",
-        "drush/drush": "^8"
+        "drush/drush": "^8 || ^9"
     },
     "require-dev": {
         "composer/composer": "^1.9"
