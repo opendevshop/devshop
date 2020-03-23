@@ -1,5 +1,9 @@
 # Power Process Changelog
 
+### 1.6.x
+
+Migrated to `devshop/power-process`!
+
 ## 2.x - March 17 2020
 
 ### Branch: `master`
