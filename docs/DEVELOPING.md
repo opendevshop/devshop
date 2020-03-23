@@ -85,3 +85,14 @@ This list is changing rapidly. We'll try to keep it up to date with status.
 #### Component: GitSplit
 
 1. GitSplit - Composer command and bin script to run splitsh-lite. This is used to split the monorepo.
+
+## Follow Symfony
+
+Symfony solved how to build a big repo with many components.
+
+Refer to Symfony/symfony codebase for examples.
+
+Useful examples include:
+
+- Commit to add a new Component: https://github.com/symfony/symfony/commit/053de25edffaf39a6d7e16d0badbedf79f89a8e3#diff-b5d0ee8c97c7abd7e3fa29b9a27d1780
+- 
