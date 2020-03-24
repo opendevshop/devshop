@@ -72,9 +72,9 @@ class PowerProcessStyle extends SymfonyStyle {
                 $message
             );
         }
-        $this->io->text($message);
+        $this->text($message);
         if ($newLine) {
-            $this->io->newLine();
+            $this->newLine();
         }
     }
 
@@ -122,7 +122,7 @@ class PowerProcessStyle extends SymfonyStyle {
      * @param $message
      * @param string $icon
      */
-    function helpBlock($message, $icon = ProvisionStyle::ICON_HELP) {
+    function helpBlock($message, $icon = self::ICON_HELP) {
         if (is_array($message)) {
             $message = implode("\n", $message);
         }
