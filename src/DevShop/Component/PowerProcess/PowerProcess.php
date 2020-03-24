@@ -6,6 +6,7 @@ use Psr\Log\LoggerAwareTrait;
 use Robo\Common\OutputAwareTrait;
 use Robo\Common\TimeKeeper;
 use Symfony\Component\Console\Output\Output;
+use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process as BaseProcess;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -107,12 +108,24 @@ class PowerProcess extends BaseProcess {
     }
 
     /**
-     * Provides compatibility with Process 3.x.
-     * @inheritDoc
+     * Runs the process.
+     *
+     * This is identical to run() except that an exception is thrown if the process
+     * exits with a non-zero exit code.
+     *
+     * @return $this
+     *
+     * @throws RuntimeException       if PHP was compiled with --enable-sigchild and the enhanced sigchild compatibility mode is not enabled
+     * @throws ProcessFailedException if the process didn't terminate successfully
+     *
+     * @final since version 3.3
      */
     public function mustRun(callable $callback = null/*, array $env = []*/) {
-        $env = 1 < \func_num_args() ? func_get_arg(1) : null;
-        parent::mustRun($callback, $env);
+        $env = 1 < \func_num_args() ? func_get_arg(1) : [];
+        if (0 !== $this->run($callback, $env)) {
+            throw new ProcessFailedException($this);
+        }
+        return $this;
     }
 
     /**
