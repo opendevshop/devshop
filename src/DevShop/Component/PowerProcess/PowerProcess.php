@@ -64,8 +64,11 @@ class PowerProcess extends BaseProcess {
      *
      * @final
      */
-    public function run($callback = null, array $env = [])
+    public function run($callback = null/*, array $env = []*/)
     {
+        // Get $env from function arguments.
+        $env = 1 < \func_num_args() ? func_get_arg(1) : null;
+
         $this->io->writeln(" <comment>$</comment> {$this->getCommandLine()} <fg=black>Output:/path/to/file</>");
 
         $timer = new TimeKeeper();
@@ -105,27 +108,6 @@ class PowerProcess extends BaseProcess {
 
         return $exit;
 
-    }
-
-    /**
-     * Runs the process.
-     *
-     * This is identical to run() except that an exception is thrown if the process
-     * exits with a non-zero exit code.
-     *
-     * @return $this
-     *
-     * @throws RuntimeException       if PHP was compiled with --enable-sigchild and the enhanced sigchild compatibility mode is not enabled
-     * @throws ProcessFailedException if the process didn't terminate successfully
-     *
-     * @final since version 3.3
-     */
-    public function mustRun(callable $callback = null/*, array $env = []*/) {
-        $env = 1 < \func_num_args() ? func_get_arg(1) : [];
-        if (0 !== $this->run($callback, $env)) {
-            throw new ProcessFailedException($this);
-        }
-        return $this;
     }
 
     /**
