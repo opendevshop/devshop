@@ -29,9 +29,10 @@ $process = new DevShop\Component\PowerProcess\PowerProcess($command, $io);
 $process->mustRun();
 
 // Output comes back in real-time.
-$command = 'ping packagist.org -c 5';
+echo "Using PowerProcess::run() method so failing commands won't cause errors:";
+$command = 'ping packagist.orgggg -c 2';
 $process = new DevShop\Component\PowerProcess\PowerProcess($command, $io);
-$process->mustRun();
+$process->run();
 
 $command = 'rm -rf /';
 $process = new DevShop\Component\PowerProcess\PowerProcess($command, $io);
