@@ -18,6 +18,7 @@ class PowerProcessStyle extends SymfonyStyle {
      */
     protected $bufferedOutput;
     protected $input;
+    protected $output;
     protected $lineLength;
 
     /**
@@ -36,6 +37,7 @@ class PowerProcessStyle extends SymfonyStyle {
     public function __construct(InputInterface $input, OutputInterface $output)
     {
         $this->input = $input;
+        $this->output = $output;
         $this->bufferedOutput = new BufferedOutput($output->getVerbosity(), false, clone $output->getFormatter());
         // Windows cmd wraps lines as soon as the terminal width is reached, whether there are following chars or not.
         $width = (new Terminal())->getWidth() ?: self::MAX_LINE_LENGTH;
@@ -225,5 +227,14 @@ class PowerProcessStyle extends SymfonyStyle {
      */
     public function pause($text = 'Press ENTER to continue...') {
         $this->askHidden($text, function () {return TRUE;});
+    }
+
+    /**
+     * {@inheritdoc}
+     * @TODO: Remove? Not sure why this is not working in other projects.
+     */
+    public function isDebug()
+    {
+        return $this->output->isDebug();
     }
 }
