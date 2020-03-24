@@ -64,8 +64,11 @@ class PowerProcess extends BaseProcess {
      *
      * @final
      */
-    public function run($callback = null, array $env = [])
+    public function run($callback = null/*, array $env = []*/)
     {
+        // Get $env from function arguments.
+        $env = 1 < \func_num_args() ? func_get_arg(1) : null;
+
         $this->io->writeln(" <comment>$</comment> {$this->getCommandLine()} <fg=black>Output:/path/to/file</>");
 
         $timer = new TimeKeeper();
