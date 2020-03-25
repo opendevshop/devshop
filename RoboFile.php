@@ -427,6 +427,10 @@ class RoboFile extends \Robo\Tasks {
     // @TODO: Figure out why PowerProcess::mustRun() fails so miserably: https://github.com/opendevshop/devshop/pull/541/checks?check_run_id=518074346#step:7:45
     $process->run();
 
+    if ($process->getExitCode() != 0) {
+      throw new \Exception('Process failed: ' . $process->getExitCodeText());
+    }
+
   }
 
   /**
