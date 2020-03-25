@@ -714,6 +714,9 @@ BODY;
     protected function getTargetUrl($alternate_url = null)
     {
         // Return the alternate URL if it is present. If not, the command line option. (which defaults to the ENV var.)
-        return $alternate_url?: $this->input->getOption('status-url');
+        $url = $alternate_url?: $this->input->getOption('status-url');
+
+        // Switch link to use HTTPS, it is required by GitHub API.
+        return str_replace('http://', 'https://', $url);
     }
 }
