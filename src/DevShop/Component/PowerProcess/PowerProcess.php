@@ -62,12 +62,14 @@ class PowerProcess extends BaseProcess {
      * @throws RuntimeException When process stopped after receiving signal
      * @throws LogicException   In case a callback is provided and output has been disabled
      *
-     * @final
+     * @final since version 3.3
      */
-    public function run($callback = null/*, array $env = []*/)
+    public function run($callback = null, $env = [])
     {
-        // Get $env from function arguments.
-        $env = 1 < \func_num_args() ? func_get_arg(1) : null;
+        // Handle a null $env variable.
+        if (!array($env)) {
+          $env = [];
+        }
 
         $this->io->writeln(" <comment>$</comment> {$this->getCommandLine()} <fg=black>Output:/path/to/file</>");
 

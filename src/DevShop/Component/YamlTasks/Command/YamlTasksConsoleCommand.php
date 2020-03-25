@@ -119,7 +119,8 @@ class YamlTasksConsoleCommand extends BaseCommand
             'github-token',
             null,
             InputOption::VALUE_REQUIRED,
-            'An active github token. Create a new token at ' . $this->addTokenUrl
+            'An active github token. Create a new token at ' . $this->addTokenUrl,
+            !empty($_SERVER['GITHUB_TOKEN'])? $_SERVER['GITHUB_TOKEN']: null
         );
         $this->addOption(
             'ignore-dirty',
@@ -190,26 +191,8 @@ class YamlTasksConsoleCommand extends BaseCommand
         // Validate YML
         $this->loadTasksYml();
 
-        // Load Environment variables
-        $dotenv = new \Dotenv\Dotenv(__DIR__);
-        $dotenv->safeLoad(array(
-
-            // Current user's home directory
-            isset($_SERVER['HOME'])? $_SERVER['HOME']: '',
-
-            // Git repo holding the tasks file.
-            dirname($this->gitRepo->getRepositoryPath()),
-
-            // Current directory
-            getcwd(),
-        ));
-
-        // Look for token.
-        if (!empty($_SERVER['GITHUB_TOKEN'])) {
-            $token = $_SERVER['GITHUB_TOKEN'];
-        } else {
-            $token = $input->getOption('github-token');
-        }
+        // Load token.
+        $token = $input->getOption('github-token');
 
         // This is the actual SHA of the working copy clone.
         $this->repoSha = $this->gitRepo->getCurrentCommit();
