@@ -151,7 +151,8 @@ class YamlTasksConsoleCommand extends BaseCommand
             'status-url',
             null,
             InputOption::VALUE_OPTIONAL,
-            'The url used for the "Details" link on GitHub.com.'
+            'The url used for the "Details" link on GitHub.com.',
+            !empty($_SERVER['STATUS_URL'])? $_SERVER['STATUS_URL']: null
         );
         $this->addArgument(
             'filter',
