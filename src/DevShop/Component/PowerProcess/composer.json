@@ -26,6 +26,7 @@
     },
     "extra": {
         "branch-alias": {
+            "dev-component/yaml-tasks/env-fixes": "1.6-dev",
             "dev-1.x": "1.6-dev"
         }
     },
