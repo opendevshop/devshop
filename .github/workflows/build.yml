@@ -2,6 +2,7 @@ name: Build
 
 on:
  push:
+   branches: 1.x
  pull_request:
    types: [opened, synchronize]
  schedule:
@@ -64,7 +65,12 @@ jobs:
     - name: Install Composer dependencies
       run: composer install --prefer-dist --no-progress --no-suggest
 
-    # NOTE: The env vars shown below should be loaded into the Robo options automatically.
+    - name: Docker & Docker Compose Version
+      run: |
+        docker --version
+        docker-compose --version
+
+      # NOTE: The env vars shown below should be loaded into the Robo options automatically.
     # They are added to the command here for visibility.
     - name: Launch Server Container (${{ matrix.os }})
       run: |

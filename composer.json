@@ -17,24 +17,35 @@
         }
     ],
     "require": {
-        "knplabs/github-api": "^1.4",
-        "cpliakas/git-wrapper": "2.*",
-        "asm/php-ansible": "^2.0",
-        "mouf/nodejs-installer": "^1.0",
         "php": "^7.1",
-        "provision-ops/power-process": "^1.3"
+        "knplabs/github-api": "^1.4",
+        "mouf/nodejs-installer": "^1.0",
+        "devshop/yaml-tasks": "*",
+        "devshop/git-split": "*",
+        "cpliakas/git-wrapper": "^1.0",
+        "drush/drush": "^8"
     },
     "require-dev": {
+        "composer/composer": "^1.9"
     },
-    "authors": [
+    "autoload": {
+        "psr-0": { "DevShop": "src/" },
+        "autoload": {
+            "psr-4": {
+                "DevShop\\Component\\": "src/DevShop/Component/"
+            }
+        }
+    },
+    "repositories": [
         {
-            "name": "Jon Pugh",
-            "email": "jon@thinkdrop.net"
+            "type": "path",
+            "url": "src/DevShop/Component/GitSplit"
+        },
+        {
+            "type": "path",
+            "url": "src/DevShop/Component/YamlTasks"
         }
     ],
-    "autoload": {
-        "psr-0": { "DevShop": "src/" }
-    },
     "bin": [
         "scripts/devshop",
         "scripts/branch-or-tag"
@@ -46,18 +57,24 @@
         },
         "sort-packages:": "true"
     },
+    "extra": {
+        "git-split": {
+            "repos": {
+                "tests/test-repo": "https://github.com/devshop-packages/test-repo.git",
+                "devmaster": "https://github.com/opendevshop/devmaster.git",
+                "roles/opendevshop.apache": "https://github.com/opendevshop/ansible-role-apache.git",
+                "roles/opendevshop.devmaster": "https://github.com/opendevshop/ansible-role-devmaster.git",
+                "roles/opendevshop.users": "https://github.com/opendevshop/ansible-role-user.git",
+                "src/DevShop/Component/GitSplit": "https://github.com/devshop-packages/git-split.git",
+                "src/DevShop/Component/PowerProcess": "https://github.com/devshop-packages/power-process.git",
+                "src/DevShop/Component/YamlTasks": "https://github.com/devshop-packages/yaml-tasks.git"
+            }
+        }
+    },
     "minimum-stability": "dev",
     "prefer-stable": true,
     "scripts": {
-        "bin-install": [
-            "DevShop\\Composer::installBins"
-        ],
-        "split": [
-            "DevShop\\Composer::installBins",
-            "DevShop\\Composer::splitRepos"
-        ],
         "post-install-cmd": [
-            "DevShop\\Composer::installBins"
         ],
         "pre-update-cmd": [
         ],
