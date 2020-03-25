@@ -259,7 +259,9 @@ class YamlTasksConsoleCommand extends BaseCommand
             try {
                 $commit = $this->githubClient->repository()->commits()->show($this->repoOwner, $this->repoName, $this->repoSha);
             } catch (RuntimeException $exception) {
-                throw new RuntimeException("Commit not found in the remote repository. YamlTasks cannot post commit status until the commits are pushed to the remote repository.");
+
+              // @TODO This can fail because the commits don't exist, or from an SSL cert problem. Change the message for each.
+              throw new RuntimeException("Commit not found in the remote repository. YamlTasks cannot post commit status until the commits are pushed to the remote repository. The message was: " . $exception->getMessage());
             }
 
             $this->say("GitHub Commit URL: <comment>" . $commit['html_url'] . "</>");
