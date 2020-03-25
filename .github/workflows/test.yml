@@ -1,7 +1,9 @@
 name: Test
 
-on: 
- push:
+on:
+  push:
+  pull_request:
+    types: [opened, synchronize]
 
 env:
   ANSIBLE_VERBOSITY: 2

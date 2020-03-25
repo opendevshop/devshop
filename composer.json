@@ -1,6 +1,21 @@
 {
-    "name": "devshop/cli",
-    "description": "Command Line interface for DevShop",
+    "name": "devshop/devshop",
+    "type": "library",
+    "description": "The DevShop DevOps Framework",
+    "keywords": ["framework", "devops", "platform", "hosting"],
+    "homepage": "https://getdevshop.com",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jon Pugh",
+            "email": "jon@thinkdrop.net",
+            "role": "Author"
+        },
+        {
+            "name": "DevShop Community",
+            "homepage": "https://github.com/opendevshop/devshop/graphs/contributors"
+        }
+    ],
     "require": {
         "knplabs/github-api": "^1.4",
         "cpliakas/git-wrapper": "2.*",
