@@ -29,7 +29,8 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-1.x": "1.6-dev"
+            "dev-1.x": "1.6-dev",
+            "dev-component/yaml-tasks/env-fixes": "1.6-dev"
         },
         "class": "DevShop\\Component\\YamlTasks\\Composer\\Plugin"
     },
