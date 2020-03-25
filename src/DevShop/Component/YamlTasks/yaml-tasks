@@ -40,9 +40,11 @@ if (!class_exists(Application::class)) {
     exit(1);
 }
 
-if (!class_exists(Composer::class)) {
+// If Composer itself is in the autoloader, use the ComposerCommand.
+if (class_exists(Composer::class)) {
     $command = new YamlTasksComposerCommand();
 }
+// Otherwise use ConsoleCommand.
 else {
     $command = new YamlTasksConsoleCommand();
 }
