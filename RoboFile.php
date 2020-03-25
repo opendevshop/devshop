@@ -126,7 +126,7 @@ class RoboFile extends \Robo\Tasks {
   private function generateEnvironmentArgs(array $opts, $new = false) {
 
     // Convert opts to environment vars.
-    $environment = $this->generateEnvironment($opts);
+    $environment = $this->generateEnvironment($opts, $_ENV);
 
     // Load default environment, either empty or from existing.
     $return_env = $new? []: $environment;
