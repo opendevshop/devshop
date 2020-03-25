@@ -399,7 +399,7 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
       '#default_value' => $project->settings->default_environment['solr_server'],
     );
   }
-  
+
   // Force the servers for this project's environments
   $form['project']['settings']['default_environment']['force_default_servers'] = array(
     '#title' => t('Force new environments to use these servers.'),
@@ -430,7 +430,7 @@ function devshop_projects_validate($node, &$form, &$form_state) {
       '%url' => $form_state['values']['project']['base_url'],
     )));
   }
-  
+
   // "Environment Domain Name Pattern" (Base URL)
   // Ensure @environment is included.
   if (strpos($form_state['values']['project']['base_url'], '@environment') === FALSE ) {
@@ -789,7 +789,7 @@ HTML;
  * "Environment" Settings form.
  */
 function devshop_projects_form_site_node_form_alter(&$form, &$form_state, $form_id) {
-  
+
   $node = $form['#node'];
 
   $form['environment'] = array(
@@ -894,7 +894,7 @@ function devshop_projects_form_site_node_form_alter(&$form, &$form_state, $form_
   $form['http_basic_auth']['#group'] = 'environment_settings';
   $form['http_basic_auth']['#title'] = t('Password Protection');
   $form['hosting_logs']['#group'] = 'environment_settings';
-  
+
   // Have to add new element for Domains because of the way drupal ajax callback works.
   $form['domains'] = array(
     '#title' => t('Domain Names'),
@@ -905,7 +905,7 @@ function devshop_projects_form_site_node_form_alter(&$form, &$form_state, $form_
   $form['domains']['aliases_wrapper']['#type'] = 'container';
   $form['domains']['aliases_wrapper']['add_alias']['#ajax']['callback'] = 'devshop_hosting_alias_add_alias_callback';
   unset($form['aliases_wrapper']);
-  
+
   $form['environment']['settings']['client'] = $form['client'];
   $form['environment']['settings']['client']['#tree'] = FALSE;
   unset($form['client']);
@@ -913,7 +913,7 @@ function devshop_projects_form_site_node_form_alter(&$form, &$form_state, $form_
   $form['environment']['settings']['site_language'] = $form['site_language'];
   $form['environment']['settings']['site_language']['#tree'] = FALSE;
   unset($form['site_language']);
-  
+
   if (isset($form['hosting_ssl_wrapper'])) {
     $form['hosting_ssl_wrapper']['#group'] = 'environment_settings';
     $form['hosting_ssl_wrapper']['#title'] = t('HTTPS');
@@ -934,7 +934,7 @@ function devshop_projects_form_site_node_form_alter(&$form, &$form_state, $form_
       '#value' => $environment->settings->install_method,
     );
   }
-  
+
   // Add our own submit handler.
   $form['actions']['submit']['#submit'][] = 'devshop_projects_environment_settings_submit';
 
@@ -991,7 +991,7 @@ function devshop_projects_create_environment_form(&$form, &$form_state, $form_id
   else {
     $pattern = variable_get('devshop_project_environment_url_pattern', '@project.@environment.@hostname');
   }
-  
+
   $labels = explode('@environment', strtr($pattern, array(
     '@project' => $project_node->title,
     '@hostname' => $_SERVER['SERVER_NAME'],
@@ -1225,6 +1225,20 @@ function devshop_projects_create_environment_form(&$form, &$form_state, $form_id
     ),
   );
 
+  $form['install_method']['import_files'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Path to Files Snapshot Directory'),
+    '#description' =>
+      t('Enter an absolute path to a files snapshot directory (such as /var/aegir/backups/files-snapshot/).') .
+      '<span class="text-danger">' . t('This string is stored in plain text. Use with caution.') . '</span>',
+    '#weight' => -98,
+    '#states' => array(
+      'visible' => array(
+        ':input[name="install_method[method]"]' => array('value' => 'import'),
+      ),
+    ),
+  );
+
   $form['server_stack'] = array(
     '#type' => 'fieldset',
     '#title' => t('Server Stack'),
@@ -1355,7 +1369,7 @@ function devshop_prepare_platform_node($project, $environment_name, $git_ref, $w
   $platform_node = new stdClass();
   $platform_node->type = 'platform';
   $platform_node->title = $project->name . '_' . $environment_name;
-  
+
   // Specify GIT Url for hosting_git.module
   if (empty($git_remote)) {
     $platform_node->git['repo_url'] = $project->git_url;
@@ -1376,8 +1390,8 @@ function devshop_prepare_platform_node($project, $environment_name, $git_ref, $w
   else {
     $platform_node->git['pull_method'] = HOSTING_GIT_PULL_DISABLED;
   }
-  
-  
+
+
   // Determine which web server to use.
   // If no web server was set and project has a default, make sure we set it.
   if (empty($web_server) && !empty($project->settings->default_environment['web_server'])) {

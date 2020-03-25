@@ -548,13 +548,27 @@ function drush_devshop_provision_post_provision_install() {
       }
     }
 
-    // Import the file
+    // Import the database file
     $alias = d()->name;
     $command = "drush {$alias} sqlq 'SOURCE {$file_to_import}'";
     provision_process($command, NULL, dt('Importing database file...'));
     provision_process('drush cc drush', NULL, 'Clearing drush caches');
     devshop_drush_process_cache_clear($alias);
     provision_process("drush {$alias} sqlq 'SHOW TABLES'", NULL, dt('Show Tables'));
+
+    // Import files snapshot, just rsync or cp over
+    // @todo Make work with different sources, local tar, tgz, or http:// etc.
+    // @todo Exclude non-essential files directories e.g. css, php, js etc.
+    if ($import_files_path = d()->environment_settings['install_method']['import_files']) {
+      provision_process("drush --yes rsync {$import_files_path} {$alias}:%files", NULL, dt('Importing files snapshot...'));
+      $files_path = d()->site_path . '/files/';
+      // Recursively chmod/chown all the files.
+      // Overriding this https://www.drupal.org/node/874716
+      provision_process("chown --recursive :apache {$files_path}");
+      provision_process("chmod --recursive 2770 {$files_path}");
+      provision_process("ls -al {$files_path}");
+
+    }
   }
 }
 
