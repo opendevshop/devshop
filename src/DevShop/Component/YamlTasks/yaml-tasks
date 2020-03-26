@@ -36,18 +36,12 @@ if (
 }
 
 if (!class_exists(Application::class)) {
-    fwrite(STDERR, 'You need the "symfony/console" component in order to run the git-split.'.PHP_EOL);
+    fwrite(STDERR, 'You need the "symfony/console" component in order to run yaml-tasks.'.PHP_EOL);
     exit(1);
 }
 
-// If Composer itself is in the autoloader, use the ComposerCommand.
-if (class_exists(Composer::class)) {
-    $command = new YamlTasksComposerCommand();
-}
-// Otherwise use ConsoleCommand.
-else {
-    $command = new YamlTasksConsoleCommand();
-}
+// This stand-alone bin file does not use Composer, so it must use the Console command class.
+$command = new YamlTasksConsoleCommand();
 
 (new Application())->add($command)
     ->getApplication()
