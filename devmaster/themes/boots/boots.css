@@ -989,9 +989,14 @@ div.hosting-task-retry form, div.hosting-task-retry form input {
 }
 
 pre.ansi_box {
-    padding: 1.25em;
+    padding: 1.25em 1.25em 1.25em 5em;
     white-space: pre-wrap;
     line-height: 120%;
+}
+pre.ansi_box .line-number {
+    color: silver;
+    width: 5em;
+    float: left;
 }
 
 .errors-table td > div {
