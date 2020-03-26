@@ -246,6 +246,10 @@ class YamlTasksConsoleCommand extends BaseCommand
         $this->say("Git Commit: <comment>{$this->gitRepo->getCurrentCommit()}</comment>");
         $this->say("Tasks File: <comment>{$this->tasksFilePath}</comment>");
 
+        if ($this->getTargetUrl()) {
+            $this->say("Target URL: <comment>{$this->getTargetUrl()}</comment>");
+        }
+
         // Lookup composer bin path and add to PATH if it is not there already.
         $composer_bin_path = $this->workingDir . '/' . (!empty($this->config->config->{"bin-dir"})? $this->config->config->{"bin-dir"}: 'vendor/bin');
         $this->say("Composer Bin Path: <comment>$composer_bin_path</comment>");
