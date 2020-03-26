@@ -408,16 +408,16 @@ class YamlTasksConsoleCommand extends BaseCommand
 
                 // If there is a target URL, print it.
                 if ($this->getTargetUrl()) {
-                  $title = "Running task <fg=white>$task_name</>  -  {$this->getTargetUrl()}#{$task_name}";
+                    $title = "Running task <fg=white>$task_name</>  -  {$this->getTargetUrl()}#{$task_name}";
                 }
                 else {
-                  $title = "Running task <fg=white>$task_name</>";
+                    $title = "Running task <fg=white>$task_name</>";
                 }
 
                 $this->io->section($title);
 
                 if ($task['description']) {
-                  $this->io->text($task['description']);
+                    $this->io->text($task['description']);
                 }
 
                 if ($task['show-output'] == false) {
