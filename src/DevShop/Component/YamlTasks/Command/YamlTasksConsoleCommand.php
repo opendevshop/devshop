@@ -406,13 +406,19 @@ class YamlTasksConsoleCommand extends BaseCommand
 
                 $process->setEnv($env);
 
-                $title = "Running task <fg=white>$task_name</>";
-
-                if (!empty($task['description'])) {
-                    $title .= ": <fg=white>{$task['description']}</>";
+                // If there is a target URL, print it.
+                if ($this->getTargetUrl()) {
+                  $title = "Running task <fg=white>$task_name</>  -  {$this->getTargetUrl()}#{$task_name}";
+                }
+                else {
+                  $title = "Running task <fg=white>$task_name</>";
                 }
 
                 $this->io->section($title);
+
+                if ($task['description']) {
+                  $this->io->text($task['description']);
+                }
 
                 if ($task['show-output'] == false) {
                     $process->disableOutput();
@@ -427,8 +433,8 @@ class YamlTasksConsoleCommand extends BaseCommand
                 $params->description = implode(
                     ' — ',
                     array(
-                        $input->getOption('hostname'),
-                        !empty($task['description'])? $task['description']: $task_name
+                        !empty($task['description'])? $task['description']: $task_name,
+                        $input->getOption('hostname')
                     )
                 );
                 $params->context = $task_name;
@@ -591,7 +597,7 @@ BODY;
             }
 
             $task['command'] = $commands;
-            $task['description'] = isset($task['description'])? $task['description']: true;
+            $task['description'] = isset($task['description'])? $task['description']: null;
             $task['post-errors'] = isset($task['post-errors'])? $task['post-errors']: true;
             $task['show-output'] = isset($task['show-output'])? $task['show-output']: true;
 
@@ -728,12 +734,12 @@ BODY;
     /**
      * Return the target URL used in the GitHub "Details" link, using either param, command line option, or the ENV var.
      */
-    protected function getTargetUrl($alternate_url = null)
+    protected function getTargetUrl()
     {
         // Return the alternate URL if it is present. If not, the command line option. (which defaults to the ENV var.)
-        $url = $alternate_url?: $this->input->getOption('status-url');
+        $url = $this->input->getOption('status-url');
 
         // Switch link to use HTTPS, it is required by GitHub API.
-        return str_replace('http://', 'https://', $url);
+        return empty($url)? null: str_replace('http://', 'https://', $url);
     }
 }
