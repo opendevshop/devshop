@@ -173,8 +173,6 @@ function devshop_projects_preprocess_node(&$vars) {
       if ($vars['node']->task_type == 'install' && !$vars['node']->environment->settings->locked) {
         $vars['retry'] = $form;
         $vars['retry']['retry']['#value'] = t('Reinstall');
-
-        // @TODO: Should we should the user a note saying "cannot reinstall: site is locked"?
       }
       elseif ($vars['node']->task_type == 'install' && $vars['node']->environment->settings->locked) {
         $vars['retry'] = array(
