@@ -409,8 +409,7 @@ class YamlTasksConsoleCommand extends BaseCommand
                 // If there is a target URL, print it.
                 if ($this->getTargetUrl()) {
                     $title = "Running task <fg=white>$task_name</>  -  {$this->getTargetUrl()}#{$task_name}";
-                }
-                else {
+                } else {
                     $title = "Running task <fg=white>$task_name</>";
                 }
 
