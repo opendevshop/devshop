@@ -249,7 +249,7 @@ class YamlTasksConsoleCommand extends BaseCommand
         // Lookup composer bin path and add to PATH if it is not there already.
         $composer_bin_path = $this->workingDir . '/' . (!empty($this->config->config->{"bin-dir"})? $this->config->config->{"bin-dir"}: 'vendor/bin');
         $this->say("Composer Bin Path: <comment>$composer_bin_path</comment>");
-        if (is_readable($composer_bin_path) && strpos($_SERVER['PATH'], $composer_bin_path) === FALSE) {
+        if (is_readable($composer_bin_path) && strpos($_SERVER['PATH'], $composer_bin_path) === false) {
             $this->warningLite("Composer Bin Path was not found in existing PATH variable, so it was added.");
             $_SERVER['PATH'] .= ':' . $composer_bin_path;
         }
@@ -273,9 +273,8 @@ class YamlTasksConsoleCommand extends BaseCommand
             try {
                 $commit = $this->githubClient->repository()->commits()->show($this->repoOwner, $this->repoName, $this->repoSha);
             } catch (RuntimeException $exception) {
-
-              // @TODO This can fail because the commits don't exist, or from an SSL cert problem. Change the message for each.
-              throw new RuntimeException("Commit not found in the remote repository. YamlTasks cannot post commit status until the commits are pushed to the remote repository. The message was: " . $exception->getMessage());
+                // @TODO This can fail because the commits don't exist, or from an SSL cert problem. Change the message for each.
+                throw new RuntimeException("Commit not found in the remote repository. YamlTasks cannot post commit status until the commits are pushed to the remote repository. The message was: " . $exception->getMessage());
             }
 
             $this->say("GitHub Commit URL: <comment>" . $commit['html_url'] . "</>");
