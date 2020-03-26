@@ -351,7 +351,7 @@ class YamlTasksConsoleCommand extends BaseCommand
                     // Set a commit status for this REF
                     $params = new \stdClass();
                     $params->state = 'pending';
-                    $params->target_url = $this->getTargetUrl() . '#' . $task_name;
+                    $params->target_url = $this->getTargetUrl($task_name);
                     $params->description = implode(
                         ' — ',
                         array(
@@ -408,7 +408,7 @@ class YamlTasksConsoleCommand extends BaseCommand
 
                 // If there is a target URL, print it.
                 if ($this->getTargetUrl()) {
-                    $title = "Running task <fg=white>$task_name</>  -  {$this->getTargetUrl()}#{$task_name}";
+                    $title = "Running task <fg=white>$task_name</>  -  {$this->getTargetUrl($task_name)}";
                 } else {
                     $title = "Running task <fg=white>$task_name</>";
                 }
@@ -428,7 +428,7 @@ class YamlTasksConsoleCommand extends BaseCommand
                 // Set a commit status for this REF
                 $params = new \stdClass();
                 $params->state = 'pending';
-                $params->target_url = $this->getTargetUrl();
+                $params->target_url = $this->getTargetUrl($task_name);
                 $params->description = implode(
                     ' — ',
                     array(
@@ -526,7 +526,7 @@ BODY;
                                 // @TODO: Set Target URL from yaml-task options.
                                 // $params->target_url = $this->getTargetUrl($comment_response['html_url']);
                                 // Always use the main target url... If this is overridable, it should be configurable by the user in their tasks,yml.
-                                $params->target_url = $this->getTargetUrl();
+                                $params->target_url = $this->getTargetUrl($task_name);
                             } catch (\Github\Exception\RuntimeException $e) {
                                 $this->errorLite("Unable to create GitHub Commit Comment: " . $e->getMessage() . ': ' . $e->getCode());
                             }
@@ -733,10 +733,10 @@ BODY;
     /**
      * Return the target URL used in the GitHub "Details" link, using either param, command line option, or the ENV var.
      */
-    protected function getTargetUrl()
+    protected function getTargetUrl($anchor = null)
     {
         // Return the alternate URL if it is present. If not, the command line option. (which defaults to the ENV var.)
-        $url = $this->input->getOption('status-url');
+        $url = $this->input->getOption('status-url') . '#' . $anchor;
 
         // Switch link to use HTTPS, it is required by GitHub API.
         return empty($url)? null: str_replace('http://', 'https://', $url);
