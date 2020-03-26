@@ -169,7 +169,7 @@ class YamlTasksConsoleCommand extends BaseCommand
 
         $this->io = new PowerProcessStyle($input, $output);
         $this->input = $input;
-        $this->output = $input;
+        $this->output = $output;
         $this->logger = $this->io;
         $this->workingDir = getcwd();
 
@@ -245,6 +245,19 @@ class YamlTasksConsoleCommand extends BaseCommand
         $this->say("Git Repository directory: <comment>{$this->workingDir}</comment>");
         $this->say("Git Commit: <comment>{$this->gitRepo->getCurrentCommit()}</comment>");
         $this->say("Tasks File: <comment>{$this->tasksFilePath}</comment>");
+
+        // Lookup composer bin path and add to PATH if it is not there already.
+        $composer_bin_path = $this->workingDir . '/' . (!empty($this->config->config->{"bin-dir"})? $this->config->config->{"bin-dir"}: 'vendor/bin');
+        $this->say("Composer Bin Path: <comment>$composer_bin_path</comment>");
+        if (is_readable($composer_bin_path) && strpos($_SERVER['PATH'], $composer_bin_path) === FALSE) {
+            $this->warningLite("Composer Bin Path was not found in existing PATH variable, so it was added.");
+            $_SERVER['PATH'] .= ':' . $composer_bin_path;
+        }
+
+        // If debug flag was used, print the PATH.
+        if ($this->io->isDebug()) {
+            $this->say("Path: <comment>{$_SERVER['PATH']}</comment>");
+        }
 
         // @TODO: Dry run could still read info from the repo.
         if (!$input->getOption('dry-run')) {
