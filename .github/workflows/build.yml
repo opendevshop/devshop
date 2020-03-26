@@ -80,7 +80,8 @@ jobs:
           --os "${OS}" \
           --vars "${ANSIBLE_VARS}" \
           --tags "${ANSIBLE_TAGS}" \
-          --skip-tags "${ANSIBLE_SKIP_TAGS}"
+          --skip-tags "${ANSIBLE_SKIP_TAGS}" \
+          --volumes 0
 
     - name: Wait for yum
       if: matrix.os == 'centos7'
