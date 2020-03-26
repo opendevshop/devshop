@@ -351,7 +351,7 @@ class YamlTasksConsoleCommand extends BaseCommand
                     // Set a commit status for this REF
                     $params = new \stdClass();
                     $params->state = 'pending';
-                    $params->target_url = $this->getTargetUrl();
+                    $params->target_url = $this->getTargetUrl() . '#' . $task_name;
                     $params->description = implode(
                         ' — ',
                         array(
