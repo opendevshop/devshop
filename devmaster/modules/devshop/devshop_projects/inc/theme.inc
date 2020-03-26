@@ -473,6 +473,8 @@ function template_preprocess_devshop_project_nav(&$vars) {
  *   theme('devshop_ascii', $string);
  */
 function theme_devshop_ascii($vars) {
+  static $total_lines = 0;
+
   $string = $vars['output'];
   if (empty($string)) {
     return $string;
@@ -486,21 +488,27 @@ function theme_devshop_ascii($vars) {
   drupal_add_html_head("<style>$styles</style>");
   $converter = new AnsiToHtmlConverter($theme);
   $output = $converter->convert($string);
-  
+
   // Make URLs clickable:
   $filter = new stdClass();
   $filter->settings = [
     'filter_url_length' => 1000,
   ];
   $output = _filter_url($output, $filter);
-  
+
   // Change linebreaks to <br> tags.
-  $output = strtr($output, array(
-    '\n' => '<br />',
-  ));
+  $lines = explode('\n', $output);
+  $return = '';
+  foreach ($lines as $line_output) {
+    $sub_lines = explode("\n", $line_output);
+    foreach ($sub_lines as $sub_line_output) {
+      $return .= "<div id='line-{$total_lines}'><span class='line-number'>$total_lines</span>{$sub_line_output}</div>";
+      $total_lines++;
+    }
+  }
 
   return <<<HTML
-  <pre class="ansi_color_bg_black ansi_color_fg_white ansi_box">$output</pre>
+  <pre class="ansi_color_bg_black ansi_color_fg_white ansi_box">$return</pre>
 HTML;
 
 }
