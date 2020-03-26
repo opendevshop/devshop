@@ -166,7 +166,32 @@ function devshop_projects_preprocess_node(&$vars) {
         $vars['node']->task_status == HOSTING_TASK_WARNING ||
         $vars['node']->task_status == HOSTING_TASK_SUCCESS
       )) {
-      $vars['retry'] = drupal_get_form('hosting_task_retry_form', $vars['node']->nid);
+
+      // If "install" task, change name and add "force" task arg.
+      $form = drupal_get_form('hosting_task_retry_form', $vars['node']->nid);
+
+      if ($vars['node']->task_type == 'install' && !$vars['node']->environment->settings->locked) {
+        $vars['retry'] = $form;
+        $vars['retry']['retry']['#value'] = t('Reinstall');
+
+        // @TODO: Should we should the user a note saying "cannot reinstall: site is locked"?
+      }
+      elseif ($vars['node']->task_type == 'install' && $vars['node']->environment->settings->locked) {
+        $vars['retry'] = array(
+          '#prefix' => t('Site is protected.'),
+          '#type' => 'container',
+          '#attributes' => array(
+            'class' => array('well well-sm')
+          ),
+        );
+        $settings_link = "node/{$vars['node']->rid}/edit";
+        if (drupal_valid_path($settings_link)) {
+          $vars['retry']['#children'] .= ' ' . l(t('Environment Settings'), $settings_link);
+        }
+      }
+      elseif ($vars['node']->task_type != 'install' && $vars['node']->task_type != 'delete') {
+        $vars['retry'] = $form;
+      }
 
       // Change the name of the form button to "Run Again" if the task ended ok.
       if ($vars['node']->task_status == HOSTING_TASK_WARNING || $vars['node']->task_status == HOSTING_TASK_SUCCESS) {
