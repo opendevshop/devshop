@@ -1,0 +1,36 @@
+{
+  "name": "devshop/github-tools",
+  "type": "composer-plugin",
+  "description": "Console and Composer commands for interacting with GitHub API.",
+  "keywords": [],
+  "homepage": "https://getdevshop.com",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Jon Pugh",
+      "email": "jon@thinkdrop.net"
+    },
+    {
+      "name": "DevShop Community",
+      "homepage": "https://github.com/opendevshop/devshop/graphs/contributors"
+    }
+  ],
+  "require": {
+    "php": "^7.1",
+    "composer-plugin-api": "^1.1"
+  },
+  "require-dev": {
+  },
+  "extra": {
+    "class": "DevShop\\Component\\GitHubTools\\ComposerPlugin"
+  },
+  "autoload": {
+    "psr-4": {
+      "DevShop\\Component\\GitHubTools\\": ""
+    }
+  },
+  "bin": [
+    "github"
+  ],
+  "minimum-stability": "dev"
+}
