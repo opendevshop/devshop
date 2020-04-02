@@ -1716,7 +1716,7 @@ function devshop_projects_environment_settings_submit($form, &$form_state) {
     watchdog('error', 'Environment record not saved: ' . print_r($environment, 1));
   }
 
-  $form_state['redirect'] = 'node/' . $site->nid;
+  $form_state['redirect'] = 'node/' . $environment->site;
 }
 
 
