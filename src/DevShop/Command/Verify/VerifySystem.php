@@ -2,6 +2,7 @@
 
 namespace DevShop\Command\Verify;
 
+use DevShop\Component\PowerProcess\PowerProcess;
 use DevShop\Console\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -12,7 +13,6 @@ use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 
 use Symfony\Component\Process\Process;
-use Asm\Ansible\Ansible;
 use Symfony\Component\Yaml\Yaml;
 
 class VerifySystem extends Command
@@ -216,36 +216,16 @@ If this is a new installation, you may select the default randomly generated pas
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         parent::execute($input, $output);
-        if (!$this->ansible) {
-          throw new \Exception('Ansible not loaded. Unable to find ansible-galaxy or ansible-playbook in the PATH.');
-        }
 
-        $ansible = $this->ansible->playbook();
-
-        $ansible->play($input->getOption('playbook'));
-
-        if ($input->getOption('user')) {
-            $ansible->user($input->getOption('user'));
-        }
-        if ($input->getArgument('limit')) {
-            $ansible->limit($input->getArgument('limit'));
-        }
-
-        if ($input->getOption('inventory-file')) {
-            $ansible->inventoryFile($input->getOption('inventory-file'));
-        }
-
-        // Set connection from option. Defaults to "local"
-        // @TODO: This command really can handle all servers, so might want to change the default.
-        $ansible->connection($input->getOption('connection'));
-
-        $result = $ansible->execute(function ($type, $buffer) {
-            print $buffer;
-        });
-
-        if ($result !== 0) {
-          throw new \Exception('Ansible playbook run failed.');
-        }
+        // Run ansible-playbook.
+        $command = "ansible-playbook {$input->getOption('playbook')} --user {$input->getOption('user')} --limit {$input->getOption('limit')} --inventory {$input->getOption('inventory-file')} --connection {$input->getOption('connection')}";
+        $process = new PowerProcess($command);
+        $env = $_SERVER;
+        // @TODO: fix power process to have a more flexible style.
+        $env['PROVISION_PROCESS_OUTPUT'] = 'direct';
+        $process->setEnv($env);
+        $process->run();
+        return $process->getExitCode();
     }
 
     /**
