@@ -8,7 +8,11 @@ defaults[projects][type] = "module"
 projects[devshop_stats][version] = 1.x
 
 ; Aegir Modules
-projects[hosting][version] = "3.180"
+; For development, use latest branch.
+; For release, use tagged version
+projects[hosting][version] = "3.x"
+projects[hosting][download][type] = git
+projects[hosting][download][branch] = 7.x-3.180-devshop
 
 ; Aegir Core not included in hosting.module
 projects[eldir][type] = theme
