@@ -14,8 +14,8 @@ yaml-tests/github-comment-test:
   # Set ignore-failure to TRUE to post a Success commit status not matter what.
   ignore-failure: true
 
-  # Set post-errors to FALSE to skip posting error logs to github comments.
-  post-errors: FALSE
+  # Set post-errors-as-comments to TRUE to post the error log as a github comment on the commit.
+  post-errors-as-comments: TRUE
 
   # Set show-output to FALSE to not print the output or show it in the github comment.
   show-output: FALSE
