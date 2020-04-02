@@ -17,8 +17,6 @@
 
 namespace DevShop\Console;
 
-use Asm\Ansible\Ansible;
-use Asm\Ansible\Exception\CommandException;
 use DevShop\DevShop;
 use GitWrapper\GitWorkingCopy;
 use GitWrapper\GitWrapper;
@@ -77,20 +75,20 @@ abstract class Command extends BaseCommand
    */
   protected $process = NULL;
 
-  /**
-   * @var Ansible;
-   */
-  protected $ansible = NULL;
+//  /**
+//   * @var Ansible;
+//   */
+//  protected $ansible = NULL;
 
   /**
    * @var Filesystem
    */
   protected $FS;
 
-  /**
-   * @var bool Sub classes should define this to load $this->ansible;
-   */
-  protected $ansibleRequired = FALSE;
+//  /**
+//   * @var bool Sub classes should define this to load $this->ansible;
+//   */
+//  protected $ansibleRequired = FALSE;
 
   /**
    * @var If target version is branch or tag.
@@ -112,19 +110,19 @@ abstract class Command extends BaseCommand
     $this->gitWrapper = new GitWrapper();
     $this->user = trim(shell_exec('whoami'));
 
-    try {
-      $this->ansible = new Ansible(
-        getcwd(),
-        trim(`which ansible-playbook`),
-        trim(`which ansible-galaxy`)
-      );
-      $this->ansible->setTimeout(0);
-    } catch (CommandException $exception) {
-      if ($this->ansibleRequired) {
-        $commandName = $this->getName();
-        throw new \Exception("The command '$commandName' requires ansible to be installed. Please make sure 'ansible-galaxy' and 'ansible-playbook' are in the PATH and try again. The error was: " . $exception->getMessage());
-      }
-    }
+//    try {
+//      $this->ansible = new Ansible(
+//        getcwd(),
+//        trim(`which ansible-playbook`),
+//        trim(`which ansible-galaxy`)
+//      );
+//      $this->ansible->setTimeout(0);
+//    } catch (CommandException $exception) {
+//      if ($this->ansibleRequired) {
+//        $commandName = $this->getName();
+//        throw new \Exception("The command '$commandName' requires ansible to be installed. Please make sure 'ansible-galaxy' and 'ansible-playbook' are in the PATH and try again. The error was: " . $exception->getMessage());
+//      }
+//    }
   }
 
   /**

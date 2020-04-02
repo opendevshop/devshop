@@ -45,7 +45,7 @@ class YamlTasksComposerCommand extends BaseCommand
    */
     public function __construct()
     {
-        parent::__construct('git:split');
+        parent::__construct();
     }
 
   /**

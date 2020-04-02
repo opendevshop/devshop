@@ -154,7 +154,8 @@ function devshop_dothooks_run_hook($hook, $site, $task = null) {
   $env['ROOT'] = $environment->repo_path;
 
   // Set env var for the task being run (if no task, use the site NID url.)
-  $env['DEVSHOP_TASK_URL'] = $task? url("node/{$task->nid}", array('absolute' => TRUE)): url("node/{$site->nid}", array('absolute' => TRUE));
+  // Set STATUS_URL for yaml-tasks.
+  $env['DEVSHOP_TASK_URL'] = $env['STATUS_URL'] = $task? url("node/{$task->nid}", array('absolute' => TRUE)): url("node/{$site->nid}", array('absolute' => TRUE));
 
   // Prepare and run each command.
   foreach ($hooks as $hook_line) {

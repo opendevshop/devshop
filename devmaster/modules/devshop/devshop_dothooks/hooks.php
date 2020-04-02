@@ -8,7 +8,7 @@
  */
 function devshop_dothooks_post_hosting_verify_task($task, $data) {
   if ($task->ref->type == 'site') {
-    devshop_dothooks_run_hook('verify', $task->ref);
+    devshop_dothooks_run_hook('verify', $task->ref, $task);
   }
 }
 
@@ -19,7 +19,7 @@ function devshop_dothooks_post_hosting_verify_task($task, $data) {
  * Runs the "deploy" dotHook
  */
 function devshop_dothooks_post_hosting_devshop_deploy_task($task, $data) {
-  devshop_dothooks_run_hook('deploy', $task->ref);
+  devshop_dothooks_run_hook('deploy', $task->ref, $task);
 }
 
 /**
@@ -29,7 +29,7 @@ function devshop_dothooks_post_hosting_devshop_deploy_task($task, $data) {
  * Runs the "test" dotHook
  */
 function devshop_dothooks_post_hosting_test_task($task, $data) {
-  devshop_dothooks_run_hook('test', $task->ref);
+  devshop_dothooks_run_hook('test', $task->ref, $task);
 }
 
 /**
@@ -39,7 +39,7 @@ function devshop_dothooks_post_hosting_test_task($task, $data) {
  * Runs the "sync" dotHook
  */
 function devshop_dothooks_post_hosting_sync_task($task, $data) {
-  devshop_dothooks_run_hook('sync', $task->ref);
+  devshop_dothooks_run_hook('sync', $task->ref, $task);
 }
 
 /**
@@ -49,5 +49,5 @@ function devshop_dothooks_post_hosting_sync_task($task, $data) {
  * Runs the "install" dotHook
  */
 function devshop_dothooks_post_hosting_install_task($task, $data) {
-  devshop_dothooks_run_hook('install', $task->ref);
+  devshop_dothooks_run_hook('install', $task->ref, $task);
 }

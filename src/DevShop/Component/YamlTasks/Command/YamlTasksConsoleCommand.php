@@ -151,7 +151,8 @@ class YamlTasksConsoleCommand extends BaseCommand
             'status-url',
             null,
             InputOption::VALUE_OPTIONAL,
-            'The url used for the "Details" link on GitHub.com.'
+            'The url used for the "Details" link on GitHub.com.',
+            !empty($_SERVER['STATUS_URL'])? $_SERVER['STATUS_URL']: null
         );
         $this->addArgument(
             'filter',
@@ -168,7 +169,7 @@ class YamlTasksConsoleCommand extends BaseCommand
 
         $this->io = new PowerProcessStyle($input, $output);
         $this->input = $input;
-        $this->output = $input;
+        $this->output = $output;
         $this->logger = $this->io;
         $this->workingDir = getcwd();
 
@@ -245,6 +246,23 @@ class YamlTasksConsoleCommand extends BaseCommand
         $this->say("Git Commit: <comment>{$this->gitRepo->getCurrentCommit()}</comment>");
         $this->say("Tasks File: <comment>{$this->tasksFilePath}</comment>");
 
+        if ($this->getTargetUrl()) {
+            $this->say("Target URL: <comment>{$this->getTargetUrl()}</comment>");
+        }
+
+        // Lookup composer bin path and add to PATH if it is not there already.
+        $composer_bin_path = $this->workingDir . '/' . (!empty($this->config->config->{"bin-dir"})? $this->config->config->{"bin-dir"}: 'vendor/bin');
+        $this->say("Composer Bin Path: <comment>$composer_bin_path</comment>");
+        if (is_readable($composer_bin_path) && strpos($_SERVER['PATH'], $composer_bin_path) === false) {
+            $this->warningLite("Composer Bin Path was not found in existing PATH variable, so it was added.");
+            $_SERVER['PATH'] .= ':' . $composer_bin_path;
+        }
+
+        // If debug flag was used, print the PATH.
+        if ($this->io->isDebug()) {
+            $this->say("Path: <comment>{$_SERVER['PATH']}</comment>");
+        }
+
         // @TODO: Dry run could still read info from the repo.
         if (!$input->getOption('dry-run')) {
             $this->githubClient = new \Github\Client();
@@ -259,7 +277,8 @@ class YamlTasksConsoleCommand extends BaseCommand
             try {
                 $commit = $this->githubClient->repository()->commits()->show($this->repoOwner, $this->repoName, $this->repoSha);
             } catch (RuntimeException $exception) {
-                throw new RuntimeException("Commit not found in the remote repository. YamlTasks cannot post commit status until the commits are pushed to the remote repository.");
+                // @TODO This can fail because the commits don't exist, or from an SSL cert problem. Change the message for each.
+                throw new RuntimeException("Commit not found in the remote repository. YamlTasks cannot post commit status until the commits are pushed to the remote repository. The message was: " . $exception->getMessage());
             }
 
             $this->say("GitHub Commit URL: <comment>" . $commit['html_url'] . "</>");
@@ -332,7 +351,7 @@ class YamlTasksConsoleCommand extends BaseCommand
                     // Set a commit status for this REF
                     $params = new \stdClass();
                     $params->state = 'pending';
-                    $params->target_url = $this->getTargetUrl();
+                    $params->target_url = $this->getTargetUrl($task_name);
                     $params->description = implode(
                         ' — ',
                         array(
@@ -387,13 +406,18 @@ class YamlTasksConsoleCommand extends BaseCommand
 
                 $process->setEnv($env);
 
-                $title = "Running task <fg=white>$task_name</>";
-
-                if (!empty($task['description'])) {
-                    $title .= ": <fg=white>{$task['description']}</>";
+                // If there is a target URL, print it.
+                if ($this->getTargetUrl()) {
+                    $title = "Running task <fg=white>$task_name</>  -  {$this->getTargetUrl($task_name)}";
+                } else {
+                    $title = "Running task <fg=white>$task_name</>";
                 }
 
                 $this->io->section($title);
+
+                if ($task['description']) {
+                    $this->io->text($task['description']);
+                }
 
                 if ($task['show-output'] == false) {
                     $process->disableOutput();
@@ -404,12 +428,12 @@ class YamlTasksConsoleCommand extends BaseCommand
                 // Set a commit status for this REF
                 $params = new \stdClass();
                 $params->state = 'pending';
-                $params->target_url = $this->getTargetUrl();
+                $params->target_url = $this->getTargetUrl($task_name);
                 $params->description = implode(
                     ' — ',
                     array(
-                        $input->getOption('hostname'),
-                        !empty($task['description'])? $task['description']: $task_name
+                        !empty($task['description'])? $task['description']: $task_name,
+                        $input->getOption('hostname')
                     )
                 );
                 $params->context = $task_name;
@@ -502,7 +526,7 @@ BODY;
                                 // @TODO: Set Target URL from yaml-task options.
                                 // $params->target_url = $this->getTargetUrl($comment_response['html_url']);
                                 // Always use the main target url... If this is overridable, it should be configurable by the user in their tasks,yml.
-                                $params->target_url = $this->getTargetUrl();
+                                $params->target_url = $this->getTargetUrl($task_name);
                             } catch (\Github\Exception\RuntimeException $e) {
                                 $this->errorLite("Unable to create GitHub Commit Comment: " . $e->getMessage() . ': ' . $e->getCode());
                             }
@@ -572,7 +596,7 @@ BODY;
             }
 
             $task['command'] = $commands;
-            $task['description'] = isset($task['description'])? $task['description']: true;
+            $task['description'] = isset($task['description'])? $task['description']: null;
             $task['post-errors'] = isset($task['post-errors'])? $task['post-errors']: true;
             $task['show-output'] = isset($task['show-output'])? $task['show-output']: true;
 
@@ -709,9 +733,12 @@ BODY;
     /**
      * Return the target URL used in the GitHub "Details" link, using either param, command line option, or the ENV var.
      */
-    protected function getTargetUrl($alternate_url = null)
+    protected function getTargetUrl($anchor = null)
     {
         // Return the alternate URL if it is present. If not, the command line option. (which defaults to the ENV var.)
-        return $alternate_url?: $this->input->getOption('status-url');
+        $url = $this->input->getOption('status-url') . '#' . $anchor;
+
+        // Switch link to use HTTPS, it is required by GitHub API.
+        return empty($url)? null: str_replace('http://', 'https://', $url);
     }
 }

@@ -2,8 +2,6 @@
 
 namespace DevShop\Command;
 
-use Asm\Ansible\Ansible;
-use Asm\Ansible\Command\AnsibleGalaxy;
 use DevShop\Console\Command;
 
 use Phar;

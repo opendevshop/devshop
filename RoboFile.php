@@ -498,7 +498,7 @@ class RoboFile extends \Robo\Tasks {
     'config' => '/usr/share/devshop/ansible.cfg',
     'local' => FALSE,
     'environment' => [],
-    'volumes' => FALSE,
+    'volumes' => true,
     'install-at-runtime' => FALSE,
   ]) {
 
@@ -632,6 +632,9 @@ class RoboFile extends \Robo\Tasks {
           // @TODO: Figure out why PowerProcess::mustRun() fails so miserably: https://github.com/opendevshop/devshop/pull/541/checks?check_run_id=518074346#step:7:45
           // $process->mustRun();
           $process->run();
+          if ($process->getExitCode() != 0) {
+            throw new \Exception('Process failed: ' . $process->getExitCodeText());
+          }
         }
         return;
       }
@@ -929,6 +932,7 @@ class RoboFile extends \Robo\Tasks {
     $process->setTty(TRUE);
     $process->setTimeout(NULL);
     $process->run();
+    return $process->getExitCode();
   }
 
   /**
@@ -955,6 +959,7 @@ class RoboFile extends \Robo\Tasks {
     // @TODO: Figure out why PowerProcess::mustRun() fails so miserably: https://github.com/opendevshop/devshop/pull/541/checks?check_run_id=518074346#step:7:45
     // $process->mustRun();
     $process->run();
+    return $process->getExitCode();
   }
 
   /**
