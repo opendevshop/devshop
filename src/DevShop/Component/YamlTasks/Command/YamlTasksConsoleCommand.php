@@ -504,9 +504,8 @@ BODY;
                             throw new \Exception('Comment body is STILL too long... the math must be wrong.');
                         }
 
-                        if (isset($task['post-errors']) && $task['post-errors'] == false) {
-                            $this->warningLite("Skipped post of errors to GitHub, as configured in " . $this->tasksFile);
-                        } else {
+                        // Only post github comment if "post-errors-as-comments" is set.
+                        if ($task['post-errors-as-comments']) {
                             try {
                                 // @TODO: If this branch is a PR, we will submit a Review or a PR comment. Neither work yet.
                                 if (!empty($this->pullRequest)) {
@@ -597,7 +596,7 @@ BODY;
 
             $task['command'] = $commands;
             $task['description'] = isset($task['description'])? $task['description']: null;
-            $task['post-errors'] = isset($task['post-errors'])? $task['post-errors']: true;
+            $task['post-errors-as-comments'] = isset($task['post-errors-as-comments'])? $task['post-errors-as-comments']: false;
             $task['show-output'] = isset($task['show-output'])? $task['show-output']: true;
 
             $this->yamlTasks[$name] = $task;
