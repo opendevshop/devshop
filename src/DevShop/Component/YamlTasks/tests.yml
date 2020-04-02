@@ -19,3 +19,8 @@ yaml-tests/github-comment-test:
 
   # Set show-output to FALSE to not print the output or show it in the github comment.
   show-output: FALSE
+
+yaml-tests/github-no-comment-test:
+  description: Confirm errors dont get posted as comments by default. This test fails but should not post a comment to github.
+  command: exit 1
+  ignore-failure: true
