@@ -163,6 +163,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.INPUT_GITHUB_TOKEN }}
         working-directory: ${{env.working-directory}}
         run: |
+          env
           ./github whoami
           ./github api deployment create opendevshop devshop --param ref=${GITHUB_REF} --param environment=${HOSTNAME} --param required_contexts=,
 
