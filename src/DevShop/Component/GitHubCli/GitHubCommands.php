@@ -37,8 +37,12 @@ class GitHubCommands extends \Robo\Tasks
        $api = $this->cli->api($apiName);
        $apiClass = get_class($api);
 
-       if (!method_exists($api, $apiMethod)) {
-         throw new \InvalidArgumentException("Method $apiMethod does not exist on Class $apiClass.");
+       // Validate that the method exists and can be called.
+       if (!is_callable(array($api, $apiMethod))) {
+         if (!method_exists($api, $apiMethod)) {
+           throw new \InvalidArgumentException("Method $apiMethod does not exist on Class $apiClass.");
+         }
+         throw new \InvalidArgumentException("Method $apiMethod on Class $apiClass is private. It cannot be used.");
        }
 
        // Same as call_user_func_array, only faster!
