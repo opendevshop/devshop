@@ -78,11 +78,12 @@ class GitHubCommands extends \Robo\Tasks
    * @param $apiName string The name of the specific API to use. See https://github.com/KnpLabs/php-github-api/blob/master/lib/Github/Client.php#L166 for available options.
    * @param $apiMethod string The API method to call. Depends on the API used. Common methods include show, create, update, remove. See the available AbstractAPI classes at https://github.com/KnpLabs/php-github-api/tree/master/lib/Github/Api.
    * @param $apiMethodArgs string All additional arguments are passed to the apiMethod.
+   * @option param Add a parameter to pass to the API method in the format NAME=VALUE.
    *
    * @see \Github\Client
    * @see \Github\Client::api()
    */
-  public function api($apiName = null, $apiMethod = null, array $apiMethodArgs)
+  public function api($apiName = null, $apiMethod = null, array $apiMethodArgs, $opts = ['param' => []])
   {
      if (!$apiName) {
        $apiName = $this->io()->choice('Which API?', $this->cli->getApis(), 0);
@@ -104,6 +105,16 @@ class GitHubCommands extends \Robo\Tasks
            throw new \InvalidArgumentException("Method $apiMethod does not exist on Class $apiClass.");
          }
          throw new \InvalidArgumentException("Method $apiMethod on Class $apiClass is private. It cannot be used.");
+       }
+
+       // Append $params argument to the method args.
+       if (!empty($opts['param'])) {
+         $params = [];
+         foreach ($opts['param'] as $param) {
+           list($name, $value) = explode('=', $param);
+           $params[$name] = $value;
+         }
+         $apiMethodArgs[] = $params;
        }
 
        // Same as call_user_func_array, only faster!
