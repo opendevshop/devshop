@@ -80,9 +80,18 @@ class GitHubCommands extends \Robo\Tasks
    * @see \Github\Client
    * @see \Github\Client::api()
    */
-  public function api($apiName, $apiMethod = 'show', array $apiMethodArgs)
+  public function api($apiName = null, $apiMethod = null, array $apiMethodArgs)
   {
-     // Validate the API request.
+     if (!$apiName) {
+       $apiName = $this->io()->choice('Which API?', $this->cli->getApis());
+     }
+
+    if (!$apiMethod) {
+      $apiMethod = $this->io()->choice('Which API method?', $this->cli->getApiMethods($apiName));
+    }
+
+
+    // Validate the API request.
      try {
        $api = $this->cli->api($apiName);
        $apiClass = get_class($api);
