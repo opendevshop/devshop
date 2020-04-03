@@ -65,6 +65,37 @@ class GitHubCli
   public function getApis()
   {
     $apis[] = 'me';
+    $apis[] = 'deployment';
+    $apis[] = 'enterprise';
+    $apis[] = 'git';
+    $apis[] = 'git_data';
+    $apis[] = 'gist';
+    $apis[] = 'issue';
+    $apis[] = 'markdown';
+    $apis[] = 'notification';
+    $apis[] = 'organization';
+    $apis[] = 'pull_request';
+    $apis[] = 'rate_limit';
+    $apis[] = 'repo';
+    $apis[] = 'search';
+    $apis[] = 'team';
+    $apis[] = 'user';
+    $apis[] = 'authorization';
+    $apis[] = 'meta';
+    return $apis;
+  }
+
+  /**
+   * Return all available APIs.
+   *
+   * This has to be a list of strings because the GitHub\Client::api method uses
+   * a long "switch" statement to map API strings to classes.
+   *
+   * @return array List of available APIs.
+   */
+  public function getApisWithAliases()
+  {
+    $apis[] = 'me';
     $apis[] = 'current_user';
     $apis[] = 'currentUser';
     $apis[] = 'deployment';
