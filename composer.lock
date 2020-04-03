@@ -1,10 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b0a8cfeaf36837ba614609db140630f7",
+    "content-hash": "c1d5b103f4871720718ab6cce3b16f5d",
     "packages": [
         {
             "name": "consolidation/annotated-command",
@@ -625,10 +625,10 @@
                 "reference": "0e92d7471e9fe60aca4bb54fec54dd4e40b3dc9b"
             },
             "dist": {
-                "type": "path",
+                "type": "zip",
                 "url": "https://api.github.com/repos/devshop-packages/git-split/zipball/0e92d7471e9fe60aca4bb54fec54dd4e40b3dc9b",
                 "reference": "0e92d7471e9fe60aca4bb54fec54dd4e40b3dc9b",
-                "shasum": null
+                "shasum": ""
             },
             "require": {
                 "composer-plugin-api": "^1.1",
@@ -674,10 +674,10 @@
                 "reference": "604288a8bf0ab11a3bd91d96a9a424392eba2bd3"
             },
             "dist": {
-                "type": "path",
+                "type": "zip",
                 "url": "https://api.github.com/repos/devshop-packages/yaml-tasks/zipball/604288a8bf0ab11a3bd91d96a9a424392eba2bd3",
                 "reference": "604288a8bf0ab11a3bd91d96a9a424392eba2bd3",
-                "shasum": null
+                "shasum": ""
             },
             "require": {
                 "composer-plugin-api": "^1.1",
@@ -718,7 +718,8 @@
                 }
             ],
             "description": "Plugin to run commands from a YML file and pass to GitHub commit status API.",
-            "homepage": "https://getdevshop.com"
+            "homepage": "https://getdevshop.com",
+            "time": "2020-03-19T01:03:46+00:00"
         },
         {
             "name": "dflydev/dot-access-data",
@@ -3277,6 +3278,46 @@
                 "performance"
             ],
             "time": "2020-03-01T12:26:26+00:00"
+        },
+        {
+            "name": "geerlingguy/drupal-vm-docker",
+            "version": "1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/geerlingguy/drupal-vm-docker.git",
+                "reference": "28f0ae313b881009d602910b07336c10b667ad32"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/geerlingguy/drupal-vm-docker/zipball/28f0ae313b881009d602910b07336c10b667ad32",
+                "reference": "28f0ae313b881009d602910b07336c10b667ad32",
+                "shasum": ""
+            },
+            "require": {
+                "composer-plugin-api": "^1.1"
+            },
+            "type": "composer-plugin",
+            "extra": {
+                "class": "geerlingguy\\DrupalVmDocker\\Composer\\Plugin"
+            },
+            "autoload": {
+                "psr-4": {
+                    "geerlingguy\\DrupalVmDocker\\": "src",
+                    "geerlingguy\\DrupalVmDocker\\Composer\\": "src/Composer"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jeff Geerling",
+                    "homepage": "https://www.jeffgeerling.com"
+                }
+            ],
+            "description": "A quick and easy Docker-based Drupal project development environment.",
+            "time": "2019-12-11T19:17:44+00:00"
         },
         {
             "name": "justinrainbow/json-schema",

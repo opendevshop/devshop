@@ -26,7 +26,8 @@
         "drush/drush": "^8"
     },
     "require-dev": {
-        "composer/composer": "^1.9"
+        "composer/composer": "^1.9",
+        "geerlingguy/drupal-vm-docker": "^1.1"
     },
     "autoload": {
         "psr-0": { "DevShop": "src/" },
