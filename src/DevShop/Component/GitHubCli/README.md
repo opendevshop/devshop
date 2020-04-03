@@ -106,6 +106,19 @@ Load info about an organization:
   repos_url                   https://api.github.com/orgs/department-of-veterans-affairs/repos                    
 ```
 
+Show info about a repo:
+```
+./github api repo show department-of-veterans-affairs va.gov-cms
+ ------------------- ----------------------------------------------------------------------------------------------------------------- 
+  Name                Value                                                                                                            
+ ------------------- ----------------------------------------------------------------------------------------------------------------- 
+  id                  154174777                                                                                                        
+  node_id             MDEwOlJlcG9zaXRvcnkxNTQxNzQ3Nzc=                                                                                 
+  name                va.gov-cms                                                                                                       
+  full_name           department-of-veterans-affairs/va.gov-cms                                                                        
+  private                                                                                                                              
+  html_url            https://github.com/department-of-veterans-affairs/va.gov-cms                                                     
+```
 
 Resources
 ---------

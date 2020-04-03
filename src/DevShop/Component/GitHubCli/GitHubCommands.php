@@ -23,7 +23,7 @@ class GitHubCommands extends \Robo\Tasks
    */
   public function api($apiName, $apiMethod = 'show', $arg1 = null, $arg2 = null,  $arg3 = null,  $arg4 = null, $opts = [])
   {
-     $object = $this->cli->api($apiName)->{$apiMethod}($arg1);
+     $object = $this->cli->api($apiName)->{$apiMethod}($arg1, $arg2, $arg3, $arg4);
      $this->io()->table(['Name', 'Value'], $this->objectToTableRows($object));
   }
 
