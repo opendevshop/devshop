@@ -55,7 +55,7 @@ class GitHubCommands extends \Robo\Tasks
   public function listMethods($apiName = null) {
 
     if (!$apiName) {
-      $apiName = $this->io()->choice('Which API?', $this->cli->getApis());
+      $apiName = $this->io()->choice('Which API?', $this->cli->getApis(), 0);
     }
 
     $this->io()->section('Available Methods for API ' . $apiName);
@@ -83,11 +83,11 @@ class GitHubCommands extends \Robo\Tasks
   public function api($apiName = null, $apiMethod = null, array $apiMethodArgs)
   {
      if (!$apiName) {
-       $apiName = $this->io()->choice('Which API?', $this->cli->getApis());
+       $apiName = $this->io()->choice('Which API?', $this->cli->getApis(), 0);
      }
 
     if (!$apiMethod) {
-      $apiMethod = $this->io()->choice('Which API method?', $this->cli->getApiMethods($apiName));
+      $apiMethod = $this->io()->choice('Which API method?', $this->cli->getApiMethods($apiName), 0);
     }
 
 
@@ -107,8 +107,7 @@ class GitHubCommands extends \Robo\Tasks
        // Same as call_user_func_array, only faster!
        // @see https://www.php.net/manual/en/function.call-user-func-array.php#117655
        $object = $api->{$apiMethod}(...$apiMethodArgs);
-
-       $this->io()->table(['Name', 'Value'], $this->objectToTableRows($object));
+       $this->objectTable($object, ["API Name: " . $apiName, $apiMethod]);
 
      } catch (\ArgumentCountError $e) {
        $this->io()->error('GitHub API Request failed: ' . $e->getMessage());
@@ -140,7 +139,7 @@ class GitHubCommands extends \Robo\Tasks
     $user = $this->cli->api('me')->show();
 
     // @TODO: Add a "format" option to return json, yml, or pretty
-    $this->io()->table(['Name', 'Value'], $this->objectToTableRows($user));
+    $this->objectTable($user);
     return 0;
   }
 
@@ -150,13 +149,20 @@ class GitHubCommands extends \Robo\Tasks
    *
    * @return array
    */
-   private function objectToTableRows($obj) {
+   private function objectTable($object, $headers = []) {
     $rows = [];
-    foreach ($obj as $name => $value) {
-      if (!is_array($value)) {
+    foreach ((array) $object as $name => $value) {
+      if (is_scalar($value)) {
         $rows[] = [$name, $value];
       }
+      else {
+        $cell = '';
+        foreach ((array) $value as $name_2 => $value_2) {
+          $cell .= "$name_2: $value_2\n";
+        }
+        $rows[] = [$name, $cell];
+      }
     }
-    return $rows;
+    return $this->io()->table($headers, $rows);
   }
 }
