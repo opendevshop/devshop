@@ -160,7 +160,7 @@ jobs:
 
       - name: Test GitHub Cli
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.INPUT_GITHUB_TOKEN }}
         working-directory: ${{env.working-directory}}
         run: |
           ./github whoami
