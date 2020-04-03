@@ -17,6 +17,56 @@ class GitHubCommands extends \Robo\Tasks
     $this->cli = new GitHubCli();
   }
 
+  /**
+   * List available APIs.
+   */
+  public function listApis() {
+
+    $this->io()->section('Available APIs');
+
+    try {
+      $apis[] = ['current_user', 'currentUser me'];
+      $apis[] = ['deployment', 'deployments'];
+      $apis[] = ['enterprise', 'ent'];
+      $apis[] = ['git', 'git_data gitData'];
+      $apis[] = ['gist', 'gists'];
+      $apis[] = ['issue', 'issues'];
+      $apis[] = ['markdown'];
+      $apis[] = ['notification', 'notifications'];
+      $apis[] = ['organization', 'organizations'];
+      $apis[] = ['pull_request', 'pr pullRequest pullRequests pull_requests'];
+      $apis[] = ['rateLimit', 'rate_limit'];
+      $apis[] = ['repo', 'repos'];
+      $apis[] = ['repository', 'repositories'];
+      $apis[] = ['search'];
+      $apis[] = ['team', 'teams'];
+      $apis[] = ['user', 'users'];
+      $apis[] = ['authorization', 'authorizations'];
+      $apis[] = ['meta'];
+      $this->io()->table(['API Name', 'Aliases'], $apis);
+    } catch (\Exception $e) {
+      $this->io()->error('Unable to list APIs: ' . $e->getMessage());
+    }
+  }
+
+  /**
+   * List available API methods.
+   */
+  public function listMethods($apiName = null) {
+
+    if (!$apiName) {
+      $apiName = $this->io()->choice('Which API?', $this->cli->getApis());
+    }
+
+    $this->io()->section('Available Methods for API ' . $apiName);
+
+    try {
+      $api = $this->cli->api($apiName);
+      $this->io()->listing($this->cli->getApiMethods($api));
+    } catch (\Exception $e) {
+      $this->io()->error('Unable to list methods: ' . $e->getMessage());
+    }
+  }
 
   /**
    * Send an API request.
