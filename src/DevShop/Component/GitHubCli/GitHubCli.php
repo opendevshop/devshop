@@ -108,10 +108,10 @@ class GitHubCli
   /**
    * Return all available = methods for the chosen API.
    *
-   * @param $classNameOrInstance
+   * @param $apiName
    */
-  public function getApiMethods($classNameOrInstance) {
-    return $this->getPublicMethods($classNameOrInstance);
+  public function getApiMethods($apiName) {
+    return $this->getPublicMethods($this->api($apiName));
   }
 
   /**
