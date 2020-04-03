@@ -32,12 +32,35 @@ class GitHubCommands extends \Robo\Tasks
    */
   public function api($apiName, $apiMethod = 'show', array $apiMethodArgs)
   {
-     $api = $this->cli->api($apiName);
+     // Validate the API request.
+     try {
+       $api = $this->cli->api($apiName);
+       $apiClass = get_class($api);
 
-     // When using call_user_func_array on objects, the first $para_arr must be the object method.
-     $object = call_user_func_array(array($api, $apiMethod), $apiMethodArgs);
+       if (!method_exists($api, $apiMethod)) {
+         throw new \InvalidArgumentException("Method $apiMethod does not exist on Class $apiClass.");
+       }
 
-     $this->io()->table(['Name', 'Value'], $this->objectToTableRows($object));
+       // Same as call_user_func_array, only faster!
+       // @see https://www.php.net/manual/en/function.call-user-func-array.php#117655
+       $object = $api->{$apiMethod}(...$apiMethodArgs);
+
+       $this->io()->table(['Name', 'Value'], $this->objectToTableRows($object));
+
+     } catch (\ArgumentCountError $e) {
+       $this->io()->error('GitHub API Request failed: ' . $e->getMessage());
+       return 1;
+
+     } catch (\Exception $e) {
+       $this->io()->error('GitHub API Request failed: ' . $e->getMessage());
+
+       if ($this->io()->isDebug()) {
+         $this->io()->warning($e->getTraceAsString());
+       }
+
+       return 1;
+     }
+//
   }
 
   /**
