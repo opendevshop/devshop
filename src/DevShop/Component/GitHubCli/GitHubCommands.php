@@ -19,15 +19,30 @@ class GitHubCommands extends \Robo\Tasks
 
 
   /**
+   * Send an API request.
+   *
    * @command api
+   *
+   * @param $apiName string The name of the specific API to use. See https://github.com/KnpLabs/php-github-api/blob/master/lib/Github/Client.php#L166 for available options.
+   * @param $apiMethod string The API method to call. Depends on the API used. Common methods include show, create, update, remove. See the available AbstractAPI classes at https://github.com/KnpLabs/php-github-api/tree/master/lib/Github/Api.
+   * @param $apiMethodArgs string All additional arguments are passed to the apiMethod.
+   *
+   * @see \Github\Client
+   * @see \Github\Client::api()
    */
-  public function api($apiName, $apiMethod = 'show', $arg1 = null, $arg2 = null,  $arg3 = null,  $arg4 = null, $opts = [])
+  public function api($apiName, $apiMethod = 'show', array $apiMethodArgs)
   {
-     $object = $this->cli->api($apiName)->{$apiMethod}($arg1, $arg2, $arg3, $arg4);
+     $api = $this->cli->api($apiName);
+
+     // When using call_user_func_array on objects, the first $para_arr must be the object method.
+     $object = call_user_func_array(array($api, $apiMethod), $apiMethodArgs);
+
      $this->io()->table(['Name', 'Value'], $this->objectToTableRows($object));
   }
 
   /**
+   * Show the data for the currently authenticated user. (The owner of the token.)
+   *
    * @command whoami
    */
   public function whoami()
@@ -37,6 +52,8 @@ class GitHubCommands extends \Robo\Tasks
      * @var \Github\Api\CurrentUser
      */
     $user = $this->cli->api('me')->show();
+
+    // @TODO: Add a "format" option to return json, yml, or pretty
     $this->io()->table(['Name', 'Value'], $this->objectToTableRows($user));
     return 0;
   }
@@ -47,7 +64,7 @@ class GitHubCommands extends \Robo\Tasks
    *
    * @return array
    */
-  function objectToTableRows($obj) {
+   private function objectToTableRows($obj) {
     $rows = [];
     foreach ($obj as $name => $value) {
       if (!is_array($value)) {
