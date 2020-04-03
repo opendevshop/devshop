@@ -2,6 +2,8 @@
 
 namespace DevShop\Component\GitHubCli;
 
+use Symfony\Component\Yaml\Yaml;
+
 class GitHubCommands extends \Robo\Tasks
 {
 
@@ -156,13 +158,11 @@ class GitHubCommands extends \Robo\Tasks
         $rows[] = [$name, $value];
       }
       else {
-        $cell = '';
-        foreach ((array) $value as $name_2 => $value_2) {
-          $cell .= "$name_2: $value_2\n";
-        }
-        $rows[] = [$name, $cell];
+        $rows[] = [$name, Yaml::dump($value, 4, 4, Yaml::DUMP_OBJECT_AS_MAP)];
       }
     }
     return $this->io()->table($headers, $rows);
   }
+
 }
+
