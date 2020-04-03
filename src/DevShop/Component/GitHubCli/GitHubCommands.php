@@ -117,9 +117,15 @@ class GitHubCommands extends \Robo\Tasks
              throw new InvalidOptionException('--param options must be in the format NAME=VALUE.');
            }
            else {
+             // If the param value has a comma, turn it into an array.
+             // Some github params need to be arrays.
+             if (strpos($param_pair[1], ',') !== FALSE) {
+               $param_pair[1] = array_filter(explode(',', trim($param_pair[1])));
+             }
              $params[$param_pair[0]] = $param_pair[1];
            }
          }
+
          $apiMethodArgs[] = $params;
        }
 
