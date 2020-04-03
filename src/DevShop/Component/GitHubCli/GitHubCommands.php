@@ -2,6 +2,7 @@
 
 namespace DevShop\Component\GitHubCli;
 
+use Symfony\Component\Console\Exception\InvalidOptionException;
 use Symfony\Component\Yaml\Yaml;
 
 class GitHubCommands extends \Robo\Tasks
@@ -111,8 +112,13 @@ class GitHubCommands extends \Robo\Tasks
        if (!empty($opts['param'])) {
          $params = [];
          foreach ($opts['param'] as $param) {
-           list($name, $value) = explode('=', $param);
-           $params[$name] = $value;
+           $param_pair = explode('=', $param);
+           if (count($param_pair) != 2) {
+             throw new InvalidOptionException('--param options must be in the format NAME=VALUE.');
+           }
+           else {
+             $params[$param_pair[0]] = $param_pair[1];
+           }
          }
          $apiMethodArgs[] = $params;
        }
