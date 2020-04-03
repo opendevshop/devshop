@@ -164,5 +164,5 @@ jobs:
         working-directory: ${{env.working-directory}}
         run: |
           ./github whoami
-          ./github api deployment create opendevshop devshop --param ref=${{env.GITHUB_REF}} --param environment=${{env.HOSTNAME}} --param required_contexts=,
+          ./github api deployment create opendevshop devshop --param ref=${GITHUB_REF} --param environment=${HOSTNAME} --param required_contexts=,
 
