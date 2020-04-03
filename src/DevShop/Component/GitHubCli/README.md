@@ -60,11 +60,52 @@ bin/github whoami
 
 ## Commands
 
-The CLI will abstractly pass all commands to the GitHub API in an abstract manner.
+### `github api`
 
-It also has custom commands like `whoami` that are contained in the GitHubCommands.php file.
+Passes directly to `GitHub\Api\AbstractAPI classes.
 
-Stand by for more.
+```sh
+ ./github api me
+ --------------------------- ---------------------------------------------------------------- 
+  Name                        Value                                                           
+ --------------------------- ---------------------------------------------------------------- 
+  login                       devshopbot                                                      
+  id                          11931385                                                        
+  node_id                     MDQ6VXNlcjExOTMxMzg1                                            
+  avatar_url                  https://avatars2.githubusercontent.com/u/11931385?v=4       
+```
+
+Only "show" works right now, but it should successfully return any object.
+
+```
+/github api user show jonpugh
+ --------------------- ------------------------------------------------------------- 
+  Name                  Value                                                        
+ --------------------- ------------------------------------------------------------- 
+  login                 jonpugh                                                      
+  id                    106420                                                       
+  node_id               MDQ6VXNlcjEwNjQyMA==                                         
+  avatar_url            https://avatars2.githubusercontent.com/u/106420?v=4          
+  gravatar_id                                                                        
+  url                   https://api.github.com/users/jonpugh                         
+  html_url              https://github.com/jonpugh                                   
+  followers_url         https://api.github.com/users/jonpugh/followers               
+```
+
+Load info about an organization:
+
+```
+./github api organization show department-of-veterans-affairs
+ --------------------------- ------------------------------------------------------------------------------------ 
+  Name                        Value                                                                               
+ --------------------------- ------------------------------------------------------------------------------------ 
+  login                       department-of-veterans-affairs                                                      
+  id                          5421563                                                                             
+  node_id                     MDEyOk9yZ2FuaXphdGlvbjU0MjE1NjM=                                                    
+  url                         https://api.github.com/orgs/department-of-veterans-affairs                          
+  repos_url                   https://api.github.com/orgs/department-of-veterans-affairs/repos                    
+```
+
 
 Resources
 ---------
