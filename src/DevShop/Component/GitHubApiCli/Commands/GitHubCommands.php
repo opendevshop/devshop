@@ -219,7 +219,20 @@ class GitHubCommands extends \Robo\Tasks
                             $params[$value] = 1;
                         }
                     }
-                    $apiMethodArgsConfirmed[$arg->name] = array_filter($params);
+
+                    // EDGE CASE: Array parameters.
+                    // Required Contexts: pass an empty array.
+                    if (isset($params['required_contexts'])) {
+                        if (empty($params['required_contexts'])) {
+                            $params['required_contexts'] = [];
+                        }
+                        else {
+                            // @TODO: Support JSON list of required contexts?
+                            $params['required_contexts'] = explode(',', $params['required_contexts']);
+                        }
+                    }
+
+                    $apiMethodArgsConfirmed[$arg->name] = $params;
                 }
                 else {
                     if (empty($default_value)) {
