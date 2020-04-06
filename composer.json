@@ -22,6 +22,7 @@
         "mouf/nodejs-installer": "^1.0",
         "devshop/yaml-tasks": "*",
         "devshop/git-split": "*",
+        "devshop/github-api-cli": "*",
         "cpliakas/git-wrapper": "^1.0",
         "drush/drush": "^8"
     },
@@ -37,6 +38,10 @@
         }
     },
     "repositories": [
+        {
+            "type": "path",
+            "url": "src/DevShop/Component/GitHubApiCli"
+        },
         {
             "type": "path",
             "url": "src/DevShop/Component/GitSplit"
