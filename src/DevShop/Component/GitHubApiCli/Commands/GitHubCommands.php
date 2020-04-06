@@ -86,20 +86,17 @@ class GitHubCommands extends \Robo\Tasks
      * Send an API request.
      *
      * @command api
-     *
-     * @param $apiName string The name of the specific API to use. See
+     * @param string $apiName The name of the specific API to use. See
      *   https://github.com/KnpLabs/php-github-api/blob/master/lib/Github/Client.php#L166
      *   for available options.
-     * @param $apiMethod string The API method to call. Depends on the API
+     * @param string $apiMethod The API method to call. Depends on the API
      *   used.
      *   Common methods include show, create, update, remove. See the available
      *   AbstractAPI classes at
      *   https://github.com/KnpLabs/php-github-api/tree/master/lib/Github/Api.
-     * @param $apiMethodArgs string All additional arguments are passed to the
+     * @param string $apiMethodArgs All additional arguments are passed to the
      *   apiMethod.
-     *
-     * @option param Add a parameter to pass to the API method in the format
-     *   NAME=VALUE.
+     * @option param Add a parameter to pass to the API method in the format NAME=VALUE.
      *
      * @see \Github\Client
      * @see \Github\Client::api()
@@ -108,7 +105,9 @@ class GitHubCommands extends \Robo\Tasks
       $apiName = null,
       $apiMethod = null,
       array $apiMethodArgs,
-      $opts = ['param' => []]
+      $opts = [
+        'param|p' => [],
+      ]
     ) {
         if (!$apiName) {
             $apiName = $this->io()->choice(
