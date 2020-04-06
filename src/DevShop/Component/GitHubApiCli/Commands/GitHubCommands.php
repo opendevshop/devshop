@@ -170,11 +170,10 @@ class GitHubCommands extends \Robo\Tasks
 
             // Validate the number of arguments with reflection.
             $reflection = new \ReflectionMethod($apiClass, $apiMethod);
-            $i = 0;
             $apiMethodArgsConfirmed = [];
 
             // Confirm arguments
-            foreach ($reflection->getParameters() as $arg)
+            foreach ($reflection->getParameters() as $i => $arg)
             {
                 $default_value = !empty($apiMethodArgs[$i])? $apiMethodArgs[$i]: '';
                 $apiMethodArgsConfirmed[] = $this->askDefault($arg->name, $default_value);
