@@ -170,18 +170,59 @@ class GitHubCommands extends \Robo\Tasks
 
             // Validate the number of arguments with reflection.
             $reflection = new \ReflectionMethod($apiClass, $apiMethod);
+            $parameters = $reflection->getParameters();
+
             $apiMethodArgsConfirmed = [];
 
+            $this->yell("Confirming parameters for: $apiClass::$apiMethod()");
+
             // Confirm arguments
-            foreach ($reflection->getParameters() as $i => $arg)
+            foreach ($parameters as $i => $arg)
             {
                 $default_value = !empty($apiMethodArgs[$i])? $apiMethodArgs[$i]: '';
-                $apiMethodArgsConfirmed[] = $this->askDefault($arg->name, $default_value);
+
+                // If Method parameter is expecting an array, ask for multiple params.
+                $type = $arg->getType();
+                if ($type == 'array') {
+                    // The last value given.
+                    $value = 'none';
+
+                    // The list of all values given.
+                    $values = [];
+
+                    // Keep asking until empty value.
+                    while (!empty($value)) {
+                        $value = $this->ask($arg->name . ' (Enter as many as needed. Leave blank to continue.)');
+                        if (empty($value)) continue;
+
+                        // If param has =, explode.
+                        if (strpos($value, '=') !== FALSE) {
+                            list($key, $value) = explode('=', $value);
+                            $values[$key] = $value;
+                        }
+                        // If not, just set to true.
+                        else {
+                            $values[$value] = 1;
+                        }
+                    }
+                    $apiMethodArgsConfirmed[$arg->name] = array_filter($values);
+                }
+                else {
+                    if (empty($default_value)) {
+                        $apiMethodArgsConfirmed[$arg->name] = $this->ask($arg->name);
+                    }
+                    else {
+                        $apiMethodArgsConfirmed[$arg->name] = $this->askDefault($arg->name, $default_value);
+                    }
+                }
             }
+
+            $this->objectTable($apiMethodArgsConfirmed, [$apiClass, $apiMethod]);
 
             // Same as call_user_func_array, only faster!
             // @see https://www.php.net/manual/en/function.call-user-func-array.php#117655
-            $results = $api->{$apiMethod}(...$apiMethodArgsConfirmed);
+            $apiMethodArgs = array_values($apiMethodArgsConfirmed);
+            $results = $api->{$apiMethod}(...$apiMethodArgs);
 
             // Handle all variable types.
             if (is_object($results)) {
