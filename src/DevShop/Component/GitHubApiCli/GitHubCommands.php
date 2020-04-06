@@ -232,14 +232,33 @@ class GitHubCommands extends \Robo\Tasks
      */
     private function objectTable($object, $headers = [])
     {
+
+        // Handle all variable types.
+        if (is_object($object)) {
+            $this->say(get_class($object));
+
+            if (method_exists($object , 'all')) {
+                $items = $object->all();
+            }
+            else {
+                $items = (array) $object;
+            }
+        }
+        elseif (is_array($object)) {
+            $items = $object;
+        }
+        else {
+            $items= [$object];
+        }
+
         $rows = [];
-        foreach ((array)$object as $name => $value) {
+        foreach ($items as $name => $value) {
             if (is_scalar($value)) {
                 $rows[] = [$name, $value];
             } else {
                 $rows[] = [
-                  $name,
-                  Yaml::dump($value, 4, 4, Yaml::DUMP_OBJECT_AS_MAP),
+                    $name,
+                    Yaml::dump($value, 4, 4, Yaml::DUMP_OBJECT_AS_MAP),
                 ];
             }
         }
