@@ -1,20 +1,20 @@
 <?php
 
-namespace DevShop\Component\GitHubCli;
+namespace DevShop\Component\GitHubApiCli;
 
-use Github\Client as GitHubClient;
+use Github\Client as GitHubApiClient;
 
-class GitHubCli
+class GitHubApiCli
 {
   protected $apiToken;
 
   /**
-   * @var GitHubClient
+   * @var GitHubApiClient
    */
   private $apiClient;
 
   /**
-   * GitHubCLI constructor
+   * GitHubApiCli constructor
    *
    * @param $apiToken String GitHub API Token. If not passed, will look for
    *    GTIHUB_TOKEN environment variable.
@@ -29,9 +29,9 @@ class GitHubCli
     }
 
     // Setup GitHub API client
-    $this->apiClient = new GitHubClient();
+    $this->apiClient = new GitHubApiClient();
     // @TODO: Allow password auth?
-    $this->apiClient->authenticate($this->getToken(), null, GitHubClient::AUTH_HTTP_TOKEN);
+    $this->apiClient->authenticate($this->getToken(), null, GitHubApiClient::AUTH_HTTP_TOKEN);
 
     // Set options or headers from CLI or config options.
     // @see Client::options

@@ -1,7 +1,7 @@
-GitHubCli Component
+GitHub API CLI Component
 =================
 
-The GitHubCli component a simple console wrapper for the GitHub API to allow 
+The GitHubApiCli component a simple console wrapper for the GitHub API to allow 
 abstract command line interaction.
 
 Built on knp-labs/github-api.
@@ -9,7 +9,7 @@ Built on knp-labs/github-api.
 ## Usage
 
 ```
-composer require devshop/github-cli
+composer require devshop/github-api-cli
 export GITHUB_TOKEN=aRealToken
 bin/github whoami
 

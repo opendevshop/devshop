@@ -26,10 +26,11 @@ $classLoader = require $autoloaderPath;
 $argv = $_SERVER['argv'];
 $appName = "DevShop GitHub CLI";
 $appVersion = trim(file_get_contents(__DIR__ . '/VERSION'));
-$commandClasses = [ \DevShop\Component\GitHubCli\GitHubCommands::class ];
-$selfUpdateRepository = 'devshop-packages/github-cli';
+
+$commandClasses = [ \DevShop\Component\GitHubApiCli\GitHubCommands::class ];
+$selfUpdateRepository = 'devshop-packages/github-api-cli';
 $configPrefix = 'DEVSHOP_GITHUB_CLI';
-$configFilePath = getenv($configPrefix . '_CONFIG') ?: getenv('HOME') . '/.devshop/github-cli.yml';
+$configFilePath = getenv($configPrefix . '_CONFIG') ?: getenv('HOME') . '/.devshop/github-api-cli.yml';
 
 // Define our Runner, and pass it the command classes we provide.
 $runner = new \Robo\Runner($commandClasses);

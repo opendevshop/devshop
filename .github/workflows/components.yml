@@ -111,8 +111,8 @@ jobs:
           ./run composer install --prefer-dist --no-progress --no-suggest
           ./demo.php
 
-  github-cli:
-    name: devshop/github-cli
+  github-api-cli:
+    name: devshop/github-api-cli
 
     runs-on: ubuntu-latest
     strategy:
@@ -123,7 +123,7 @@ jobs:
 
     # Set working directory for entire file. https://github.community/t5/GitHub-Actions/use-working-directory-for-entire-job/td-p/36759
     env:
-      working-directory: ./src/DevShop/Component/GitHubCli
+      working-directory: ./src/DevShop/Component/GitHubApiCli
 
     steps:
       - uses: actions/checkout@v1

@@ -1,5 +1,5 @@
 {
-  "name": "devshop/github-cli",
+  "name": "devshop/github-api-cli",
   "type": "library",
   "description": "Simple console wrapper for GitHub API",
   "keywords": [],
@@ -26,7 +26,7 @@
   },
   "autoload": {
     "psr-4": {
-      "DevShop\\Component\\GitHubCli\\": ""
+      "DevShop\\Component\\GitHubApiCli\\": ""
     }
   },
   "bin": [

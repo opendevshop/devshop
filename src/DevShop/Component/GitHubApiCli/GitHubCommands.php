@@ -1,6 +1,6 @@
 <?php
 
-namespace DevShop\Component\GitHubCli;
+namespace DevShop\Component\GitHubApiCli;
 
 use Symfony\Component\Console\Exception\InvalidOptionException;
 use Symfony\Component\Yaml\Yaml;
@@ -9,7 +9,7 @@ class GitHubCommands extends \Robo\Tasks
 {
 
   /**
-   * @var \DevShop\Component\GitHubCli\GitHubCli
+   * @var \DevShop\Component\GitHubApiCli\GitHubApiCli
    */
   protected $cli;
 
@@ -17,7 +17,7 @@ class GitHubCommands extends \Robo\Tasks
    * GitHubCommands constructor.
    */
   public function __construct() {
-    $this->cli = new GitHubCli();
+    $this->cli = new GitHubApiCli();
   }
 
   /**
