@@ -1,7 +1,8 @@
 <?php
 
-namespace DevShop\Component\GitHubApiCli;
+namespace DevShop\Component\GitHubApiCli\Commands;
 
+use DevShop\Component\GitHubApiCli\GitHubApiCli;
 use Symfony\Component\Console\Exception\InvalidOptionException;
 use Symfony\Component\Yaml\Yaml;
 
