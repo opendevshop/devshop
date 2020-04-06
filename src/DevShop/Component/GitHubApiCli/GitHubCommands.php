@@ -181,8 +181,8 @@ class GitHubCommands extends \Robo\Tasks
 
             // Same as call_user_func_array, only faster!
             // @see https://www.php.net/manual/en/function.call-user-func-array.php#117655
-            $object = $api->{$apiMethod}(...$apiMethodArgsConfirmed);
-            $this->objectTable($object, ["API Name: ".$apiName, $apiMethod]);
+            $results = $api->{$apiMethod}(...$apiMethodArgsConfirmed);
+            $this->objectTable($results, ["API: ".$apiName, $apiMethod]);
 
         } catch (\ArgumentCountError $e) {
 
@@ -254,7 +254,10 @@ class GitHubCommands extends \Robo\Tasks
         $rows = [];
         foreach ($items as $name => $value) {
             if (is_scalar($value)) {
-                $rows[] = [$name, $value];
+                $rows[] = [
+                  $name,
+                  $value
+                ];
             } else {
                 $rows[] = [
                     $name,
