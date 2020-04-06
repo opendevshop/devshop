@@ -167,14 +167,26 @@ class GitHubCommands extends \Robo\Tasks
                 $apiMethodArgs[] = $params;
             }
 
+            // Validate the number of arguments with reflection.
+            $reflection = new \ReflectionMethod($apiClass, $apiMethod);
+            $i = 0;
+            $apiMethodArgsConfirmed = [];
+
+            // Confirm arguments
+            foreach ($reflection->getParameters() as $arg)
+            {
+                $default_value = !empty($apiMethodArgs[$i])? $apiMethodArgs[$i]: '';
+                $apiMethodArgsConfirmed[] = $this->askDefault($arg->name, $default_value);
+            }
+
             // Same as call_user_func_array, only faster!
             // @see https://www.php.net/manual/en/function.call-user-func-array.php#117655
-            $object = $api->{$apiMethod}(...$apiMethodArgs);
+            $object = $api->{$apiMethod}(...$apiMethodArgsConfirmed);
             $this->objectTable($object, ["API Name: ".$apiName, $apiMethod]);
 
         } catch (\ArgumentCountError $e) {
 
-            $this->io()->error('GitHub API Request failed: '.$e->getMessage());
+            $this->io()->error('Command failed: '.$e->getMessage());
 
             return 1;
 
