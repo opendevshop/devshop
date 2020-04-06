@@ -182,6 +182,38 @@ class GitHubCommands extends \Robo\Tasks
             // Same as call_user_func_array, only faster!
             // @see https://www.php.net/manual/en/function.call-user-func-array.php#117655
             $results = $api->{$apiMethod}(...$apiMethodArgsConfirmed);
+
+            // Handle all variable types.
+            if (is_object($results)) {
+                $this->say(get_class($results));
+
+                // Get methods on the class they chose.
+                $methods = [];
+                $reflectionClass = new \ReflectionClass($results);
+                foreach ($reflectionClass->getMethods() as $method) {
+                    $methods[] = $method->getName();
+                }
+
+                $method = $this->io()->choice("API Method?", $methods, key($methods));
+
+                // @TODO: Ask for args, if any.
+                $params= [];
+                $reflectionMethod = new \ReflectionMethod($apiClass, $method);
+                foreach ($reflectionMethod->getParameters() as $arg) {
+                    $params[] = $this->ask($arg->name);
+                }
+
+                $results = $results->{$method}(...$params);
+
+
+            }
+            elseif (is_array($results)) {
+                $items = $results;
+            }
+            else {
+                $items= [$results];
+            }
+
             $this->objectTable($results, ["API: ".$apiName, $apiMethod]);
 
         } catch (\ArgumentCountError $e) {
@@ -230,27 +262,8 @@ class GitHubCommands extends \Robo\Tasks
      *
      * @return array
      */
-    private function objectTable($object, $headers = [])
+    private function objectTable($items, $headers = [])
     {
-
-        // Handle all variable types.
-        if (is_object($object)) {
-            $this->say(get_class($object));
-
-            if (method_exists($object , 'all')) {
-                $items = $object->all();
-            }
-            else {
-                $items = (array) $object;
-            }
-        }
-        elseif (is_array($object)) {
-            $items = $object;
-        }
-        else {
-            $items= [$object];
-        }
-
         $rows = [];
         foreach ($items as $name => $value) {
             if (is_scalar($value)) {
