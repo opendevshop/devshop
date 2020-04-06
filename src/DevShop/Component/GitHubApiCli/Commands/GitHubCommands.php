@@ -187,7 +187,22 @@ class GitHubCommands extends \Robo\Tasks
                     $value = 'none';
 
                     // The list of all values given.
-                    $values = [];
+                    $params = [];
+
+                    // Confirm existing params first
+                    foreach ($default_value as $paramName => $paramValue) {
+                        $value = $this->askDefault("{$arg->name} (Enter as many as needed. Leave blank to continue.)", "{$paramName}={$paramValue}");
+
+                        // If param has =, explode.
+                        if (strpos($value, '=') !== FALSE) {
+                            list($key, $value) = explode('=', $value);
+                            $params[$key] = $value;
+                        }
+                        // If not, just set to true.
+                        else {
+                            $params[$value] = 1;
+                        }
+                    }
 
                     // Keep asking until empty value.
                     while (!empty($value)) {
@@ -197,14 +212,14 @@ class GitHubCommands extends \Robo\Tasks
                         // If param has =, explode.
                         if (strpos($value, '=') !== FALSE) {
                             list($key, $value) = explode('=', $value);
-                            $values[$key] = $value;
+                            $params[$key] = $value;
                         }
                         // If not, just set to true.
                         else {
-                            $values[$value] = 1;
+                            $params[$value] = 1;
                         }
                     }
-                    $apiMethodArgsConfirmed[$arg->name] = array_filter($values);
+                    $apiMethodArgsConfirmed[$arg->name] = array_filter($params);
                 }
                 else {
                     if (empty($default_value)) {
