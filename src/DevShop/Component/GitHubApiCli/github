@@ -27,7 +27,9 @@ $argv = $_SERVER['argv'];
 $appName = "DevShop GitHub CLI";
 $appVersion = trim(file_get_contents(__DIR__ . '/VERSION'));
 
-$commandClasses = [ \DevShop\Component\GitHubApiCli\Commands\GitHubCommands::class ];
+$commandClasses[] = \DevShop\Component\GitHubApiCli\Commands\GitHubCommands::class;
+$commandClasses[] = \DevShop\Component\GitHubApiCli\Commands\DeploymentsCommands::class;
+
 $selfUpdateRepository = 'devshop-packages/github-api-cli';
 $configPrefix = 'DEVSHOP_GITHUB_CLI';
 $configFilePath = getenv($configPrefix . '_CONFIG') ?: getenv('HOME') . '/.devshop/github-api-cli.yml';
