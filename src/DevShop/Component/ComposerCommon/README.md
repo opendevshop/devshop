@@ -1,8 +1,15 @@
-DevShop Common
+DevShop Composer Common
 =========================
 
-The DevShop Common component contains code that is needed by most devshop 
-components.
+The DevShop Composer Common component contains code that might be useful for any 
+composer-based project.
+
+Tools
+-----
+
+### GitRepositoryAwareTrait
+
+A PHP Trait that gives any class awareness of the Git Repository it resides in.
 
 Resources
 ---------

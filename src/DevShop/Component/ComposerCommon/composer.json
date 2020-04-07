@@ -1,7 +1,7 @@
 {
-  "name": "devshop/common",
+  "name": "devshop/common-composer",
   "type": "library",
-  "description": "Code common to all DevShop Components",
+  "description": "Tools useful for any composer-based project.",
   "keywords": [],
   "homepage": "https://getdevshop.com",
   "license": "MIT",
@@ -26,7 +26,7 @@
   },
   "autoload": {
     "psr-4": {
-      "DevShop\\Component\\DevShopCommon\\": ""
+      "DevShop\\Component\\Common\\": "src/"
     }
   },
   "bin": [
