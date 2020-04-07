@@ -7,9 +7,10 @@ composer-based project.
 Tools
 -----
 
-### GitRepositoryAwareTrait
+### RepositoryAwareTrait
 
-A PHP Trait that gives any class awareness of the Git Repository it resides in.
+A PHP Trait that gives any class awareness of the Git Repository it resides in 
+using the PHP Stream Wrapper for Git from https://github.com/teqneers/PHP-Stream-Wrapper-for-Git.
 
 Resources
 ---------
