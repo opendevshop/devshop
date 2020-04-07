@@ -1,5 +1,5 @@
 {
-  "name": "devshop/common-composer",
+  "name": "devshop/composer-common",
   "type": "library",
   "description": "Tools useful for any composer-based project.",
   "keywords": [],
