@@ -11,7 +11,7 @@ env:
 
 jobs:
   yaml-tasks:
-    name: devshop/yaml-tasks
+    name: YamlTasks
 
     runs-on: ubuntu-latest
 
@@ -62,7 +62,7 @@ jobs:
         ./yaml-tasks --tasks-file tests.yml --ansi -v --hostname=github.com --status-url=https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}?check_suite_focus=true
 
   power-process:
-    name: devshop/power-process
+    name: PowerProcess
 
     runs-on: ubuntu-latest
     strategy:
@@ -115,7 +115,7 @@ jobs:
           ./demo.php
 
   github-api-cli:
-    name: devshop/github-api-cli
+    name: GitHubApiCli
 
     runs-on: ubuntu-latest
     strategy:
@@ -172,7 +172,7 @@ jobs:
 
 
   ComposerCommon:
-    name: devshop/composer-common
+    name: ComposerCommon
 
     runs-on: ubuntu-latest
     strategy:
