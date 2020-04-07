@@ -12,6 +12,7 @@ env:
 
   # DEBUG_COMMAND is run
   DEBUG_COMMAND: "docker-compose exec -T devshop systemctl status --no-pager"
+  GITHUB_TOKEN: ${{ secrets.INPUT_GITHUB_TOKEN }}
 
 jobs:
   test:
