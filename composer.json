@@ -24,7 +24,7 @@
         "devshop/git-split": "*",
         "devshop/github-api-cli": "*",
         "cpliakas/git-wrapper": "^1.0",
-        "drush/drush": "^8",
+        "drush/drush": "^8 || ^10",
         "ext-json": "*"
     },
     "require-dev": {
