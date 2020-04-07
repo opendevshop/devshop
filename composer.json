@@ -22,8 +22,10 @@
         "mouf/nodejs-installer": "^1.0",
         "devshop/yaml-tasks": "*",
         "devshop/git-split": "*",
+        "devshop/github-api-cli": "*",
         "cpliakas/git-wrapper": "^1.0",
-        "drush/drush": "^8"
+        "drush/drush": "^8",
+        "ext-json": "*"
     },
     "require-dev": {
         "composer/composer": "^1.9"
@@ -37,6 +39,10 @@
         }
     },
     "repositories": [
+        {
+            "type": "path",
+            "url": "src/DevShop/Component/GitHubApiCli"
+        },
         {
             "type": "path",
             "url": "src/DevShop/Component/GitSplit"
@@ -65,6 +71,7 @@
                 "roles/opendevshop.apache": "https://github.com/opendevshop/ansible-role-apache.git",
                 "roles/opendevshop.devmaster": "https://github.com/opendevshop/ansible-role-devmaster.git",
                 "roles/opendevshop.users": "https://github.com/opendevshop/ansible-role-user.git",
+                "src/DevShop/Component/GitHubApiCli": "https://github.com/devshop-packages/github-api-cli.git",
                 "src/DevShop/Component/GitSplit": "https://github.com/devshop-packages/git-split.git",
                 "src/DevShop/Component/PowerProcess": "https://github.com/devshop-packages/power-process.git",
                 "src/DevShop/Component/YamlTasks": "https://github.com/devshop-packages/yaml-tasks.git"

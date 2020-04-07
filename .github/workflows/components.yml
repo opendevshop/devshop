@@ -6,6 +6,9 @@ on:
   pull_request:
     types: [opened, synchronize]
 
+env:
+  GITHUB_TOKEN: ${{ secrets.INPUT_GITHUB_TOKEN }}
+
 jobs:
   yaml-tasks:
     name: devshop/yaml-tasks
@@ -110,3 +113,60 @@ jobs:
         run: |
           ./run composer install --prefer-dist --no-progress --no-suggest
           ./demo.php
+
+  github-api-cli:
+    name: devshop/github-api-cli
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-versions:
+          # - '5.6'
+          - '7.1'
+
+    # Set working directory for entire file. https://github.community/t5/GitHub-Actions/use-working-directory-for-entire-job/td-p/36759
+    env:
+      working-directory: ./src/DevShop/Component/GitHubApiCli
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Install PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-versions }}
+      #            extensions: intl #optional
+      #            ini-values: "post_max_size=256M" #optional
+
+      - name: Check PHP Version
+        run: php -v
+
+      - name: Get Composer Cache Directory
+        id: composer-cache
+        run: |
+          echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+      - uses: actions/cache@v1
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      - name: Validate composer.json and composer.lock
+        run: composer validate
+        working-directory: ${{env.working-directory}}
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-suggest
+        working-directory: ${{env.working-directory}}
+
+      - name: Test GitHub Cli
+        env:
+          GITHUB_TOKEN: ${{ secrets.INPUT_GITHUB_TOKEN }}
+        working-directory: ${{env.working-directory}}
+        run: |
+          env
+          ./github whoami
+          ./github api deployment create opendevshop devshop --param ref=${GITHUB_HEAD_REF} --param environment=actions.github.com --param required_contexts= -n
+

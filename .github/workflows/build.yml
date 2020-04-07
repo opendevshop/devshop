@@ -13,6 +13,7 @@ env:
   ANSIBLE_VERBOSITY: 0
   COMPOSE_FILE: "docker-compose.yml:docker-compose.tests.yml"
   DEBUG_COMMAND: "docker-compose exec -T devshop systemctl status --no-pager"
+  GITHUB_TOKEN: ${{ secrets.INPUT_GITHUB_TOKEN }}
 
 jobs:
   build:
@@ -43,6 +44,8 @@ jobs:
 
     runs-on: ubuntu-18.04
     steps:
+
+    # @TODO: Implement a github-api-cli generated CURL command to notify GitHub that a deployment has started.
 
     - name: Prepare CI (ubuntu)
       if: matrix.os == 'ubuntu1804'

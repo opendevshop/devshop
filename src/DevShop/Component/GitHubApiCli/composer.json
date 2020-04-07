@@ -1,0 +1,36 @@
+{
+  "name": "devshop/github-api-cli",
+  "type": "library",
+  "description": "Simple console wrapper for GitHub API",
+  "keywords": [],
+  "homepage": "https://getdevshop.com",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Jon Pugh",
+      "email": "jon@thinkdrop.net"
+    },
+    {
+      "name": "DevShop Community",
+      "homepage": "https://github.com/opendevshop/devshop/graphs/contributors"
+    }
+  ],
+  "require": {
+    "php": "^7.1",
+    "consolidation/robo": "^1.0",
+    "knplabs/github-api": "^1.0"
+  },
+  "require-dev": {
+  },
+  "extra": {
+  },
+  "autoload": {
+    "psr-4": {
+      "DevShop\\Component\\GitHubApiCli\\": ""
+    }
+  },
+  "bin": [
+    "github"
+  ],
+  "minimum-stability": "dev"
+}
