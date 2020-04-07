@@ -18,7 +18,12 @@ trait GitRepositoryAwareTrait
      */
     public function setRepository(Repository $repository = NULL)
     {
-        $this->repository = $repository;
+        if ($repository) {
+            $this->repository = $repository;
+        }
+        else {
+            $this->repository = Repository::open(__DIR__);;
+        }
 
         return $this;
     }
