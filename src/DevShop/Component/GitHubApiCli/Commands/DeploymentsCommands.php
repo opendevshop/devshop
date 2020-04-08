@@ -63,7 +63,7 @@ class DeploymentsCommands extends \Robo\Tasks
         $params = [
           'ref' => $opts['ref']?: $this->getRepository()->getCurrentCommit(),
           'description' => $opts['description'],
-          'environment' => $opts['environment'],
+          'environment' => $opts['environment']?: $this->getEnvironmentName(),
           'required_contexts' => $opts['required_contexts'],
         ];
 
@@ -147,5 +147,21 @@ class DeploymentsCommands extends \Robo\Tasks
      */
     public function deploymentDelete() {
 
+    }
+
+    /**
+     * Helper to dynamically generate environment names.
+     */
+    private function getEnvironmentName() {
+
+        // In GitHub Actions:
+        if (getenv('GITHUB_EVENT_PATH')) {
+            $event = json_decode(file_get_contents(getenv('GITHUB_EVENT_PATH')));
+            $pull_request_number = $event->pull_request->number;
+            return "pr{$pull_request_number}";
+        }
+        else {
+            return shell_exec('hostname -f');
+        }
     }
 }
