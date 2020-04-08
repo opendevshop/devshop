@@ -207,7 +207,7 @@ class DeploymentsCommands extends \Robo\Tasks
      */
     private function paramsFromOpts($opts, $allowed_params = self::GITHUB_DEPLOYMENT_PARAMS) {
         return array_filter($opts, function ($value, $key) use ($allowed_params) {
-            return !empty($value) && in_array($key, $allowed_params);
+            return in_array($key, $allowed_params) && (!empty($value) || is_array($value));
         }, ARRAY_FILTER_USE_BOTH);
     }
 
