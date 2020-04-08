@@ -17,6 +17,7 @@ if (
 }
 
 use DevShop\Component\Common\GitRepositoryAwareTrait;
+use DevShop\Component\Common\GitHubRepositoryAwareTrait;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Robo\Common\OutputAwareTrait;
 use Robo\Common\IO;
@@ -24,11 +25,19 @@ use Robo\Common\IO;
 class repoInfo {
 
     use GitRepositoryAwareTrait;
+    use GitHubRepositoryAwareTrait;
     use IO;
 
     function __construct()
     {
+        // Set repository to the current git checkout.
         $this->setRepository();
+
+        // Set the GitHub Repo from the git remote.
+        $this->getRepository()->getCurrentRemote();
+        $this->setGitHubRepo($this->getRepository()->getCurrentRemote()['origin']['fetch']);
+
+        // Get a ConsoleOutput object so we can look nice.
         $this->setOutput(new ConsoleOutput());
     }
 
@@ -51,6 +60,11 @@ class repoInfo {
             $rows[] = [$branch];
         }
         $this->io()->table(["Repo Branches"], $rows);
+
+        $this->io()->table(["GitHub Repo Information"], [
+          ['GitHub Repo Owner', $this->getRepoOwner()],
+          ['GitHub Repo Name', $this->getRepoName()],
+        ]);
 
     }
 }
