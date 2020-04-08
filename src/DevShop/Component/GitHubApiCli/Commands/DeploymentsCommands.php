@@ -2,6 +2,7 @@
 
 namespace DevShop\Component\GitHubApiCli\Commands;
 
+use DevShop\Component\Common\GitHubRepositoryAwareTrait;
 use DevShop\Component\GitHubApiCli\GitHubApiCli;
 use DevShop\Component\Common\GitRepositoryAwareTrait;
 
@@ -9,6 +10,7 @@ class DeploymentsCommands extends \Robo\Tasks
 {
 
     use GitRepositoryAwareTrait;
+    use GitHubRepositoryAwareTrait;
 
     /**
      * @var \DevShop\Component\GitHubApiCli\GitHubApiCli
@@ -41,7 +43,16 @@ class DeploymentsCommands extends \Robo\Tasks
           ['Current Commit', $this->getRepository()->getCurrentCommit()],
         ]);
 
+        $this->io()->table(["GitHub Repo Information"], [
+          ['GitHub Repo Owner', $this->getRepoOwner()],
+          ['GitHub Repo Name', $this->getRepoName()],
+        ]);
 
+        $this->cli->api('deployments')->create($this->getRepoOwner(), $this->getRepoName(), [
+          'description' => '',
+          'environment' => '',
+          'required_contexts' => ''
+        ]);
 
     }
 
