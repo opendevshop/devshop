@@ -34,17 +34,30 @@ class DeploymentsCommands extends \Robo\Tasks
     }
 
     /**
-     * Start a deployment.
+     * Start (create) a deployment.
      * @see https://developer.github.com/v3/repos/deployments/#create-a-deployment
      *
-     * Custom command:
-     * github api deployment create opdendevshop devshop -p ref=component/github-cli -p description='COMMAND LINE DEPLOY!' -p environment=localhost -p required_contexts=
+     * @option ref Required. The ref to deploy. This can be a branch, tag, or SHA.
+     *   If left blank, the currently checked out SHA will be used, if available.
+     * @option task	Specifies a task to execute (e.g., deploy or deploy:migrations). Default: deploy
+     * @option auto_merge	Attempts to automatically merge the default branch into the requested ref, if it's behind the default branch. Default: true
+     * @option required_contexts	The status contexts to verify against commit status checks. If you omit this parameter, GitHub verifies all unique contexts before creating a deployment. To bypass checking entirely, pass an empty array. Defaults to all unique contexts.
+     * @option payload	JSON payload with extra information about the deployment. Default: ""
+     * @option environment	Name for the target deployment environment (e.g., production, staging, qa). Default: production
+     * @option description	Short description of the deployment. Default: ""
+     * @option transient_environment	Specifies if the given environment is specific to the deployment and will no longer exist at some point in the future. Default: false
+     * @option production_environment	Specifies if the given environment is one that end-users directly interact with. Default: true when environment is production and false otherwise.
      */
     public function deploymentStart($opts = [
-      'description' => null,
-      'environment' => null,
-      'required_contexts' => [],
       'ref' => null,
+      'task' => 'deploy',
+      'auto_merge' => true,
+      'required_contexts' => [],
+      'payload' => null,
+      'environment' => null,
+      'description' => null,
+      'transient_environment' => false,
+      'production_environment' => false,
     ]) {
 
         $this->io()->section('Start Deployment');
