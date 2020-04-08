@@ -53,6 +53,9 @@ jobs:
       working-directory: ${{env.working-directory}}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}
+        GITHUB_RUN_LOG_URL: https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}?check_suite_focus=true
+
         # @TODO: Get environment variable setting to work.
         # YAML_TASKS_STATUS_URL: https://github.com/${GITHUB_REPOSITORY}/runs/${GITHUB_RUN_ID}?check_suite_focus=true
         PROVISION_PROCESS_OUTPUT: direct
@@ -168,7 +171,8 @@ jobs:
         run: |
           env
           ./github whoami
-          ./github deployment:start --environment=actions.github.com --description="DevShop GitHubApiCli Actions Tests" -n
+          ./github deployment:start --environment=pr{$GITHUB_PR_NUMBER}.components.githubApi --description="DevShop GitHubApiCli Actions Tests" -n
+          ./github deployment:update --description="DevShop GitHubApiCli Actions Tests: Done" --state=success -n
 
   ComposerCommon:
     name: ComposerCommon
