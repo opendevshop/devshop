@@ -24,7 +24,6 @@ use Robo\Common\IO;
 
 class repoInfo {
 
-    use GitRepositoryAwareTrait;
     use GitHubRepositoryAwareTrait;
     use IO;
 

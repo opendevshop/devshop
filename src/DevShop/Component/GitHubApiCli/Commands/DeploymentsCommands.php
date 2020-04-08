@@ -9,7 +9,6 @@ use DevShop\Component\Common\GitRepositoryAwareTrait;
 class DeploymentsCommands extends \Robo\Tasks
 {
 
-    use GitRepositoryAwareTrait;
     use GitHubRepositoryAwareTrait;
 
     /**
@@ -25,7 +24,8 @@ class DeploymentsCommands extends \Robo\Tasks
         $this->cli = new GitHubApiCli();
 
         // Make this class aware of it's repo.
-        $this->setRepository();
+        $this->setGitHubRepo();
+
     }
 
     /**
@@ -33,7 +33,12 @@ class DeploymentsCommands extends \Robo\Tasks
      * 1. Create a Deployment and a Deployment status.
      * github api deployment create opdendevshop devshop -p ref=component/github-cli -p description='COMMAND LINE DEPLOY!' -p environment=localhost -p required_contexts=
      */
-    public function deploymentStart() {
+    public function deploymentStart($opts = [
+      'description' => null,
+      'environment' => null,
+      'required_contexts' => [],
+      'ref' => null,
+    ]) {
 
         $this->io()->section('Start Deployment');
         $this->io()->table(["Repo Information"], [
@@ -48,12 +53,21 @@ class DeploymentsCommands extends \Robo\Tasks
           ['GitHub Repo Name', $this->getRepoName()],
         ]);
 
-        $this->cli->api('deployments')->create($this->getRepoOwner(), $this->getRepoName(), [
-          'description' => '',
-          'environment' => '',
-          'required_contexts' => ''
-        ]);
+        $params = [
+          'ref' => $opts['ref']?: $this->getRepository()->getCurrentCommit(),
+          'description' => $opts['description'],
+          'environment' => $opts['environment'],
+          'required_contexts' => $opts['required_contexts'],
+        ];
 
+        print_r($params);
+
+        if ($this->confirm("Start deployment with the above params?")) {
+            $this->cli->api('deployments')->create($this->getRepoOwner(), $this->getRepoName(), $params);
+        }
+        else {
+            throw new \Exception('Deployment cancelled.');
+        }
     }
 
     /**

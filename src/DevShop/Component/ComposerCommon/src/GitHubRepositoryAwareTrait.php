@@ -4,6 +4,9 @@ namespace DevShop\Component\Common;
 
 trait GitHubRepositoryAwareTrait
 {
+
+    use GitRepositoryAwareTrait;
+
     /**
      * @var string
      */
@@ -24,8 +27,13 @@ trait GitHubRepositoryAwareTrait
      *
      * @return $this
      */
-    public function setGitHubRepo(string $repo_url)
+    public function setGitHubRepo(string $repo_url = null)
     {
+        // Default to this repo's fetch URL.
+        if (!$repo_url && isset($this->getRepository()->getCurrentRemote()['origin']['fetch'])) {
+            $repo_url = $this->getRepository()->getCurrentRemote()['origin']['fetch'];
+        }
+
         // Normalize the possible git URLs to https.
         $this->githubRepoUrlNormalized = strtr($repo_url, array(
           'git@github.com:' => 'http://github.com/',
