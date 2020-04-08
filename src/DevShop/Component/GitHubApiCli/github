@@ -1,10 +1,19 @@
 #!/usr/bin/env php
 <?php
 
+/*
+ * This file is part of the DevShop package.
+ *
+ * (c) Jon Pugh <jon@thinkdrop.net
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 /**
- * DevShop GitHub CLI Executable
+ * Runs the github command.
  *
- *
+ * @author Jon Pugh <jon@thinkdrop.net
  */
 
 // If we're running from phar load the phar autoload file.
