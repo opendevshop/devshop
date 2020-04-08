@@ -1,10 +1,19 @@
 #!/usr/bin/env php
 <?php
 
+/*
+ * This file is part of the DevShop package.
+ *
+ * (c) Jon Pugh <jon@thinkdrop.net
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 /**
- * DevShop GitHub CLI Executable
+ * Runs the github command.
  *
- *
+ * @author Jon Pugh <jon@thinkdrop.net
  */
 
 // If we're running from phar load the phar autoload file.
@@ -16,8 +25,13 @@ if ($pharPath) {
     $autoloaderPath = __DIR__.'/vendor/autoload.php';
   } elseif (file_exists(__DIR__.'/../../autoload.php')) {
     $autoloaderPath = __DIR__ . '/../../autoload.php';
+
+  // The path to autoloader when used in side the main devshop repo.
+  } elseif (file_exists(__DIR__.'/../../../../vendor/autoload.php')) {
+    $autoloaderPath = __DIR__ . '/../../../../vendor/autoload.php';
   } else {
-    die("Could not find autoloader. Run 'composer install'.");
+    echo ("Could not find autoloader. Run 'composer install'.");
+    exit(1);
   }
 }
 $classLoader = require $autoloaderPath;
