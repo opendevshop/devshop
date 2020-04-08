@@ -5,6 +5,7 @@ namespace DevShop\Component\GitHubApiCli\Commands;
 use DevShop\Component\Common\GitHubRepositoryAwareTrait;
 use DevShop\Component\GitHubApiCli\GitHubApiCli;
 use DevShop\Component\Common\GitRepositoryAwareTrait;
+use Symfony\Component\Yaml\Yaml;
 use TQ\Vcs\Cli\CallResult;
 
 class DeploymentsCommands extends \Robo\Tasks
@@ -23,6 +24,31 @@ class DeploymentsCommands extends \Robo\Tasks
     const GIT_CONFIG_DEPLOYMENT_ID_NAME = 'devshop.github.deployment.id';
 
     /**
+     * @var array The list of parameters for a Deployment and Deployment Status object.
+     * @TODO: Is it possible to get this list from somewhere else?
+     */
+    const GITHUB_DEPLOYMENT_PARAMS = [
+      'ref',
+      'task',
+      'auto_merge',
+      'required_contexts',
+      'payload',
+      'environment',
+      'description',
+      'transient_environment',
+      'production_environment',
+    ];
+    const GITHUB_DEPLOYMENT_STATUS_PARAMS = [
+      'deployment_id',
+      'state',
+      'log_url',
+      'description',
+      'environment',
+      'environment_url',
+      'auto_inactive',
+    ];
+
+    /**
      * GitHubCommands constructor.
      */
     public function __construct()
@@ -38,29 +64,28 @@ class DeploymentsCommands extends \Robo\Tasks
      * Start (create) a deployment.
      * @see https://developer.github.com/v3/repos/deployments/#create-a-deployment
      *
-     * @option ref The ref to deploy. This can be a branch, tag, or SHA. Set to the string "branch", "tag" or "sha" to automatically read the branch, tag, or SHA from the repository
-     * @option task	Specifies a task to execute (e.g., deploy or deploy:migrations). Default: deploy
-     * @option auto_merge	Attempts to automatically merge the default branch into the requested ref, if it's behind the default branch. Default: true
+     * @option ref The ref to deploy. This can be a branch, tag, or SHA. Set to the string "branch", "tag" or "sha" to automatically read the branch, tag, or SHA from the repository.
+     * @option task	Specifies a task to execute (e.g., deploy or deploy:migrations).
+     * @option auto_merge	Attempts to automatically merge the default branch into the requested ref, if it's behind the default branch.
      * @option required_contexts	The status contexts to verify against commit status checks. If you omit this parameter, GitHub verifies all unique contexts before creating a deployment. To bypass checking entirely, pass an empty array. Defaults to all unique contexts.
-     * @option payload	JSON payload with extra information about the deployment. Default: ""
-     * @option environment	Name for the target deployment environment (e.g., production, staging, qa). Default: production
+     * @option payload	JSON payload with extra information about the deployment.
+     * @option environment	Name for the target deployment environment (e.g., production, staging, qa).
      * @option description	Short description of the deployment. Default: ""
-     * @option transient_environment	Specifies if the given environment is specific to the deployment and will no longer exist at some point in the future. Default: false
-     * @option production_environment	Specifies if the given environment is one that end-users directly interact with. Default: true when environment is production and false otherwise.
+     * @option transient_environment	Specifies if the given environment is specific to the deployment and will no longer exist at some point in the future.
+     * @option production_environment	Specifies if the given environment is one that end-users directly interact with.
      */
     public function deploymentStart($opts = [
       'ref' => 'sha',
       'task' => 'deploy',
       'auto_merge' => true,
       'required_contexts' => [],
-      'payload' => null,
-      'environment' => null,
-      'description' => null,
+      'payload' => '',
+      'environment' => '',
+      'description' => '',
       'transient_environment' => false,
       'production_environment' => false,
     ]) {
 
-        $this->io()->section('Start Deployment');
         $info =  [
           ['Branch', $this->getRepository()->getCurrentBranch()],
           ['Remote', "Fetch: " . current($this->getRepository()->getCurrentRemote())['fetch']],
@@ -73,23 +98,34 @@ class DeploymentsCommands extends \Robo\Tasks
           $info[] = ['Tag', $tag];
         }
         catch (\Exception $e) {
-          $this->io()->note('No tag for current SHA found.');
+            if ($opts['ref'] == 'tag') {
+                throw $e;
+            }
         }
 
         $info[] = ['GitHub Repo Owner', $this->getRepoOwner()];
         $info[] = ['GitHub Repo Name', $this->getRepoName()];
 
+        // Begin user output
+        $this->io()->section('Start Deployment');
         $this->io()->table(["Repo Information"], $info);
 
-        $params = [
-          'ref' => $this->getRefFromOpt($opts['ref']),
-          'description' => $opts['description'],
-          'environment' => $opts['environment']?: $this->getEnvironmentName(),
-          'required_contexts' => $opts['required_contexts'],
-        ];
+        // Prepare deployment parameters.
+        $opts['ref'] = $this->getRefFromOpt($opts['ref']);
+        $opts['environment'] =  $opts['environment']?: $this->getEnvironmentName();
+
+        // Create params by limiting to allowed items (self::GITHUB_DEPLOYMENT_PARAMS)
+        $params = array_filter($opts, function ($key) {
+            return in_array($key, self::GITHUB_DEPLOYMENT_PARAMS);
+        }, ARRAY_FILTER_USE_KEY);
+
+        $this->io()->table(["Deployment Parameters"], $this->paramsToRows($params));
 
         if (!$this->input->isInteractive() || $this->confirm("Start deployment with the above params?")) {
             $deployment = $this->cli->api('deployments')->create($this->getRepoOwner(), $this->getRepoName(), $params);
+
+            $this->io()->success("Deployment created successfully: " . $deployment['url']);
+            $this->io()->table(["Deployment"],  $this->paramsToRows($deployment));
 
             // @TODO: Create simple get and set methods for git config in a class or trait.
             $git_config = self::GIT_CONFIG_DEPLOYMENT_ID_NAME;
@@ -97,7 +133,6 @@ class DeploymentsCommands extends \Robo\Tasks
             // @TODO: Import ProcessAwareTrait
             shell_exec("git config --add {$git_config} {$deployment['id']}");
 
-            $this->io()->success("Deployment created successfully: " . $deployment['url']);
             $this->io()->comment("Deployment ID saved to git config: Use 'git config --get {$git_config}' to retrieve it.");
         }
         else {
@@ -139,6 +174,31 @@ class DeploymentsCommands extends \Robo\Tasks
       );
 
       return $result->getStdOut();
+    }
+
+
+    /**
+     * Return an array of rows ready for table()
+     * @param $params
+     *
+     * @return array
+     */
+    private function paramsToRows($params) {
+        $rows = [];
+        foreach ($params as $name => $value) {
+            if (is_scalar($value)) {
+                $rows[] = [
+                  $name,
+                  $value
+                ];
+            } else {
+                $rows[] = [
+                  $name,
+                  Yaml::dump($value, 4, 4, Yaml::DUMP_OBJECT_AS_MAP),
+                ];
+            }
+        }
+        return $rows;
     }
 
     /**
