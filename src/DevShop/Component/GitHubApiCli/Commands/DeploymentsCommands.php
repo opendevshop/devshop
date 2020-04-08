@@ -17,6 +17,11 @@ class DeploymentsCommands extends \Robo\Tasks
     protected $cli;
 
     /**
+     * @var string The variable name to use when saving the deployment ID to git config.
+     */
+    const GIT_CONFIG_DEPLOYMENT_ID_NAME = 'devshop.github.deployment.id';
+
+    /**
      * GitHubCommands constructor.
      */
     public function __construct()
@@ -64,7 +69,15 @@ class DeploymentsCommands extends \Robo\Tasks
 
         if (!$this->input->isInteractive() || $this->confirm("Start deployment with the above params?")) {
             $deployment = $this->cli->api('deployments')->create($this->getRepoOwner(), $this->getRepoName(), $params);
+
+            // @TODO: Create simple get and set methods for git config in a class or trait.
+            $git_config = self::GIT_CONFIG_DEPLOYMENT_ID_NAME;
+
+            // @TODO: Import ProcessAwareTrait
+            shell_exec("git config --add {$git_config} {$deployment['id']}");
+
             $this->io()->success("Deployment created successfully: " . $deployment['url']);
+            $this->io()->comment("Deployment ID saved to git config: Use 'git config --get {$git_config}' to retrieve it.");
         }
         else {
             throw new \Exception('Deployment cancelled.');
