@@ -216,10 +216,10 @@ class DeploymentsCommands extends \Robo\Tasks
     public function deploymentUpdate($deployment_id = null, $opts = [
       'deployment_id' => null,
       'state' => 'queued',
-      'log_url' => null,
-      'description' => null,
-      'environment' => null,
-      'environment_url' => null,
+      'log_url' => '',
+      'description' => '',
+      'environment' => '',
+      'environment_url' => '',
       'auto_inactive' => true,
     ]) {
 
@@ -246,10 +246,25 @@ class DeploymentsCommands extends \Robo\Tasks
         }
 
         // Run updateStatus method to update the deployment.
-        $params = $opts;
-        $deployment_status = $this->cli->api('deployments')->updateStatus($this->getRepoOwner(), $this->getRepoName(), $deployment_id, $params);
-        $this->io()->success("Deployment status created successfully.");
-        $this->io()->comment($deployment_status['url']);
+
+        // Prepare deployment status parameters.
+        // Create params by limiting to allowed items (self::GITHUB_DEPLOYMENT_PARAMS)
+        $opts['deployment_id'] = $opts['deployment_id']?: $deployment_id;
+
+        $params = array_filter($opts, function ($key) {
+            return in_array($key, self::GITHUB_DEPLOYMENT_STATUS_PARAMS);
+        }, ARRAY_FILTER_USE_KEY);
+
+        $this->io()->table(["Deployment Status Parameters"], $this->paramsToRows($params));
+
+        if (!$this->input->isInteractive() || $this->confirm("Update deployment status with the above params?")) {
+            $deployment_status = $this->cli->api('deployments')->updateStatus($this->getRepoOwner(), $this->getRepoName(), $deployment_id, $params);
+            $this->io()->success("Deployment status created successfully.");
+            $this->io()->table(["Deployment Status"], $this->paramsToRows($deployment_status));
+        }
+        else {
+                throw new \Exception('Deployment update cancelled.');
+        }
     }
 
     /**
