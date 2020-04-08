@@ -19,7 +19,7 @@
     "php": "^7.1",
     "consolidation/robo": "^1.0",
     "knplabs/github-api": "^1.0",
-    "devshop/composer-common": "dev-component/common"
+    "devshop/composer-common": "1.x-dev"
   },
   "require-dev": {
   },
