@@ -29,8 +29,10 @@ class DeploymentsCommands extends \Robo\Tasks
     }
 
     /**
-     * Start a deployment
-     * 1. Create a Deployment and a Deployment status.
+     * Start a deployment.
+     * @see https://developer.github.com/v3/repos/deployments/#create-a-deployment
+     *
+     * Custom command:
      * github api deployment create opdendevshop devshop -p ref=component/github-cli -p description='COMMAND LINE DEPLOY!' -p environment=localhost -p required_contexts=
      */
     public function deploymentStart($opts = [
@@ -70,9 +72,40 @@ class DeploymentsCommands extends \Robo\Tasks
     }
 
     /**
-     * Update deployment information.
+     * Update deployment state.
+     *
+     * @see https://developer.github.com/v3/repos/deployments/#create-a-deployment-status
+     *
+     * @option state The state of the status. Can be one of error, failure, inactive, in_progress, queued pending, or success.
+     * @option log_url The target URL to associate with this status.
+     * @option description A short description of the status.
+     * @option environment Name for the target deployment environment.
+     * @option environment_url Sets the URL for accessing your environment.
+     * @option auto_inactive Adds a new inactive status to all prior non-transient, non-production environment deployments with the same repository and environment name as the created status's deployment.
      */
-    public function deploymentUpdate() {
+    public function deploymentUpdate($deployment_id = null, $opts = [
+      'state' => 'queued',
+      'log_url' => null,
+      'description' => null,
+      'environment' => null,
+      'environment_url' => null,
+      'auto_inactive' => true,
+    ]) {
+
+        $this->io()->section('Update Deployment');
+        $this->io()->table(["Repo Information"], [
+          ['Current Branch', $this->getRepository()->getCurrentBranch()],
+          ['Current Remote', "Fetch: " . current($this->getRepository()->getCurrentRemote())['fetch']],
+          ['',               "Push: " . current($this->getRepository()->getCurrentRemote())['push']],
+          ['Current Commit', $this->getRepository()->getCurrentCommit()],
+        ]);
+
+        $this->io()->table(["GitHub Repo Information"], [
+          ['GitHub Repo Owner', $this->getRepoOwner()],
+          ['GitHub Repo Name', $this->getRepoName()],
+        ]);
+
+        $this->say('Looking up latest deployment...');
     }
 
     /**
