@@ -70,7 +70,7 @@ class DeploymentsCommands extends \Robo\Tasks
      * @option required_contexts	The status contexts to verify against commit status checks. If you omit this parameter, GitHub verifies all unique contexts before creating a deployment. To bypass checking entirely, pass an empty array. Defaults to all unique contexts.
      * @option payload	JSON payload with extra information about the deployment.
      * @option environment	Name for the target deployment environment (e.g., production, staging, qa).
-     * @option description	Short description of the deployment. Default: ""
+     * @option description	Short description of the deployment.
      * @option transient_environment	Specifies if the given environment is specific to the deployment and will no longer exist at some point in the future.
      * @option production_environment	Specifies if the given environment is one that end-users directly interact with.
      */
@@ -115,9 +115,9 @@ class DeploymentsCommands extends \Robo\Tasks
         $opts['environment'] =  $opts['environment']?: $this->getEnvironmentName();
 
         // Create params by limiting to allowed items (self::GITHUB_DEPLOYMENT_PARAMS)
-        $params = array_filter($opts, function ($key) {
-            return in_array($key, self::GITHUB_DEPLOYMENT_PARAMS);
-        }, ARRAY_FILTER_USE_KEY);
+        $params = array_filter($opts, function ($value, $key) {
+            return !empty($value) && in_array($key, self::GITHUB_DEPLOYMENT_PARAMS);
+        }, ARRAY_FILTER_USE_BOTH);
 
         $this->io()->table(["Deployment Parameters"], $this->paramsToRows($params));
 
@@ -251,9 +251,10 @@ class DeploymentsCommands extends \Robo\Tasks
         // Create params by limiting to allowed items (self::GITHUB_DEPLOYMENT_PARAMS)
         $opts['deployment_id'] = $opts['deployment_id']?: $deployment_id;
 
-        $params = array_filter($opts, function ($key) {
-            return in_array($key, self::GITHUB_DEPLOYMENT_STATUS_PARAMS);
-        }, ARRAY_FILTER_USE_KEY);
+        // Create params by limiting to allowed items (self::GITHUB_DEPLOYMENT_PARAMS)
+        $params = array_filter($opts, function ($value, $key) {
+            return !empty($value) && in_array($key, self::GITHUB_DEPLOYMENT_STATUS_PARAMS);
+        }, ARRAY_FILTER_USE_BOTH);
 
         $this->io()->table(["Deployment Status Parameters"], $this->paramsToRows($params));
 
@@ -293,7 +294,7 @@ class DeploymentsCommands extends \Robo\Tasks
             return "pr{$pull_request_number}";
         }
         else {
-            return shell_exec('hostname -f');
+            return trim(shell_exec('hostname -f'));
         }
     }
 }
