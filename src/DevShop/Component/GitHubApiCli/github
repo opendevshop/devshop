@@ -26,7 +26,8 @@ if ($pharPath) {
   } elseif (file_exists(__DIR__.'/../../autoload.php')) {
     $autoloaderPath = __DIR__ . '/../../autoload.php';
   } else {
-    die("Could not find autoloader. Run 'composer install'.");
+    echo ("Could not find autoloader. Run 'composer install'.");
+    exit(1);
   }
 }
 $classLoader = require $autoloaderPath;
