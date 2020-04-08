@@ -1,7 +1,7 @@
 {
-  "name": "devshop/github-api-cli",
+  "name": "devshop/composer-common",
   "type": "library",
-  "description": "Simple console wrapper for GitHub API",
+  "description": "Tools useful for any composer-based project.",
   "keywords": [],
   "homepage": "https://getdevshop.com",
   "license": "MIT",
@@ -19,7 +19,7 @@
     "php": "^7.1",
     "consolidation/robo": "^1.0",
     "knplabs/github-api": "^1.0",
-    "devshop/composer-common": "dev-component/common"
+    "teqneers/php-stream-wrapper-for-git": "^2.0@dev"
   },
   "require-dev": {
   },
@@ -27,11 +27,10 @@
   },
   "autoload": {
     "psr-4": {
-      "DevShop\\Component\\GitHubApiCli\\": ""
+      "DevShop\\Component\\Common\\": "src/"
     }
   },
   "bin": [
-    "github"
   ],
   "minimum-stability": "dev"
 }

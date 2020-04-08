@@ -11,7 +11,7 @@ env:
 
 jobs:
   yaml-tasks:
-    name: devshop/yaml-tasks
+    name: YamlTasks
 
     runs-on: ubuntu-latest
 
@@ -62,7 +62,7 @@ jobs:
         ./yaml-tasks --tasks-file tests.yml --ansi -v --hostname=github.com --status-url=https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}?check_suite_focus=true
 
   power-process:
-    name: devshop/power-process
+    name: PowerProcess
 
     runs-on: ubuntu-latest
     strategy:
@@ -115,7 +115,7 @@ jobs:
           ./demo.php
 
   github-api-cli:
-    name: devshop/github-api-cli
+    name: GitHubApiCli
 
     runs-on: ubuntu-latest
     strategy:
@@ -168,5 +168,58 @@ jobs:
         run: |
           env
           ./github whoami
-          ./github api deployment create opendevshop devshop --param ref=${GITHUB_HEAD_REF} --param environment=actions.github.com --param required_contexts= -n
+          ./github deployment:start --environment=actions.github.com --description="DevShop GitHubApiCli Actions Tests" -n
 
+  ComposerCommon:
+    name: ComposerCommon
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-versions:
+          # - '5.6'
+          - '7.1'
+
+    # Set working directory for entire file. https://github.community/t5/GitHub-Actions/use-working-directory-for-entire-job/td-p/36759
+    env:
+      working-directory: ./src/DevShop/Component/ComposerCommon
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Install PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-versions }}
+      #            extensions: intl #optional
+      #            ini-values: "post_max_size=256M" #optional
+
+      - name: Check PHP Version
+        run: php -v
+
+      - name: Get Composer Cache Directory
+        id: composer-cache
+        run: |
+          echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+      - uses: actions/cache@v1
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      - name: Validate composer.json and composer.lock
+        run: composer validate
+        working-directory: ${{env.working-directory}}
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-suggest
+        working-directory: ${{env.working-directory}}
+
+      - name: Test
+        env:
+          GITHUB_TOKEN: ${{ secrets.INPUT_GITHUB_TOKEN }}
+        working-directory: ${{env.working-directory}}
+        run: |
+          ./Tests/repo-info.php
