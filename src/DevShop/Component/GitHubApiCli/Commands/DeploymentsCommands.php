@@ -115,9 +115,7 @@ class DeploymentsCommands extends \Robo\Tasks
         $opts['environment'] =  $opts['environment']?: $this->getEnvironmentName();
 
         // Create params by limiting to allowed items (self::GITHUB_DEPLOYMENT_PARAMS)
-        $params = array_filter($opts, function ($value, $key) {
-            return !empty($value) && in_array($key, self::GITHUB_DEPLOYMENT_PARAMS);
-        }, ARRAY_FILTER_USE_BOTH);
+        $params = $this->paramsFromOpts($opts, self::GITHUB_DEPLOYMENT_PARAMS);
 
         $this->io()->table(["Deployment Parameters"], $this->paramsToRows($params));
 
@@ -202,6 +200,18 @@ class DeploymentsCommands extends \Robo\Tasks
     }
 
     /**
+     * Return an array of parameters ready for GitHub API.
+     * @param $opts
+     *
+     * @return array
+     */
+    private function paramsFromOpts($opts, $allowed_params = self::GITHUB_DEPLOYMENT_PARAMS) {
+        return array_filter($opts, function ($value, $key) use ($allowed_params) {
+            return !empty($value) && in_array($key, $allowed_params);
+        }, ARRAY_FILTER_USE_BOTH);
+    }
+
+    /**
      * Update deployment state.
      *
      * @see https://developer.github.com/v3/repos/deployments/#create-a-deployment-status
@@ -251,10 +261,8 @@ class DeploymentsCommands extends \Robo\Tasks
         // Create params by limiting to allowed items (self::GITHUB_DEPLOYMENT_PARAMS)
         $opts['deployment_id'] = $opts['deployment_id']?: $deployment_id;
 
-        // Create params by limiting to allowed items (self::GITHUB_DEPLOYMENT_PARAMS)
-        $params = array_filter($opts, function ($value, $key) {
-            return !empty($value) && in_array($key, self::GITHUB_DEPLOYMENT_STATUS_PARAMS);
-        }, ARRAY_FILTER_USE_BOTH);
+        // Create params by limiting to allowed items (self::GITHUB_DEPLOYMENT_STATUS_PARAMS)
+        $params = $this->paramsFromOpts($opts, self::GITHUB_DEPLOYMENT_STATUS_PARAMS);
 
         $this->io()->table(["Deployment Status Parameters"], $this->paramsToRows($params));
 
