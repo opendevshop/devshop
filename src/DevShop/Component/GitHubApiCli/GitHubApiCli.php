@@ -13,13 +13,22 @@ class GitHubApiCli
    */
   private $apiClient;
 
+    /**
+     * @var string The "version" of the GitHub API to use.
+     */
+  private $apiVersion;
+
   /**
    * GitHubApiCli constructor
    *
    * @param $apiToken String GitHub API Token. If not passed, will look for
    *    GTIHUB_TOKEN environment variable.
+   *
+   * @param $apiVersion String GitHub API Version. If a feature requires an
+   * additional "Accept" header like "application/vnd.github.flash-preview+json",
+   * Specify the string between "github." and "+json".
    */
-  public function __construct($apiToken = NULL)
+  public function __construct($apiToken = NULL, $apiVersion = 'flash-preview')
   {
     if (!$apiToken && getenv('GITHUB_TOKEN')) {
       $this->apiToken = getenv('GITHUB_TOKEN');
@@ -28,6 +37,8 @@ class GitHubApiCli
       $this->apiToken = $apiToken;
     }
 
+    $this->apiVersion = $apiVersion;
+
     // Setup GitHub API client
     $this->apiClient = new GitHubApiClient();
     // @TODO: Allow password auth?
@@ -35,6 +46,10 @@ class GitHubApiCli
 
     // Set options or headers from CLI or config options.
     // @see Client::options
+    // Using pattern from HttpClient::clearHeaders()
+    $this->apiClient->setHeaders([
+      'Accept' => sprintf('application/vnd.github.%s+json', $this->apiVersion),
+    ]);
 
   }
 
