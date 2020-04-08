@@ -5,6 +5,7 @@ namespace DevShop\Component\GitHubApiCli\Commands;
 use DevShop\Component\Common\GitHubRepositoryAwareTrait;
 use DevShop\Component\GitHubApiCli\GitHubApiCli;
 use DevShop\Component\Common\GitRepositoryAwareTrait;
+use TQ\Vcs\Cli\CallResult;
 
 class DeploymentsCommands extends \Robo\Tasks
 {
@@ -37,8 +38,7 @@ class DeploymentsCommands extends \Robo\Tasks
      * Start (create) a deployment.
      * @see https://developer.github.com/v3/repos/deployments/#create-a-deployment
      *
-     * @option ref Required. The ref to deploy. This can be a branch, tag, or SHA.
-     *   If left blank, the currently checked out SHA will be used, if available.
+     * @option ref The ref to deploy. This can be a branch, tag, or SHA. Set to the string "branch", "tag" or "sha" to automatically read the branch, tag, or SHA from the repository
      * @option task	Specifies a task to execute (e.g., deploy or deploy:migrations). Default: deploy
      * @option auto_merge	Attempts to automatically merge the default branch into the requested ref, if it's behind the default branch. Default: true
      * @option required_contexts	The status contexts to verify against commit status checks. If you omit this parameter, GitHub verifies all unique contexts before creating a deployment. To bypass checking entirely, pass an empty array. Defaults to all unique contexts.
@@ -49,7 +49,7 @@ class DeploymentsCommands extends \Robo\Tasks
      * @option production_environment	Specifies if the given environment is one that end-users directly interact with. Default: true when environment is production and false otherwise.
      */
     public function deploymentStart($opts = [
-      'ref' => null,
+      'ref' => 'sha',
       'task' => 'deploy',
       'auto_merge' => true,
       'required_contexts' => [],
@@ -61,20 +61,28 @@ class DeploymentsCommands extends \Robo\Tasks
     ]) {
 
         $this->io()->section('Start Deployment');
-        $this->io()->table(["Repo Information"], [
-          ['Current Branch', $this->getRepository()->getCurrentBranch()],
-          ['Current Remote', "Fetch: " . current($this->getRepository()->getCurrentRemote())['fetch']],
-          ['',               "Push: " . current($this->getRepository()->getCurrentRemote())['push']],
-          ['Current Commit', $this->getRepository()->getCurrentCommit()],
-        ]);
+        $info =  [
+          ['Branch', $this->getRepository()->getCurrentBranch()],
+          ['Remote', "Fetch: " . current($this->getRepository()->getCurrentRemote())['fetch']],
+          ['',       "Push: " . current($this->getRepository()->getCurrentRemote())['push']],
+          ['Commit', $this->getRepository()->getCurrentCommit()],
+        ];
 
-        $this->io()->table(["GitHub Repo Information"], [
-          ['GitHub Repo Owner', $this->getRepoOwner()],
-          ['GitHub Repo Name', $this->getRepoName()],
-        ]);
+        try {
+          $tag = $this->getCurrentTag();
+          $info[] = ['Tag', $tag];
+        }
+        catch (\Exception $e) {
+          $this->io()->note('No tag for current SHA found.');
+        }
+
+        $info[] = ['GitHub Repo Owner', $this->getRepoOwner()];
+        $info[] = ['GitHub Repo Name', $this->getRepoName()];
+
+        $this->io()->table(["Repo Information"], $info);
 
         $params = [
-          'ref' => $opts['ref']?: $this->getRepository()->getCurrentCommit(),
+          'ref' => $this->getRefFromOpt($opts['ref']),
           'description' => $opts['description'],
           'environment' => $opts['environment']?: $this->getEnvironmentName(),
           'required_contexts' => $opts['required_contexts'],
@@ -95,6 +103,42 @@ class DeploymentsCommands extends \Robo\Tasks
         else {
             throw new \Exception('Deployment cancelled.');
         }
+    }
+
+    /**
+     * @param $ref string If "branch", "tag", or "sha", ref will be read from
+     *   the current git repository. Otherwise, the $ref will be returned.
+     *
+     * @return string The requested git reference.
+     */
+    private function getRefFromOpt($ref) {
+      switch ($ref) {
+        case 'sha': return $this->getRepository()->getCurrentCommit();
+        case 'branch': return $this->getRepository()->getCurrentBranch();
+        case 'tag': return $this->getCurrentTag();
+        default: return $ref;
+      }
+    }
+
+    /**
+     * Returns the name of the current tag, if that is what is checked out.
+     *
+     * @TODO: Submit a PR to Repository.php
+     *
+     * @return  string
+     */
+    private function getCurrentTag()
+    {
+      /** @var $result CallResult */
+      $result = $this->getRepository()->getGit()->{'describe'}($this->getRepository()->getRepositoryPath(), array(
+        '--tags',
+        '--exact-match'
+      ));
+      $result->assertSuccess(
+        sprintf('Cannot retrieve current tag from "%s"', $this->getRepository()->getRepositoryPath())
+      );
+
+      return $result->getStdOut();
     }
 
     /**
