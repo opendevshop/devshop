@@ -33,6 +33,9 @@ trait GitRepositoryAwareTrait
      */
     public function getRepository()
     {
+        if (!$this->repository){
+            $this->setRepository();
+        }
         return $this->repository;
     }
 }
