@@ -168,8 +168,7 @@ jobs:
         run: |
           env
           ./github whoami
-          ./github api deployment create opendevshop devshop --param ref=${GITHUB_HEAD_REF} --param environment=actions.github.com --param required_contexts= -n
-
+          ./github deployment:start --environment=actions.github.com --description="DevShop GitHubApiCli Actions Tests" -n
 
   ComposerCommon:
     name: ComposerCommon
