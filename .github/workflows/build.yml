@@ -73,7 +73,7 @@ jobs:
 
     - name: Create a GitHub Deployment
       run: |
-        bin/github deployment:start --environment=${GITHUB_PR_NUMBER}.${OS} --ref=${GITHUB_HEAD_REF} --description="Triggered from ./.github/workflows/build.yml"
+        bin/github deployment:start --environment=pr${GITHUB_PR_NUMBER}.${OS} --ref=${GITHUB_HEAD_REF} --description="Triggered from ./.github/workflows/build.yml"
 
     - name: Docker & Docker Compose Version
       run: |
