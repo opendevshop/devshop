@@ -22,7 +22,7 @@ trait GitRepositoryAwareTrait
             $this->repository = $repository;
         }
         else {
-            $this->repository = Repository::open(__DIR__);;
+            $this->repository = Repository::open(getcwd());
         }
 
         return $this;
