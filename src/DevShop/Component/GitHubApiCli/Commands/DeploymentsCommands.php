@@ -97,6 +97,7 @@ class DeploymentsCommands extends \Robo\Tasks
      * @option auto_inactive Adds a new inactive status to all prior non-transient, non-production environment deployments with the same repository and environment name as the created status's deployment.
      */
     public function deploymentUpdate($deployment_id = null, $opts = [
+      'deployment_id' => null,
       'state' => 'queued',
       'log_url' => null,
       'description' => null,
@@ -119,6 +120,16 @@ class DeploymentsCommands extends \Robo\Tasks
         ]);
 
         $this->say('Looking up latest deployment...');
+        $git_config = self::GIT_CONFIG_DEPLOYMENT_ID_NAME;
+        $deployment_id = $opts['deployment_id']?: trim(shell_exec("git config --get {$git_config}"));
+        if ($deployment_id) {
+            $this->io()->comment("Deployment ID found: {$deployment_id}");
+        } else {
+            throw new \Exception('Unable to find deployment ID in git config. Please specify using --deployment-id');
+        }
+
+        // UPDATE!
+
     }
 
     /**
