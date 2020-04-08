@@ -120,6 +120,35 @@ Show info about a repo:
   html_url            https://github.com/department-of-veterans-affairs/va.gov-cms                                                     
 ```
 
+### `github deployment:start`
+
+Creates a new deployment and saves the ID as a git config item.
+
+    bin/github deployment:start --environment=dev --description="Manual deployment triggered as an example."
+
+Then use `deployment:update` to change the status.
+
+### `github deployment:update`
+
+Updates the status of a deployment.
+
+    bin/github deployment:update --state=in_progress --description="Building our thing..." --log_url=$OUR_BUILD_LOGS_URL
+
+You can use bash operators to set different state based on exit code of a script.
+
+Use `&&` after a command to designate a command to run on success.
+Use `||` after a command to designate a command to run on failure.
+
+    deploy.sh \
+       && bin/github deployment:update --state=success --description="This deployment update will only happen if deploy.sh returns exit code 0" \
+       || ( bin/github deployment:update --state=failure --description="This deployment update will only happen if deploy.sh returns exit 1." && exit 1 )
+
+See The DevShop Build tests as an example https://github.com/opendevshop/devshop/blob/09fbf10286994c378fa24cf6b9f91e9df33928dd/.github/workflows/build.yml#L110
+
+If you are using a CI runner, be sure to `exit 1` after the failure command, to
+ensure the overall script exits with a failure as well.
+
+
 Resources
 ---------
 
