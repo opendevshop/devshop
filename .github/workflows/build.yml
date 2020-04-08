@@ -94,7 +94,7 @@ jobs:
           --skip-tags "${ANSIBLE_SKIP_TAGS}" \
           --volumes 0 \
           && bin/github deployment:update --state=in_progress --description="Preparing Containers with robo up... Done." \
-          || bin/github deployment:update --state=failure --description="Preparing Containers with robo up... Failed." && exit 1
+          || ( bin/github deployment:update --state=failure --description="Preparing Containers with robo up... Failed." && exit 1 )
 
     - name: Wait for yum
       if: matrix.os == 'centos7'
@@ -108,7 +108,7 @@ jobs:
         bin/github deployment:update --state=in_progress --description="Installing DevShop with devshop-ansible-playbook..." --log_url=${GITHUB_RUN_LOG_URL}#step:10:1
         bin/robo exec devshop-ansible-playbook \
           && bin/github deployment:update --state=success --description="Installing DevShop with devshop-ansible-playbook... Done" \
-          || bin/github deployment:update --state=failure --description="Installing DevShop with devshop-ansible-playbook... Failed" && exit 1
+          || ( bin/github deployment:update --state=failure --description="Installing DevShop with devshop-ansible-playbook... Failed" && exit 1 )
 
     - name: Test DevShop
       run: |
