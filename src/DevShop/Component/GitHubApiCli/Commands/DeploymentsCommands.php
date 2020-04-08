@@ -131,7 +131,8 @@ class DeploymentsCommands extends \Robo\Tasks
         // Run updateStatus method to update the deployment.
         $params = $opts;
         $deployment_status = $this->cli->api('deployments')->updateStatus($this->getRepoOwner(), $this->getRepoName(), $deployment_id, $params);
-        $this->io()->success("Deployment status created successfully." . $deployment_status['url']);
+        $this->io()->success("Deployment status created successfully.");
+        $this->io()->comment($deployment_status['url']);
     }
 
     /**
