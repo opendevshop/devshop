@@ -292,6 +292,7 @@ class DeploymentsCommands extends \Robo\Tasks
 
     /**
      * Helper to dynamically generate environment names.
+     * @TODO: Decide if we should remove this or not.
      */
     private function getEnvironmentName() {
 
