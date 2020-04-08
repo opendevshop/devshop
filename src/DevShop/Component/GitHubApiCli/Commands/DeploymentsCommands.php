@@ -60,10 +60,9 @@ class DeploymentsCommands extends \Robo\Tasks
           'required_contexts' => $opts['required_contexts'],
         ];
 
-        print_r($params);
-
-        if ($this->confirm("Start deployment with the above params?")) {
-            $this->cli->api('deployments')->create($this->getRepoOwner(), $this->getRepoName(), $params);
+        if (!$this->input->isInteractive() || $this->confirm("Start deployment with the above params?")) {
+            $deployment = $this->cli->api('deployments')->create($this->getRepoOwner(), $this->getRepoName(), $params);
+            $this->io()->success("Deployment created successfully: " . $deployment['url']);
         }
         else {
             throw new \Exception('Deployment cancelled.');
