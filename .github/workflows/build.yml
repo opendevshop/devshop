@@ -40,7 +40,7 @@ jobs:
       ANSIBLE_TAGS: "${{ matrix.build_tags }}"
       ANSIBLE_SKIP_TAGS: "${{ matrix.build_skip_tags }}"
       ANSIBLE_VARS: "${{ matrix.vars }}"
-      DEVSHOP_SERVER_HOSTNAME: "${{ matrix.os }}.${GITHUB_REF/refs\/pull\//}.actions.github.com"
+      DEVSHOP_SERVER_HOSTNAME: "${{ matrix.os }}.actions.github.com"
       OS: "${{ matrix.os }}"
 
     runs-on: ubuntu-18.04
