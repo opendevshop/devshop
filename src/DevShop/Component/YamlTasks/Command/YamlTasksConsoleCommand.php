@@ -267,7 +267,7 @@ class YamlTasksConsoleCommand extends BaseCommand
         if (!$input->getOption('dry-run')) {
             $this->githubClient = new \Github\Client();
 
-            if ($input->getOption('ignore-ssl')) {
+            if ($input->getOption('ignore-ssl') || getenv('DEVSHOP_GITHUB_API_IGNORE_SSL')) {
                 $this->githubClient->getHttpClient()->client->setDefaultOption('verify', false);
             }
 
