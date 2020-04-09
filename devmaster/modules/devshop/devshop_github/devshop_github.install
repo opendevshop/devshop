@@ -138,6 +138,6 @@ function devshop_github_update_7004() {
 /**
  * Delete the hosting_devshop_github_deployments table.
  */
-function devshop_github_update_7004() {
+function devshop_github_update_7005() {
   db_query('DROP TABLE {hosting_devshop_github_deployments}');
 }
