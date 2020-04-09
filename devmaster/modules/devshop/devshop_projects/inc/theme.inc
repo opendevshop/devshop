@@ -176,7 +176,7 @@ function devshop_projects_preprocess_node(&$vars) {
       }
       elseif ($vars['node']->task_type == 'install' && $vars['node']->environment->settings->locked) {
         $vars['retry'] = array(
-          '#prefix' => t('Site is protected.'),
+          '#children' => t('Site is protected.'),
           '#type' => 'container',
           '#attributes' => array(
             'class' => array('well well-sm')
