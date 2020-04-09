@@ -6,6 +6,7 @@
 version: '2.2'
 services:
   devshop:
+    hostname: ${DEVSHOP_SERVER_HOSTNAME:-devshop.local.computer}
     build:
       args:
       - CI=CI

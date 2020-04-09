@@ -41,6 +41,10 @@
     "repositories": [
         {
             "type": "path",
+            "url": "src/DevShop/Component/ComposerCommon"
+        },
+        {
+            "type": "path",
             "url": "src/DevShop/Component/GitHubApiCli"
         },
         {
