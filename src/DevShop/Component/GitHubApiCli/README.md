@@ -120,6 +120,22 @@ Show info about a repo:
   html_url            https://github.com/department-of-veterans-affairs/va.gov-cms                                                     
 ```
 
+## SSL Issues
+
+If you encounter any SSL errors, such as the one below, you can tell the 
+HTTPClient Library Guzzle to skip SSL verification.
+
+    60: SSL certificate problem: self signed certificate in certificate chain
+    
+All DevShop components that use the GitHub API can be configured to skip the SSL
+certificate verification. Set the following environment variable to ignore SSL 
+errors:
+
+    export DEVSHOP_GITHUB_API_IGNORE_SSL=1
+
+See [YamlTasksConsoleCommand.php](https://github.com/opendevshop/devshop/blob/1.x/src/DevShop/Component/YamlTasks/Command/YamlTasksConsoleCommand.php#L271) and [GitHubApiCli.php](https://github.com/opendevshop/devshop/blob/1.x/src/DevShop/Component/GitHubApiCli/GitHubApiCli.php) to see the 
+implementation.
+
 Resources
 ---------
 

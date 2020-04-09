@@ -11,7 +11,7 @@ class GitHubApiCli
   /**
    * @var GitHubApiClient
    */
-  private $apiClient;
+  public $apiClient;
 
   /**
    * GitHubApiCli constructor
@@ -32,6 +32,11 @@ class GitHubApiCli
     $this->apiClient = new GitHubApiClient();
     // @TODO: Allow password auth?
     $this->apiClient->authenticate($this->getToken(), null, GitHubApiClient::AUTH_HTTP_TOKEN);
+
+    // Skip SSL verification if ENV var is found.
+    if (getenv('DEVSHOP_GITHUB_API_IGNORE_SSL')) {
+      $this->apiClient->getHttpClient()->client->setDefaultOption('verify', false);
+    }
 
     // Set options or headers from CLI or config options.
     // @see Client::options
