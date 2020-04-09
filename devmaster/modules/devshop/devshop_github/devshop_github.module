@@ -1100,15 +1100,6 @@ function devshop_github_project_create_webhook($form, $form_state) {
  */
 function devshop_github_node_load($nodes, $types) {
 
-  // Load each tasks deployment object.
-  $types_we_want_to_process = array('task');
-  if (count(array_intersect($types_we_want_to_process, $types))) {
-    $result = db_query('SELECT * FROM {hosting_devshop_github_deployments} WHERE task_nid IN(:nids)', array(':nids' => array_keys($nodes)));
-    foreach ($result as $record) {
-      $nodes[$record->task_nid]->github_deployment = unserialize($record->deployment_object);
-    }
-  }
-
   foreach ($nodes as $nid => &$node) {
     if ($node->type == 'project') {
       // Look for a pull request object.
@@ -1139,21 +1130,6 @@ function devshop_github_node_insert($node) {
     $environment->name = $node->environment_name;
     $environment->project_nid = $node->project_nid;
     devshop_github_save_pr_env_data($node->pull_request, $environment);
-  }
-
-  if ($node->type == 'task' && $node->task_type == 'devshop-deploy') {
-
-    // Get the latest environment info.
-    $site = node_load($node->rid, null, true);
-    if ($site->type == 'site' && isset($site->environment)) {
-      // Create a deployment on GitHub.
-      $deployment = DevShopGitHubApi::deploy($site->environment, 'pending', $node, t('DevShop Deploy task queued.'), NULL, url("node/$node->nid", array(
-        'absolute' => true,
-      )));
-      watchdog('devshop_github', t('DevShop Deploy Task created [%nid] and GitHub Deployment Created: [%id]'), array(
-        '%id' => $deployment->id,
-      ));
-    }
   }
 }
 
