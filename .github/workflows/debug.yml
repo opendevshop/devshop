@@ -1,0 +1,28 @@
+name: Debugging Information
+# https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#example-printing-context-information-to-the-log-file
+
+on:
+  push:
+    branches: 1.x
+  pull_request:
+    types: [opened, syncronized]
+
+env:
+  GITHUB: ${{ toJson(github) }}
+  JOB: ${{ toJson(job) }}
+  STEPS: ${{ toJson(steps) }}
+  RUNNER: ${{ toJson(runner) }}
+  STRATEGY: ${{ toJson(strategy) }}
+  MATRIX: ${{ toJson(matrix) }}
+
+jobs:
+  debug:
+    name: Context Values
+    runs-on: ubuntu-18.04
+    steps:
+      - run: echo "$GITHUB"
+      - run: echo "JOB"
+      - run: echo "$STEPS"
+      - run: echo "RUNNER"
+      - run: echo "STRATEGY"
+      - run: echo "MATRIX"
