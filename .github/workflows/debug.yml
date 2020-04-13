@@ -5,7 +5,7 @@ on:
   push:
     branches: 1.x
   pull_request:
-    types: [opened, syncronized]
+    types: [opened, synchronize]
 
 env:
   GITHUB: ${{ toJson(github) }}
