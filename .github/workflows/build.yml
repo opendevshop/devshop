@@ -6,7 +6,8 @@ on:
  pull_request:
    types: [opened, synchronize]
  schedule:
-   - cron: "10 * * * *"
+   # Once per day. https://crontab.guru/#*_0_*_*_*
+   - cron: "* 0 * * *"
 
 env:
   # Set ANSIBLE_VERBOSITY to 1,2 or 3 when needed for development.
