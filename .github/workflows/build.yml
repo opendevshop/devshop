@@ -78,8 +78,6 @@ jobs:
 
     - name: Create a GitHub Deployment to branch environment
       if: github.event_name != "pull_request"
-      env:
-        ENV_NAME: {{ format()  }}
       run: |
         bin/github deployment:start --environment=${GITHUB_REF}.${OS} --ref=sha --description="Triggered from ./.github/workflows/build.yml"
 
