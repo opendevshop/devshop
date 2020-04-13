@@ -1,4 +1,4 @@
-name: Debugging Information
+name: Debugging
 # https://help.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#example-printing-context-information-to-the-log-file
 
 on:
@@ -8,7 +8,8 @@ on:
     types: [opened, synchronize]
 
 jobs:
-  one:
+  contexts:
+    name: GitHub Actions
     runs-on: ubuntu-16.04
     steps:
       - name: '${{ github }}'
