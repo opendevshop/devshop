@@ -6,6 +6,10 @@ on:
   pull_request:
     types: [opened, synchronize]
 
+  schedule:
+    # Once per day. https://crontab.guru/#*_0_*_*_*
+    - cron: "* 0 * * *"
+
 env:
   GITHUB_TOKEN: ${{ secrets.INPUT_GITHUB_TOKEN }}
 
