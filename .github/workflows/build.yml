@@ -72,12 +72,12 @@ jobs:
       run: composer install --prefer-dist --no-progress --no-suggest
 
     - name: Create a GitHub Deployment to PR environment
-      if: github.event_name == "pull_request"
+      if: ${{ github.event_name == 'pull_request' }}
       run: |
         bin/github deployment:start --environment=pr${GITHUB_PR_NUMBER}.${OS} --ref=sha --description="Triggered from ./.github/workflows/build.yml"
 
     - name: Create a GitHub Deployment to branch environment
-      if: github.event_name != "pull_request"
+      if: ${{ github.event_name != 'pull_request' }}
       run: |
         bin/github deployment:start --environment=${GITHUB_REF}.${OS} --ref=sha --description="Triggered from ./.github/workflows/build.yml"
 
