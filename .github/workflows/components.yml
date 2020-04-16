@@ -25,6 +25,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+      with:
+        ref: ${{ github.event.pull_request.head.sha }}
+
     - name: Get Composer Cache Directory
       working-directory: ${{env.working-directory}}
       id: composer-cache
