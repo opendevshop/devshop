@@ -60,7 +60,10 @@ jobs:
       run: |
         echo "::set-env name=ANSIBLE_TAGS::mysql"
 
+    # Checkout v2 allows checking out the actual pushed SHA instead of the merge commit: https://github.com/actions/checkout#checkout-pull-request-head-commit-instead-of-merge-commit
     - uses: actions/checkout@v2
+      with:
+        ref: ${{ github.event.pull_request.head.sha }}
 
     - name: Get Composer Cache Directory
       id: composer-cache
