@@ -84,7 +84,7 @@ jobs:
     - name: Create a GitHub Deployment to branch environment
       if: ${{ github.event_name != 'pull_request' }}
       run: |
-        bin/github deployment:start --environment=${GITHUB_REF}.${OS} --ref=${GITHUB_SHA}  --description="Triggered from ./.github/workflows/build.yml"
+        bin/github deployment:start --environment=$(bin/branch-or-tag).${OS} --ref=${GITHUB_SHA}  --description="Triggered from ./.github/workflows/build.yml"
 
     - name: Docker & Docker Compose Version
       run: |
