@@ -350,13 +350,16 @@ class YamlTasksConsoleCommand extends BaseCommand
                 foreach ($this->yamlTasks as $task_name => $task) {
                     // Set a commit status for this REF
                     $params = new \stdClass();
-                    $params->state = 'pending';
+
+                    // Reserve "Pending" for the earliest possible commit status update (a curl request at the beginning.)
+                    // Use "queued" once it is in the task system.
+                    $params->state = 'queued';
                     $params->target_url = $this->getTargetUrl($task_name);
                     $params->description = implode(
                         ' — ',
                         array(
+                            !empty($task['description'])? $task['description']: $task_name,
                             $input->getOption('hostname'),
-                            !empty($task['description'])? $task['description']: $task_name
                         )
                     );
                     $params->context = $task_name;
@@ -423,34 +426,52 @@ class YamlTasksConsoleCommand extends BaseCommand
                     $process->disableOutput();
                 }
 
+                // Set a commit status for this REF
+                $params = new \stdClass();
+                $params->state = 'in_progress';
+                $params->target_url = $this->getTargetUrl($task_name);
+                $params->context = $task_name;
+
                 $exit = $process->run();
 
                 // Set a commit status for this REF
                 $params = new \stdClass();
-                $params->state = 'pending';
                 $params->target_url = $this->getTargetUrl($task_name);
-                $params->description = implode(
-                    ' — ',
-                    array(
-                        !empty($task['description'])? $task['description']: $task_name,
-                        $input->getOption('hostname')
-                    )
-                );
                 $params->context = $task_name;
 
                 if ($exit == 0) {
                     $results_row[] = '<info>✔</info> Passed';
                     $params->state = 'success';
+                    $params->description = implode(
+                        ' — ',
+                        array(
+                            "Successful in {$process->duration} on {$input->getOption('hostname')}",
+                        )
+                    );
+
                 } else {
                     // If the task has the ignore failure flag, ignore it.
                     if (!empty($task['ignore-failure'])) {
                         $results_row[] = '<fg=red>✘</> Failed (Ignoring)';
                         $params->state = 'success';
-                        $params->description .= ' | TASK FAILED but is set to ignore.';
+                        $params->description = implode(
+                            ' — ',
+                            array(
+                                "Failed after {$process->duration} on {$input->getOption('hostname')} (ignored).",
+                                !empty($task['description'])? $task['description']: $task_name,
+                            )
+                        );
                     } else {
                         $results_row[] = '<fg=red>✘</> Failed';
                         $tasks_failed = true;
                         $params->state = 'failure';
+                        $params->description = implode(
+                            ' — ',
+                            array(
+                                "Failed after {$process->duration} on {$input->getOption('hostname')}",
+                                !empty($task['description'])? $task['description']: $task_name,
+                            )
+                        );
                     }
 
                     if (!$input->getOption('dry-run')) {
