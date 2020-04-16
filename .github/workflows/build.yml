@@ -2,7 +2,10 @@ name: Build
 
 on:
  push:
-   branches: 1.x
+   branches:
+   - 1.x
+   # @TODO: Remove after this branch is merged.
+   - ci/github/actions-branches
  pull_request:
    types: [opened, synchronize]
  schedule:
