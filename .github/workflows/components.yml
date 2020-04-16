@@ -52,10 +52,6 @@ jobs:
         composer require devshop/power-process
         composer install --prefer-dist --no-progress --no-suggest
 
-    - name: Create a branch for the yaml-tests to read.
-      working-directory: ${{env.working-directory}}
-      run: git checkout -b $( echo ${GITHUB_REF} | sed 's/refs\/heads\///')
-
     - name: Run Yaml Tests
       working-directory: ${{env.working-directory}}
       env:
