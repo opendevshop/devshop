@@ -173,10 +173,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.INPUT_GITHUB_TOKEN }}
         working-directory: ${{env.working-directory}}
         run: |
-          env
           ./github whoami
-          ./github deployment:start --environment=pr{$GITHUB_PR_NUMBER}.components.githubApi --description="DevShop GitHubApiCli Actions Tests" -n
-          ./github deployment:update --description="DevShop GitHubApiCli Actions Tests: Done" --state=success -n
 
   ComposerCommon:
     name: ComposerCommon
