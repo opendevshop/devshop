@@ -18,8 +18,6 @@ The only tools you need on your host machine to develop devshop are:
 * Docker version 1.10.0+.
 * Docker Compose version 1.6.0+.
 * [Install Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git).
-* [Install Drush](http://docs.drush.org/en/master/install/).
-* [Install Robo](http://robo.li/).
 * [Install Docker](https://docs.docker.com/engine/installation/).
 * [Install Docker Compose](https://github.com/docker/compose/releases).
 * Clone this Repo and change to it's directory.
@@ -27,22 +25,11 @@ The only tools you need on your host machine to develop devshop are:
   ```text
    git clone git@github.com:opendevshop/devshop.git
    cd devshop
+   composer install
+   bin/robo up
   ```
 
-* If working on a Mac \(or a linux machine with a user other than uid 1000\), you need to regenerate your containers so the Aegir user UID matches your local user UID:
-
-  ```text
-  robo prepare:containers
-  ```
-
-  The command will attempt to automatically detect your UID. If you need to set it manually, you can pass the UID as an argument
-
-  ```text
-  robo prepare:containers 1001
-  ```
-
-1. Run `robo up` script to clone the rest of the source code and launch the docker containers.
-2. That's it! Look for a one-time login link that looks like:
+That's it! Look for a one-time login link that looks like:
 
    ```text
    http://devshop.local.computer/user/reset/1/1475596064/EzLbpsTpSgKLJl7GmO0
