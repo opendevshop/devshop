@@ -544,6 +544,11 @@ BODY;
 
                                 $this->successLite("Comment Created: {$comment_response['html_url']}");
 
+                                // GitHub Actions, we want to test posting a comment but we don't want to see the comment.
+                                if (getenv('GITHUB_ACTIONS')) {
+                                    $client->repos()->comments()->remove($this->repoOwner, $this->repoName, $comment_response['id']);
+                                }
+
                                 // @TODO: Set Target URL from yaml-task options.
                                 // $params->target_url = $this->getTargetUrl($comment_response['html_url']);
                                 // Always use the main target url... If this is overridable, it should be configurable by the user in their tasks,yml.
