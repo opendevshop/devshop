@@ -364,7 +364,9 @@ class YamlTasksConsoleCommand extends BaseCommand
                     );
                     $params->context = $task_name;
 
-                    $params->description = substr($params->description, 0, self::GITHUB_STATUS_DESCRIPTION_MAX_SIZE - 3) . '...';
+                    if (strlen($params->description) > self::GITHUB_STATUS_DESCRIPTION_MAX_SIZE) {
+                        $params->description = substr($params->description, 0, self::GITHUB_STATUS_DESCRIPTION_MAX_SIZE - 1) . '…';
+                    }
 
                     // Post status to github
                     try {
@@ -559,7 +561,7 @@ BODY;
                 }
 
                 if (!$input->getOption('dry-run')) {
-                    $params->description = substr($params->description, 0, self::GITHUB_STATUS_DESCRIPTION_MAX_SIZE - 3) . '...';
+                    $params->description = substr($params->description, 0, self::GITHUB_STATUS_DESCRIPTION_MAX_SIZE);
                     $response = $client->getHttpClient()->post("/repos/$this->repoOwner/$this->repoName/statuses/$this->repoSha", json_encode($params));
                     $this->commitStatusMessage($response, $task_name, $task, $params->state);
                 }
