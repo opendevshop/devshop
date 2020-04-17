@@ -450,7 +450,6 @@ class YamlTasksConsoleCommand extends BaseCommand
                             "Successful in {$process->duration} on {$input->getOption('hostname')}",
                         )
                     );
-
                 } else {
                     // If the task has the ignore failure flag, ignore it.
                     if (!empty($task['ignore-failure'])) {
