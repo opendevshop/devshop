@@ -18,7 +18,6 @@ env:
   GITHUB_TOKEN: ${{ secrets.INPUT_GITHUB_TOKEN }}
   GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}
   GITHUB_PR_SHA: ${{ github.event.pull_request.head.sha  }}
-  GITHUB_RUN_LOG_URL: https://github.com/${{ env.GITHUB_REPOSITORY }}/actions/runs/${{ env.GITHUB_RUN_ID }}?check_suite_focus=true
 
 jobs:
   build:
@@ -47,6 +46,7 @@ jobs:
       ANSIBLE_VARS: "${{ matrix.vars }}"
       DEVSHOP_SERVER_HOSTNAME: "${{ matrix.os }}.actions.github.com"
       OS: "${{ matrix.os }}"
+      GITHUB_RUN_LOG_URL: https://github.com/${{ env.GITHUB_REPOSITORY }}/actions/runs/${{ env.GITHUB_RUN_ID }}?check_suite_focus=true
 
     runs-on: ubuntu-18.04
     steps:
