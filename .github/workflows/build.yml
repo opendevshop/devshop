@@ -18,7 +18,7 @@ env:
   GITHUB_TOKEN: ${{ secrets.INPUT_GITHUB_TOKEN }}
   GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}
   GITHUB_PR_SHA: ${{ github.event.pull_request.head.sha  }}
-  GITHUB_RUN_LOG_URL: https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}?check_suite_focus=true
+  GITHUB_RUN_LOG_URL: https://github.com/${{ env.GITHUB_REPOSITORY }}/actions/runs/${{ env.GITHUB_RUN_ID }}?check_suite_focus=true
 
 jobs:
   build:
