@@ -15,7 +15,9 @@ jobs:
     name: GitHub Actions
     runs-on: ubuntu-16.04
     steps:
-      - name: gitgub context
+      - name: environment vars
+        run: env
+      - name: github context
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
         run: echo "$GITHUB_CONTEXT"
