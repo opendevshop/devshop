@@ -22,9 +22,16 @@
         "devshop/yaml-tasks": "*",
         "devshop/git-split": "*",
         "devshop/github-api-cli": "*",
+        "devshop/power-process": "*",
         "cpliakas/git-wrapper": "^1.0",
         "drush/drush": "^8",
         "ext-json": "*"
+    },
+    "replace": {
+        "devshop/git-split": "self.version",
+        "devshop/github-api-cli": "self.version",
+        "devshop/power-process": "self.version",
+        "devshop/yaml-tasks": "self.version"
     },
     "require-dev": {
         "composer/composer": "^1.9"
@@ -40,24 +47,6 @@
             }
         }
     },
-    "repositories": [
-        {
-            "type": "path",
-            "url": "src/DevShop/Component/ComposerCommon"
-        },
-        {
-            "type": "path",
-            "url": "src/DevShop/Component/GitHubApiCli"
-        },
-        {
-            "type": "path",
-            "url": "src/DevShop/Component/GitSplit"
-        },
-        {
-            "type": "path",
-            "url": "src/DevShop/Component/YamlTasks"
-        }
-    ],
     "bin": [
         "scripts/devshop",
         "scripts/branch-or-tag"
