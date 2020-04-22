@@ -26,7 +26,6 @@
     },
     "replace": {
         "devshop/composer-common": "self.version",
-        "devshop/github-api-cli": "self.version",
         "devshop/power-process": "self.version",
         "devshop/yaml-tasks": "self.version"
     },
