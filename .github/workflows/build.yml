@@ -2,11 +2,13 @@ name: Build
 
 on:
  push:
-   branches: 1.x
+   branches:
+   - 1.x
  pull_request:
    types: [opened, synchronize]
  schedule:
-   - cron: "10 * * * *"
+   # Once per day. https://crontab.guru/#*_0_*_*_*
+   - cron: "* 0 * * *"
 
 env:
   # Set ANSIBLE_VERBOSITY to 1,2 or 3 when needed for development.
@@ -15,6 +17,7 @@ env:
   DEBUG_COMMAND: "docker-compose exec -T devshop systemctl status --no-pager"
   GITHUB_TOKEN: ${{ secrets.INPUT_GITHUB_TOKEN }}
   GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}
+  GITHUB_PR_SHA: ${{ github.event.pull_request.head.sha  }}
   GITHUB_RUN_LOG_URL: https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}?check_suite_focus=true
 
 jobs:
@@ -55,7 +58,8 @@ jobs:
       run: |
         echo "::set-env name=ANSIBLE_TAGS::mysql"
 
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
+
     - name: Get Composer Cache Directory
       id: composer-cache
       run: |
@@ -71,9 +75,15 @@ jobs:
     - name: Install Composer dependencies
       run: composer install --prefer-dist --no-progress --no-suggest
 
-    - name: Create a GitHub Deployment
+    - name: Create a GitHub Deployment to PR environment
+      if: ${{ github.event_name == 'pull_request' }}
       run: |
-        bin/github deployment:start --environment=pr${GITHUB_PR_NUMBER}.${OS} --ref=${GITHUB_HEAD_REF} --description="Triggered from ./.github/workflows/build.yml"
+        bin/github deployment:start --environment=github.${OS}.pr${GITHUB_PR_NUMBER} --ref=${GITHUB_PR_SHA} --description="Triggered from ./.github/workflows/build.yml"
+
+    - name: Create a GitHub Deployment to branch environment
+      if: ${{ github.event_name != 'pull_request' }}
+      run: |
+        bin/github deployment:start --environment=github.${OS}.$(bin/branch-or-tag) --ref=${GITHUB_SHA}  --description="Triggered from ./.github/workflows/build.yml"
 
     - name: Docker & Docker Compose Version
       run: |

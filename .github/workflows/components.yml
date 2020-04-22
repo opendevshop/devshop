@@ -6,6 +6,10 @@ on:
   pull_request:
     types: [opened, synchronize]
 
+  schedule:
+    # Once per day. https://crontab.guru/#*_0_*_*_*
+    - cron: "* 0 * * *"
+
 env:
   GITHUB_TOKEN: ${{ secrets.INPUT_GITHUB_TOKEN }}
 
@@ -20,7 +24,10 @@ jobs:
       working-directory: ./src/DevShop/Component/YamlTasks
 
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
+      with:
+        ref: ${{ github.event.pull_request.head.sha }}
+
     - name: Get Composer Cache Directory
       working-directory: ${{env.working-directory}}
       id: composer-cache
@@ -45,24 +52,20 @@ jobs:
         composer require devshop/power-process
         composer install --prefer-dist --no-progress --no-suggest
 
-    - name: Create a branch for the yaml-tests to read.
-      working-directory: ${{env.working-directory}}
-      run: git checkout -b $( echo ${GITHUB_REF} | sed 's/refs\/heads\///')
-
     - name: Run Yaml Tests
       working-directory: ${{env.working-directory}}
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.INPUT_GITHUB_TOKEN }}
         GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}
-        GITHUB_RUN_LOG_URL: https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}?check_suite_focus=true
+        GITHUB_RUN_LOG_URL: https://github.com/${{ env.GITHUB_REPOSITORY }}/actions/runs/${{ env.GITHUB_RUN_ID }}?check_suite_focus=true
 
         # @TODO: Get environment variable setting to work.
         # YAML_TASKS_STATUS_URL: https://github.com/${GITHUB_REPOSITORY}/runs/${GITHUB_RUN_ID}?check_suite_focus=true
         PROVISION_PROCESS_OUTPUT: direct
       run: |
         chmod +x yaml-tasks
-        ./yaml-tasks  --ansi -v --hostname=github.com --status-url=https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}?check_suite_focus=true
-        ./yaml-tasks --tasks-file tests.yml --ansi -v --hostname=github.com --status-url=https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}?check_suite_focus=true
+        ./yaml-tasks  --ansi -v --hostname=github.com --status-url=${GITHUB_RUN_LOG_URL}
+        ./yaml-tasks --tasks-file tests.yml --ansi -v --hostname=github.com --status-url=${GITHUB_RUN_LOG_URL}
 
   power-process:
     name: PowerProcess
@@ -169,10 +172,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.INPUT_GITHUB_TOKEN }}
         working-directory: ${{env.working-directory}}
         run: |
-          env
           ./github whoami
-          ./github deployment:start --environment=pr{$GITHUB_PR_NUMBER}.components.githubApi --description="DevShop GitHubApiCli Actions Tests" -n
-          ./github deployment:update --description="DevShop GitHubApiCli Actions Tests: Done" --state=success -n
 
   ComposerCommon:
     name: ComposerCommon
