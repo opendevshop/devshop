@@ -25,7 +25,6 @@
         "devshop/github-api-cli": "self.version"
     },
     "replace": {
-        "devshop/composer-common": "self.version",
         "devshop/power-process": "self.version",
         "devshop/yaml-tasks": "self.version"
     },
@@ -43,6 +42,10 @@
         }
     },
     "repositories": [
+        {
+            "type": "path",
+            "url": "src/DevShop/Component/ComposerCommon"
+        },
         {
             "type": "path",
             "url": "src/DevShop/Component/GitSplit"
