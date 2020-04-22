@@ -19,7 +19,6 @@
     "require": {
         "php": "^7.1",
         "knplabs/github-api": "^1.4",
-        "mouf/nodejs-installer": "^1.0",
         "devshop/yaml-tasks": "*",
         "devshop/git-split": "*",
         "devshop/github-api-cli": "*",
@@ -29,6 +28,9 @@
     },
     "require-dev": {
         "composer/composer": "^1.9"
+    },
+    "suggest": {
+        "mouf/nodejs-installer": "Use to install nodejs into the devshop bin dir using composer."
     },
     "autoload": {
         "psr-0": { "DevShop": "src/" },
