@@ -12,6 +12,9 @@ on:
 
 env:
   GITHUB_TOKEN: ${{ secrets.INPUT_GITHUB_TOKEN }}
+  GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}
+  GITHUB_PR_SHA: ${{ github.event.pull_request.head.sha  }}
+  GITHUB_RUN_LOG_URL: https://github.com/opendevshop/devshop/runs/${{ github.run_id }}
 
 jobs:
   yaml-tasks:
@@ -52,20 +55,16 @@ jobs:
         composer require devshop/power-process
         composer install --prefer-dist --no-progress --no-suggest
 
-    - name: Run Yaml Tests
+    - name: Run Yaml Tasks
       working-directory: ${{env.working-directory}}
       env:
-        GITHUB_TOKEN: ${{ secrets.INPUT_GITHUB_TOKEN }}
-        GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}
-        GITHUB_RUN_LOG_URL: https://github.com/${{ env.GITHUB_REPOSITORY }}/actions/runs/${{ env.GITHUB_RUN_ID }}?check_suite_focus=true
-
         # @TODO: Get environment variable setting to work.
         # YAML_TASKS_STATUS_URL: https://github.com/${GITHUB_REPOSITORY}/runs/${GITHUB_RUN_ID}?check_suite_focus=true
         PROVISION_PROCESS_OUTPUT: direct
       run: |
         chmod +x yaml-tasks
-        ./yaml-tasks  --ansi -v --hostname=github.com --status-url=${GITHUB_RUN_LOG_URL}
-        ./yaml-tasks --tasks-file tests.yml --ansi -v --hostname=github.com --status-url=${GITHUB_RUN_LOG_URL}
+        ./yaml-tasks  --ansi -v --hostname=github.com --status-url=${GITHUB_RUN_LOG_URL}#step:7:1
+        ./yaml-tasks --tasks-file tests.yml --ansi -v --hostname=github.com --status-url=${GITHUB_RUN_LOG_URL}#step:7:1
 
   power-process:
     name: PowerProcess
