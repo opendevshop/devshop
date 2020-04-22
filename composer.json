@@ -19,16 +19,12 @@
     "require": {
         "php": "^7.1",
         "knplabs/github-api": "^1.4",
-        "devshop/yaml-tasks": "*",
-        "devshop/git-split": "*",
-        "devshop/github-api-cli": "*",
-        "devshop/power-process": "*",
-        "cpliakas/git-wrapper": "^1.0",
         "drush/drush": "^8",
-        "ext-json": "*"
+        "ext-json": "*",
+        "devshop/git-split": "composer/node/suggests-dev"
     },
     "replace": {
-        "devshop/git-split": "self.version",
+        "devshop/composer-common": "self.version",
         "devshop/github-api-cli": "self.version",
         "devshop/power-process": "self.version",
         "devshop/yaml-tasks": "self.version"
@@ -40,13 +36,18 @@
         "mouf/nodejs-installer": "Use to install nodejs into the devshop bin dir using composer."
     },
     "autoload": {
-        "psr-0": { "DevShop": "src/" },
         "autoload": {
             "psr-4": {
                 "DevShop\\Component\\": "src/DevShop/Component/"
             }
         }
     },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "src/DevShop/Component/GitSplit"
+        }
+    ],
     "bin": [
         "scripts/devshop",
         "scripts/branch-or-tag"

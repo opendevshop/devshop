@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "539519dcb428a2040abb949693826a7c",
+    "content-hash": "e3741bc0bbb5af8757d2e0317cd74d65",
     "packages": [
         {
             "name": "consolidation/annotated-command",
@@ -204,59 +204,50 @@
             "time": "2019-05-30T23:16:01+00:00"
         },
         {
-            "name": "cpliakas/git-wrapper",
-            "version": "1.7.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/cpliakas/git-wrapper.git",
-                "reference": "1a2f1131ec9ebe04a0b729b141396fa55f992d44"
-            },
+            "name": "devshop/git-split",
+            "version": "dev-composer/node/suggests",
             "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/cpliakas/git-wrapper/zipball/1a2f1131ec9ebe04a0b729b141396fa55f992d44",
-                "reference": "1a2f1131ec9ebe04a0b729b141396fa55f992d44",
-                "shasum": ""
+                "type": "path",
+                "url": "src/DevShop/Component/GitSplit",
+                "reference": "43c140153da25bb227a2e3d43903be533439bffd"
             },
             "require": {
-                "php": ">=5.3.0",
-                "symfony/event-dispatcher": "~2.3|~3.0",
-                "symfony/process": "~2.3|~3.0"
+                "composer-plugin-api": "^1.1",
+                "php": "^7.1"
             },
             "require-dev": {
-                "pdepend/pdepend": "~1.0",
-                "phploc/phploc": "~2.0",
-                "phpmd/phpmd": "~1.0",
-                "phpunit/phpunit": "~3.0",
-                "psr/log": "~1.0",
-                "scrutinizer/ocular": "~1.0",
-                "sebastian/phpcpd": "~2.0",
-                "symfony/filesystem": "~2.0"
+                "symfony/console": "^4.4|^5.0"
             },
-            "suggest": {
-                "monolog/monolog": "Enables logging of executed git commands"
+            "bin": [
+                "bin/git-split"
+            ],
+            "type": "composer-plugin",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.x-dev"
+                },
+                "class": "DevShop\\Component\\GitSplit\\Composer\\Plugin"
             },
-            "type": "library",
             "autoload": {
-                "psr-0": {
-                    "GitWrapper": "src/"
+                "psr-4": {
+                    "DevShop\\Component\\GitSplit\\": ""
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
             "authors": [
                 {
-                    "name": "Chris Pliakas",
-                    "email": "opensource@chrispliakas.com"
+                    "name": "Jon Pugh",
+                    "email": "jon@thinkdrop.net"
+                },
+                {
+                    "name": "DevShop Community",
+                    "homepage": "https://github.com/opendevshop/devshop/graphs/contributors"
                 }
             ],
-            "description": "A PHP wrapper around the Git command line utility.",
-            "homepage": "https://github.com/cpliakas/git-wrapper",
-            "keywords": [
-                "git"
-            ],
-            "time": "2016-04-19T16:12:33+00:00"
+            "description": "DevShop GitSplit Component",
+            "homepage": "https://getdevshop.com"
         },
         {
             "name": "dflydev/dot-access-data",
@@ -1202,55 +1193,6 @@
             "time": "2020-03-09T19:04:49+00:00"
         },
         {
-            "name": "symfony/process",
-            "version": "v3.4.39",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/symfony/process.git",
-                "reference": "1dbc09f6e14703ae2398efc86b02ae2bcd9a9931"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/symfony/process/zipball/1dbc09f6e14703ae2398efc86b02ae2bcd9a9931",
-                "reference": "1dbc09f6e14703ae2398efc86b02ae2bcd9a9931",
-                "shasum": ""
-            },
-            "require": {
-                "php": "^5.5.9|>=7.0.8"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "3.4-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Symfony\\Component\\Process\\": ""
-                },
-                "exclude-from-classmap": [
-                    "/Tests/"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
-                },
-                {
-                    "name": "Symfony Community",
-                    "homepage": "https://symfony.com/contributors"
-                }
-            ],
-            "description": "Symfony Process Component",
-            "homepage": "https://symfony.com",
-            "time": "2020-03-20T06:07:50+00:00"
-        },
-        {
             "name": "symfony/var-dumper",
             "version": "v3.4.39",
             "source": {
@@ -2023,11 +1965,62 @@
             "description": "Symfony Filesystem Component",
             "homepage": "https://symfony.com",
             "time": "2020-03-27T16:54:36+00:00"
+        },
+        {
+            "name": "symfony/process",
+            "version": "v4.4.7",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/process.git",
+                "reference": "3e40e87a20eaf83a1db825e1fa5097ae89042db3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/process/zipball/3e40e87a20eaf83a1db825e1fa5097ae89042db3",
+                "reference": "3e40e87a20eaf83a1db825e1fa5097ae89042db3",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.1.3"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "4.4-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Component\\Process\\": ""
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony Process Component",
+            "homepage": "https://symfony.com",
+            "time": "2020-03-27T16:54:36+00:00"
         }
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": [],
+    "stability-flags": {
+        "devshop/git-split": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
