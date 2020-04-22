@@ -21,7 +21,8 @@
         "knplabs/github-api": "^1.4",
         "drush/drush": "^8",
         "ext-json": "*",
-        "devshop/git-split": "composer/node/suggests-dev"
+        "devshop/git-split": "self.version",
+        "devshop/github-api-cli": "self.version"
     },
     "replace": {
         "devshop/composer-common": "self.version",
@@ -46,6 +47,10 @@
         {
             "type": "path",
             "url": "src/DevShop/Component/GitSplit"
+        },
+        {
+            "type": "path",
+            "url": "src/DevShop/Component/GitHubApiCli"
         }
     ],
     "bin": [

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e3741bc0bbb5af8757d2e0317cd74d65",
+    "content-hash": "dd4d33d35ab43df50fa3acb5bcb2eec7",
     "packages": [
         {
             "name": "consolidation/annotated-command",
@@ -205,7 +205,7 @@
         },
         {
             "name": "devshop/git-split",
-            "version": "dev-composer/node/suggests",
+            "version": "1.x-dev",
             "dist": {
                 "type": "path",
                 "url": "src/DevShop/Component/GitSplit",
@@ -2019,7 +2019,8 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "devshop/git-split": 20
+        "devshop/git-split": 20,
+        "devshop/github-api-cli": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,
