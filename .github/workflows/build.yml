@@ -2,8 +2,7 @@ name: Build
 
 on:
  push:
-   branches:
-   - 1.x
+   branches: 1.x
  pull_request:
    types: [opened, synchronize]
  schedule:
@@ -18,7 +17,7 @@ env:
   GITHUB_TOKEN: ${{ secrets.INPUT_GITHUB_TOKEN }}
   GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}
   GITHUB_PR_SHA: ${{ github.event.pull_request.head.sha  }}
-  GITHUB_RUN_LOG_URL: https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}?check_suite_focus=true
+  GITHUB_RUN_LOG_URL: https://github.com/opendevshop/devshop/actions/runs/${{ github.run_id }}
 
 jobs:
   build:
@@ -78,12 +77,12 @@ jobs:
     - name: Create a GitHub Deployment to PR environment
       if: ${{ github.event_name == 'pull_request' }}
       run: |
-        bin/github deployment:start --environment=github.${OS}.pr${GITHUB_PR_NUMBER} --ref=${GITHUB_PR_SHA} --description="Triggered from ./.github/workflows/build.yml"
+        bin/github deployment:start --environment=github.pr${GITHUB_PR_NUMBER}.${OS} --ref=${GITHUB_PR_SHA} --description="Triggered from ./.github/workflows/build.yml"
 
     - name: Create a GitHub Deployment to branch environment
       if: ${{ github.event_name != 'pull_request' }}
       run: |
-        bin/github deployment:start --environment=github.${OS}.$(bin/branch-or-tag) --ref=${GITHUB_SHA}  --description="Triggered from ./.github/workflows/build.yml"
+        bin/github deployment:start --environment=github.$(bin/branch-or-tag).${OS} --ref=${GITHUB_SHA}  --description="Triggered from ./.github/workflows/build.yml"
 
     - name: Docker & Docker Compose Version
       run: |
