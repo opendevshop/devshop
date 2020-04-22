@@ -29,7 +29,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-1.x": "1.6-dev"
+            "dev-master": "1.x-dev"
         },
         "class": "DevShop\\Component\\YamlTasks\\Composer\\Plugin"
     },
