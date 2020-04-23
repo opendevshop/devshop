@@ -97,7 +97,6 @@ jobs:
       run: |
         bin/github deployment:update --state=in_progress --description="Preparing Containers with robo up..." --log_url=${GITHUB_RUN_LOG_URL}#step:8:1
         bin/robo up ps  \
-          --build-command /usr/share/devshop/install.sh
           --build \
           --follow 0 \
           --from "${OS}" \
@@ -116,7 +115,7 @@ jobs:
       env:
         ANSIBLE_TAGS: "${{ matrix.run_tags }}"
         ANSIBLE_SKIP_TAGS: "${{ matrix.run_skip_tags }}"
-        DEVSHOP_DOCKER_COMMAND: "devshop-ansible-playbook"
+        DEVSHOP_DOCKER_COMMAND: "/usr/share/devshop/install.sh"
       run: |
         bin/github deployment:update --state=in_progress --description="Installing DevShop with devshop-ansible-playbook..." --log_url=${GITHUB_RUN_LOG_URL}#step:10:1
         bin/robo exec ${DEVSHOP_DOCKER_COMMAND} \
