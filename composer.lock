@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f85959613aad82b8cee1513b98617ba6",
+    "content-hash": "60951964d39b4b6dd317eef12137f541",
     "packages": [
         {
             "name": "consolidation/annotated-command",
@@ -690,6 +690,53 @@
                 }
             ],
             "description": "Simple console wrapper for GitHub API",
+            "homepage": "https://getdevshop.com"
+        },
+        {
+            "name": "devshop/power-process",
+            "version": "1.x-dev",
+            "dist": {
+                "type": "path",
+                "url": "src/DevShop/Component/PowerProcess",
+                "reference": "7a2fcfd9b70057036b2265ff8f1198ef69d790ee"
+            },
+            "require": {
+                "consolidation/robo": "^1",
+                "php": ">=5.5.9|>=7.0.8",
+                "symfony/process": "^3"
+            },
+            "conflict": {
+                "symfony/console": ">=4",
+                "symfony/process": ">=4"
+            },
+            "bin": [
+                "run"
+            ],
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "DevShop\\Component\\PowerProcess\\": ""
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jon Pugh",
+                    "email": "jon@thinkdrop.net"
+                },
+                {
+                    "name": "DevShop Community",
+                    "homepage": "https://github.com/opendevshop/devshop/graphs/contributors"
+                }
+            ],
+            "description": "Enhanced Symfony Process component.",
             "homepage": "https://getdevshop.com"
         },
         {
@@ -1896,25 +1943,25 @@
         },
         {
             "name": "symfony/process",
-            "version": "v4.4.7",
+            "version": "v3.4.39",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/process.git",
-                "reference": "3e40e87a20eaf83a1db825e1fa5097ae89042db3"
+                "reference": "1dbc09f6e14703ae2398efc86b02ae2bcd9a9931"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/process/zipball/3e40e87a20eaf83a1db825e1fa5097ae89042db3",
-                "reference": "3e40e87a20eaf83a1db825e1fa5097ae89042db3",
+                "url": "https://api.github.com/repos/symfony/process/zipball/1dbc09f6e14703ae2398efc86b02ae2bcd9a9931",
+                "reference": "1dbc09f6e14703ae2398efc86b02ae2bcd9a9931",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.1.3"
+                "php": "^5.5.9|>=7.0.8"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "4.4-dev"
+                    "dev-master": "3.4-dev"
                 }
             },
             "autoload": {
@@ -1941,7 +1988,7 @@
             ],
             "description": "Symfony Process Component",
             "homepage": "https://symfony.com",
-            "time": "2020-03-27T16:54:36+00:00"
+            "time": "2020-03-20T06:07:50+00:00"
         },
         {
             "name": "symfony/var-dumper",
@@ -2728,7 +2775,8 @@
     "minimum-stability": "dev",
     "stability-flags": {
         "devshop/git-split": 20,
-        "devshop/github-api-cli": 20
+        "devshop/github-api-cli": 20,
+        "devshop/power-process": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,

@@ -22,10 +22,10 @@
         "drush/drush": "^8",
         "ext-json": "*",
         "devshop/git-split": "self.version",
-        "devshop/github-api-cli": "self.version"
+        "devshop/github-api-cli": "self.version",
+        "devshop/power-process": "self.version"
     },
     "replace": {
-        "devshop/power-process": "self.version",
         "devshop/yaml-tasks": "self.version"
     },
     "require-dev": {
@@ -35,10 +35,8 @@
         "mouf/nodejs-installer": "Use to install nodejs into the devshop bin dir using composer."
     },
     "autoload": {
-        "autoload": {
-            "psr-4": {
-                "DevShop\\Component\\": "src/DevShop/Component/"
-            }
+        "psr-4": {
+            "DevShop\\Component\\": "src/DevShop/Component/"
         }
     },
     "repositories": [
@@ -53,6 +51,10 @@
         {
             "type": "path",
             "url": "src/DevShop/Component/GitHubApiCli"
+        },
+        {
+            "type": "path",
+            "url": "src/DevShop/Component/PowerProcess"
         }
     ],
     "bin": [
