@@ -36,7 +36,7 @@
     },
     "autoload": {
         "psr-4": {
-            "DevShop\\Component\\": "src/DevShop/Component/"
+            "DevShop\\": "src/DevShop/"
         }
     },
     "repositories": [
