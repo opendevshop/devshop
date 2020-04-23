@@ -95,7 +95,7 @@ Your contributions make DevShop possible. Please consider becoming a patron of o
 # Copied from get.docker.com
 # Usage: $sh_c 'command_to_run'
 sh_c='sh -c'
-pip_packages="ansible"
+pip_packages="ansible pymysql"
 
 set -e
 
