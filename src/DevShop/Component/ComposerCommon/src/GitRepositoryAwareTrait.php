@@ -12,7 +12,7 @@ trait GitRepositoryAwareTrait
     protected $repository = NULL;
 
     /**
-     * @param Repository $repository
+     * @param Repository $repository If left empty, the current working directory will be used.
      *
      * @return $this
      */

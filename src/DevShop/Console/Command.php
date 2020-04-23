@@ -17,9 +17,10 @@
 
 namespace DevShop\Console;
 
+use DevShop\Component\Common\GitHubRepositoryAwareTrait;
+use TQ\Git\Repository\Repository;
+
 use DevShop\DevShop;
-use GitWrapper\GitWorkingCopy;
-use GitWrapper\GitWrapper;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
@@ -39,6 +40,9 @@ use Symfony\Component\Console\Command\Command as BaseCommand;
  */
 abstract class Command extends BaseCommand
 {
+
+  use GitHubRepositoryAwareTrait;
+
   /**
    * @var DevShop
    */
@@ -58,16 +62,16 @@ abstract class Command extends BaseCommand
    * @var SymfonyStyle
    */
   public $IO;
-
-  /**
-   * @var GitWrapper
-   */
-  public $gitWrapper;
-
-  /**
-   * @var GitWorkingCopy
-   */
-  public $gitWorkingCopy;
+//
+//  /**
+//   * @var GitWrapper
+//   */
+//  public $gitWrapper;
+//
+//  /**
+//   * @var GitWorkingCopy
+//   */
+//  public $gitWorkingCopy;
 
   /**
    * @var Process
@@ -107,7 +111,7 @@ abstract class Command extends BaseCommand
     $this->FS = new Filesystem();
     $this->input = $input;
     $this->output = $output;
-    $this->gitWrapper = new GitWrapper();
+    $this->setGitHubRepo();
     $this->user = trim(shell_exec('whoami'));
 
 //    try {
@@ -355,8 +359,10 @@ abstract class Command extends BaseCommand
     $path = realpath(__DIR__ . '/../../../');
     $version = $this->getApplication()->getVersion();
     $versionSha = $this->getApplication()->versionRefSha;
-    $this->gitWorkingCopy = $this->gitWrapper->workingCopy($path);
-    $this->gitWorkingCopy->status();
+
+    $devshopCliRepo = Repository::open($path);
+    $devshopCliRepo->getStatus();
+
     $this->output->writeln("Git repo found at <info>$path</info> at version <comment>$version</comment>#<comment>$versionSha</comment>.");
 
   }
