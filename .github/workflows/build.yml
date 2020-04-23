@@ -33,10 +33,11 @@ jobs:
         run_tags: ['all']
         run_skip_tags: ['none']
 
+        # Docker Images to build FROM:
         os:
-          - 'ubuntu1804'
+          - 'ubuntu:18.04'
           # - 'centos6'
-          - 'centos7'
+          - 'centos:7'
         vars:
           - 'php_version: 7.2'
 
@@ -91,13 +92,14 @@ jobs:
 
       # NOTE: The env vars shown below should be loaded into the Robo options automatically.
     # They are added to the command here for visibility.
+    # --from is used to override the FROM image. In this GitHub workflow, we want to do a full server build.
     - name: Launch Server Container (${{ matrix.os }})
       run: |
         bin/github deployment:update --state=in_progress --description="Preparing Containers with robo up..." --log_url=${GITHUB_RUN_LOG_URL}#step:8:1
         bin/robo up ps  \
           --build \
           --follow 0 \
-          --os "${OS}" \
+          --from "${OS}" \
           --vars "${ANSIBLE_VARS}" \
           --tags "${ANSIBLE_TAGS}" \
           --skip-tags "${ANSIBLE_SKIP_TAGS}" \
