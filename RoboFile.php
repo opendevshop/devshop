@@ -72,6 +72,7 @@ class RoboFile extends \Robo\Tasks {
     'playbook' => 'ANSIBLE_PLAYBOOK',
     'roles-path' => 'ANSIBLE_ROLES_PATH',
     'config' => 'ANSIBLE_CONFIG',
+    'build-command' => 'DOCKER_BUILD_COMMAND',
 
     // Used in docker compose image.
     'docker-image' => 'DEVSHOP_DOCKER_IMAGE',
@@ -370,6 +371,7 @@ class RoboFile extends \Robo\Tasks {
       'docker-image' => 'devshop/server:local',
       'from' => NULL,
       'dockerfile' => 'Dockerfile',
+      'build-command' => NULL,
       'os' => 'ubuntu1804',
       'vars' => '',
       'tags' => '',
@@ -500,6 +502,7 @@ class RoboFile extends \Robo\Tasks {
     'environment' => [],
     'volumes' => true,
     'install-at-runtime' => FALSE,
+    'build-command' => NULL,
   ]) {
 
     // Define docker-image (name for the "image" in docker-compose.

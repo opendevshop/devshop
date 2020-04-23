@@ -97,6 +97,7 @@ jobs:
       run: |
         bin/github deployment:update --state=in_progress --description="Preparing Containers with robo up..." --log_url=${GITHUB_RUN_LOG_URL}#step:8:1
         bin/robo up ps  \
+          --build-command /usr/share/devshop/install.sh
           --build \
           --follow 0 \
           --from "${OS}" \

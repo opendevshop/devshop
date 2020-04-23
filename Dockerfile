@@ -226,6 +226,9 @@ ENV ANSIBLE_BUILD_COMMAND="devshop-ansible-playbook \
     --extra-vars aegir_user_gid=$DEVSHOP_USER_UID \
     --extra-vars devshop_install_phase=buildtime \
 "
+# Default the docker command to the ANSIBLE_BUILD_COMMAND.
+ARG DOCKER_BUILD_COMMAND_ARG="date"
+ENV DOCKER_BUILD_COMMAND ${DOCKER_BUILD_COMMAND_ARG:-"date"}
 
 RUN \
   echo "Container Environment Preparation Complete"; \
@@ -251,19 +254,19 @@ RUN \
 
 # Provision with Ansible!
 RUN \
-    devshop-logo "Docker Build: Ansible Playbook Start" && \
-    echo $ANSIBLE_BUILD_COMMAND && \
-    $ANSIBLE_BUILD_COMMAND
+    devshop-logo "Docker Build: Docker Build Command Start" && \
+    echo $DOCKER_BUILD_COMMAND && \
+    $DOCKER_BUILD_COMMAND
 
 RUN \
-    devshop-logo "Docker Build: Ansible Playbook Complete!" && \
+    devshop-logo "Docker Build: Docker Build Command Complete!" && \
     echo "Playbook: $ANSIBLE_PLAYBOOK" && \
     echo "Tags: $ANSIBLE_TAGS" && \
     echo "Skip Tags: $ANSIBLE_SKIP_TAGS" && \
     echo "Extra Vars: $ANSIBLE_EXTRA_VARS" && \
     echo "" && \
-    echo "Ansible Playbook Command:" && \
-    echo "$ANSIBLE_BUILD_COMMAND" && \
+    echo "Docker Build Command:" && \
+    echo "$DOCKER_BUILD_COMMAND" && \
     echo ""
 
 RUN \
