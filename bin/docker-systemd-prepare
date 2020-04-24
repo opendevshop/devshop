@@ -85,6 +85,10 @@ prepare_centos7() {
 
 }
 
+prepareAll() {
+  mkdir -p /etc/ansible
+}
+
 # perform some very rudimentary platform detection
 lsb_dist=$( get_distribution )
 lsb_dist="$(echo "$lsb_dist" | tr '[:upper:]' '[:lower:]')"
@@ -163,3 +167,6 @@ case "$lsb_dist $dist_version" in
     prepare_centos7
   ;;
 esac
+
+# Run OS-agnostic preparation scripts.
+prepareAll
