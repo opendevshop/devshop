@@ -235,7 +235,7 @@ RUN \
   devshop-line
 
 # Prepare systemd to run inside a container.
-RUN chmod +x ${DEVSHOP_PATH}/docker-systemd-prepare
+RUN chmod +x ${DEVSHOP_PATH}/bin/docker-systemd-prepare
 RUN docker-systemd-prepare
 RUN chmod 766 $DEVSHOP_TESTS_ASSETS_PATH
 
