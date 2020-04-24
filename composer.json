@@ -2,7 +2,7 @@
     "name": "devshop/devshop",
     "type": "library",
     "description": "The DevShop DevOps Framework",
-    "keywords": ["framework", "devops", "platform", "hosting"],
+    "keywords": ["framework", "devops", "platform", "hosting", "drupal", "web"],
     "homepage": "https://getdevshop.com",
     "license": "MIT",
     "authors": [
