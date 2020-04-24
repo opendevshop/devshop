@@ -13,7 +13,7 @@ trait GitRepositoryAwareTrait
     protected $repository = NULL;
 
     /**
-     * @param GitRepository $repository If left empty, the current working directory will be used.
+     * @param GitRepository $repository If left empty, the directory this package is installed in will be used.
      *
      * @return $this
      */
@@ -23,7 +23,7 @@ trait GitRepositoryAwareTrait
             $this->repository = $repository;
         }
         else {
-            $this->repository = GitRepository::open(getcwd());
+            $this->repository = GitRepository::open(__DIR__);
         }
 
         return $this;
