@@ -234,8 +234,8 @@ RUN \
   echo "Container Environment Preparation Complete"; \
   devshop-line
 
-# Cleanup unwanted systemd files. See bin/docker-systemd-clean and https://github.com/geerlingguy/docker-ubuntu1804-ansible/pull/12
-RUN docker-systemd-clean
+# Prepare systemd to run inside a container.
+RUN docker-systemd-prepare
 RUN chmod 766 $DEVSHOP_TESTS_ASSETS_PATH
 
 # Remove devmaster dir if desired so that devshop code is reinstalled.
@@ -287,10 +287,11 @@ VOLUME /var/lib/mysql
 VOLUME /var/log/aegir
 VOLUME /usr/share/devshop
 
-# CMD ["devshop-ansible-playbook"]
-# Our docker-entrypoint script runs systemd, but before it does, it runs the "command" for the container.
+# Required for systemd in containers.
+# @TODO: Ensure it's the same for all OSs before committing.
+VOLUME ["/sys/fs/cgroup", "/tmp", "/run"]
 
-# When a single "
+# The docker-entrypoint script launches /lib/systemd/systemd in the background and THEN runs the CMD.
 CMD ["date"]
 
 # The command to run after the docker CMD.

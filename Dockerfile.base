@@ -228,8 +228,9 @@ RUN \
   echo "Container Environment Preparation Complete"; \
   devshop-line
 
-# Cleanup unwanted systemd files. See bin/docker-systemd-clean and https://github.com/geerlingguy/docker-ubuntu1804-ansible/pull/12
-RUN docker-systemd-clean
+# Prepare systemd to run inside a container.
+RUN docker-systemd-prepare
+
 RUN chmod 766 $DEVSHOP_TESTS_ASSETS_PATH
 
 # Pre-build Information
