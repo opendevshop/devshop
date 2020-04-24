@@ -116,14 +116,17 @@ EOT
         }
       }
 
-      // Bail if there are working copy changes, ignoring untracked files.
-      // This is similar to \GitWrapper\GitWorkingCopy::hasChanges()
-      if (!$input->getOption('ignore-working-copy-changes') && $this->getRepository()->isDirty()) {
-        // @TODO: implement our own style class. Warnings are red in SymfonyStyle.
-        $this->IO->block('DevShop source code git repository is "dirty".', 'WARNING', 'fg=white;bg=yellow', ' ', true);
-
+      // Bail if there are working copy changes ignoring untracked files, or if repo is ahead.
+      $is_ahead = strpos($this->callGit('status', array('--short', '--branch'))->getStdOut(), 'ahead') !== FALSE;
+      $is_dirty = $this->getRepository()->isDirty();
+      if  (!$input->getOption('ignore-working-copy-changes') && $is_ahead) {
+        $this->IO->block('Your local clone of the DevShop source code has un-pushed commits.', 'WARNING', 'fg=white;bg=yellow', ' ', true);
         $output->write($this->callGit('status')->getStdOut());
-
+        throw new RuntimeException("Cancelling self-update to avoid losing your commits. Run 'git push' to save your commits or use the --ignore-working-copy-changes option to skip this check.");
+      }
+      elseif (!$input->getOption('ignore-working-copy-changes') && $is_dirty) {
+        $this->IO->block('DevShop source code git repository is "dirty".', 'WARNING', 'fg=white;bg=yellow', ' ', true);
+        $output->write($this->callGit('status')->getStdOut());
         throw new RuntimeException("There are changes to your working copy at $path. Commit or revert the changes, or use the --ignore-working-copy-changes option to skip this check.");
       }
 
