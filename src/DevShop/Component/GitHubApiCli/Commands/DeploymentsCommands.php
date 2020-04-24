@@ -6,6 +6,7 @@ use DevShop\Component\Common\GitHubRepositoryAwareTrait;
 use DevShop\Component\GitHubApiCli\GitHubApiCli;
 use DevShop\Component\Common\GitRepositoryAwareTrait;
 use Symfony\Component\Yaml\Yaml;
+use DevShop\Component\Common\GitRepository;
 use TQ\Vcs\Cli\CallResult;
 
 class DeploymentsCommands extends \Robo\Tasks
@@ -17,6 +18,11 @@ class DeploymentsCommands extends \Robo\Tasks
      * @var \DevShop\Component\GitHubApiCli\GitHubApiCli
      */
     protected $cli;
+
+    /**
+     * @var GitRepository;
+     */
+    protected $gitRepo;
 
     /**
      * @var string The variable name to use when saving the deployment ID to git config.
