@@ -292,7 +292,7 @@ if [ ! `command -v ansible` ]; then
 			fi
 
       $sh_c "$pkg_manager install -y -q $pre_reqs"
-			$sh_c "pip3 install $pip_packages"
+			$sh_c "pip install $pip_packages"
 
     else
         echo "OS ($OS) is not known, or an install action was not understood.  Please post an issue with this message at http://github.com/opendevshop/devshop/issues/new"
