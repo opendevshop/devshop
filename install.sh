@@ -269,6 +269,7 @@ if [ ! `command -v ansible` ]; then
         $sh_c 'apt-get update -qq >/dev/null'
 				$sh_c "DEBIAN_FRONTEND=noninteractive apt-get install -y -qq $pre_reqs >/dev/null"
 				$sh_c "pip3 install $pip_packages"
+				$sh_c "update-alternatives --install /usr/bin/python python /usr/bin/python3 1"
 
     elif [ $OS == 'centos' ] || [ $OS == 'rhel' ] || [ $OS == 'redhat' ] || [ $OS == 'fedora'  ]; then
 
