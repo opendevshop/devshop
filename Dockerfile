@@ -268,10 +268,10 @@ RUN \
     echo ""
 
 RUN \
-    devshop-logo "Wrote build information to /etc/os-release" && \
-    env | grep "DEVSHOP" >> /etc/os-release && \
-    env | grep "ANSIBLE" >> /etc/os-release && \
-    cat  /etc/os-release
+    devshop-logo "Wrote build information to /etc/devshop-release" && \
+    env | grep "DEVSHOP" >> /etc/devshop-release && \
+    env | grep "ANSIBLE" >> /etc/devshop-release && \
+    cat  /etc/devshop-release
 
 # Reset ANSIBLE_TAGS and ANSIBLE_SKIP_TAGS to runtime values.
 ENV ANSIBLE_TAGS 'runtime'
