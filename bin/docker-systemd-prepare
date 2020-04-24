@@ -70,6 +70,16 @@ prepare_centos7() {
     rm -f /lib/systemd/system/basic.target.wants/*;\
     rm -f /lib/systemd/system/anaconda.target.wants/*;
 
+# Install requirements.
+  yum makecache fast \
+    && yum -y install deltarpm epel-release initscripts \
+    && yum -y update \
+    && yum -y install \
+      sudo \
+      which \
+      python-pip \
+    && yum clean all
+
   # Disable requiretty.
   sed -i -e 's/^\(Defaults\s*requiretty\)/#--- \1/'  /etc/sudoers
 
