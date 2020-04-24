@@ -92,7 +92,7 @@ case "$lsb_dist" in
       esac
     fi
     if [ -z "$dist_version" ] && [ -r /etc/lsb-release ]; then
-      dist_version_name="$(. /etc/lsb-release && echo "$DISTRIB_VERSION")"
+      dist_version="$(. /etc/lsb-release && echo "$DISTRIB_RELEASE")"
       dist_version_name="$(. /etc/lsb-release && echo "$DISTRIB_CODENAME")"
     fi
   ;;
