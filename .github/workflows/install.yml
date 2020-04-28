@@ -11,6 +11,7 @@ on:
 jobs:
   test:
     strategy:
+      fail-fast: false
       matrix:
         os:
           - ubuntu:18.04
@@ -21,4 +22,4 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Run install.sh
-        run: bash install/install.sh --hostname=actions.github.com
+        run: bash install/install.sh --hostname=actions.github.com --playbook=roles/server.playbook.yml
