@@ -248,6 +248,7 @@ fi
 # After testing this thoroughly on centOS and ubuntu, I think we should use command -v
 if [ ! `command -v ansible` ]; then
     echo " Installing Ansible..."
+    mkdir -p /etc/ansible
 
     if [ $OS == 'ubuntu' ] || [ $OS == 'debian' ]; then
 
