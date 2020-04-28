@@ -8,14 +8,14 @@ on:
   schedule:
     # Once per day. https://crontab.guru/#*_0_*_*_*
     - cron: "* 0 * * *"
-
-strategy:
-  matrix:
-    os:
-      - ubuntu:18.04
-      - centos:7
 jobs:
   test:
+    strategy:
+      matrix:
+        os:
+          - ubuntu:18.04
+          - centos:7
+
     runs-on: ubuntu-latest
     container: ${{ matrix.os }}
     steps:
