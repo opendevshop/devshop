@@ -291,6 +291,10 @@ if [ ! `command -v ansible` ]; then
 				pkg_suffix="el"
 			fi
 
+      # Duplicate steps in the core ansible Dockerfile (https://github.com/geerlingguy/docker-centos7-ansible/blob/master/Dockerfile)
+      $sh_c "$pkg_manager makecache fast"
+      $sh_c "$pkg_manager install -y -q deltarpm epel-release initscripts"
+      $sh_c "$pkg_manager update"
       $sh_c "$pkg_manager install -y -q $pre_reqs"
 			$sh_c "pip install $pip_packages"
 
