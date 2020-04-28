@@ -280,14 +280,14 @@ if [ ! `command -v ansible` ]; then
 				config_manager="dnf config-manager"
 				enable_channel_flag="--set-enabled"
 				disable_channel_flag="--set-disabled"
-				pre_reqs="python-pip git"
+				pre_reqs="python-pip git sudo which"
 				pkg_suffix="fc$dist_version"
 			else
 				pkg_manager="yum"
 				config_manager="yum-config-manager"
 				enable_channel_flag="--enable"
 				disable_channel_flag="--disable"
-				pre_reqs="python-pip git"
+				pre_reqs="python-pip git sudo which"
 				pkg_suffix="el"
 			fi
 
