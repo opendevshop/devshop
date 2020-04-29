@@ -276,7 +276,7 @@ if [ ! `command -v ansible` ]; then
         else
 
           # Build ansible RPM from source code.
-          yum install -y which rpm-build make asciidoc git python-setuptools python2-devel PyYAML python-httplib2 python-jinja2 python-keyczar python-paramiko python-six sshpass
+          yum install -y which rpm-build make asciidoc git python-setuptools python2-devel PyYAML python-httplib2 python-jinja2 python-keyczar python-paramiko python-six python-sphinx sshpass
           cd ansible
           git checkout v2.3.0.0-1
           make rpm > /dev/null 2>&1
