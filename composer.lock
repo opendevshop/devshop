@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "60951964d39b4b6dd317eef12137f541",
+    "content-hash": "300306d227256fd5cb686b7202fc5756",
     "packages": [
         {
             "name": "consolidation/annotated-command",
@@ -600,7 +600,10 @@
                 }
             ],
             "description": "Tools useful for any composer-based project.",
-            "homepage": "https://getdevshop.com"
+            "homepage": "https://getdevshop.com",
+            "transport-options": {
+                "relative": true
+            }
         },
         {
             "name": "devshop/git-split",
@@ -646,7 +649,10 @@
                 }
             ],
             "description": "DevShop GitSplit Component",
-            "homepage": "https://getdevshop.com"
+            "homepage": "https://getdevshop.com",
+            "transport-options": {
+                "relative": true
+            }
         },
         {
             "name": "devshop/github-api-cli",
@@ -690,7 +696,10 @@
                 }
             ],
             "description": "Simple console wrapper for GitHub API",
-            "homepage": "https://getdevshop.com"
+            "homepage": "https://getdevshop.com",
+            "transport-options": {
+                "relative": true
+            }
         },
         {
             "name": "devshop/power-process",
@@ -737,7 +746,10 @@
                 }
             ],
             "description": "Enhanced Symfony Process component.",
-            "homepage": "https://getdevshop.com"
+            "homepage": "https://getdevshop.com",
+            "transport-options": {
+                "relative": true
+            }
         },
         {
             "name": "dflydev/dot-access-data",
@@ -2787,5 +2799,6 @@
     "platform-dev": [],
     "platform-overrides": {
         "php": "7.1.3"
-    }
+    },
+    "plugin-api-version": "1.1.0"
 }

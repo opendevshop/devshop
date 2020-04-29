@@ -248,6 +248,7 @@ fi
 # After testing this thoroughly on centOS and ubuntu, I think we should use command -v
 if [ ! `command -v ansible` ]; then
     echo " Installing Ansible..."
+    mkdir -p /etc/ansible
 
     if [ $OS == 'ubuntu' ] || [ $OS == 'debian' ]; then
 
@@ -280,17 +281,21 @@ if [ ! `command -v ansible` ]; then
 				config_manager="dnf config-manager"
 				enable_channel_flag="--set-enabled"
 				disable_channel_flag="--set-disabled"
-				pre_reqs="python-pip git"
+				pre_reqs="python-pip git sudo which"
 				pkg_suffix="fc$dist_version"
 			else
 				pkg_manager="yum"
 				config_manager="yum-config-manager"
 				enable_channel_flag="--enable"
 				disable_channel_flag="--disable"
-				pre_reqs="python-pip git"
+				pre_reqs="python-pip git sudo which"
 				pkg_suffix="el"
 			fi
 
+      # Duplicate steps in the core ansible Dockerfile (https://github.com/geerlingguy/docker-centos7-ansible/blob/master/Dockerfile)
+      $sh_c "$pkg_manager makecache fast"
+      $sh_c "$pkg_manager install -y -q deltarpm epel-release initscripts"
+      $sh_c "$pkg_manager update -y"
       $sh_c "$pkg_manager install -y -q $pre_reqs"
 			$sh_c "pip install $pip_packages"
 

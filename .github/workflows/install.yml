@@ -1,0 +1,43 @@
+name: Install Script
+
+on:
+  push:
+    branches: 1.x
+  pull_request:
+    types: [opened, synchronize]
+  schedule:
+    # Once per day. https://crontab.guru/#*_0_*_*_*
+    - cron: "* 0 * * *"
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu1804
+          - centos7
+
+    runs-on: ubuntu-latest
+    container:
+      image: geerlingguy/docker-${{ matrix.os }}-ansible
+      options: "--privileged"
+      volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run docker-systemd-prepare
+        run: bash bin/docker-systemd-prepare
+      - name: Run install.sh
+        run: bash install/install.sh --hostname=actions.github.com --playbook=roles/server.playbook.yml
+
+#  publish:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - uses: actions/checkout@v2
+#      - name: Build html files
+#        run: |
+#          git checkout gh-pages
+#          cp install/install.sh install/index.html
+#          git commit install/index.html -m "Committing install script as index.html"
+#          git push

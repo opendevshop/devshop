@@ -43,14 +43,20 @@ get_distribution() {
 prepare_ubuntu1804() {
   apt-get update \
     && apt-get install -y --no-install-recommends \
-       apt-utils locales rsyslog systemd systemd-cron sudo iproute2 \
+       apt-utils locales rsyslog systemd systemd-cron sudo iproute2 curl \
     && rm -Rf /var/lib/apt/lists/* \
     && rm -Rf /usr/share/doc && rm -Rf /usr/share/man \
     && apt-get clean
 
   sed -i 's/^\($ModLoad imklog\)/#\1/' /etc/rsyslog.conf
   locale-gen en_US.UTF-8
-  chmod +x /usr/share/devshop/bin/docker-systemd-initctl-faker && rm -fr /sbin/initctl && ln -s /usr/share/devshop/bin/docker-systemd-initctl-faker /sbin/initctl
+
+  # Install the initctl faker script from @geerlingguy
+  initctl_faker_url="https://raw.githubusercontent.com/geerlingguy/docker-ubuntu1804-ansible/d75f3d7/initctl_faker"
+  initctl_faker_path="/sbin/initctl"
+
+  curl -ksSL $initctl_faker_url -o $initctl_faker_path
+  chmod +x $initctl_faker_path
 
   # Remove unnecessary getty and udev targets that result in high CPU usage when using
   # multiple containers with Molecule (https://github.com/ansible/molecule/issues/1104)
