@@ -16,11 +16,16 @@ jobs:
         os:
           - ubuntu:18.04
           - centos:7
+        include:
+          - os: ubuntu:18.04
+            systemd: /lib/systemd/systemd
+          - os: centos:7
+            systemd: /usr/lib/systemd/systemd
 
     runs-on: ubuntu-latest
     container:
       image: ${{ matrix.os }}
-      options: "--privileged --entrypoint='while ! (command -v docker-systemd) do echo \"Waiting for docker-systemd command...\" && sleep 2; done; echo \"Running docker-systemd...\" && docker-systemd'"
+      options: "--privileged --entrypoint=${{ matrix.systemd }}
       volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
 
