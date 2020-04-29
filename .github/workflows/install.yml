@@ -14,11 +14,8 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - ubuntu:18.04
-          - centos:7
-        include:
-          - os: ubuntu1804
-          - os: centos7
+          - ubuntu1804
+          - centos7
 
     runs-on: ubuntu-latest
     container:
