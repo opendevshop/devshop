@@ -160,6 +160,8 @@ RUN \
   devshop-logo " Contents of ${DEVSHOP_PATH} after copy"; \
   git status; git log -1; $LINE
 
+RUN ansible --version
+
 RUN devshop-logo "Preparing Docker Container Environment..."
 
 #
@@ -221,18 +223,18 @@ ENV DEVSHOP_ENTRYPOINT_LOG_FILES="/var/log/aegir/*"
 ENV DEVSHOP_TESTS_ASSETS_PATH="${DEVSHOP_PATH}/.github/test-assets"
 
 # Set devshop_install_phase runtime here, since the Dockerfile is ALWAYS buildtime.
-ENV ANSIBLE_BUILD_COMMAND="devshop-ansible-playbook --extra-vars aegir_user_uid=$DEVSHOP_USER_UID --extra-vars aegir_user_gid=$DEVSHOP_USER_UID --extra-vars devshop_install_phase=buildtime"
-
-# Default the docker command to the ANSIBLE_BUILD_COMMAND.
-ARG DOCKER_BUILD_COMMAND_ARG="date"
-ENV DOCKER_BUILD_COMMAND ${DOCKER_BUILD_COMMAND_ARG:-"date"}
+ENV ANSIBLE_BUILD_COMMAND="devshop-ansible-playbook \
+    --extra-vars aegir_user_uid=$DEVSHOP_USER_UID \
+    --extra-vars aegir_user_gid=$DEVSHOP_USER_UID \
+    --extra-vars devshop_install_phase=buildtime \
+"
 
 RUN \
   echo "Container Environment Preparation Complete"; \
   devshop-line
 
-# Prepare systemd to run inside a container.
-RUN bash ${DEVSHOP_PATH}/bin/docker-systemd-prepare
+# Cleanup unwanted systemd files. See bin/docker-systemd-clean and https://github.com/geerlingguy/docker-ubuntu1804-ansible/pull/12
+RUN docker-systemd-clean
 RUN chmod 766 $DEVSHOP_TESTS_ASSETS_PATH
 
 # Remove devmaster dir if desired so that devshop code is reinstalled.
@@ -251,26 +253,26 @@ RUN \
 
 # Provision with Ansible!
 RUN \
-    devshop-logo "Docker Build: Docker Build Command Start" && \
-    echo $DOCKER_BUILD_COMMAND && \
-    $DOCKER_BUILD_COMMAND
+    devshop-logo "Docker Build: Ansible Playbook Start" && \
+    echo $ANSIBLE_BUILD_COMMAND && \
+    $ANSIBLE_BUILD_COMMAND
 
 RUN \
-    devshop-logo "Docker Build: Docker Build Command Complete!" && \
+    devshop-logo "Docker Build: Ansible Playbook Complete!" && \
     echo "Playbook: $ANSIBLE_PLAYBOOK" && \
     echo "Tags: $ANSIBLE_TAGS" && \
     echo "Skip Tags: $ANSIBLE_SKIP_TAGS" && \
     echo "Extra Vars: $ANSIBLE_EXTRA_VARS" && \
     echo "" && \
-    echo "Docker Build Command:" && \
-    echo "$DOCKER_BUILD_COMMAND" && \
+    echo "Ansible Playbook Command:" && \
+    echo "$ANSIBLE_BUILD_COMMAND" && \
     echo ""
 
 RUN \
-    devshop-logo "Wrote build information to /etc/devshop-release" && \
-    env | grep "DEVSHOP" >> /etc/devshop-release && \
-    env | grep "ANSIBLE" >> /etc/devshop-release && \
-    cat  /etc/devshop-release
+    devshop-logo "Wrote build information to /etc/os-release" && \
+    env | grep "DEVSHOP" >> /etc/os-release && \
+    env | grep "ANSIBLE" >> /etc/os-release && \
+    cat  /etc/os-release
 
 # Reset ANSIBLE_TAGS and ANSIBLE_SKIP_TAGS to runtime values.
 ENV ANSIBLE_TAGS 'runtime'
@@ -284,11 +286,10 @@ VOLUME /var/lib/mysql
 VOLUME /var/log/aegir
 VOLUME /usr/share/devshop
 
-# Required for systemd in containers.
-# @TODO: Ensure it's the same for all OSs before committing.
-VOLUME ["/sys/fs/cgroup", "/tmp", "/run"]
+# CMD ["devshop-ansible-playbook"]
+# Our docker-entrypoint script runs systemd, but before it does, it runs the "command" for the container.
 
-# The docker-entrypoint script launches /lib/systemd/systemd in the background and THEN runs the CMD.
+# When a single "
 CMD ["date"]
 
 # The command to run after the docker CMD.
