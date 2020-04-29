@@ -25,7 +25,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: ${{ matrix.os }}
-      options: "--privileged --entrypoint=${{ matrix.systemd }}
+      options: "--privileged --entrypoint=${{ matrix.systemd }}"
       volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
 
