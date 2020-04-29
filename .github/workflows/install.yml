@@ -30,6 +30,7 @@ jobs:
         run: bash install/install.sh --hostname=actions.github.com --playbook=roles/server.playbook.yml
 
   publish:
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Build html files
