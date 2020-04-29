@@ -55,7 +55,7 @@ prepare_ubuntu1804() {
   initctl_faker_url="https://raw.githubusercontent.com/geerlingguy/docker-ubuntu1804-ansible/d75f3d7/initctl_faker"
   initctl_faker_path="/sbin/initctl"
 
-  curl -fsSL $initctl_faker_url -o $initctl_faker_path
+  curl -sSL $initctl_faker_url -o $initctl_faker_path
   chmod +x $initctl_faker_path
 
   # Remove unnecessary getty and udev targets that result in high CPU usage when using
