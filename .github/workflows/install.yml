@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: ${{ matrix.os }}
-      options: "--privileged --entrypoint=${{ runner.workspace }}/bin/docker-systemd"
+      options: "--privileged --entrypoint=${{ env.GITHUB_WORKSPACE }}/bin/docker-systemd"
       volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
 
