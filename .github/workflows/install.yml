@@ -28,8 +28,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Build html files
-        run:
-          - git checkout gh-pages
-          - cp install/install.sh install/index.html
-          - git commit install/index.html -m "Committing install script as index.html"
-          - git push
+        run: |
+          git checkout gh-pages
+          cp install/install.sh install/index.html
+          git commit install/index.html -m "Committing install script as index.html"
+          git push
