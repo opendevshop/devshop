@@ -246,8 +246,8 @@ fi
 # If ansible command is not available, install it.
 # Decided on "hash" thanks to http://stackoverflow.com/questions/592620/check-if-a-program-exists-from-a-bash-script
 # After testing this thoroughly on centOS and ubuntu, I think we should use command -v
-if [ ! `command -v ansible` ]; then
-    echo " Installing Ansible..."
+
+    echo " Preparing server prerequisites..."
     mkdir -p /etc/ansible
 
     if [ $OS == 'ubuntu' ] || [ $OS == 'debian' ]; then
@@ -305,11 +305,6 @@ if [ ! `command -v ansible` ]; then
     fi
 
     echo $LINE
-
-else
-    echo " Ansible already installed. Skipping installation."
-    echo $LINE
-fi
 
 ansible --version
 python --version
