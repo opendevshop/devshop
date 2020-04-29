@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: ${{ matrix.os }}
-      options: "--privileged --entrypoint=${{ env.GITHUB_WORKSPACE }}/bin/docker-systemd"
+      options: "--privileged --entrypoint='while ! (command -v docker-systemd) do echo \"Waiting for docker-systemd command...\" && sleep 2; done; echo \"Running docker-systemd...\" && docker-systemd'"
       volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
 
