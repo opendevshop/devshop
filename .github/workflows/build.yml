@@ -33,11 +33,10 @@ jobs:
         run_tags: ['all']
         run_skip_tags: ['none']
 
-        # Docker Images to build FROM:
         os:
-          - 'ubuntu:18.04'
+          - 'ubuntu1804'
           # - 'centos6'
-          - 'centos:7'
+          - 'centos7'
         vars:
           - 'php_version: 7.2'
 
@@ -92,14 +91,13 @@ jobs:
 
       # NOTE: The env vars shown below should be loaded into the Robo options automatically.
     # They are added to the command here for visibility.
-    # --from is used to override the FROM image. In this GitHub workflow, we want to do a full server build.
     - name: Launch Server Container (${{ matrix.os }})
       run: |
         bin/github deployment:update --state=in_progress --description="Preparing Containers with robo up..." --log_url=${GITHUB_RUN_LOG_URL}#step:8:1
         bin/robo up ps  \
           --build \
           --follow 0 \
-          --from "${OS}" \
+          --os "${OS}" \
           --vars "${ANSIBLE_VARS}" \
           --tags "${ANSIBLE_TAGS}" \
           --skip-tags "${ANSIBLE_SKIP_TAGS}" \
@@ -115,10 +113,9 @@ jobs:
       env:
         ANSIBLE_TAGS: "${{ matrix.run_tags }}"
         ANSIBLE_SKIP_TAGS: "${{ matrix.run_skip_tags }}"
-        DEVSHOP_DOCKER_COMMAND: "/usr/share/devshop/install/install.sh"
       run: |
         bin/github deployment:update --state=in_progress --description="Installing DevShop with devshop-ansible-playbook..." --log_url=${GITHUB_RUN_LOG_URL}#step:10:1
-        bin/robo exec ${DEVSHOP_DOCKER_COMMAND} \
+        bin/robo exec devshop-ansible-playbook \
           && bin/github deployment:update --state=success --description="Installing DevShop with devshop-ansible-playbook... Done"  --log_url=${GITHUB_RUN_LOG_URL}#step:10:1 --environment_url=${GITHUB_RUN_LOG_URL}#step:8:1 \
           || ( bin/github deployment:update --state=failure --description="Installing DevShop with devshop-ansible-playbook... Failed" --log_url=${GITHUB_RUN_LOG_URL}#step:10:1 --environment_url=${GITHUB_RUN_LOG_URL}#step:8:1 && exit 1 )
 
