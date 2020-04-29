@@ -27,7 +27,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Run docker-systemd-prepare
-        run: bin/docker-systemd-prepare
+        run: bash bin/docker-systemd-prepare
       - name: Run install.sh
         run: bash install/install.sh --hostname=actions.github.com --playbook=roles/server.playbook.yml
 
