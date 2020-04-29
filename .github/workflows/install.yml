@@ -18,7 +18,12 @@ jobs:
           - centos:7
 
     runs-on: ubuntu-latest
-    container: ${{ matrix.os }}
+    container:
+      image: ${{ matrix.os }}
+      options: "--privileged"
+      volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+
     steps:
       - uses: actions/checkout@v2
       - name: Run install.sh
