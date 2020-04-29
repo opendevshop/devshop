@@ -29,13 +29,13 @@ jobs:
       - name: Run install.sh
         run: bash install/install.sh --hostname=actions.github.com --playbook=roles/server.playbook.yml
 
-  publish:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Build html files
-        run: |
-          git checkout gh-pages
-          cp install/install.sh install/index.html
-          git commit install/index.html -m "Committing install script as index.html"
-          git push
+#  publish:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - uses: actions/checkout@v2
+#      - name: Build html files
+#        run: |
+#          git checkout gh-pages
+#          cp install/install.sh install/index.html
+#          git commit install/index.html -m "Committing install script as index.html"
+#          git push
