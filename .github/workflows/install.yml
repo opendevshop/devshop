@@ -16,11 +16,16 @@ jobs:
         os:
           - ubuntu1804
           - centos7
+        include:
+          - os: ubuntu1804
+            entrypoint: /lib/systemd/systemd
+          - os: centos7
+            entrypoint: /usr/lib/systemd/systemd
 
     runs-on: ubuntu-latest
     container:
       image: geerlingguy/docker-${{ matrix.os }}-ansible
-      options: "--privileged"
+      options: "--privileged --entrypoint=${{ matrix.entrypoint }}"
       volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
 
