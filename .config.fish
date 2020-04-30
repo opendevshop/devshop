@@ -6,9 +6,11 @@ abbr -a -- c composer
 abbr -a -- d docker
 abbr -a -- dc docker-compose
 abbr -a -- g git
+abbr -a -- gb git branch
+abbr -a -- gc git commit
 abbr -a -- gd git diff
 abbr -a -- gs git status
-abbr -a -- gc git commit
+abbr -a -- gt git tag
 abbr -a -- gco git checkout
 abbr -a -- gp git push
 abbr -a -- gpl git pull
