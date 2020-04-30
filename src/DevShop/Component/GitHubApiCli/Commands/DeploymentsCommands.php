@@ -276,6 +276,7 @@ class DeploymentsCommands extends \Robo\Tasks
             $deployment_status = $this->cli->api('deployments')->updateStatus($this->getRepoOwner(), $this->getRepoName(), $deployment_id, $params);
             $this->io()->success("Deployment status created successfully.");
 
+
             $this->io()->table(["Deployment Status"], $this->paramsToRows($deployment_status));
         }
         else {
