@@ -234,7 +234,7 @@ RUN \
   devshop-line
 
 # Cleanup unwanted systemd files. See bin/docker-systemd-clean and https://github.com/geerlingguy/docker-ubuntu1804-ansible/pull/12
-RUN docker-systemd-clean
+RUN $DEVSHOP_PATH/bin/docker-systemd-clean
 RUN chmod 766 $DEVSHOP_TESTS_ASSETS_PATH
 
 # Remove devmaster dir if desired so that devshop code is reinstalled.
