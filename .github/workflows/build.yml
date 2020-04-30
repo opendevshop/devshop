@@ -7,7 +7,7 @@ on:
    types: [opened, synchronize]
  schedule:
    # Once per day. https://crontab.guru/#*_0_*_*_*
-   - cron: "* 0 * * *"
+   - cron: "0 6 * * *"
 
 env:
   # Set ANSIBLE_VERBOSITY to 1,2 or 3 when needed for development.

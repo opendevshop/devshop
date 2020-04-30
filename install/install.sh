@@ -90,6 +90,13 @@ Your contributions make DevShop possible. Please consider becoming a patron of o
 
 "
 
+# @TODO: Include all of the helpful things from get.docker.com.
+# Simple way to run a command.
+# Copied from get.docker.com
+# Usage: $sh_c 'command_to_run'
+sh_c='sh -c'
+pip_packages="ansible pymysql"
+
 set -e
 
 # Version used for cloning devshop playbooks
@@ -239,17 +246,19 @@ fi
 # If ansible command is not available, install it.
 # Decided on "hash" thanks to http://stackoverflow.com/questions/592620/check-if-a-program-exists-from-a-bash-script
 # After testing this thoroughly on centOS and ubuntu, I think we should use command -v
-if [ ! `command -v ansible` ]; then
-    echo " Installing Ansible..."
+
+    echo " Preparing server prerequisites..."
+    mkdir -p /etc/ansible
 
     if [ $OS == 'ubuntu' ] || [ $OS == 'debian' ]; then
 
         # Detect ubuntu version and switch package.
+        # @TODO: Use the get_distribution() stuff from get.docker.com
         if [ $VERSION == '12.04' ]; then
-            PACKAGE=python-software-properties
+      			pre_reqs="python-software-properties git"
         else
-            PACKAGE=software-properties-common
-        fi
+      			pre_reqs="software-properties-common git python3-setuptools python3-pip "
+      	fi
 
         # @TODO: We should figure out how to add this to the playbook. It's tricky because of the lsb_release thing.
         if [ $SERVER_WEBSERVER == 'nginx' ]; then
@@ -257,38 +266,38 @@ if [ ! `command -v ansible` ]; then
             sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys C300EE8C
         fi
 
-        apt-get update -qq
-        apt-get install $PACKAGE -y -qq
-        apt-add-repository ppa:ansible/ansible -y
-        apt-get update -qq
-        apt-get install ansible -y -qq
+        # Copied from get.docker.com
+        $sh_c 'apt-get update -qq >/dev/null'
+				$sh_c "DEBIAN_FRONTEND=noninteractive apt-get install -y -qq $pre_reqs >/dev/null"
+				$sh_c "pip3 install $pip_packages"
+				$sh_c "update-alternatives --install /usr/bin/python python /usr/bin/python3 1"
 
     elif [ $OS == 'centos' ] || [ $OS == 'rhel' ] || [ $OS == 'redhat' ] || [ $OS == 'fedora'  ]; then
 
-        # Build ansible from source to ensure the latest version.
-        yum install -y git epel-release redhat-lsb-core > /dev/null 1>&1
-        git clone http://github.com/ansible/ansible.git --recursive --branch stable-2.3
+      # Copied from get.docker.com
+      # @TODO: Might need epel-release first. See https://github.com/geerlingguy/docker-centos7-ansible/blob/master/Dockerfile
+			if [ "$OS" = "fedora" ]; then
+				pkg_manager="dnf"
+				config_manager="dnf config-manager"
+				enable_channel_flag="--set-enabled"
+				disable_channel_flag="--set-disabled"
+				pre_reqs="python-pip git sudo which"
+				pkg_suffix="fc$dist_version"
+			else
+				pkg_manager="yum"
+				config_manager="yum-config-manager"
+				enable_channel_flag="--enable"
+				disable_channel_flag="--disable"
+				pre_reqs="python-pip git sudo which"
+				pkg_suffix="el"
+			fi
 
-        # dir may not exist, or it may exist as a symlink.  lets handle this a little better.
-        if ! [ -d "ansible" ]; then
-          echo "The directory ansible does not exist which means git clone failed.  This could be a permission or link issue.  Check the referenced directory."
-          exit 1
-        else
-
-          # Build ansible RPM from source code.
-          yum install -y which rpm-build make asciidoc git python-setuptools python2-devel PyYAML python-httplib2 python-jinja2 python-keyczar python-paramiko python-six sshpass
-          cd ansible
-          git checkout v2.3.0.0-1
-          make rpm > /dev/null 2>&1
-          rpm -Uvh ./rpm-build/ansible-*.noarch.rpm
-
-          ansible --version
-        fi
-
-        if [ ! `ansible --version` ]; then
-          echo >&2 "We require ansible but it's not installed.  The installation has failed.  Aborting.";
-          exit 1
-        fi
+      # Duplicate steps in the core ansible Dockerfile (https://github.com/geerlingguy/docker-centos7-ansible/blob/master/Dockerfile)
+      $sh_c "$pkg_manager makecache fast"
+      $sh_c "$pkg_manager install -y -q deltarpm epel-release initscripts"
+      $sh_c "$pkg_manager update -y"
+      $sh_c "$pkg_manager install -y -q $pre_reqs"
+			$sh_c "pip install $pip_packages"
 
     else
         echo "OS ($OS) is not known, or an install action was not understood.  Please post an issue with this message at http://github.com/opendevshop/devshop/issues/new"
@@ -297,23 +306,8 @@ if [ ! `command -v ansible` ]; then
 
     echo $LINE
 
-else
-    echo " Ansible already installed. Skipping installation."
-    echo $LINE
-fi
-
 ansible --version
 python --version
-
-# Install git.
-if [ $OS == 'ubuntu' ] || [ $OS == 'debian' ]; then
-  apt-get update
-  apt-get install git -y -qq
-
-elif [ $OS == 'centos' ] || [ $OS == 'redhat' ] || [ $OS == 'fedora'  ]; then
-    yum install epel-release -y
-    yum install git -y
-fi
 
 if [ -f '/root/.my.cnf' ]
 then
