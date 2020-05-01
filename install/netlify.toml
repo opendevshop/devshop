@@ -1,4 +1,14 @@
 
+# Netlify Settings
+# See https://docs.netlify.com/configure-builds/file-based-configuration/#sample-file
+[build]
+
+  # @TODO: inject SHA into index.html so the script has the version in it. 
+  # Use docker as example: https://github.com/docker/docker-install/blob/master/Makefile#L16 
+  # They use envsubst
+  command = "cp install.sh index.html"
+
+
 [[headers]]
   for = "/"
   [headers.values]
