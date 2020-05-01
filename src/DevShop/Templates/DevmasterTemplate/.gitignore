@@ -3,7 +3,7 @@
 /web/sites/all/drush/
 /web/sites/all/modules/contrib/
 /web/sites/all/themes/contrib/
-/web/sites/all/profiles/devmaster
+/web/profiles/devmaster
 /web/sites/all/libraries/
 
 # Ignore Drupal 7 core files.
