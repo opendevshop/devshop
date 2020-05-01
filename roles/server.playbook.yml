@@ -31,9 +31,9 @@
     # This is set to TRUE to ensure the playbooks don't try to run the devmaster upgade every time they run (aka on robo up).
     devmaster_skip_upgrade: true
 
-    # @TODO: Figure out the best way to set `ansible_python_interpreter` for different OS.
-    # CentOS 7 overrides this variable below.
-    # ansible_python_interpreter: /usr/bin/python3
+    # Use Python3.
+    # @TODO: This is now set only for Debian systems, in the `pre_tasks` section below..
+    # ansible_python_interpreter: python3
 
     # Supervisor will start when the container and systemd start.
     supervisor_started: false
@@ -51,14 +51,18 @@
       set_fact:
         apache_state: stopped
 
+    # @TODO: Remove this if ansible_python_interpreter: python3 solves it.
     # @TODO: I was unable to get ubuntu18 installs to properly detect and install the 'mysql_python_package_debian' packages.
     # https://github.com/opendevshop/devshop/pull/518/checks?check_run_id=517865257#step:7:523
     # By default, geerlingguy.mysql loads this automatically. However, in the automated tests for the role, Jeff DOES force set the variable:
-    - name: Set all Debian systems to use python3-mysqldb for mysql_python_package_debian.
+    # The automated tests for geerlingguy.mysql set this variable too!
+    #   https://github.com/geerlingguy/ansible-role-drupal/blob/master/molecule/default/test-vars.yml#L24
+    - name: Set all Debian systems to use python3 as the interpretor, and python3-mysqldb for mysql_python_package_debian.
       when:
         - ansible_os_family == 'Debian'
       set_fact:
         mysql_python_package_debian: python3-mysqldb
+        ansible_python_interpreter: python3
       tags: [mysql]
 
   roles:

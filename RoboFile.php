@@ -72,6 +72,7 @@ class RoboFile extends \Robo\Tasks {
     'playbook' => 'ANSIBLE_PLAYBOOK',
     'roles-path' => 'ANSIBLE_ROLES_PATH',
     'config' => 'ANSIBLE_CONFIG',
+    'build-command' => 'DOCKER_BUILD_COMMAND',
 
     // Used in docker compose image.
     'docker-image' => 'DEVSHOP_DOCKER_IMAGE',
@@ -126,7 +127,7 @@ class RoboFile extends \Robo\Tasks {
   private function generateEnvironmentArgs(array $opts, $new = false) {
 
     // Convert opts to environment vars.
-    $environment = $this->generateEnvironment($opts);
+    $environment = $this->generateEnvironment($opts, $_ENV);
 
     // Load default environment, either empty or from existing.
     $return_env = $new? []: $environment;
@@ -370,6 +371,7 @@ class RoboFile extends \Robo\Tasks {
       'docker-image' => 'devshop/server:local',
       'from' => NULL,
       'dockerfile' => 'Dockerfile',
+      'build-command' => NULL,
       'os' => 'ubuntu1804',
       'vars' => '',
       'tags' => '',
@@ -417,13 +419,19 @@ class RoboFile extends \Robo\Tasks {
       $env_build['DEVSHOP_USER_UID_ARG'] = trim(shell_exec('id -u'));
     }
 
-    $provision_io = new \ProvisionOps\Tools\Style($this->input(), $this->output());
-    $process = new \ProvisionOps\Tools\PowerProcess('docker-compose build --pull --no-cache', $provision_io);
+    $provision_io = new \DevShop\Component\PowerProcess\PowerProcessStyle($this->input(), $this->output());
+    $process = new \DevShop\Component\PowerProcess\PowerProcess('docker-compose build --pull --no-cache', $provision_io);
     $process->setEnv($env_build);
     $process->disableOutput();
     $process->setTimeout(null);
     $process->setTty(!empty($_SERVER['XDG_SESSION_TYPE']) && $_SERVER['XDG_SESSION_TYPE'] == 'tty');
-    $process->mustRun();
+
+    // @TODO: Figure out why PowerProcess::mustRun() fails so miserably: https://github.com/opendevshop/devshop/pull/541/checks?check_run_id=518074346#step:7:45
+    $process->run();
+
+    if ($process->getExitCode() != 0) {
+      throw new \Exception('Process failed: ' . $process->getExitCodeText());
+    }
 
   }
 
@@ -492,8 +500,9 @@ class RoboFile extends \Robo\Tasks {
     'config' => '/usr/share/devshop/ansible.cfg',
     'local' => FALSE,
     'environment' => [],
-    'volumes' => FALSE,
+    'volumes' => true,
     'install-at-runtime' => FALSE,
+    'build-command' => NULL,
   ]) {
 
     // Define docker-image (name for the "image" in docker-compose.
@@ -615,14 +624,20 @@ class RoboFile extends \Robo\Tasks {
 
       if (!empty($cmd)) {
         foreach ($cmd as $command) {
-          $provision_io = new \ProvisionOps\Tools\Style($this->input, $this->output);
-          $process = new \ProvisionOps\Tools\PowerProcess($command, $provision_io);
+          $provision_io = new \DevShop\Component\PowerProcess\PowerProcessStyle($this->input, $this->output);
+          $process = new \DevShop\Component\PowerProcess\PowerProcess($command, $provision_io);
           $process->setEnv($env_run);
           $isTty = !empty($_SERVER['XDG_SESSION_TYPE']) && $_SERVER['XDG_SESSION_TYPE'] == 'tty';
           $process->setTty($isTty);
           $process->setTimeout(NULL);
           $process->disableOutput();
-          $process->mustRun();
+
+          // @TODO: Figure out why PowerProcess::mustRun() fails so miserably: https://github.com/opendevshop/devshop/pull/541/checks?check_run_id=518074346#step:7:45
+          // $process->mustRun();
+          $process->run();
+          if ($process->getExitCode() != 0) {
+            throw new \Exception('Process failed: ' . $process->getExitCodeText());
+          }
         }
         return;
       }
@@ -920,6 +935,7 @@ class RoboFile extends \Robo\Tasks {
     $process->setTty(TRUE);
     $process->setTimeout(NULL);
     $process->run();
+    return $process->getExitCode();
   }
 
   /**
@@ -931,8 +947,8 @@ class RoboFile extends \Robo\Tasks {
     $is_tty = !empty($_SERVER['XDG_SESSION_TYPE']) && $_SERVER['XDG_SESSION_TYPE'] == 'tty';
     $no_tty = !$is_tty? '-T': '';
     $command = "docker-compose exec $no_tty --user $user devshop /usr/share/devshop/tests/devshop-tests.sh";
-    $provision_io = new \ProvisionOps\Tools\Style($this->input, $this->output);
-    $process = new \ProvisionOps\Tools\PowerProcess($command, $provision_io);
+    $provision_io = new \DevShop\Component\PowerProcess\PowerProcessStyle($this->input, $this->output);
+    $process = new \DevShop\Component\PowerProcess\PowerProcess($command, $provision_io);
 
     $process->setTty(!empty($_SERVER['XDG_SESSION_TYPE']) && $_SERVER['XDG_SESSION_TYPE'] == 'tty');
 
@@ -941,7 +957,12 @@ class RoboFile extends \Robo\Tasks {
     ]);
     $process->setTimeout(NULL);
     $process->disableOutput();
-    $process->mustRun();
+
+
+    // @TODO: Figure out why PowerProcess::mustRun() fails so miserably: https://github.com/opendevshop/devshop/pull/541/checks?check_run_id=518074346#step:7:45
+    // $process->mustRun();
+    $process->run();
+    return $process->getExitCode();
   }
 
   /**

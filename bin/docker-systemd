@@ -20,6 +20,10 @@ elif [ -f "/usr/lib/systemd/systemd" ]; then
 # https://github.com/geerlingguy/docker-centos6-ansible/blob/master/Dockerfile
 elif [ -f "/sbin/init" ]; then
   COMMAND="/sbin/init"
+
+else
+  echo "Unable to find systemD or init system. Check docker-systemd script."
+  exit 1
 fi
 
 devshop-line

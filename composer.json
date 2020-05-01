@@ -2,7 +2,7 @@
     "name": "devshop/devshop",
     "type": "library",
     "description": "The DevShop DevOps Framework",
-    "keywords": ["framework", "devops", "platform", "hosting"],
+    "keywords": ["framework", "devops", "platform", "hosting", "drupal", "web"],
     "homepage": "https://getdevshop.com",
     "license": "MIT",
     "authors": [
@@ -17,24 +17,46 @@
         }
     ],
     "require": {
-        "knplabs/github-api": "^1.4",
-        "cpliakas/git-wrapper": "2.*",
-        "asm/php-ansible": "^2.0",
-        "mouf/nodejs-installer": "^1.0",
         "php": "^7.1",
-        "provision-ops/power-process": "^1.3"
+        "knplabs/github-api": "^1.4",
+        "drush/drush": "^8",
+        "ext-json": "*",
+        "devshop/git-split": "self.version",
+        "devshop/github-api-cli": "self.version",
+        "devshop/power-process": "self.version"
+    },
+    "replace": {
+        "devshop/yaml-tasks": "self.version"
     },
     "require-dev": {
+        "composer/composer": "^1.9"
     },
-    "authors": [
+    "suggest": {
+        "mouf/nodejs-installer": "Use to install nodejs into the devshop bin dir using composer."
+    },
+    "autoload": {
+        "psr-4": {
+            "DevShop\\": "src/DevShop/"
+        }
+    },
+    "repositories": [
         {
-            "name": "Jon Pugh",
-            "email": "jon@thinkdrop.net"
+            "type": "path",
+            "url": "src/DevShop/Component/ComposerCommon"
+        },
+        {
+            "type": "path",
+            "url": "src/DevShop/Component/GitSplit"
+        },
+        {
+            "type": "path",
+            "url": "src/DevShop/Component/GitHubApiCli"
+        },
+        {
+            "type": "path",
+            "url": "src/DevShop/Component/PowerProcess"
         }
     ],
-    "autoload": {
-        "psr-0": { "DevShop": "src/" }
-    },
     "bin": [
         "scripts/devshop",
         "scripts/branch-or-tag"
@@ -46,18 +68,28 @@
         },
         "sort-packages:": "true"
     },
+    "extra": {
+        "git-split": {
+            "repos": {
+                "docs": "https://github.com/opendevshop/documentation.git",
+                "tests/test-repo": "https://github.com/devshop-packages/test-repo.git",
+                "devmaster": "https://github.com/opendevshop/devmaster.git",
+                "roles/opendevshop.apache": "https://github.com/opendevshop/ansible-role-apache.git",
+                "roles/opendevshop.devmaster": "https://github.com/opendevshop/ansible-role-devmaster.git",
+                "roles/opendevshop.users": "https://github.com/opendevshop/ansible-role-user.git",
+                "src/DevShop/Component/ComposerCommon": "https://github.com/devshop-packages/composer-common.git",
+                "src/DevShop/Component/GitHubApiCli": "https://github.com/devshop-packages/github-api-cli.git",
+                "src/DevShop/Component/GitSplit": "https://github.com/devshop-packages/git-split.git",
+                "src/DevShop/Component/PowerProcess": "https://github.com/devshop-packages/power-process.git",
+                "src/DevShop/Component/YamlTasks": "https://github.com/devshop-packages/yaml-tasks.git",
+                "install": "https://github.com/opendevshop/devshop-install.git"
+            }
+        }
+    },
     "minimum-stability": "dev",
     "prefer-stable": true,
     "scripts": {
-        "bin-install": [
-            "DevShop\\Composer::installBins"
-        ],
-        "split": [
-            "DevShop\\Composer::installBins",
-            "DevShop\\Composer::splitRepos"
-        ],
         "post-install-cmd": [
-            "DevShop\\Composer::installBins"
         ],
         "pre-update-cmd": [
         ],
