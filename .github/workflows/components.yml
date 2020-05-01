@@ -226,3 +226,54 @@ jobs:
         working-directory: ${{env.working-directory}}
         run: |
           ./Tests/repo-info.php
+
+  DevmasterTemplate:
+    name: DevmasterTemplate
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-versions:
+          # - '5.6'
+          - '7.1'
+    env:
+      working-directory: ./src/DevShop/Template/DevmasterTemplate
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Install PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-versions }}
+      #            extensions: intl #optional
+      #            ini-values: "post_max_size=256M" #optional
+
+      - name: Check PHP Version
+        run: php -v
+
+      - name: Get Composer Cache Directory
+        id: composer-cache
+        run: |
+          echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+      - uses: actions/cache@v1
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      - name: Validate composer.json and composer.lock
+        run: composer validate
+        working-directory: ${{env.working-directory}}
+
+      - name: Create a project
+        run: composer install --prefer-dist --no-progress --no-suggest
+        working-directory: ${{env.working-directory}}
+
+      - name: Test
+        env:
+          GITHUB_TOKEN: ${{ secrets.INPUT_GITHUB_TOKEN }}
+        working-directory: ${{env.working-directory}}
+        run: |
+          ./Tests/repo-info.php
