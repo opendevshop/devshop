@@ -267,13 +267,13 @@ jobs:
         run: composer validate
         working-directory: ${{env.working-directory}}
 
-      - name: Create a project
+      - name: Install dependencies
         run: composer install --prefer-dist --no-progress --no-suggest
         working-directory: ${{env.working-directory}}
 
-      - name: Test
+      - name: Test Project Creation
         env:
           GITHUB_TOKEN: ${{ secrets.INPUT_GITHUB_TOKEN }}
-        working-directory: ${{env.working-directory}}
+        working-directory: ./src/DevShop/Templates/
         run: |
-          ./Tests/repo-info.php
+          composer create-project devshop/devmaster-template:@dev temp --repository='{"type":"path","url":"DevmasterTemplate"}'
