@@ -161,7 +161,25 @@ class InstallDevmaster extends Command
       // root
       ->addOption(
         'root', NULL, InputOption::VALUE_OPTIONAL,
-        'The desired path to install to.  Example: /var/aegir/devmaster-0.x. If not specified, will be created from aegir_root, profile, and version.'
+        'The absolute public document root of the Devmaster codebase. If using a custom repo_url, "root" must be set to the path to the folder exposed to the web. If not specified, will be generated from other variables.'
+      )
+
+      // repo_url
+      ->addOption(
+        'repo_url', NULL, InputOption::VALUE_OPTIONAL,
+        'A git repository URL that contains a Devmaster codebase. Can be a full Drupal codebase or a composer project.'
+      )
+
+      // repo_path
+      ->addOption(
+        'repo_path', NULL, InputOption::VALUE_OPTIONAL,
+        'If using a custom repo_url, the path to clone the git repository into.'
+      )
+
+      // git_ref
+      ->addOption(
+        'git_ref', NULL, InputOption::VALUE_OPTIONAL,
+        'The git branch, tag, or sha to use for this Devmaster codebase.'
       )
 
       // http_service_type
@@ -525,6 +543,10 @@ class InstallDevmaster extends Command
       'web_server' => $server,
       'root' => $this->input->getOption('root'),
       'makefile' => $this->input->getOption('makefile'),
+      'repo_url' => $this->input->getOption('repo_url'),
+      'repo_path' =>  $this->input->getOption('repo_path'),
+      'deploy_from_git' => !empty($this->input->getOption('repo_url')),
+      'git_ref' => $this->input->getOption('git_ref'),
     ));
 
     // Save Hostmaster Site context, and flag for installation, pre-verify.
