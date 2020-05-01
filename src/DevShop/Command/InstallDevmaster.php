@@ -52,8 +52,6 @@ class InstallDevmaster extends Command
    * @param \Symfony\Component\Console\Output\OutputInterface $output
    */
   protected function execute(InputInterface $input, OutputInterface $output) {
-    // Attaches input and output to the Command class.
-    parent::execute($input, $output);
 
     // Validate the database.
     if ($this->validateSecureDatabase()) {
@@ -221,6 +219,7 @@ class InstallDevmaster extends Command
    * @param OutputInterface $output An OutputInterface instance
    */
   protected function initialize(InputInterface $input, OutputInterface $output) {
+    parent::initialize($input, $output);
 
     $output->writeln('');
 
