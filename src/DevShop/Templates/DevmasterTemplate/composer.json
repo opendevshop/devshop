@@ -15,8 +15,8 @@
             "url": "https://packages.drupal.org/7"
         },
         {
-            "type": "vcs",
-            "url": "https://github.com/opendevshop/devmaster"
+            "type": "path",
+            "url": "../../../../devmaster"
         }
     ],
     "require": {
