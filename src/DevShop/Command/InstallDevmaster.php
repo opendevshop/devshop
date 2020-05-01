@@ -139,6 +139,13 @@ class InstallDevmaster extends Command
         'root'
       )
 
+      // aegir_db_grant_all_hosts
+      ->addOption(
+        'aegir_db_grant_all_hosts', NULL, InputOption::VALUE_OPTIONAL,
+        'Set to FALSE to force database grants to use the IP of the web servers.',
+        TRUE
+      )
+
       // profile
       ->addOption(
         'profile', NULL, InputOption::VALUE_OPTIONAL,
@@ -504,6 +511,7 @@ class InstallDevmaster extends Command
         'remote_host' => $this->input->getOption('aegir_db_host'),
         'context_type' => 'server',
         'db_service_type' => 'mysql',
+        'aegir_db_grant_all_hosts' => $this->input->getOption('aegir_db_grant_all_hosts'),
         'master_db' => $master_db,
         'db_port' => $this->input->getOption('aegir_db_port'),
       ));
