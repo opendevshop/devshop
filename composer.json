@@ -81,7 +81,8 @@
                 "src/DevShop/Component/GitHubApiCli": "https://github.com/devshop-packages/github-api-cli.git",
                 "src/DevShop/Component/GitSplit": "https://github.com/devshop-packages/git-split.git",
                 "src/DevShop/Component/PowerProcess": "https://github.com/devshop-packages/power-process.git",
-                "src/DevShop/Component/YamlTasks": "https://github.com/devshop-packages/yaml-tasks.git"
+                "src/DevShop/Component/YamlTasks": "https://github.com/devshop-packages/yaml-tasks.git",
+                "install": "https://github.com/opendevshop/devshop-install.git"
             }
         }
     },

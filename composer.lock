@@ -1,10 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "5def887a10f99e2418a001f45671f78c",
+    "content-hash": "3fbf2c650b70cc12e49e45057d6d1249",
     "packages": [
         {
             "name": "consolidation/annotated-command",
@@ -567,7 +567,8 @@
             "dist": {
                 "type": "path",
                 "url": "src/DevShop/Component/ComposerCommon",
-                "reference": "87a089704d0efd73223dfbda00bd903876eb094b"
+                "reference": "87a089704d0efd73223dfbda00bd903876eb094b",
+                "shasum": null
             },
             "require": {
                 "consolidation/robo": "^1.0",
@@ -600,7 +601,10 @@
                 }
             ],
             "description": "Tools useful for any composer-based project.",
-            "homepage": "https://getdevshop.com"
+            "homepage": "https://getdevshop.com",
+            "transport-options": {
+                "relative": true
+            }
         },
         {
             "name": "devshop/git-split",
@@ -608,7 +612,8 @@
             "dist": {
                 "type": "path",
                 "url": "src/DevShop/Component/GitSplit",
-                "reference": "43c140153da25bb227a2e3d43903be533439bffd"
+                "reference": "43c140153da25bb227a2e3d43903be533439bffd",
+                "shasum": null
             },
             "require": {
                 "composer-plugin-api": "^1.1",
@@ -654,7 +659,8 @@
             "dist": {
                 "type": "path",
                 "url": "src/DevShop/Component/GitHubApiCli",
-                "reference": "394e2043abb214e57c89c2f53fd908cb13fee2dd"
+                "reference": "394e2043abb214e57c89c2f53fd908cb13fee2dd",
+                "shasum": null
             },
             "require": {
                 "consolidation/robo": "^1.0",
@@ -690,7 +696,10 @@
                 }
             ],
             "description": "Simple console wrapper for GitHub API",
-            "homepage": "https://getdevshop.com"
+            "homepage": "https://getdevshop.com",
+            "transport-options": {
+                "relative": true
+            }
         },
         {
             "name": "devshop/power-process",
@@ -698,7 +707,8 @@
             "dist": {
                 "type": "path",
                 "url": "src/DevShop/Component/PowerProcess",
-                "reference": "7a2fcfd9b70057036b2265ff8f1198ef69d790ee"
+                "reference": "7a2fcfd9b70057036b2265ff8f1198ef69d790ee",
+                "shasum": null
             },
             "require": {
                 "consolidation/robo": "^1",
@@ -737,7 +747,10 @@
                 }
             ],
             "description": "Enhanced Symfony Process component.",
-            "homepage": "https://getdevshop.com"
+            "homepage": "https://getdevshop.com",
+            "transport-options": {
+                "relative": true
+            }
         },
         {
             "name": "dflydev/dot-access-data",
