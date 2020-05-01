@@ -63,8 +63,9 @@ devshop_cli_version: "{{ devshop_version }}"
 # Drush make is used to build the code platform before the install command, so we can have containers with the code ready.
 devmaster_make_command: "{{ drush_bin_path }} make {{ devshop_makefile }} {{ devshop_devmaster_path }} {{ devshop_working_copy }}"
 
-devmaster_install_command: "{{ drush_bin_path }} hostmaster-install -y --strict=0 {{ server_hostname }} \
-                                --database_host={{ database_host }} \
+devmaster_install_command: "{{ local_bin_path }}/devshop devmaster:install -n \
+                                --site={{ server_hostname }} \
+                                --aegir_db_host={{ database_host }}
                                 --aegir_db_pass={{ mysql_root_password }} \
                                 --aegir_db_port=3306 \
                                 --aegir_db_user={{ mysql_root_username }} \
@@ -76,6 +77,8 @@ devmaster_install_command: "{{ drush_bin_path }} hostmaster-install -y --strict=
                                 --makefile={{ devshop_makefile }} \
                                 --profile={{ devshop_install_profile }} \
                                 --root=/var/aegir/devmaster-{{ devshop_version }} \
+                                --devshop_version={{ devshop_version }} \
+                                --drush-path={{ devshop_cli_bin_path }}/drush \
                                 {{ devshop_working_copy }} \
 "
 
