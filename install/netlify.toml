@@ -1,6 +1,6 @@
 
 [[headers]]
-  for = "/index.html"
+  for = "/"
   [headers.values]
     Content-Type = "text/plain"
 
