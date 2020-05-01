@@ -25,9 +25,9 @@ jobs:
       if: success()
       uses: crazy-max/ghaction-github-pages@v1
       with:
-        repo: opendevshop/devshop
+        repo: opendevshop/devshop-install
         target_branch: gh-pages
         build_dir: install
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.INPUT_GITHUB_TOKEN }}
+        GITHUB_PAT: ${{ secrets.INPUT_GITHUB_TOKEN }}
