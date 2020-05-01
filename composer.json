@@ -82,7 +82,7 @@
                 "src/DevShop/Component/GitSplit": "https://github.com/devshop-packages/git-split.git",
                 "src/DevShop/Component/PowerProcess": "https://github.com/devshop-packages/power-process.git",
                 "src/DevShop/Component/YamlTasks": "https://github.com/devshop-packages/yaml-tasks.git",
-                "src/DevShop/Templates/DevmasterTemplates": "https://github.com/devshop-packages/devmaster-template.git",
+                "src/DevShop/Templates/DevmasterTemplate": "https://github.com/devshop-packages/devmaster-template.git",
                 "install": "https://github.com/opendevshop/devshop-install.git"
             }
         }
