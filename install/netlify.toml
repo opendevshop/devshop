@@ -1,0 +1,6 @@
+
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    Content-Type = "text/plain"
+
