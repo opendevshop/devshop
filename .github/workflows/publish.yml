@@ -28,6 +28,8 @@ jobs:
         repo: opendevshop/devshop-install
         target_branch: gh-pages
         build_dir: install
+        keep_history: true
+        fqdn: get.devshop.tech
       env:
         GITHUB_TOKEN: ${{ secrets.INPUT_GITHUB_TOKEN }}
         GITHUB_PAT: ${{ secrets.INPUT_GITHUB_TOKEN }}
