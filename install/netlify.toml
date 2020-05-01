@@ -13,4 +13,4 @@
   for = "/"
   [headers.values]
     Content-Type = "text/plain"
-
+    Content-Disposition = "attachment; filename='install-devshop.sh'"
