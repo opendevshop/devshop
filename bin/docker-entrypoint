@@ -44,14 +44,14 @@ env | grep "${DEBUG_ENVIRONMENT}" || echo "No Variables with a name containing '
 echo 'TIP: Set the $DEBUG_ENVIRONMENT environment variable to a variable name (or partial string) to print out values.'
 devshop-line
 
-log "Launching Docker Commands in a new process..."
+devshop-log "Launching Docker Commands in a new process..."
 ((sleep 3 && \
   devshop-logo "System Status: systemctl status --no-pager" && systemctl status --no-pager && \
   devshop-logo "Running DOCKER_COMMAND: $DOCKER_COMMAND ..." && $DOCKER_COMMAND &&
   devshop-logo "Running DOCKER_COMMAND_POST: $DOCKER_COMMAND_POST ..." && $DOCKER_COMMAND_POST && \
     # If successful
-    log "Docker Entrypoint Commands Completed successfully! (exit 0)") || ( \
-    log "Docker Entrypoint Command failed. (exit $?)" && \
+    devshop-log "Docker Entrypoint Commands Completed successfully! (exit 0)") || ( \
+    devshop-log "Docker Entrypoint Command failed. (exit $?)" && \
         exit $?)) &
 
 DOCKER_COMMANDS_PID=$!
