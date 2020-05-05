@@ -63,6 +63,13 @@ devshop_cli_version: "{{ devshop_version }}"
 # Drush make is used to build the code platform before the install command, so we can have containers with the code ready.
 devmaster_make_command: "{{ drush_bin_path }} make {{ devshop_makefile }} {{ devshop_devmaster_path }} {{ devshop_working_copy }}"
 
+# Set devmaster_git_repo to deploy a devmaster instance from an existing git repo.
+devmaster_git_repo: 'https://github.com/devshop-packages/devmaster-template'
+devmaster_git_repo_docroot: web
+
+# Leave empty to use default branch.
+devmaster_git_ref: ''
+
 devmaster_install_command: "{{ devshop_cli_bin_path }}/devshop devmaster:install -n \
                                 --site={{ server_hostname }} \
                                 --aegir_db_host={{ database_host }}
@@ -78,6 +85,9 @@ devmaster_install_command: "{{ devshop_cli_bin_path }}/devshop devmaster:install
                                 --profile={{ devshop_install_profile }} \
                                 --root=/var/aegir/devmaster-{{ devshop_version }} \
                                 --devshop_version={{ devshop_version }} \
+                                --repo_url={{ devmaster_git_repo }} \
+                                --repo_path={{ aegir_user_home }}/devmaster \
+                                --git_ref={{ devmaster_git_ref }} \
                                 --drush-path={{ devshop_cli_bin_path }}/drush \
                                 {{ devshop_working_copy }} \
 "
