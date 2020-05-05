@@ -46,6 +46,11 @@ class InstallDevmaster extends Command
 {
 
   /**
+   * @var string The git repo to use for the devmaster site.
+   */
+  private $defaultGitRepo = 'https://github.com/devshop-packages/devmaster-template';
+
+  /**
    * Executes the command.
    *
    * @param \Symfony\Component\Console\Input\InputInterface $input
@@ -292,9 +297,9 @@ class InstallDevmaster extends Command
       $input->setOption('script_user', $this->findCurrentUser());
     }
 
-    // makefile
-    if (!$input->getOption('makefile')) {
-      $input->setOption('makefile', realpath(dirname(__FILE__) . '/../../../build-devmaster.make'));
+    // repo_url
+    if (!$input->getOption('makefile') && !$input->getOption('repo_url')) {
+      $input->setOption('repo_url', $this->defaultGitRepo);
     }
 
     // aegir_root
