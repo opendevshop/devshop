@@ -24,7 +24,10 @@ drush_bin_path: "{{ devshop_cli_bin_path }}/drush"
 
 devshop_devmaster_path: "{{ aegir_user_home }}/devmaster-{{ devshop_version }}"
 
-devshop_makefile: "{{ devshop_cli_path }}/build-devmaster.make"
+# Legacy Makefile
+# devshop_makefile: "{{ devshop_cli_path }}/build-devmaster.make"
+devshop_makefile: ""
+
 devshop_install_profile: devmaster
 devshop_working_copy: --working-copy
 
@@ -59,9 +62,6 @@ php_date_timezone: "America/New_York"
 # Overridden by install.sh
 devshop_version: 1.x
 devshop_cli_version: "{{ devshop_version }}"
-
-# Drush make is used to build the code platform before the install command, so we can have containers with the code ready.
-devmaster_make_command: "{{ drush_bin_path }} make {{ devshop_makefile }} {{ devshop_devmaster_path }} {{ devshop_working_copy }}"
 
 # Set devmaster_git_repo to deploy a devmaster instance from an existing git repo.
 devmaster_git_repo: 'https://github.com/devshop-packages/devmaster-template'

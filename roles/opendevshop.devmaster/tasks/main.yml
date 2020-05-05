@@ -165,15 +165,16 @@
     state: absent
   tags: [never, remove-devmaster, rebuild-devmaster]
 
-- name: "Prepare DevShop Web Interface Source Code: {{ devmaster_make_command }}"
+- name: "Prepare DevShop Devmaster from Makefile: {{ devshop_makefile }}"
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
-  command: "{{ devmaster_make_command }}"
+  command: "{{ drush_bin_path }} make {{ devshop_makefile }} {{ devshop_devmaster_path }} {{ devshop_working_copy }}"
   changed_when: true
   args:
     creates: "{{ devshop_devmaster_path }}/index.php"
     chdir: "{{ devshop_cli_path }}"
+  when: not devshop_makefile|bool
   tags: [rebuild-devmaster]
 
 - name: Clear the drush cache.
