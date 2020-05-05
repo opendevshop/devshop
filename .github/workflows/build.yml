@@ -129,6 +129,8 @@ jobs:
         docker ps -a > ./.github/test-assets/build-docker-ps.log && \
         $DEBUG_COMMAND > ./.github/test-assets/build-debug-command.log && \
         docker-compose logs > ./.github/test-assets/build-docker-compose.log
+        docker-compose exec devshop cat /var/aegir/.drush/platform_hostmaster.drushrc.php > ./.github/test-assets/platform_hostmaster.drushrc.php.log
+        docker-compose exec --user aegir devshop composer info --working-dir /var/aegir/devmaster > ./.github/test-assets/devmaster-composer-info.log
 
     - uses: actions/upload-artifact@v1
       if: always()
