@@ -173,24 +173,24 @@ class InstallDevmaster extends Command
       // root
       ->addOption(
         'root', NULL, InputOption::VALUE_OPTIONAL,
-        'The absolute public document root of the Devmaster codebase. If using a custom repo_url, "root" must be set to the path to the folder exposed to the web. If not specified, will be generated from other variables.'
+        'The absolute public document root of the Devmaster codebase. If using a custom git_remote, "root" must be set to the path to the folder exposed to the web. If not specified, will be generated from other variables.'
       )
 
-      // repo_url
+      // git_remote
       ->addOption(
-        'repo_url', NULL, InputOption::VALUE_OPTIONAL,
+        'git_remote', NULL, InputOption::VALUE_OPTIONAL,
         'A git repository URL that contains a Devmaster codebase. Can be a full Drupal codebase or a composer project.'
       )
 
-      // repo_path
+      // git_root
       ->addOption(
-        'repo_path', NULL, InputOption::VALUE_OPTIONAL,
-        'If using a custom repo_url, the path to clone the git repository into.'
+        'git_root', NULL, InputOption::VALUE_OPTIONAL,
+        'If using a custom git_remote, the path to clone the git repository into.'
       )
 
-      // git_ref
+      // git_reference
       ->addOption(
-        'git_ref', NULL, InputOption::VALUE_OPTIONAL,
+        'git_reference', NULL, InputOption::VALUE_OPTIONAL,
         'The git branch, tag, or sha to use for this Devmaster codebase.'
       )
 
@@ -297,9 +297,9 @@ class InstallDevmaster extends Command
       $input->setOption('script_user', $this->findCurrentUser());
     }
 
-    // repo_url
-    if (!$input->getOption('makefile') && !$input->getOption('repo_url')) {
-      $input->setOption('repo_url', $this->defaultGitRepo);
+    // git_remote
+    if (!$input->getOption('git_remote')) {
+      $input->setOption('git_remote', $this->defaultGitRepo);
     }
 
     // aegir_root
@@ -556,10 +556,9 @@ class InstallDevmaster extends Command
       'web_server' => $server,
       'root' => $this->input->getOption('root'),
       'makefile' => $this->input->getOption('makefile'),
-      'repo_url' => $this->input->getOption('repo_url'),
-      'repo_path' =>  $this->input->getOption('repo_path'),
-      'deploy_from_git' => !empty($this->input->getOption('repo_url')),
-      'git_ref' => $this->input->getOption('git_ref'),
+      'git_remote' => $this->input->getOption('git_remote'),
+      'git_root' =>  $this->input->getOption('git_root'),
+      'git_reference' => $this->input->getOption('git_reference'),
     ));
 
     // Save Hostmaster Site context, and flag for installation, pre-verify.
