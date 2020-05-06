@@ -83,7 +83,7 @@ devmaster_install_command: "{{ devshop_cli_bin_path }}/devshop devmaster:install
                                 --http_service_type={{ aegir_server_webserver }} \
                                 --makefile={{ devshop_makefile }} \
                                 --profile={{ devshop_install_profile }} \
-                                --root=/var/aegir/devmaster-{{ devshop_version }} \
+                                --root={{ aegir_user_home }}/devmaster/web \
                                 --devshop_version={{ devshop_version }} \
                                 --repo_url={{ devmaster_git_repo }} \
                                 --repo_path={{ aegir_user_home }}/devmaster \
