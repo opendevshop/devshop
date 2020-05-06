@@ -144,9 +144,14 @@ abstract class Command extends BaseCommand
   /**
    * Helper for running processes.
    *
-   * @param \Symfony\Component\Process\Process $process
+   * @param \Symfony\Component\Process\Process|string $process
    */
-  public function runProcess(Process $process) {
+  public function runProcess($process) {
+
+    if (is_string($process)) {
+      $process = new Process($process);
+      $process->setTimeout(null);
+    }
 
     try {
       $process->mustRun(function ($type, $buffer) {
