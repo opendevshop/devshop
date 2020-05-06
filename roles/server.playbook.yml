@@ -38,11 +38,6 @@
     # Supervisor will start when the container and systemd start.
     supervisor_started: false
 
-    # @TODO: Make a cleaner separation between playbooks and makefiles for docker hub, playbooks for CI testing, and local development.s
-    # Use local dev makefile because it copies the files directly from this repo.
-    # build-devmaster.make is designed for standalone use, and always downloads 1.x until release.
-    devshop_makefile: "{{ devshop_cli_path }}/build-devmaster-dev.make.yml"
-
   pre_tasks:
     - name: Set variables ({{ ansible_os_family}} {{ansible_distribution_major_version}})
       when:
