@@ -8,7 +8,7 @@ services:
   devshop:
     volumes:
       - ./aegir-home:/var/aegir:delegated
-      - ./devmaster:/var/aegir/devmaster-1.x/profiles/devmaster
+      - ./src/DevShop/Templates/DevmasterTemplate:/var/aegir/devmaster-1.x
       - ./:/usr/share/devshop:delegated
       - ./provision:/usr/share/drush/commands/provision:delegated
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
