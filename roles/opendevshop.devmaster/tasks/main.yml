@@ -174,7 +174,7 @@
   args:
     creates: "{{ devshop_devmaster_path }}/index.php"
     chdir: "{{ devshop_cli_path }}"
-  when: not devshop_makefile|bool
+  when: devshop_makefile|bool
   tags: [rebuild-devmaster]
 
 - name: Clear the drush cache.
