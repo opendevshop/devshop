@@ -622,43 +622,19 @@ PHP;
     // If this is hostmaster, we need to install first.  provision-verify will fail, otherwise.
     if ($install) {
       $client_email = $this->input->getOption('client_email');
-      $this->output->writeln("");
-      $this->output->writeln("Running <comment>{$drush_path} @{$name} provision-install --client_email={$client_email}</comment> ...");
-      $process = $this->getProcess("{$drush_path} @{$name} provision-install --client_email={$client_email} -v");
-      $process->setTimeout(NULL);
-
-      // Ensure process runs sucessfully.
-      if ($this->runProcess($process)) {
-        $this->output->writeln("");
-        $this->output->writeln("Running <comment>drush @{$name} provision-install</comment>: <info>Done</info>");
-        $this->output->writeln("");
-      }
-      else {
-        $this->output->writeln("");
-        $this->output->writeln("<error>Unable to run drush @{$name} provision-install.");
-        $this->output->writeln("");
-        exit(1);
-      }
-    }
-
-    // Run provision-verify
-    $drush_path = $this->input->getOption('drush-path');
-    $this->output->writeln("");
-    $this->output->writeln("Running <comment>drush @{$name} provision-verify</comment> ...");
-    $process = $this->getProcess("{$drush_path} @{$name} provision-verify");
-    $process->setTimeout(NULL);
-
-    if ($this->runProcess($process)) {
-      $this->output->writeln("");
-      $this->output->writeln("Running <comment>drush @{$name} provision-verify</comment>: <info>Done</info>");
-      $this->output->writeln("");
+      $command = "{$drush_path} @{$name} provision-install --client_email={$client_email} -v";
     }
     else {
-      $this->output->writeln("");
-      $this->output->writeln("<error>Unable to run drush @{$name} provision-verify.");
-      $this->output->writeln("");
-      exit(1);
+      $command = "{$drush_path} @{$name} provision-verify";
     }
+
+    // Ensure process runs successfully.
+    $this->output->writeln("");
+    $this->output->writeln("Running <comment>{$command}</comment> ...");
+    $this->runProcess($command);
+    $this->output->writeln("Running <comment>{$command}</comment> ... <info>Done</info>");
+    $this->output->writeln("");
+
   }
 
   /**
