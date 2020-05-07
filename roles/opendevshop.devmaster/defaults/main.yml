@@ -85,9 +85,9 @@ devmaster_install_command: "{{ devshop_cli_bin_path }}/devshop devmaster:install
                                 --profile={{ devshop_install_profile }} \
                                 --root={{ aegir_user_home }}/devmaster/web \
                                 --devshop_version={{ devshop_version }} \
-                                --repo_url={{ devmaster_git_repo }} \
-                                --repo_path={{ aegir_user_home }}/devmaster \
-                                --git_ref={{ devmaster_git_ref }} \
+                                --git_remote={{ devmaster_git_repo }} \
+                                --git_root={{ aegir_user_home }}/devmaster \
+                                --git_reference={{ devmaster_git_ref }} \
                                 --drush-path={{ devshop_cli_bin_path }}/drush \
                                 {{ devshop_working_copy }} \
 "
