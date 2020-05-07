@@ -624,7 +624,7 @@ PHP;
       $command = "{$drush_path} @{$name} provision-install --client_email={$client_email} -v";
     }
     else {
-      $command = "{$drush_path} @{$name} provision-verify";
+      $command = "{$drush_path} @{$name} provision-verify -v";
     }
 
     // Ensure process runs successfully.
