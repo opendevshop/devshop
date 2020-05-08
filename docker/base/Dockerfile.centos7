@@ -10,6 +10,7 @@ ENV OUTPUT err
 # docker-systemd-prepare layer will only be rebuild if these files change.
 COPY ./bin/run-quiet $bin_dir
 COPY ./bin/docker-systemd-prepare $bin_dir
+RUN chmod +x $bin_dir/run-quiet $bin_dir/docker-systemd-prepare
 RUN run-quiet docker-systemd-prepare
 
 COPY ./bin $bin_dir
