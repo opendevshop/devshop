@@ -1,43 +1,29 @@
-# DevShop Dockerfiles
+# DevShop Docker Images
 
-## Base Images
+This folder containes all of the various files needed to build the DevShop 
+Docker Images. 
 
-The base images are nothing but the upstream OS, SystemD, and a few
- prerequisite packages like git and sudo.
+### Base Images: OS & SystemD 
 
-The [docker-systemd-prepare script](../bin/docker-systemd-prepare) is used 
-prepare every supported OS for running SystemD inside the container.
+- [devshop/base:ubuntu1804](base)
+- [devshop/base:centos7](base)
 
-The script is based on the commands inside Jeff Geerling's Docker containers.
+### Ansible Images: PIP & Ansible
 
-- devshop/base:ubuntu1804
-- devshop/base:centos7
+Base image plus Ansible, PIP, and helper scripts. 
 
-### Init System
+Other containers can extend these by just changing `ANSIBLE_` server variables. 
 
-In order to test Ansible roles as they would work on full Linux machines, these
-containers run SystemD.
+- [devshop/ansible:ubuntu1804](ansible)
+- [devshop/ansible:centos7](ansible)
 
-SystemD must run as PID 1 to work. This means the Docker CMD needs to be systemd, normally.
+*Coming Shortly*
 
-These containers contain a special script that alter the behavior of the container
-to run the CMD *after* launching SystemD.
+### DevShop Service Images
 
-If the command exits with an error, the container exits with one as well.
+Built from `devshop/ansible` and the relevant Ansible roles.
 
-This allows us to test complex systems that have multiple services running.
+- [devshop/server](server) - Fully functional single container devshop server.
+- [devshop/http](http) - Apache web server container.
 
-By default, there is no Docker command. The entrypoint launches SystemD and stays
-open.
-
-## Ansible Images
-
-Base images plus Ansible. Used to build Ansible Roles into containers.
-
-- devshop/ansible:ubuntu1804
-- devshop/ansible:centos7
-
-## DevShop Images
-
-- devshop/server - Fully functional single container devshop server.
-- devshop/http - Apache web server container.
+*Coming Shortly*
