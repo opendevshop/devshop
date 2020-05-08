@@ -30,8 +30,10 @@ if [ ! -z "$DOCKER_COMMAND" ]; then
     ((sleep ${INIT_COMMAND_WAIT:-3} && \
       echo "Checking system status ..." && $SYSTEM_STATUS_COMMAND &&
       echo "Running Docker Command '$DOCKER_COMMAND' ..." && $DOCKER_COMMAND &&
-        # If not successful, kill the container
-        echo "DOCKER_COMMAND completed. (exit 0)") || ( \
+        # If not successful, kill the container.
+        # If successful, mention that system D continues.
+        # @TODO: Until we can control systemd exit code on "shutdown", we don't have a way for this container to exit 0.
+        echo "DOCKER_COMMAND completed (exit 0). SystemD continues.") || ( \
         echo "DOCKER_COMMAND failed. (exit $?) ... Exiting the container." && \
             shutdown )) &
   DOCKER_COMMAND_PID=$!
