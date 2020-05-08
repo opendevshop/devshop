@@ -1,0 +1,20 @@
+FROM ubuntu:18.04
+LABEL maintainer="Jon Pugh"
+ENV bin_dir /usr/local/bin
+ENV INIT_COMMAND /lib/systemd/systemd
+
+# Do this first so cache isn't broken when othe rfiles change.
+COPY ./bin/docker-systemd-prepare $bin_dir
+RUN docker-systemd-prepare
+
+COPY ./bin $bin_dir
+RUN chmod +x $bin_dir/*
+
+
+VOLUME ["/sys/fs/cgroup", "/tmp", "/run"]
+
+# The Entrypoint script runs the CMD after starting up SystemD.
+ENTRYPOINT ["docker-systemd-entrypoint"]
+
+# CMD can be changed to run a script or command as soon as the container is up.
+CMD [""]

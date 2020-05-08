@@ -223,11 +223,9 @@ ENV DEVSHOP_ENTRYPOINT_LOG_FILES="/var/log/aegir/*"
 ENV DEVSHOP_TESTS_ASSETS_PATH="${DEVSHOP_PATH}/.github/test-assets"
 
 # Set devshop_install_phase runtime here, since the Dockerfile is ALWAYS buildtime.
-ENV ANSIBLE_BUILD_COMMAND="devshop-ansible-playbook \
-    --extra-vars aegir_user_uid=$DEVSHOP_USER_UID \
-    --extra-vars aegir_user_gid=$DEVSHOP_USER_UID \
-    --extra-vars devshop_install_phase=buildtime \
-"
+ARG DOCKER_BUILD_COMMAND_ARG="id"
+ENV DOCKER_BUILD_COMMAND ${DOCKER_BUILD_COMMAND:-""}
+ENV ANSIBLE_BUILD_COMMAND=
 
 RUN \
   echo "Container Environment Preparation Complete"; \

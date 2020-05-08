@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+set -e
+#
+# This script performs some magic to allow Docker container "Commands" to be run
+# as a process other than 1 so that SystemD can be running in the background.
+#
+# Currently, if CMD runs successfully, the container stays running with SystemD.
+# If CMD fails, it triggers the "shutdown" command to exit the container.
+#
+# The DOCKER_COMMAND is the actual Docker CMD used for this container image.
+# $@ is every argument and option passed to the entrypoint (which is the same way CMD/ENTRPOINT work)
+DOCKER_COMMAND=${@:-watch uptime}
+SYSTEM_STATUS_COMMAND=${SYSTEM_STATUS_COMMAND:-systemctl status --no-pager}
+
+echo "Hi! I'm docker-systemd-entrypoint."
+echo "In a few seconds, I'm going to launch the Docker Command you specified as a new process."
+echo "Then, I'm going to pass my process off to SystemD!"
+echo "That way, you can specify any docker CMD but it will run inside a container with SystemD running properly."
+
+echo "-----------------"
+echo "DOCKER_COMMAND: $DOCKER_COMMAND"
+echo "INIT_COMMAND: $INIT_COMMAND"
+echo "SYSTEM_STATUS_COMMAND: $SYSTEM_STATUS_COMMAND"
+echo "-----------------"
+
+if [ ! -z "$DOCKER_COMMAND" ]; then
+    # This launches a group of commands in a new process:
+    #  Sleep for 3 seconds, to allow INIT_COMMAND to launch.
+    #  Run $DOCKER_COMMAND, and exit with it's exit code.
+    ((sleep ${INIT_COMMAND_WAIT:-3} && \
+      echo "Checking system status ..." && $SYSTEM_STATUS_COMMAND &&
+      echo "Running Docker Command '$DOCKER_COMMAND' ..." && $DOCKER_COMMAND &&
+        # If not successful, kill the container
+        echo "DOCKER_COMMAND completed. (exit 0)") || ( \
+        echo "DOCKER_COMMAND failed. (exit $?) ... Exiting the container." && \
+            shutdown )) &
+  DOCKER_COMMAND_PID=$!
+  echo "The Docker Command is about to start with PID $DOCKER_COMMAND_PID ..."
+
+else
+  echo "DOCKER_COMMAND variable is empty."
+  (sleep ${INIT_COMMAND_WAIT:-3} && echo "Checking system status ..." && $SYSTEM_STATUS_COMMAND) &
+fi
+
+# @TODO: Detect an unprivileged container and inform the user.
+# @TODO: Detect a missing volume
+
+echo "Running $INIT_COMMAND ..."
+exec "$INIT_COMMAND"
+
