@@ -121,7 +121,7 @@ ARG DEVSHOP_PATH_ARG="/usr/share/devshop"
 ENV DEVSHOP_PATH ${DEVSHOP_PATH_ARG:-"/usr/share/devshop"}
 
 # Set PATH so we can run devshop scripts immediately.
-ENV PATH="${DEVSHOP_PATH}/bin:$PATH"
+ENV PATH="${DEVSHOP_PATH}/bin:${DEVSHOP_PATH}/docker/bin:$PATH"
 
 RUN \
     $LINE && echo && \
