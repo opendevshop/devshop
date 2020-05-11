@@ -15,6 +15,7 @@
     php_default_version_debian: '7.2'
 
   pre_tasks:
+    # @TODO: Can we move this into the roles? It's not great having to set this.
     - name: Set Debian Family Server Variables
       when:
         - ansible_os_family == 'Debian'
