@@ -79,7 +79,7 @@
                 "docs": "https://github.com/opendevshop/documentation.git",
                 "tests/test-repo": "https://github.com/devshop-packages/test-repo.git",
                 "devmaster": "https://github.com/opendevshop/devmaster.git",
-                "docker": "https://github.com/devshop-packages/docker-bin-tools.git",
+                "docker/bin": "https://github.com/devshop-packages/docker-bin-tools.git",
                 "roles/opendevshop.apache": "https://github.com/opendevshop/ansible-role-apache.git",
                 "roles/opendevshop.devmaster": "https://github.com/opendevshop/ansible-role-devmaster.git",
                 "roles/opendevshop.users": "https://github.com/opendevshop/ansible-role-user.git",
