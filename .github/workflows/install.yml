@@ -27,14 +27,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Build Base Container
-      working-directory: docker
+      working-directory: ./docker
       run: |
         docker build . \
           --file base/Dockerfile.{{ matrix.os }} \
           --tag devshop/base:{{ matrix.os }}-ci
 
     - name: Launch Base Container
-      working-directory: docker
+      working-directory: ./docker
       run: |
         docker run \
           --name devshop-base-{{ matrix.os }}-ci \
@@ -44,13 +44,13 @@ jobs:
           devshop/base:{{ matrix.os }}-ci
 
     - name: Get DevShop Install Script
-      working-directory: docker
+      working-directory: ./docker
       run: |
         docker exec devshop-base-{{ matrix.os }}-ci \
           curl -fsSL https://get.devshop.tech -o get-devshop.sh
 
     - name: Run DevShop Install Script
-      working-directory: docker
+      working-directory: ./docker
       run: |
         docker exec devshop-base-{{ matrix.os }}-ci \
           bash get-devshop.sh
