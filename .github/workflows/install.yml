@@ -56,15 +56,10 @@ jobs:
           --hostname ${HOSTNAME} \
           ${DOCKER_TAG}
 
-    - name: Get DevShop Install Script
-      run: |
-        docker exec ${DOCKER_NAME} \
-          curl -fsSL https://get.devshop.tech -o get-devshop.sh
-
     - name: Run DevShop Install Script
       run: |
         docker exec ${DOCKER_NAME} \
-          bash get-devshop.sh
+          bash ${DEVSHOP_SCRIPT_PATH}
 
     - name: Save Assets
       if: always()
