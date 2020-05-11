@@ -32,6 +32,10 @@ jobs:
 
     runs-on: ubuntu-latest
     steps:
+
+    - name: Check Out Sourcecode
+      uses: actions/checkout@v2
+
     - name: Build Base Container
       run: |
         docker build ${DOCKER_DIR} \
