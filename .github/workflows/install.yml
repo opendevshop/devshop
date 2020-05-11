@@ -23,38 +23,44 @@ jobs:
         os:
           - 'ubuntu1804'
           - 'centos7'
+    env:
+      DOCKER_DIR: "docker"
+      DOCKERFILE: "docker/base/Dockerfile.${{ matrix.os }}"
+      DOCKER_TAG: "devshop/base:${{ matrix.os }}-ci"
+      DOCKER_NAME: "devshop-base-${{ matrix.os }}-ci"
+      HOSTNAME: "devshop.${{ github.event.pull_request.number }}.${{ matrix.os }}.actions.github.com"
 
     runs-on: ubuntu-latest
     steps:
     - name: Build Base Container
       run: |
-        docker build docker \
-          --file docker/base/Dockerfile.{{ matrix.os }} \
-          --tag devshop/base:{{ matrix.os }}-ci
+        docker build ${DOCKER_DIR} \
+          --file ${DOCKERFILE} \
+          --tag ${DOCKER_TAG}
 
     - name: Launch Base Container
       run: |
         docker run \
-          --name devshop-base-{{ matrix.os }}-ci \
+          --name ${DOCKER_NAME} \
           --privileged \
-          --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro \
-          --hostname=devshop.${{ github.event.pull_request.number }}.actions.github.com
-          devshop/base:{{ matrix.os }}-ci
+          --volume /sys/fs/cgroup:/sys/fs/cgroup:ro \
+          --hostname ${HOSTNAME}
+          ${DOCKER_TAG}
 
     - name: Get DevShop Install Script
       run: |
-        docker exec devshop-base-{{ matrix.os }}-ci \
+        docker exec ${DOCKER_NAME} \
           curl -fsSL https://get.devshop.tech -o get-devshop.sh
 
     - name: Run DevShop Install Script
       run: |
-        docker exec devshop-base-{{ matrix.os }}-ci \
+        docker exec ${DOCKER_NAME} \
           bash get-devshop.sh
 
     - name: Save Assets
       if: always()
       run: |
-        docker logs devshop/base:{{ matrix.os }}-ci > ./.github/test-assets/docker-container.log
+        docker logs ${DOCKER_NAME} > ./.github/test-assets/docker-container.log
 
     - uses: actions/upload-artifact@v1
       if: always()
