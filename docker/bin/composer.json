@@ -1,0 +1,34 @@
+{
+  "name": "devshop/docker-bin-tools",
+  "type": "library",
+  "description": "All of the scripts used in Docker containers and images.",
+  "keywords": [],
+  "homepage": "https://getdevshop.com",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Jon Pugh",
+      "email": "jon@thinkdrop.net"
+    },
+    {
+      "name": "DevShop Community",
+      "homepage": "https://github.com/opendevshop/devshop/graphs/contributors"
+    }
+  ],
+  "require": {
+  },
+  "require-dev": {
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-master": "1.x-dev"
+    }
+  },
+  "bin": [
+    "docker-systemd",
+    "docker-systemd-entrypoint",
+    "docker-systemd-initctl-faker",
+    "docker-systemd-prepare"
+  ],
+  "minimum-stability": "dev"
+}
