@@ -65,7 +65,7 @@ jobs:
       if: always()
       run: |
         docker logs ${DOCKER_NAME} > ./.github/test-assets/docker-container.log
-        docker exec systemctl status --no-pager > ./.github/test-assets/systemctl-status.log
+        docker exec ${DOCKER_NAME} systemctl status --no-pager > ./.github/test-assets/systemctl-status.log
 
     - uses: actions/upload-artifact@v1
       if: always()
