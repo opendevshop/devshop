@@ -46,6 +46,7 @@ jobs:
       run: |
         docker run \
           --name ${DOCKER_NAME} \
+          --detach \
           --privileged \
           --volume /sys/fs/cgroup:/sys/fs/cgroup:ro \
           --hostname ${HOSTNAME} \
