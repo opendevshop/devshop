@@ -42,8 +42,14 @@ if [ ! -z "$DOCKER_COMMAND" ]; then
   echo "The Docker Command is about to start with PID $DOCKER_COMMAND_PID ..."
 
 else
-  echo "DOCKER_COMMAND variable is empty."
-  (sleep ${INIT_COMMAND_WAIT:-3} && echo "Checking system status ..." && $SYSTEM_STATUS_COMMAND) &
+
+  # Let INIT COMMAND run, then wait 3 seconds, then show some messages and check system status.
+  (( sleep ${INIT_COMMAND_WAIT:-3} && \
+     echo "Checking system status ..." && \
+     $SYSTEM_STATUS_COMMAND && \
+     echo "There is no DOCKER_COMMAND set. There will be no futher Docker logs." && \
+     echo "Enjoy the DevShop Docker Containers!" \
+   ) &
 fi
 
 # @TODO: Detect an unprivileged container or missing cgroup volume and inform the user.
