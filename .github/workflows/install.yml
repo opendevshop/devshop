@@ -1,0 +1,66 @@
+name: Install Script
+
+on:
+ push:
+   branches: 1.x
+ pull_request:
+   types: [opened, synchronize]
+ schedule:
+   - cron: "0 6 * * *"
+
+env:
+  GITHUB_TOKEN: ${{ secrets.INPUT_GITHUB_TOKEN }}
+  GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}
+  GITHUB_PR_SHA: ${{ github.event.pull_request.head.sha  }}
+  GITHUB_RUN_LOG_URL: https://github.com/opendevshop/devshop/actions/runs/${{ github.run_id }}
+
+jobs:
+  get.devshop.tech:
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - 'ubuntu1804'
+          - 'centos7'
+
+    runs-on: ubuntu-latest
+    steps:
+    - name: Build Base Container
+      working-directory: docker
+      run: |
+        docker build . \
+          --file base/Dockerfile.{{ matrix.os }} \
+          --tag devshop/base:{{ matrix.os }}-ci
+
+    - name: Launch Base Container
+      working-directory: docker
+      run: |
+        docker run \
+          --name devshop-base-{{ matrix.os }}-ci \
+          --privileged \
+          --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro \
+          --hostname=devshop.${{ github.event.pull_request.number }}.actions.github.com
+          devshop/base:{{ matrix.os }}-ci
+
+    - name: Get DevShop Install Script
+      working-directory: docker
+      run: |
+        docker exec devshop-base-{{ matrix.os }}-ci \
+          curl -fsSL https://get.devshop.tech -o get-devshop.sh
+
+    - name: Run DevShop Install Script
+      working-directory: docker
+      run: |
+        docker exec devshop-base-{{ matrix.os }}-ci \
+          bash get-devshop.sh
+
+    - name: Save Assets
+      if: always()
+      run: |
+        docker logs devshop/base:{{ matrix.os }}-ci > ./.github/test-assets/docker-container.log
+
+    - uses: actions/upload-artifact@v1
+      if: always()
+      with:
+        name: test-assets
+        path: ./.github/test-assets
