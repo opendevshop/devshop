@@ -17,7 +17,7 @@ env:
 jobs:
   install_script:
     name: "Install Script"
-    description: "This test copies the install.sh file into an empty base container and runs it, without any supporting code."
+    # description: "This test copies the install.sh file into an empty base container and runs it, without any supporting code."
     strategy:
       fail-fast: false
       matrix:
