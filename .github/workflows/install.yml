@@ -51,8 +51,8 @@ jobs:
           --detach \
           --privileged \
           --volume /sys/fs/cgroup:/sys/fs/cgroup:ro \
-          --volume ./install/install.sh:${DEVSHOP_SCRIPT_PATH} \
-          --volume ./:${DEVSHOP_SOURCE_PATH} \
+          --volume ${PWD}/install/install.sh:${DEVSHOP_SCRIPT_PATH} \
+          --volume ${PWD}:${DEVSHOP_SOURCE_PATH} \
           --hostname ${HOSTNAME} \
           ${DOCKER_TAG}
 
