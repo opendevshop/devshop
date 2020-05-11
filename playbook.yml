@@ -1,7 +1,12 @@
 ##
 # DevShop: DevMaster Server with Apache
 #
-
+# This is the default playbook run by install.sh.
+#
+# It can be copied and customized to your needs.
+#
+# Use the --playbook option when running install.sh to use a different playbook.
+#
 ---
 - hosts: all
   user: root
