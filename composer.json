@@ -24,7 +24,8 @@
         "devshop/docker-bin-tools": "*",
         "devshop/git-split": "self.version",
         "devshop/github-api-cli": "self.version",
-        "devshop/power-process": "self.version"
+        "devshop/power-process": "self.version",
+        "devshop/bin-tools": "@dev"
     },
     "replace": {
         "devshop/yaml-tasks": "self.version"
@@ -44,6 +45,10 @@
         {
             "type": "path",
             "url": "docker/bin"
+        },
+        {
+            "type": "path",
+            "url": "scripts"
         },
         {
             "type": "path",
@@ -83,6 +88,7 @@
                 "roles/opendevshop.apache": "https://github.com/opendevshop/ansible-role-apache.git",
                 "roles/opendevshop.devmaster": "https://github.com/opendevshop/ansible-role-devmaster.git",
                 "roles/opendevshop.users": "https://github.com/opendevshop/ansible-role-user.git",
+                "scripts": "https://github.com/devshop-packages/bin-tools.git",
                 "src/DevShop/Component/ComposerCommon": "https://github.com/devshop-packages/composer-common.git",
                 "src/DevShop/Component/GitHubApiCli": "https://github.com/devshop-packages/github-api-cli.git",
                 "src/DevShop/Component/GitSplit": "https://github.com/devshop-packages/git-split.git",

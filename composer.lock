@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "05e60c9d1848ca7976e74471cf760d6b",
+    "content-hash": "15c5692739b4324061f5a8da05c3d269",
     "packages": [
         {
             "name": "consolidation/annotated-command",
@@ -560,6 +560,47 @@
             "homepage": "https://github.com/container-interop/container-interop",
             "abandoned": "psr/container",
             "time": "2017-02-14T19:40:03+00:00"
+        },
+        {
+            "name": "devshop/bin-tools",
+            "version": "dev-ops/docker/dockerfiles",
+            "dist": {
+                "type": "path",
+                "url": "scripts",
+                "reference": "b7080079793a13a53daf60b850cc6f120a7d278d",
+                "shasum": null
+            },
+            "bin": [
+                "branch-or-tag",
+                "devshop-ansible-playbook",
+                "devshop-chuid",
+                "devshop-line",
+                "devshop-log",
+                "devshop-logo",
+                "devshop-site-active",
+                "devshop-site-info",
+                "hosting-queue-runner",
+                "tail-file",
+                "wait-for",
+                "wait-mysql",
+                "wait-site"
+            ],
+            "type": "library",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jon Pugh",
+                    "email": "jon@thinkdrop.net"
+                },
+                {
+                    "name": "DevShop Community",
+                    "homepage": "https://github.com/opendevshop/devshop/graphs/contributors"
+                }
+            ],
+            "description": "Useful shell scripts",
+            "homepage": "https://getdevshop.com"
         },
         {
             "name": "devshop/composer-common",
@@ -2826,7 +2867,8 @@
     "stability-flags": {
         "devshop/git-split": 20,
         "devshop/github-api-cli": 20,
-        "devshop/power-process": 20
+        "devshop/power-process": 20,
+        "devshop/bin-tools": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,
