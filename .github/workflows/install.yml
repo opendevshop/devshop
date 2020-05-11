@@ -15,7 +15,8 @@ env:
   GITHUB_RUN_LOG_URL: https://github.com/opendevshop/devshop/actions/runs/${{ github.run_id }}
 
 jobs:
-  get.devshop.tech:
+  getdevshoptech:
+    name: "get.devshop.tech"
     strategy:
       fail-fast: false
       matrix:
