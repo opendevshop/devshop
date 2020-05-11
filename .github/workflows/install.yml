@@ -48,7 +48,7 @@ jobs:
           --name ${DOCKER_NAME} \
           --privileged \
           --volume /sys/fs/cgroup:/sys/fs/cgroup:ro \
-          --hostname ${HOSTNAME}
+          --hostname ${HOSTNAME} \
           ${DOCKER_TAG}
 
     - name: Get DevShop Install Script
