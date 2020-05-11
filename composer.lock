@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "1cdac346dfee53009417652320b7c369",
+    "content-hash": "05e60c9d1848ca7976e74471cf760d6b",
     "packages": [
         {
             "name": "consolidation/annotated-command",
@@ -605,6 +605,43 @@
             "transport-options": {
                 "relative": true
             }
+        },
+        {
+            "name": "devshop/docker-bin-tools",
+            "version": "1.9999999.9999999.9999999-dev",
+            "dist": {
+                "type": "path",
+                "url": "docker/bin",
+                "reference": "06dd97132a305e9cc589d8f6ca80b6bfc7d3bd7a",
+                "shasum": null
+            },
+            "bin": [
+                "docker-systemd",
+                "docker-systemd-entrypoint",
+                "docker-systemd-initctl-faker",
+                "docker-systemd-prepare"
+            ],
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.x-dev"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jon Pugh",
+                    "email": "jon@thinkdrop.net"
+                },
+                {
+                    "name": "DevShop Community",
+                    "homepage": "https://github.com/opendevshop/devshop/graphs/contributors"
+                }
+            ],
+            "description": "All of the scripts used in Docker containers and images.",
+            "homepage": "https://getdevshop.com"
         },
         {
             "name": "devshop/git-split",
