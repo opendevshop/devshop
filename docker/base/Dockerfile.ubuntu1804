@@ -22,4 +22,4 @@ VOLUME ["/sys/fs/cgroup", "/tmp", "/run"]
 ENTRYPOINT ["docker-systemd-entrypoint"]
 
 # CMD can be changed to run a script or command as soon as the container (and SystemD) is up.
-CMD ["echo", "No Docker command was set. SystemD continues to run. Enjoy!"]
+CMD []
