@@ -8,7 +8,14 @@
   vars:
     php_version: '7.2'
     php_default_version_debian: '7.2'
-    ansible_python_interpreter: python3
+
+  pre_tasks:
+    - name: Set Debian Family Server Variables
+      when:
+        - ansible_os_family == 'Debian'
+      set_fact:
+        mysql_python_package_debian: python3-mysqldb
+        ansible_python_interpreter: python3
 
   roles:
     - role: geerlingguy.repo-remi
