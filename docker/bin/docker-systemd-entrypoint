@@ -44,8 +44,7 @@ else
   (sleep ${INIT_COMMAND_WAIT:-3} && echo "Checking system status ..." && $SYSTEM_STATUS_COMMAND) &
 fi
 
-# @TODO: Detect an unprivileged container and inform the user.
-# @TODO: Detect a missing volume
+# @TODO: Detect an unprivileged container or missing cgroup volume and inform the user.
 
 echo "Running $INIT_COMMAND ..."
 exec "$INIT_COMMAND"
