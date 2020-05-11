@@ -29,7 +29,7 @@ jobs:
       DEVSHOP_SOURCE_PATH: "/usr/share/devshop"
       DOCKER_DIR: "docker"
       DOCKERFILE: "docker/base/Dockerfile.${{ matrix.os }}"
-      DOCKER_TAG: "devshop/base:${{ matrix.os }}-ci"
+      DOCKER_TAG: "devshop/base:${{ matrix.os }}"
       DOCKER_NAME: "devshop-base-${{ matrix.os }}-ci"
       HOSTNAME: "devshop.${{ github.event.pull_request.number }}.${{ matrix.os }}.actions.github.com"
 
@@ -38,12 +38,6 @@ jobs:
 
     - name: Check Out Sourcecode
       uses: actions/checkout@v2
-
-    - name: Build Base Container
-      run: |
-        docker build ${DOCKER_DIR} \
-          --file ${DOCKERFILE} \
-          --tag ${DOCKER_TAG}
 
     - name: Launch Base Container
       # Run the install.sh file from the PR by mounting it as a volume.
