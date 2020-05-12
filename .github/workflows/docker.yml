@@ -32,6 +32,8 @@ jobs:
       DOCKER_NAME: "devshop-${{ matrix.image }}-${{ matrix.os }}"
       HOSTNAME: "devshop.${{ github.event.pull_request.number }}.${{ matrix.os }}.actions.github.com"
       DOCKER_BUILD_COMMAND: "docker build . --file ${IMAGE}/Dockerfile.${OS} --tag devshop/${IMAGE}:${OS}"
+      DEVSHOP_SOURCE_PATH: "/usr/share/devshop"
+      DEVSHOP_SCRIPT_PATH: "/root/install.sh"
 
     runs-on: ubuntu-latest
     steps:
@@ -48,3 +50,31 @@ jobs:
       name: "Build Containers: devshop/${{env.IMAGE}}"
       working-directory: ${{env.DOCKER_DIR}}
       run: "docker build . --file ${{env.IMAGE}}/Dockerfile.${{env.OS}} --tag devshop/${{env.IMAGE}}:${{env.OS}}"
+
+    - env: {IMAGE: "base"}
+      name: "Launch Container: devshop/${{env.IMAGE}}"
+      run: |
+        docker run \
+          --name devshop-${IMAGE}-${OS} \
+          --detach \
+          --privileged \
+          --volume /sys/fs/cgroup:/sys/fs/cgroup:ro \
+          --volume ${PWD}/install/install.sh:${DEVSHOP_SCRIPT_PATH} \
+          --volume ${PWD}:${DEVSHOP_SOURCE_PATH} \
+          --hostname ${HOSTNAME} \
+          devshop/${IMAGE}:${OS}
+
+    # @TODO: Test installing via ansible playbook.
+
+    # Test out Install.sh against "devshop/base" to ensure it can prepare ansible.
+    - env: {IMAGE: "base"}
+      name: Run install.sh on devshop/${{env.IMAGE}}
+      run: |
+        docker exec devshop-${IMAGE}-${OS} \
+          bash ${DEVSHOP_SCRIPT_PATH}
+
+    - name: Save Assets
+      if: always()
+      run: |
+        docker logs ${DOCKER_NAME} > ./.github/test-assets/docker-container.log
+        docker exec ${DOCKER_NAME} systemctl s`tatus --no-pager > ./.github/test-assets/systemctl-status.log
