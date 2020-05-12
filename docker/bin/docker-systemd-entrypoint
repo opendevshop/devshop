@@ -49,7 +49,7 @@ else
      $SYSTEM_STATUS_COMMAND && \
      echo "There is no DOCKER_COMMAND set. There will be no futher Docker logs." && \
      echo "Enjoy the DevShop Docker Containers!" \
-   ) &
+  )) &
 fi
 
 # @TODO: Detect an unprivileged container or missing cgroup volume and inform the user.
