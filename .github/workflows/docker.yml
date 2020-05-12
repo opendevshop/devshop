@@ -62,7 +62,8 @@ jobs:
           --volume ${PWD}/install/install.sh:${DEVSHOP_SCRIPT_PATH} \
           --volume ${PWD}:${DEVSHOP_SOURCE_PATH} \
           --hostname ${HOSTNAME} \
-          devshop/${IMAGE}:${OS}
+          devshop/${IMAGE}:${OS} && \
+        sleep 5 && docker logs devshop-${IMAGE}-${OS}
 
     # @TODO: Test installing via ansible playbook.
 
