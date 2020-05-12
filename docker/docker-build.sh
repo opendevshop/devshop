@@ -28,8 +28,8 @@ docker run \
     --detach \
     --privileged \
     --volume /sys/fs/cgroup:/sys/fs/cgroup:ro \
-    --volume ${PWD}/install/install.sh:${DEVSHOP_SCRIPT_PATH} \
-    --volume ${PWD}:${DEVSHOP_SOURCE_PATH} \
+    --volume "${PWD}/install/install.sh:${DEVSHOP_SCRIPT_PATH}" \
+    --volume "${PWD}:${DEVSHOP_SOURCE_PATH}" \
     --publish "80:80" \
     --hostname ${HOSTNAME} \
     devshop/${IMAGE}:${OS}
