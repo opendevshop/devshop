@@ -1,0 +1,55 @@
+name: Docker Images
+
+on:
+ push:
+   branches: 1.x
+ pull_request:
+   types: [opened, synchronize]
+ schedule:
+   - cron: "0 6 * * *"
+
+env:
+  GITHUB_TOKEN: ${{ secrets.INPUT_GITHUB_TOKEN }}
+  GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}
+  GITHUB_PR_SHA: ${{ github.event.pull_request.head.sha  }}
+  GITHUB_RUN_LOG_URL: https://github.com/opendevshop/devshop/actions/runs/${{ github.run_id }}
+
+jobs:
+  build:
+    name: "Docker Build"
+    # description: "This test copies the install.sh file into an empty base container and runs it, without any supporting code."
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - 'ubuntu1804'
+          - 'centos7'
+    env:
+      OS: "${{ matrix.os }}"
+      DOCKER_DIR: "docker"
+      DOCKERFILE: "docker/${{ matrix.image }}/Dockerfile.${{ matrix.os }}"
+      DOCKER_TAG: "devshop/${{ matrix.image }}:${{ matrix.os }}"
+      DOCKER_NAME: "devshop-${{ matrix.image }}-${{ matrix.os }}"
+      HOSTNAME: "devshop.${{ github.event.pull_request.number }}.${{ matrix.os }}.actions.github.com"
+      DOCKER_BUILD_COMMAND: "docker build . --file ${IMAGE}/Dockerfile.${OS} --tag devshop/${IMAGE}:${OS}"
+
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Check Out Sourcecode
+      uses: actions/checkout@v2
+
+    - name: "Build Containers: devshop/${IMAGE}"
+      working-directory: "${DOCKER_DIR}"
+      run: "${DOCKER_BUILD_COMMAND}"
+      env:
+        # The directory and docker image name.
+        IMAGE: "base"
+
+    - name: "Build Containers: devshop/${IMAGE}"
+      working-directory: "${DOCKER_DIR}"
+      run: "${DOCKER_BUILD_COMMAND}"
+      env:
+        # The directory and docker image name.
+        IMAGE: "ansible"
+
