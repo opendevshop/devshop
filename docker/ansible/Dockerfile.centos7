@@ -1,0 +1,15 @@
+FROM devshop/base:centos7
+LABEL maintainer="Jon Pugh"
+
+# Tell the "run-quiet" script to only show us stderr.
+ENV OUTPUT err
+
+COPY ./bin/docker-ansible-prepare $bin_dir
+RUN chmod +x $bin_dir/docker-ansible-prepare
+RUN run-quiet docker-ansible-prepare
+RUN which ansible && ansible --version && \
+    which python && python --version
+
+# Install Ansible inventory file.
+RUN mkdir -p /etc/ansible
+RUN echo "[local]\nlocalhost ansible_connection=local" > /etc/ansible/hosts
