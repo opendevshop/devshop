@@ -1,4 +1,6 @@
+#!/usr/bin/env bash
 set -e
+ROOT_PATH="$( cd "$(dirname "$0")"/.. ; pwd -P )"
 
 # BASE
 # devshop/base is FROM $OS
@@ -25,11 +27,14 @@ HOSTNAME=devshop.local.computer
 # Same as what's in github actions
 docker run \
     --name devshop-${IMAGE}-${OS} \
+    --rm \
     --detach \
     --privileged \
     --volume /sys/fs/cgroup:/sys/fs/cgroup:ro \
-    --volume "${PWD}/install/install.sh:${DEVSHOP_SCRIPT_PATH}" \
-    --volume "${PWD}:${DEVSHOP_SOURCE_PATH}" \
+    --volume "${ROOT_PATH}/:${DEVSHOP_SOURCE_PATH}" \
     --publish "80:80" \
     --hostname ${HOSTNAME} \
     devshop/${IMAGE}:${OS}
+
+docker exec -ti devshop-${IMAGE}-${OS} \
+    bash ${DEVSHOP_SOURCE_PATH}/install/install.sh
