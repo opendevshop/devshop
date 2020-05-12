@@ -1,6 +1,6 @@
 # DevShop Docker Images
 
-## Base Images: OS & SystemD 
+## `devshop/base` 
 
 Base Docker images containing just the operating system, and some [scripts to 
 prepare the image for running SystemD](../bin/docker-systemd-prepare).
