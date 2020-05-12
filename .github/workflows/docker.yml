@@ -39,9 +39,9 @@ jobs:
     - name: Check Out Sourcecode
       uses: actions/checkout@v2
 
-    - name: "Build Containers: devshop/${IMAGE}"
+    - name: "Build Containers: devshop/${{env.IMAGE}}"
       working-directory: ${{env.DOCKER_DIR}}
-      run: ${DOCKER_BUILD_COMMAND}
+      run: "docker build . --file ${{env.IMAGE}}/Dockerfile.${OS} --tag devshop/${{env.IMAGE}}:${OS}"
       env:
         # The directory and docker image name.
         IMAGE: "base"
