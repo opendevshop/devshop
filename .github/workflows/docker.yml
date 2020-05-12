@@ -39,17 +39,12 @@ jobs:
     - name: Check Out Sourcecode
       uses: actions/checkout@v2
 
-    - name: "Build Containers: devshop/${{env.IMAGE}}"
+    - env: {IMAGE: "base"}
+      name: "Build Containers: devshop/${{env.IMAGE}}"
       working-directory: ${{env.DOCKER_DIR}}
-      run: "docker build . --file ${{env.IMAGE}}/Dockerfile.${OS} --tag devshop/${{env.IMAGE}}:${OS}"
-      env:
-        # The directory and docker image name.
-        IMAGE: "base"
+      run: "docker build . --file ${{env.IMAGE}}/Dockerfile.${{env.OS}} --tag devshop/${{env.IMAGE}}:${{env.OS}}"
 
-    - name: "Build Containers: devshop/${IMAGE}"
+    - env: {IMAGE: "ansible"}
+      name: "Build Containers: devshop/${{env.IMAGE}}"
       working-directory: ${{env.DOCKER_DIR}}
-      run: "${DOCKER_BUILD_COMMAND}"
-      env:
-        # The directory and docker image name.
-        IMAGE: "ansible"
-
+      run: "docker build . --file ${{env.IMAGE}}/Dockerfile.${{env.OS}} --tag devshop/${{env.IMAGE}}:${{env.OS}}"
