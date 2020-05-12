@@ -11,6 +11,7 @@ set -e
 # $@ is every argument and option passed to the entrypoint (which is the same way CMD/ENTRPOINT work)
 DOCKER_COMMAND=${@}
 SYSTEM_STATUS_COMMAND=${SYSTEM_STATUS_COMMAND:-systemctl status --no-pager}
+WELCOME_MESSAGE="Enjoy the DevShop Containers!"
 
 echo "Hi! I'm docker-systemd-entrypoint."
 echo "In a few seconds, I'm going to launch the Docker Command you specified as a new process."
@@ -27,13 +28,16 @@ if [ ! -z "$DOCKER_COMMAND" ]; then
     # This launches a group of commands in a new process:
     #  Sleep for 3 seconds, to allow INIT_COMMAND to launch.
     #  Run $DOCKER_COMMAND, and exit with it's exit code.
-    ((sleep ${INIT_COMMAND_WAIT:-3} && \
+    (( \
+      sleep ${INIT_COMMAND_WAIT:-3} && \
       echo "System Status before running DOCKER_COMMAND: " && $SYSTEM_STATUS_COMMAND &&
       echo "Running Docker Command '$DOCKER_COMMAND' ..." && $DOCKER_COMMAND &&
         # If not successful, kill the container.
         # If successful, mention that system D continues.
         echo "The DOCKER_COMMAND completed. (exit 0) Remember: INIT_COMMAND may continue to run." && \
-        echo "System Status after running DOCKER_COMMAND: " && $SYSTEM_STATUS_COMMAND \
+        echo "System Status after running Docker command: " && $SYSTEM_STATUS_COMMAND && \
+        echo $WELCOME_MESSAGE \
+
     ) || ( \
         echo "The DOCKER_COMMAND failed. (exit $?) Triggering a shutdown to end INIT_COMMAND ..." && \
             shutdown
@@ -42,14 +46,15 @@ if [ ! -z "$DOCKER_COMMAND" ]; then
   echo "The Docker Command is about to start with PID $DOCKER_COMMAND_PID ..."
 
 else
+  echo "There is no Docker command set. If you set one, it would run after INIT_COMMAND in a separate process."
 
   # Let INIT COMMAND run, then wait 3 seconds, then show some messages and check system status.
-  (( sleep ${INIT_COMMAND_WAIT:-3} && \
-     echo "Checking system status ..." && \
-     $SYSTEM_STATUS_COMMAND && \
-     echo "There is no DOCKER_COMMAND set. There will be no futher Docker logs." && \
-     echo "Enjoy the DevShop Docker Containers!" \
-  )) &
+  ( \
+     sleep ${INIT_COMMAND_WAIT:-3} && \
+     echo "System Status: " && $SYSTEM_STATUS_COMMAND && \
+     echo $WELCOME_MESSAGE \
+  ) &
+
 fi
 
 # @TODO: Detect an unprivileged container or missing cgroup volume and inform the user.
