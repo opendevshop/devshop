@@ -76,5 +76,5 @@ jobs:
     - name: Save Assets
       if: always()
       run: |
-        docker exec ${DOCKER_NAME} systemctl status --no-pager | tee ./.github/test-assets/systemctl-status.log
+        docker exec devshop-${IMAGE}-${OS} systemctl status --no-pager | tee ./.github/test-assets/systemctl-status.log
         docker logs devshop-${IMAGE}-${OS} | tee ./.github/test-assets/docker-container.log
