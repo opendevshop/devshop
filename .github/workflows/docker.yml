@@ -40,14 +40,14 @@ jobs:
       uses: actions/checkout@v2
 
     - name: "Build Containers: devshop/${IMAGE}"
-      working-directory: "${DOCKER_DIR}"
-      run: "${DOCKER_BUILD_COMMAND}"
+      working-directory: ${{env.DOCKER_DIR}}
+      run: ${DOCKER_BUILD_COMMAND}
       env:
         # The directory and docker image name.
         IMAGE: "base"
 
     - name: "Build Containers: devshop/${IMAGE}"
-      working-directory: "${DOCKER_DIR}"
+      working-directory: ${{env.DOCKER_DIR}}
       run: "${DOCKER_BUILD_COMMAND}"
       env:
         # The directory and docker image name.
