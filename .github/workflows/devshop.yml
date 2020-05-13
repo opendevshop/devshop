@@ -1,0 +1,144 @@
+name: DevShop Build & Test
+
+on:
+  push:
+    branches: 1.x
+  pull_request:
+    types: [opened, synchronize]
+  schedule:
+    - cron: "0 6 * * *"
+
+env:
+  GITHUB_TOKEN: ${{ secrets.INPUT_GITHUB_TOKEN }}
+  GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}
+  GITHUB_PR_SHA: ${{ github.event.pull_request.head.sha  }}
+  GITHUB_RUN_LOG_URL: https://github.com/opendevshop/devshop/actions/runs/${{ github.run_id }}
+  DOCKER_DIR: "docker"
+  DEVSHOP_SOURCE_PATH: "/usr/share/devshop"
+  DEVSHOP_SCRIPT_PATH: "/root/install.sh"
+
+jobs:
+  docker:
+    name: "Docker Containers"
+    # description: Build every docker container, then install DevShop to confirm they work.
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - 'ubuntu1804'
+          - 'centos7'
+        image:
+          - 'ansible'
+    env:
+      OS: "${{ matrix.os }}"
+      DOCKERFILE: "docker/${{ matrix.image }}/Dockerfile.${{ matrix.os }}"
+      DOCKER_IMAGE: "devshop/${{ matrix.image }}:${{ matrix.os }}"
+      DOCKER_CONTAINER: "devshop-${{ matrix.image }}-${{ matrix.os }}"
+      HOSTNAME: "devshop.${{ github.event.pull_request.number }}.${{ matrix.os }}.actions.github.com"
+      DOCKER_BUILD_COMMAND: "docker build . --file ${IMAGE}/Dockerfile.${OS} --tag devshop/${IMAGE}:${OS}"
+
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Check Out Sourcecode
+        uses: actions/checkout@v2
+
+      # Build "base"
+      - name: "Build Container: ${{env.DOCKER_IMAGE}}"
+        env:
+          DOCKER_IMAGE: "devshop/base:${{ matrix.os }}"
+        working-directory: ${{env.DOCKER_DIR}}
+        run: "docker build . --file base/Dockerfile.${{env.OS}} --tag devshop/base:${{env.OS}}"
+
+      # Build "ansible"
+      - name: "Build Container: ${{env.DOCKER_IMAGE}}"
+        env:
+          DOCKER_IMAGE: "devshop/ansible:${{ matrix.os }}"
+        working-directory: ${{env.DOCKER_DIR}}
+        run: "docker build . --file ansible/Dockerfile.${{env.OS}} --tag devshop/ansible:${{env.OS}}"
+
+      # @TODO: Add "server" role
+      #- env: {IMAGE: "server"}
+      #  name: "Build Container: devshop/server"
+      #  working-directory: ${{env.DOCKER_DIR}}
+      #  run: "docker build . --file server/Dockerfile.${{env.OS}} --tag devshop/server:${{env.OS}}"
+
+      # TODO: Build from IMAGE: server
+      - name: "Launch Container: ${{env.DOCKER_IMAGE}}"
+        env:
+          DOCKER_IMAGE: "devshop/ansible:${{ matrix.os }}"
+          DOCKER_CONTAINER: "devshop-ansible-${{ matrix.os }}"
+        run: |
+          docker run \
+            --name ${DOCKER_IMAGE} \
+            --detach \
+            --privileged \
+            --volume /sys/fs/cgroup:/sys/fs/cgroup:ro \
+            --volume ${PWD}/install/install.sh:${DEVSHOP_SCRIPT_PATH} \
+            --volume ${PWD}:${DEVSHOP_SOURCE_PATH} \
+            --hostname ${HOSTNAME} \
+            devshop/${IMAGE}:${OS} && \
+          sleep 5 && docker logs devshop-${IMAGE}-${OS}
+
+      - name: Install DevShop
+        env:
+          DOCKER_CONTAINER: "devshop-ansible-${{ matrix.os }}"
+
+        run: |
+          docker exec ${DOCKER_CONTAINER} \
+            bash ${DEVSHOP_SCRIPT_PATH}
+
+      - name: Save Assets
+        if: always()
+        env:
+          IMAGE: "ansible"
+          DOCKER_IMAGE: "devshop/${IMAGE}:${{ matrix.os }}"
+          DOCKER_CONTAINER: "devshop-${IMAGE}-${{ matrix.os }}"
+        run: |
+          docker exec devshop-${IMAGE}-${OS} systemctl status --no-pager | tee ./.github/test-assets/systemctl-status.log
+          docker logs devshop-${IMAGE}-${OS} | tee ./.github/test-assets/docker-container.log
+
+
+  install:
+    name: "Install DevShop"
+    # description: Test the install script and Ansible Playbook install.
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - 'ubuntu1804'
+          - 'centos7'
+    env:
+      OS: "${{ matrix.os }}"
+      IMAGE: "base"
+      DOCKERFILE: "docker/${IMAGE}/Dockerfile.${{ matrix.os }}"
+      DOCKER_IMAGE: "devshop/${IMAGE}:${{ matrix.os }}"
+      DOCKER_CONTAINER: "devshop-${IMAGE}-${{ matrix.os }}"
+      HOSTNAME: "devshop.${{ github.event.pull_request.number }}.${{ matrix.os }}.actions.github.com"
+      DOCKER_BUILD_COMMAND: "docker build . --file ${IMAGE}/Dockerfile.${OS} --tag devshop/${IMAGE}:${OS}"
+
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: "Launch Container: devshop/base"
+        run: |
+          docker run \
+            --name ${DOCKER_CONTAINER} \
+            --detach \
+            --privileged \
+            --volume /sys/fs/cgroup:/sys/fs/cgroup:ro \
+            --volume ${PWD}/install/install.sh:${DEVSHOP_SCRIPT_PATH} \
+            --hostname ${HOSTNAME} \
+            ${DOCKER_IMAGE} && \
+          sleep 5 && docker logs ${DOCKER_CONTAINER}
+
+      - name: Install DevShop
+        run: |
+          docker exec ${DOCKER_CONTAINER} \
+            bash ${DEVSHOP_SCRIPT_PATH}
+
+      - name: Save Assets
+        if: always()
+        run: |
+          docker exec ${DOCKER_CONTAINER} systemctl status --no-pager | tee ./.github/test-assets/systemctl-status.log
+          docker logs ${DOCKER_CONTAINER} | tee ./.github/test-assets/docker-container.log
