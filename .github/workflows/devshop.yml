@@ -108,14 +108,14 @@ jobs:
         os:
           - 'ubuntu1804'
           - 'centos7'
+        image:
+          - "base"
     env:
       OS: "${{ matrix.os }}"
-      IMAGE: "base"
-      DOCKERFILE: "docker/${IMAGE}/Dockerfile.${{ matrix.os }}"
-      DOCKER_IMAGE: "devshop/${IMAGE}:${{ matrix.os }}"
-      DOCKER_CONTAINER: "devshop-${IMAGE}-${{ matrix.os }}"
+      DOCKERFILE: "docker/${{ matrix.image }}/Dockerfile.${{ matrix.os }}"
+      DOCKER_IMAGE: "devshop/${{ matrix.image }}:${{ matrix.os }}"
+      DOCKER_CONTAINER: "devshop-${{ matrix.image }}-${{ matrix.os }}"
       HOSTNAME: "devshop.${{ github.event.pull_request.number }}.${{ matrix.os }}.actions.github.com"
-      DOCKER_BUILD_COMMAND: "docker build . --file ${IMAGE}/Dockerfile.${OS} --tag devshop/${IMAGE}:${OS}"
 
     runs-on: ubuntu-latest
     steps:
