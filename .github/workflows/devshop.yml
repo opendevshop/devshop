@@ -120,6 +120,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
+      - name: Check Out Sourcecode
+        uses: actions/checkout@v2
+
       - name: "Launch Container: devshop/base"
         run: |
           docker run \
