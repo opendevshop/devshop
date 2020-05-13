@@ -76,7 +76,8 @@ jobs:
             --volume /sys/fs/cgroup:/sys/fs/cgroup:ro \
             --volume ${PWD}/install:/root/install \
             --hostname ${HOSTNAME} \
-            ${DOCKER_IMAGE} && \
+            ${DOCKER_IMAGE} \
+            ls -la /root/install && \
           sleep 5 && docker logs ${DOCKER_CONTAINER}
 
       - name: Install DevShop
