@@ -126,7 +126,7 @@ jobs:
             --detach \
             --privileged \
             --volume /sys/fs/cgroup:/sys/fs/cgroup:ro \
-            --volume ${PWD}/install/install.sh:${DEVSHOP_SCRIPT_PATH} \
+            --volume ${PWD}/install:/root/install \
             --hostname ${HOSTNAME} \
             ${DOCKER_IMAGE} && \
           sleep 5 && docker logs ${DOCKER_CONTAINER}
