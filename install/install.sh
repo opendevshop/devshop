@@ -243,68 +243,194 @@ if [ $SERVER_WEBSERVER != 'nginx' ] && [ $SERVER_WEBSERVER != 'apache' ]; then
   exit 1
 fi
 
-# If ansible command is not available, install it.
-# Decided on "hash" thanks to http://stackoverflow.com/questions/592620/check-if-a-program-exists-from-a-bash-script
-# After testing this thoroughly on centOS and ubuntu, I think we should use command -v
+command_exists() {
+	command -v "$@" > /dev/null 2>&1
+}
 
-    echo " Preparing server prerequisites..."
-    mkdir -p /etc/ansible
+get_distribution() {
+	lsb_dist=""
+	# Every system that we officially support has /etc/os-release
+	if [ -r /etc/os-release ]; then
+		lsb_dist="$(. /etc/os-release && echo "$ID")"
+	fi
+	# Returning an empty string here should be alright since the
+	# case statements don't act unless you provide an actual value
+	echo "$lsb_dist"
+}
 
-    if [ $OS == 'ubuntu' ] || [ $OS == 'debian' ]; then
+prepare_ubuntu1804() {
+  PYTHON_DEFAULT=/usr/bin/python3
+  DEBIAN_FRONTEND=noninteractive
+  apt-get update \
+      && apt-get install -y --no-install-recommends \
+         apt-utils \
+         locales \
+         python3-setuptools \
+         python3-pip \
+         software-properties-common \
+      && rm -Rf /var/lib/apt/lists/* \
+      && rm -Rf /usr/share/doc && rm -Rf /usr/share/man \
+      && apt-get clean
 
-        # Detect ubuntu version and switch package.
-        # @TODO: Use the get_distribution() stuff from get.docker.com
-        if [ $VERSION == '12.04' ]; then
-      			pre_reqs="python-software-properties git"
-        else
-      			pre_reqs="software-properties-common git python3-setuptools python3-pip "
-      	fi
+  pip3 install $pip_packages
+}
 
-        # @TODO: We should figure out how to add this to the playbook. It's tricky because of the lsb_release thing.
-        if [ $SERVER_WEBSERVER == 'nginx' ]; then
-            echo "deb http://ppa.launchpad.net/nginx/stable/ubuntu $(lsb_release -sc) main" | tee /etc/apt/sources.list.d/nginx-stable.list
-            sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys C300EE8C
-        fi
+prepare_centos7() {
+    system_packages_pre="\
+        deltarpm \
+        epel-release \
+        initscripts \
+    "
+    system_packages="python-pip"
 
-        # Copied from get.docker.com
-        $sh_c 'apt-get update -qq >/dev/null'
-				$sh_c "DEBIAN_FRONTEND=noninteractive apt-get install -y -qq $pre_reqs >/dev/null"
-				$sh_c "pip3 install $pip_packages"
-				$sh_c "update-alternatives --install /usr/bin/python python /usr/bin/python3 1"
+    yum makecache fast
+    yum -y install $system_packages_pre
+    yum -y update
+    yum -y install $system_packages
+    yum clean all
+    pip install $pip_packages
+}
 
-    elif [ $OS == 'centos' ] || [ $OS == 'rhel' ] || [ $OS == 'redhat' ] || [ $OS == 'fedora'  ]; then
+# perform some very rudimentary platform detection
+lsb_dist=$( get_distribution )
+lsb_dist="$(echo "$lsb_dist" | tr '[:upper:]' '[:lower:]')"
 
-      # Copied from get.docker.com
-      # @TODO: Might need epel-release first. See https://github.com/geerlingguy/docker-centos7-ansible/blob/master/Dockerfile
-			if [ "$OS" = "fedora" ]; then
-				pkg_manager="dnf"
-				config_manager="dnf config-manager"
-				enable_channel_flag="--set-enabled"
-				disable_channel_flag="--set-disabled"
-				pre_reqs="python-pip git sudo which"
-				pkg_suffix="fc$dist_version"
-			else
-				pkg_manager="yum"
-				config_manager="yum-config-manager"
-				enable_channel_flag="--enable"
-				disable_channel_flag="--disable"
-				pre_reqs="python-pip git sudo which"
-				pkg_suffix="el"
-			fi
-
-      # Duplicate steps in the core ansible Dockerfile (https://github.com/geerlingguy/docker-centos7-ansible/blob/master/Dockerfile)
-      $sh_c "$pkg_manager makecache fast"
-      $sh_c "$pkg_manager install -y -q deltarpm epel-release initscripts"
-      $sh_c "$pkg_manager update -y"
-      $sh_c "$pkg_manager install -y -q $pre_reqs"
-			$sh_c "pip install $pip_packages"
-
-    else
-        echo "OS ($OS) is not known, or an install action was not understood.  Please post an issue with this message at http://github.com/opendevshop/devshop/issues/new"
-        exit 1
+case "$lsb_dist" in
+  ubuntu)
+    if command_exists lsb_release; then
+      dist_version="$(lsb_release --release | cut -f2)"
+      case "$dist_version" in
+        "14.04")
+          dist_version_name="trusty"
+        ;;
+        "16.04")
+          dist_version_name="xenial"
+        ;;
+        "18.04")
+          dist_version_name="bionic"
+        ;;
+        "20.04")
+          dist_version_name="focal"
+        ;;
+      esac
     fi
+    if [ -z "$dist_version" ] && [ -r /etc/lsb-release ]; then
+      dist_version="$(. /etc/lsb-release && echo "$DISTRIB_RELEASE")"
+      dist_version_name="$(. /etc/lsb-release && echo "$DISTRIB_CODENAME")"
+    fi
+  ;;
 
-    echo $LINE
+  debian|raspbian)
+    dist_version="$(sed 's/\/.*//' /etc/debian_version | sed 's/\..*//')"
+    case "$dist_version" in
+      10)
+        dist_version_name="buster"
+      ;;
+      9)
+        dist_version_name="stretch"
+      ;;
+      8)
+        dist_version_name="jessie"
+      ;;
+    esac
+  ;;
+
+  centos)
+    if [ -z "$dist_version" ] && [ -r /etc/os-release ]; then
+      dist_version="$(. /etc/os-release && echo "$VERSION_ID")"
+    fi
+  ;;
+
+  rhel|ol|sles)
+    ee_notice "$lsb_dist"
+    exit 1
+    ;;
+
+  *)
+    if command_exists lsb_release; then
+      dist_version="$(lsb_release --release | cut -f2)"
+    fi
+    if [ -z "$dist_version" ] && [ -r /etc/os-release ]; then
+      dist_version="$(. /etc/os-release && echo "$VERSION_ID")"
+    fi
+  ;;
+
+esac
+
+echo "OS Detected: $lsb_dist $dist_version ($dist_version_name)"
+
+# Break out preparation into separate functions.
+case "$lsb_dist $dist_version" in
+  "ubuntu 18.04")
+    prepare_ubuntu1804
+  ;;
+  "centos 7")
+    prepare_centos7
+  ;;
+esac
+
+## If ansible command is not available, install it.
+## Decided on "hash" thanks to http://stackoverflow.com/questions/592620/check-if-a-program-exists-from-a-bash-script
+## After testing this thoroughly on centOS and ubuntu, I think we should use command -v
+#
+#    echo " Preparing server prerequisites..."
+#    mkdir -p /etc/ansible
+#
+#    if [ $OS == 'ubuntu' ] || [ $OS == 'debian' ]; then
+#
+#        # Detect ubuntu version and switch package.
+#        # @TODO: Use the get_distribution() stuff from get.docker.com
+#        if [ $VERSION == '12.04' ]; then
+#      			pre_reqs="python-software-properties git"
+#        else
+#      			pre_reqs="software-properties-common git python3-setuptools python3-pip "
+#      	fi
+#
+#        # @TODO: We should figure out how to add this to the playbook. It's tricky because of the lsb_release thing.
+#        if [ $SERVER_WEBSERVER == 'nginx' ]; then
+#            echo "deb http://ppa.launchpad.net/nginx/stable/ubuntu $(lsb_release -sc) main" | tee /etc/apt/sources.list.d/nginx-stable.list
+#            sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys C300EE8C
+#        fi
+#
+#        # Copied from get.docker.com
+#        $sh_c 'apt-get update -qq >/dev/null'
+#				$sh_c "DEBIAN_FRONTEND=noninteractive apt-get install -y -qq $pre_reqs >/dev/null"
+#				$sh_c "pip3 install $pip_packages"
+#				$sh_c "update-alternatives --install /usr/bin/python python /usr/bin/python3 1"
+#
+#    elif [ $OS == 'centos' ] || [ $OS == 'rhel' ] || [ $OS == 'redhat' ] || [ $OS == 'fedora'  ]; then
+#
+#      # Copied from get.docker.com
+#      # @TODO: Might need epel-release first. See https://github.com/geerlingguy/docker-centos7-ansible/blob/master/Dockerfile
+#			if [ "$OS" = "fedora" ]; then
+#				pkg_manager="dnf"
+#				config_manager="dnf config-manager"
+#				enable_channel_flag="--set-enabled"
+#				disable_channel_flag="--set-disabled"
+#				pre_reqs="python-pip git sudo which"
+#				pkg_suffix="fc$dist_version"
+#			else
+#				pkg_manager="yum"
+#				config_manager="yum-config-manager"
+#				enable_channel_flag="--enable"
+#				disable_channel_flag="--disable"
+#				pre_reqs="python-pip git sudo which"
+#				pkg_suffix="el"
+#			fi
+#
+#      # Duplicate steps in the core ansible Dockerfile (https://github.com/geerlingguy/docker-centos7-ansible/blob/master/Dockerfile)
+#      $sh_c "$pkg_manager makecache fast"
+#      $sh_c "$pkg_manager install -y -q deltarpm epel-release initscripts"
+#      $sh_c "$pkg_manager update -y"
+#      $sh_c "$pkg_manager install -y -q $pre_reqs"
+#			$sh_c "pip install $pip_packages"
+#
+#    else
+#        echo "OS ($OS) is not known, or an install action was not understood.  Please post an issue with this message at http://github.com/opendevshop/devshop/issues/new"
+#        exit 1
+#    fi
+#
+#    echo $LINE
 
 ansible --version
 python --version
