@@ -70,15 +70,15 @@ jobs:
           DOCKER_CONTAINER: "devshop-ansible-${{ matrix.os }}"
         run: |
           docker run \
-            --name ${DOCKER_IMAGE} \
+            --name ${DOCKER_CONTAINER} \
             --detach \
             --privileged \
             --volume /sys/fs/cgroup:/sys/fs/cgroup:ro \
             --volume ${PWD}/install/install.sh:${DEVSHOP_SCRIPT_PATH} \
             --volume ${PWD}:${DEVSHOP_SOURCE_PATH} \
             --hostname ${HOSTNAME} \
-            devshop/${IMAGE}:${OS} && \
-          sleep 5 && docker logs devshop-${IMAGE}-${OS}
+            ${DOCKER_IMAGE} && \
+          sleep 5 && docker logs ${DOCKER_CONTAINER}
 
       - name: Install DevShop
         env:
