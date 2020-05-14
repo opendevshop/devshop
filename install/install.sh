@@ -276,7 +276,7 @@ prepare_ubuntu1804() {
   # Set Python3 to be the default (allow users to call "python" and "pip" instead of "python3" "pip3"
   update-alternatives --install /usr/bin/python python /usr/bin/python3 1
 
-  pip install $pip_packages
+  pip3 install $pip_packages
 }
 
 prepare_centos7() {
@@ -286,7 +286,7 @@ prepare_centos7() {
         initscripts \
         git \
     "
-    system_packages="python-pip3"
+    system_packages="python3-pip"
 
     yum makecache fast
     yum -y install $system_packages_pre
@@ -297,7 +297,7 @@ prepare_centos7() {
     # Set Python3 to be the default (allow users to call "python" and "pip" instead of "python3" "pip3"
     alternatives --install /usr/bin/python python /usr/bin/python3 1
 
-    pip install $pip_packages
+    pip3 install $pip_packages
 }
 
 # perform some very rudimentary platform detection
