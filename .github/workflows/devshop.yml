@@ -113,7 +113,8 @@ jobs:
     env:
       OS: "${{ matrix.os }}"
       DOCKERFILE: "docker/${{ matrix.image }}/Dockerfile.${{ matrix.os }}"
-      DOCKER_IMAGE: "devshop/${{ matrix.image }}:${{ matrix.os }}"
+      # DOCKER_IMAGE: "devshop/${{ matrix.image }}:${{ matrix.os }}"
+      DOCKER_IMAGE: "geerlingguy/docker-${{ matrix.os }}-ansible:latest"
       DOCKER_CONTAINER: "devshop-${{ matrix.image }}-${{ matrix.os }}"
       HOSTNAME: "devshop.${{ github.event.pull_request.number }}.${{ matrix.os }}.actions.github.com"
 
