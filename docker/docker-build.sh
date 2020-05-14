@@ -1,8 +1,14 @@
 #!/usr/bin/env bash
-set -e
 ROOT_PATH="$( cd "$(dirname "$0")"/.. ; pwd -P )"
 
+IMAGE=base
 OS=${OS:-ubuntu1804}
+
+echo "Destroying existing container in 3 seconds..."
+sleep 3
+docker kill devshop-${IMAGE}-${OS}
+
+set -e
 
 # BASE
 # devshop/base is FROM $OS
@@ -18,7 +24,6 @@ docker build . --file=ansible/Dockerfile.${OS} --tag devshop/ansible:${OS}
 # docker build . --file=server/Dockerfile.centos7 --tag devshop/server:centos7
 # docker build . --file=server/Dockerfile.ubuntu1804 --tag devshop/server:ubuntu1804
 
-IMAGE=base
 DEVSHOP_SCRIPT_PATH=/root/install.sh
 DEVSHOP_SOURCE_PATH=/usr/share/devshop
 HOSTNAME=devshop.local.computer
