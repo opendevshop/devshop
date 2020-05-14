@@ -2,15 +2,15 @@
 set -e
 ROOT_PATH="$( cd "$(dirname "$0")"/.. ; pwd -P )"
 
+OS=${OS:-ubuntu1804}
+
 # BASE
 # devshop/base is FROM $OS
-docker build . --file=base/Dockerfile.centos7 --tag devshop/base:centos7
-docker build . --file=base/Dockerfile.ubuntu1804 --tag devshop/base:ubuntu1804
+docker build . --file=base/Dockerfile.${OS} --tag devshop/base:${OS}
 
 # ANSIBLE
 # devshop/ansible is FROM devshop/base
-docker build . --file=ansible/Dockerfile.centos7 --tag devshop/ansible:centos7
-docker build . --file=ansible/Dockerfile.ubuntu1804 --tag devshop/ansible:ubuntu1804
+docker build . --file=ansible/Dockerfile.${OS} --tag devshop/ansible:${OS}
 
 # DEVSHOP
 # devshop/server is FROM devshop/ansible
@@ -19,7 +19,6 @@ docker build . --file=ansible/Dockerfile.ubuntu1804 --tag devshop/ansible:ubuntu
 # docker build . --file=server/Dockerfile.ubuntu1804 --tag devshop/server:ubuntu1804
 
 IMAGE=base
-OS=ubuntu1804
 DEVSHOP_SCRIPT_PATH=/root/install.sh
 DEVSHOP_SOURCE_PATH=/usr/share/devshop
 HOSTNAME=devshop.local.computer
