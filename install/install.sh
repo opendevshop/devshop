@@ -272,6 +272,9 @@ prepare_ubuntu1804() {
       && rm -Rf /usr/share/doc && rm -Rf /usr/share/man \
       && apt-get clean
 
+  # Set Python3 to be the default (allow users to call "python" and "pip" instead of "python3" "pip3"
+  update-alternatives --install /usr/bin/python python /usr/bin/python3 1
+
   pip3 install $pip_packages
 }
 
