@@ -77,7 +77,7 @@ jobs:
             --volume ${PWD}:${DEVSHOP_SOURCE_PATH} \
             --hostname ${HOSTNAME} \
             ${DOCKER_IMAGE} \
-            git status && \
+            cat ${DEVSHOP_SOURCE_PATH}/.git/HEAD && \
           sleep 5 && docker logs ${DOCKER_CONTAINER}
 
       - name: Run install.sh
@@ -133,7 +133,7 @@ jobs:
             --volume ${PWD}:${DEVSHOP_SOURCE_PATH} \
             --hostname ${HOSTNAME} \
             ${DOCKER_IMAGE} \
-            git status && \
+            cat ${DEVSHOP_SOURCE_PATH}/.git/HEAD && \
           sleep 5 && docker logs ${DOCKER_CONTAINER}
 
       - name: Run install.sh
