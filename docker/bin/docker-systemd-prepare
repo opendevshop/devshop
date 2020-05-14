@@ -43,7 +43,15 @@ get_distribution() {
 prepare_ubuntu1804() {
   apt-get update \
     && apt-get install -y --no-install-recommends \
-       apt-utils locales rsyslog systemd systemd-cron sudo iproute2 curl ca-certificates \
+       apt-utils \
+       locales \
+       rsyslog \
+       systemd \
+       systemd-cron \
+       sudo \
+       iproute2 \
+       curl \
+       ca-certificates \
     && rm -Rf /var/lib/apt/lists/* \
     && rm -Rf /usr/share/doc && rm -Rf /usr/share/man \
     && apt-get clean
