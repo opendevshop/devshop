@@ -286,7 +286,7 @@ prepare_centos7() {
         initscripts \
         git \
     "
-    system_packages="python3-pip"
+    system_packages="python-pip"
 
     yum makecache fast
     yum -y install $system_packages_pre
@@ -294,10 +294,7 @@ prepare_centos7() {
     yum -y install $system_packages
     yum clean all
 
-    # Set Python3 to be the default (allow users to call "python" and "pip" instead of "python3" "pip3"
-    alternatives --install /usr/bin/python python /usr/bin/python3 1
-
-    pip3 install $pip_packages
+    pip install $pip_packages
 }
 
 # perform some very rudimentary platform detection
