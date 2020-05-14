@@ -36,6 +36,7 @@ docker run \
     --privileged \
     --volume /sys/fs/cgroup:/sys/fs/cgroup:ro \
     --volume "${ROOT_PATH}/:${DEVSHOP_SOURCE_PATH}" \
+    --volume /var/lib/mysql \
     --publish "80:80" \
     --hostname ${HOSTNAME} \
     devshop/${IMAGE}:${OS}

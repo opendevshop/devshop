@@ -75,6 +75,7 @@ jobs:
             --privileged \
             --volume /sys/fs/cgroup:/sys/fs/cgroup:ro \
             --volume ${PWD}:${DEVSHOP_SOURCE_PATH} \
+            --volume /var/lib/mysql \
             --hostname ${HOSTNAME} \
             ${DOCKER_IMAGE} \
             cat ${DEVSHOP_SOURCE_PATH}/.git/HEAD && \
@@ -132,6 +133,7 @@ jobs:
             --privileged \
             --volume /sys/fs/cgroup:/sys/fs/cgroup:ro \
             --volume ${PWD}:${DEVSHOP_SOURCE_PATH} \
+            --volume /var/lib/mysql \
             --hostname ${HOSTNAME} \
             ${DOCKER_IMAGE} \
             cat ${DEVSHOP_SOURCE_PATH}/.git/HEAD && \
