@@ -51,11 +51,15 @@ prepare_ubuntu1804() {
          python3-setuptools \
          python3-pip \
          software-properties-common \
+         git \
       && rm -Rf /var/lib/apt/lists/* \
       && rm -Rf /usr/share/doc && rm -Rf /usr/share/man \
       && apt-get clean
 
-  pip3 install $pip_packages
+  # Set Python3 to be the default (allow users to call "python" and "pip" instead of "python3" "pip3"
+  update-alternatives --install /usr/bin/python python /usr/bin/python3 1
+
+  pip install $pip_packages
 }
 
 prepare_centos7() {
@@ -63,14 +67,19 @@ prepare_centos7() {
         deltarpm \
         epel-release \
         initscripts \
+        git \
     "
-    system_packages="python-pip"
+    system_packages="python-pip3"
 
     yum makecache fast
     yum -y install $system_packages_pre
     yum -y update
     yum -y install $system_packages
     yum clean all
+
+    # Set Python3 to be the default (allow users to call "python" and "pip" instead of "python3" "pip3"
+    alternatives --install /usr/bin/python python /usr/bin/python3 1
+
     pip install $pip_packages
 }
 

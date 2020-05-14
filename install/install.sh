@@ -286,7 +286,7 @@ prepare_centos7() {
         initscripts \
         git \
     "
-    system_packages="python-pip"
+    system_packages="python-pip3"
 
     yum makecache fast
     yum -y install $system_packages_pre
