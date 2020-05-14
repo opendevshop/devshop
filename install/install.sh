@@ -554,7 +554,8 @@ for i in ${ANSIBLE_EXTRA_VARS[@]}; do
 done
 
 echo $LINE
-echo "Wrote group variables file for devmaster to $ANSIBLE_VARS_GROUP_PATH"
+echo "Wrote group variables file for devmaster to $ANSIBLE_VARS_GROUP_PATH:"
+cat $ANSIBLE_VARS_GROUP_PATH
 echo $LINE
 
 ANSIBLE_VARS_GROUP_MYSQL_PATH="$ANSIBLE_CONFIG_PATH/group_vars/mysql"
