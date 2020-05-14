@@ -24,12 +24,14 @@
 #        ansible_python_interpreter: python3
 
   roles:
+    - role: geerlingguy.mysql
+      tags: [geerlingguy, mysql]
+
     - role: geerlingguy.repo-remi
       when: ansible_os_family == 'RedHat'
 
     - opendevshop.users
     - opendevshop.apache
-    - geerlingguy.mysql
     - geerlingguy.php-versions
     - geerlingguy.php
     - geerlingguy.php-mysql
