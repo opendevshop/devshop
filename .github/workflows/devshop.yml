@@ -80,7 +80,7 @@ jobs:
             git status && \
           sleep 5 && docker logs ${DOCKER_CONTAINER}
 
-      - name: Install DevShop
+      - name: Run install.sh
         env:
           DOCKER_CONTAINER: "devshop-ansible-${{ matrix.os }}"
 
@@ -95,8 +95,8 @@ jobs:
           DOCKER_IMAGE: "devshop/${IMAGE}:${{ matrix.os }}"
           DOCKER_CONTAINER: "devshop-${IMAGE}-${{ matrix.os }}"
         run: |
-          docker exec devshop-${IMAGE}-${OS} systemctl status --no-pager | tee ./.github/test-assets/systemctl-status.log
-          docker logs devshop-${IMAGE}-${OS} | tee ./.github/test-assets/docker-container.log
+          docker exec ${DOCKER_CONTAINER} systemctl status --no-pager | tee ./.github/test-assets/systemctl-status.log
+          docker logs ${DOCKER_CONTAINER} | tee ./.github/test-assets/docker-container.log
 
 
   install:
@@ -136,7 +136,7 @@ jobs:
             git status && \
           sleep 5 && docker logs ${DOCKER_CONTAINER}
 
-      - name: Install DevShop
+      - name: Run install.sh
         run: |
           docker exec ${DOCKER_CONTAINER} \
             bash ${DEVSHOP_SCRIPT_PATH}
