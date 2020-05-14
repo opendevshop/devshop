@@ -268,6 +268,7 @@ prepare_ubuntu1804() {
          python3-setuptools \
          python3-pip \
          software-properties-common \
+         git \
       && rm -Rf /var/lib/apt/lists/* \
       && rm -Rf /usr/share/doc && rm -Rf /usr/share/man \
       && apt-get clean
@@ -283,6 +284,7 @@ prepare_centos7() {
         deltarpm \
         epel-release \
         initscripts \
+        git \
     "
     system_packages="python-pip"
 
