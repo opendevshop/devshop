@@ -62,6 +62,11 @@ prepare_ubuntu1804() {
   # multiple containers with Molecule (https://github.com/ansible/molecule/issues/1104)
   rm -f /lib/systemd/system/systemd*udev* \
     && rm -f /lib/systemd/system/getty.target
+
+  # Allow mysql to be installed?
+  # Error: https://github.com/opendevshop/devshop/pull/586/checks?check_run_id=675721197#step:4:484
+  # Proposed solution: https://stackoverflow.com/questions/24988947/install-mysql-in-docker-and-expose-mysql-service-to-outside
+  echo exit 0 > /usr/sbin/policy-rc.d
 }
 
 prepare_centos7() {
