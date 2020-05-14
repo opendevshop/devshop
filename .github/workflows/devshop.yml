@@ -15,7 +15,7 @@ env:
   GITHUB_RUN_LOG_URL: https://github.com/opendevshop/devshop/actions/runs/${{ github.run_id }}
   DOCKER_DIR: "docker"
   DEVSHOP_SOURCE_PATH: "/usr/share/devshop"
-  DEVSHOP_SCRIPT_PATH: "/root/install/install.sh"
+  DEVSHOP_SCRIPT_PATH: "/usr/share/devshop/install/install.sh"
 
 jobs:
   docker:
@@ -74,10 +74,10 @@ jobs:
             --detach \
             --privileged \
             --volume /sys/fs/cgroup:/sys/fs/cgroup:ro \
-            --volume ${PWD}/install:/root/install \
+            --volume ${PWD}:${DEVSHOP_SOURCE_PATH} \
             --hostname ${HOSTNAME} \
             ${DOCKER_IMAGE} \
-            ls -la /root/install && \
+            git status && \
           sleep 5 && docker logs ${DOCKER_CONTAINER}
 
       - name: Install DevShop
@@ -130,10 +130,10 @@ jobs:
             --detach \
             --privileged \
             --volume /sys/fs/cgroup:/sys/fs/cgroup:ro \
-            --volume ${PWD}/install:/root/install \
+            --volume ${PWD}:${DEVSHOP_SOURCE_PATH} \
             --hostname ${HOSTNAME} \
             ${DOCKER_IMAGE} \
-            ls -la /root/install && \
+            git status && \
           sleep 5 && docker logs ${DOCKER_CONTAINER}
 
       - name: Install DevShop
