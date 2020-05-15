@@ -101,7 +101,7 @@ jobs:
 
 
   install:
-    name: "Install DevShop"
+    name: "Install Script"
     # description: Test the install script and Ansible Playbook install.
     strategy:
       fail-fast: false
@@ -113,35 +113,23 @@ jobs:
           - "base"
     env:
       OS: "${{ matrix.os }}"
-      DOCKERFILE: "docker/${{ matrix.image }}/Dockerfile.${{ matrix.os }}"
-      DOCKER_IMAGE: "devshop/${{ matrix.image }}:${{ matrix.os }}"
-      DOCKER_CONTAINER: "devshop-${{ matrix.image }}-${{ matrix.os }}"
       HOSTNAME: "devshop.${{ github.event.pull_request.number }}.${{ matrix.os }}.actions.github.com"
 
     runs-on: ubuntu-latest
+    container:
+      image: devshop/ansible:{{ matrix.os }}
+      volumes:
+        - ./:/usr/share/devshop
+      options:
+        hostname: "{{ env.hostname }}"
+
     steps:
 
       - name: Check Out Sourcecode
         uses: actions/checkout@v2
 
-      - name: "Launch Container: devshop/base"
-        run: |
-          docker run \
-            --name ${DOCKER_CONTAINER} \
-            --detach \
-            --privileged \
-            --volume /sys/fs/cgroup:/sys/fs/cgroup:ro \
-            --volume ${PWD}:${DEVSHOP_SOURCE_PATH} \
-            --volume /var/lib/mysql \
-            --hostname ${HOSTNAME} \
-            ${DOCKER_IMAGE} \
-            cat ${DEVSHOP_SOURCE_PATH}/.git/HEAD && \
-          sleep 5 && docker logs ${DOCKER_CONTAINER}
-
       - name: Run install.sh
-        run: |
-          docker exec ${DOCKER_CONTAINER} \
-            bash ${DEVSHOP_SCRIPT_PATH}
+        run: bash install/install.sh
 
       - name: Save Assets
         if: always()
