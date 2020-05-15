@@ -117,7 +117,7 @@ jobs:
 
     runs-on: ubuntu-latest
     container:
-      image: devshop/ansible:{{ matrix.os }}
+      image: devshop/ansible:{{ env.OS }}
       volumes:
         - ./:/usr/share/devshop
       options: >-
