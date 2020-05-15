@@ -100,24 +100,14 @@ jobs:
           docker logs ${DOCKER_CONTAINER} | tee ./.github/test-assets/docker-container.log
 
 
-  install:
-    name: "Install Script"
-    # description: Test the install script and Ansible Playbook install.
-    strategy:
-      fail-fast: false
-      matrix:
-        os:
-          - 'ubuntu1804'
-          - 'centos7'
-        image:
-          - "base"
-    env:
-      OS: "${{ matrix.os }}"
-      HOSTNAME: "devshop.${{ github.event.pull_request.number }}.${{ matrix.os }}.actions.github.com"
-
+  devmaster:
+    name: Devmaster 
+    # description: Install devmaster and run tests on a pre-built image.
+    # @TODO: Set up this job once the devshop/server container is done.
+    if: false
     runs-on: ubuntu-latest
     container:
-      image: devshop/ansible:{{ env.OS }}
+      image: devshop/ansible:centos7
       volumes:
         - ./:/usr/share/devshop
       options: >-
@@ -128,11 +118,8 @@ jobs:
       - name: Check Out Sourcecode
         uses: actions/checkout@v2
 
-      - name: Run install.sh
-        run: bash install/install.sh
+      - name: Install devmaster
+        run: devhop devmaster:install
 
-      - name: Save Assets
-        if: always()
-        run: |
-          docker exec ${DOCKER_CONTAINER} systemctl status --no-pager | tee ./.github/test-assets/systemctl-status.log
-          docker logs ${DOCKER_CONTAINER} | tee ./.github/test-assets/docker-container.log
+      - name: Test devmaster
+        run: devhop devmaster:test                
