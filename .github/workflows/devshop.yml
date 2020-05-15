@@ -120,8 +120,8 @@ jobs:
       image: devshop/ansible:{{ matrix.os }}
       volumes:
         - ./:/usr/share/devshop
-      options:
-        hostname: "{{ env.hostname }}"
+      options: >-
+        --hostname={{ env.HOSTNAME }}
 
     steps:
 
