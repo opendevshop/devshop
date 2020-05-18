@@ -30,7 +30,7 @@ See the [default playbook](./role-playbook.yml) for the best example.
 
     - hosts: devshop
       vars:
-        server_hostname: "devshop.example.com
+        server_hostname: "devshop.example.com"
       roles:
         - devshop.server
 
