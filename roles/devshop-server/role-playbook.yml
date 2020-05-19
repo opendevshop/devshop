@@ -23,11 +23,6 @@
 
     php_default_version_debian: "{{ php_version }}"
 
-    # Needs to be set to false when developing so your code doesn't get updated inside the container on build.
-    # Code gets copied using the Dockerfile
-    # @TODO: This may not be needed now that the "ancestor" check is in place.
-    devshop_cli_update: false
-
     # This is set to TRUE to ensure the playbooks don't try to run the devmaster upgade every time they run (aka on robo up).
     devmaster_skip_upgrade: true
 
@@ -71,7 +66,7 @@
         mysql_enabled_on_startup: false
       tags: [build-time]
 
-  # All roles have build-time tag here because the build-time tags are used inside the roles. 
+  # All roles have build-time tag here because the build-time tags are used inside the roles.
   roles:
     - role: geerlingguy.mysql
 
@@ -83,7 +78,7 @@
     - role: geerlingguy.apache
 
     - role: geerlingguy.php
-   
+
     - role: geerlingguy.php-versions
 
     - role: geerlingguy.composer

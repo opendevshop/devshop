@@ -66,7 +66,7 @@
 
 - name: "Stopping Upgrade: Specified devshop_version is not a descendant of {{ __devshop_version_installed.stdout }}"
   set_fact:
-    devshop_cli_update: false
+    devshop_cli_skip_update: true
     devmaster_skip_upgrade: true
   when:
     # Only run when devshop is already installed and the ancestor check failed.
@@ -88,16 +88,16 @@
   when:
     - __devshop_version_installed.failed
 
-- name: "{{ __devshop_cli_upgrade_or_install }} DevShop CLI version {{ devshop_cli_version }} in {{ devshop_cli_path }}"
+- name: "Install DevShop Source"
   git:
     repo: "{{ devshop_cli_repo }}"
     version: "{{ devshop_cli_version }}"
-    update: "{{ devshop_cli_update }}"
+    update: "{{ notdevshop_cli_skip_update }}"
     dest: "{{ devshop_cli_path }}"
     force: true
-  when: devshop_cli_update
+  when: not devshop_cli_skip_update
 
-- name: Install DevShop CLI Dependencies with Composer
+- name: Install DevShop Dependencies with Composer
   command: "{{ php_executable }} {{ composer_path }} {{ devshop_cli_composer_install_command }}"
   # Changed: true is so we don't fail ansible lint.
   changed_when: true
