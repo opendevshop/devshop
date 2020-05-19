@@ -7,7 +7,7 @@
 #
 ###
 ---
-- hosts: devshop
+- hosts: devshop-server
   become: true
 
   vars:
