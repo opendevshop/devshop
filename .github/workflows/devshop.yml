@@ -61,8 +61,8 @@ jobs:
       - name: "Build Container: ${{env.DOCKER_IMAGE}}"
         env:
           DOCKER_IMAGE: "devshop/server:${{ matrix.os }}"
-        working-directory: roles/devshop-server
-        run: "docker build . --tag $DOCKER_IMAGE"
+        working-directory: roles
+        run: "docker build . --file devshop-server/Dockerfile --tag $DOCKER_IMAGE"
 
       # Launch Container
       - name: "Launch Container: ${{env.DOCKER_IMAGE}}"
