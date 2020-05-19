@@ -31,7 +31,7 @@ COPY devshop-server/role-playbook.yml $ANSIBLE_PLAYBOOK
 
 # Put a generic localhost ansible inventory in place. Must be generic during build-time. 
 # Dynamic inventory based on HOSTNAME or remote inventory script can only be used at runtime.
-RUN echo '[devshop-server]\nlocalhost ansible_connection=local' > /etc/ansible/hosts
+COPY devshop-server/role-inventory /etc/ansible/hosts
 RUN cat /etc/ansible/hosts
 
 # Run ansible-playbook with build-time tag.
