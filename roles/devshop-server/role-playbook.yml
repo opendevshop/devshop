@@ -49,7 +49,7 @@
         - ansible_os_family == 'RedHat'
       set_fact:
         apache_state: stopped
-        mysql_daemon: mysql
+        mysql_daemon: mysqld
       tags: [build-time]
 
     # @TODO: Remove this if ansible_python_interpreter: python3 solves it.
