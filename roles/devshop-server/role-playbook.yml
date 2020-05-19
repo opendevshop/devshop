@@ -47,9 +47,10 @@
     - name: Set variables ({{ ansible_os_family}} {{ansible_distribution_major_version}})
       when:
         - ansible_os_family == 'RedHat'
-        - devshop_install_phase == 'buildtime'
       set_fact:
         apache_state: stopped
+        mysql_daemon: mysql
+      tags: [build-time]
 
     # @TODO: Remove this if ansible_python_interpreter: python3 solves it.
     # @TODO: I was unable to get ubuntu18 installs to properly detect and install the 'mysql_python_package_debian' packages.
