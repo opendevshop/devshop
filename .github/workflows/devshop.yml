@@ -44,28 +44,28 @@ jobs:
         uses: actions/checkout@v2
 
       # Build "base"
-      - name: "Build Container: ${{env.DOCKER_IMAGE}}"
+      - name: "Build: devshop/base:${{ matrix.os }}"
         env:
           DOCKER_IMAGE: "devshop/base:${{ matrix.os }}-local"
         working-directory: ${{env.DOCKER_DIR}}
         run: "docker build . --file base/Dockerfile.${{env.OS}} --tag devshop/base:${{env.OS}}"
 
       # Build "ansible"
-      - name: "Build Container: ${{env.DOCKER_IMAGE}}"
+      - name: "Build: devshop/ansible:${{ matrix.os }}"
         env:
           DOCKER_IMAGE: "devshop/ansible:${{ matrix.os }}-local"
         working-directory: ${{env.DOCKER_DIR}}
         run: "docker build . --file ansible/Dockerfile.${{env.OS}} --tag devshop/ansible:${{env.OS}}"
 
       # Build "devshop/server"
-      - name: "Build Container: ${{env.DOCKER_IMAGE}}"
+      - name: "Build: devshop/server:${{ matrix.os }}"
         env:
           DOCKER_IMAGE: "devshop/server:${{ matrix.os }}-local"
         working-directory: roles
         run: "docker build . --file devshop-server/Dockerfile.${OS} --tag $DOCKER_IMAGE"
 
       # Launch Container
-      - name: "Launch Container: ${{env.DOCKER_IMAGE}}"
+      - name: "Launch: devshop/server:${{ matrix.os }}"
         env:
           DOCKER_IMAGE: "devshop/server:${{ matrix.os }}-local"
           DOCKER_CONTAINER: "devshop-server-${{ matrix.os }}"
