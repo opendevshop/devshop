@@ -65,23 +65,21 @@
         ansible_python_interpreter: python3
       tags: [mysql]
 
+  # All roles have build-time tag here because the build-time tags are used inside the roles. 
   roles:
+    - role: geerlingguy.mysql
+
     - role: geerlingguy.repo-remi
       when: ansible_os_family == 'RedHat'
-      tags: [geerlingguy, apache]
 
     - role: opendevshop.apache
-      tags: [opendevshop, opendevshop.apache]
 
     - role: geerlingguy.apache
-      tags: [geerlingguy, apache]
 
-    - role: geerlingguy.mysql
-      tags: [geerlingguy, mysql]
+    - role: geerlingguy.php
+   
+    - role: geerlingguy.php-versions
 
-    - geerlingguy.php-versions
-    - geerlingguy.php
-    - geerlingguy.php-mysql
+    - role: geerlingguy.composer
 
-    - geerlingguy.composer
-    - opendevshop.devmaster
+    - role: opendevshop.devmaster
