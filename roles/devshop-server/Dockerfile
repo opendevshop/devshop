@@ -4,7 +4,12 @@ LABEL maintainer="Jon Pugh"
 ENV ANSIBLE_PATH /etc/ansible
 ENV ANSIBLE_ROLES_PATH /etc/ansible/roles
 ENV ANSIBLE_PLAYBOOK /etc/ansible/playbook.yml
-ENV ANSIBLE_OPTIONS_BUILD "-vv --tags build-time"
+
+# Options passed to ansible-playbook during docker build.
+ENV ANSIBLE_OPTIONS_BUILD "-vv --skip-tags run-time"
+
+# Options passed to ansible-playbook at runtime (container start). 
+# Runtime should be targeted toward as fast a start as possible.
 ENV ANSIBLE_OPTIONS_RUN "-vv --tags run-time"
 
 ENV DOCKER_COMMAND_RUN ansible-playbook \
