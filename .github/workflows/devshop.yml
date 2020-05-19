@@ -57,11 +57,12 @@ jobs:
         working-directory: ${{env.DOCKER_DIR}}
         run: "docker build . --file ansible/Dockerfile.${{env.OS}} --tag devshop/ansible:${{env.OS}}"
 
-      # @TODO: Add "server" role
-      #- env: {IMAGE: "server"}
-      #  name: "Build Container: devshop/server"
-      #  working-directory: ${{env.DOCKER_DIR}}
-      #  run: "docker build . --file server/Dockerfile.${{env.OS}} --tag devshop/server:${{env.OS}}"
+      # Build "devshop/server"
+      - name: "Build Container: ${{env.DOCKER_IMAGE}}"
+        env:
+          DOCKER_IMAGE: "devshop/server:${{ matrix.os }}"
+        working-directory: roles/devshop-server
+        run: "docker build . --tag $DOCKER_IMAGE"
 
       # TODO: Build from IMAGE: server
       - name: "Launch Container: ${{env.DOCKER_IMAGE}}"
