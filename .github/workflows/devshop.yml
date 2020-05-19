@@ -64,11 +64,11 @@ jobs:
         working-directory: roles/devshop-server
         run: "docker build . --tag $DOCKER_IMAGE"
 
-      # TODO: Build from IMAGE: server
+      # Launch Container
       - name: "Launch Container: ${{env.DOCKER_IMAGE}}"
         env:
-          DOCKER_IMAGE: "devshop/ansible:${{ matrix.os }}"
-          DOCKER_CONTAINER: "devshop-ansible-${{ matrix.os }}"
+          DOCKER_IMAGE: "devshop/server:${{ matrix.os }}"
+          DOCKER_CONTAINER: "devshop-server-${{ matrix.os }}"
         run: |
           docker run \
             --name ${DOCKER_CONTAINER} \
@@ -82,13 +82,13 @@ jobs:
             cat ${DEVSHOP_SOURCE_PATH}/.git/HEAD && \
           sleep 5 && docker logs ${DOCKER_CONTAINER}
 
-      - name: Run install.sh
+      - name: "Verify Server: Run ansible-playbook"
         env:
-          DOCKER_CONTAINER: "devshop-ansible-${{ matrix.os }}"
+          DOCKER_CONTAINER: "devshop-server-${{ matrix.os }}"
 
         run: |
           docker exec ${DOCKER_CONTAINER} \
-            bash ${DEVSHOP_SCRIPT_PATH}
+            /bin/sh -c \$DOCKER_COMMAND_RUN
 
       - name: Save Assets
         if: always()
