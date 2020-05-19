@@ -68,7 +68,7 @@
     - name: Set build time variables
       set_fact:
         apache_state: stopped
-        mysql_enabled_on_startup: no
+        mysql_enabled_on_startup: false
       tags: [build-time]
 
   # All roles have build-time tag here because the build-time tags are used inside the roles. 
