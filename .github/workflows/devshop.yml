@@ -58,7 +58,7 @@ jobs:
         run: "docker build . --file ansible/Dockerfile.${{env.OS}} --tag devshop/ansible:${{env.OS}}"
 
       # Build "devshop/server"
-      - name: "Build Container: ${{env.DOCKER_IMAGE}}-local"
+      - name: "Build Container: ${{env.DOCKER_IMAGE}}"
         env:
           DOCKER_IMAGE: "devshop/server:${{ matrix.os }}-local"
         working-directory: roles
@@ -94,8 +94,8 @@ jobs:
         if: always()
         env:
           IMAGE: "ansible"
-          DOCKER_IMAGE: "devshop/${IMAGE}:${{ matrix.os }}-local"
-          DOCKER_CONTAINER: "devshop-${IMAGE}-${{ matrix.os }}"
+          DOCKER_IMAGE: "devshop/server:${{ matrix.os }}-local"
+          DOCKER_CONTAINER: "devshop-server-${{ matrix.os }}"
         run: |
           docker exec ${DOCKER_CONTAINER} systemctl status --no-pager | tee ./.github/test-assets/systemctl-status.log
           docker logs ${DOCKER_CONTAINER} | tee ./.github/test-assets/docker-container.log
