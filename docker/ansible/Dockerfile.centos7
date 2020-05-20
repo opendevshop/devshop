@@ -4,12 +4,18 @@ LABEL maintainer="Jon Pugh"
 # Tell the "run-quiet" script to only show us stderr.
 ENV OUTPUT err
 
-COPY ./bin/docker-ansible-prepare $bin_dir
-RUN chmod +x $bin_dir/docker-ansible-prepare
-RUN run-quiet docker-ansible-prepare
-RUN which ansible && ansible --version && \
-    which python && python --version
+# Install Ansible
+# The script is put into /tmp because it is only needed once.
+COPY ./bin/docker-ansible-prepare /tmp/docker-ansible-prepare
+RUN run-quiet bash /tmp/docker-ansible-prepare
 
-# Install Ansible inventory file.
+# Prepare Ansible folder & inventory
 RUN mkdir -p /etc/ansible
 RUN echo "[local]\nlocalhost ansible_connection=local" > /etc/ansible/hosts
+
+RUN \
+echo "\n\n\
+DevShop/Ansible Container build complete! \n\n\
+Which Ansible? `which ansible && ansible --version`\n\n\
+Which Python? `which python && python --version`\n\n\
+"
