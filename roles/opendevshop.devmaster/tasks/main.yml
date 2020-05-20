@@ -92,7 +92,7 @@
   git:
     repo: "{{ devshop_cli_repo }}"
     version: "{{ devshop_cli_version }}"
-    update: "{{ notdevshop_cli_skip_update }}"
+    update: "{{ not devshop_cli_skip_update }}"
     dest: "{{ devshop_cli_path }}"
     force: true
   when: not devshop_cli_skip_update
