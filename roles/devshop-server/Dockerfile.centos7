@@ -21,6 +21,7 @@ ENV DOCKER_COMMAND_BUILD ansible-playbook \
   $ANSIBLE_OPTIONS_BUILD
 
 # Copy all ansible roles exactly as they exist in git tree.
+# Relative path is from docker build context path (./roles)
 COPY ./ $ANSIBLE_ROLES_PATH
 
 # Put ansible.cfg into the default location.
