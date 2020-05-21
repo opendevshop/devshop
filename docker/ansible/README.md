@@ -10,6 +10,8 @@ These images should effectively be exactly the same as `geerlingguy/docker-ubunu
 
 - `ubuntu1804` `latest` - Ubuntu 18.04 LTS (Bionic)
 - `centos7` - Ubuntu 18.04 LTS (Bionic)
+- `role-ubuntu1804` - Base for other roles to build FROM using Ubuntu1804
+- `role-centos7` -  Base for other roles to build FROM using Centos7
  
 ## How to Build
 
