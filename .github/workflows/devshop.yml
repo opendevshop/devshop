@@ -57,6 +57,13 @@ jobs:
         working-directory: ${{env.DOCKER_DIR}}
         run: "docker build . --file ansible/Dockerfile.${{env.OS}} --tag devshop/ansible:${{env.OS}}"
 
+      # Build "ansible-role"
+      - name: "Build: devshop/ansible-role:${{ matrix.os }}"
+        env:
+          DOCKER_IMAGE: "devshop/ansible-role:${{ matrix.os }}-local"
+        working-directory: ${{env.DOCKER_DIR}}
+        run: "docker build . --file ansible-role/Dockerfile.${{env.OS}} --tag devshop/ansible-role:${{env.OS}}"
+
       # Build "devshop/server"
       - name: "Build: devshop/server:${{ matrix.os }}"
         env:
