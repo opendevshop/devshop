@@ -1,6 +1,6 @@
 # DevShop Docker Images
 
-## `devshop/ansible-role`
+## `devshop/ansible:role-$OS`
 
 Base Docker images containing Ansible and PIP, but prepared for other Roles to build from.
 

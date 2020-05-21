@@ -1,4 +1,4 @@
-FROM devshop/ansible:ubuntu1804
+FROM devshop/ansible:role-ubuntu1804
 LABEL maintainer="Jon Pugh"
 
 ENV ANSIBLE_PATH /etc/ansible
