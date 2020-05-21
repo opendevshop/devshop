@@ -1,0 +1,9 @@
+# DevShop Development Tasks
+#
+docker/build:
+  description: Build DevShop base containers
+  command:
+    - cd docker
+    - docker build . --file=base/Dockerfile.${OS:-ubuntu1804} --tag devshop/base:${OS:-ubuntu1804}
+    - docker build . --file=ansible/Dockerfile.${OS:-ubuntu1804} --tag devshop/base:${OS:-ubuntu1804}
+
