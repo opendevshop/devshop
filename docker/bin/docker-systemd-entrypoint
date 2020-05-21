@@ -50,6 +50,7 @@ else
 
   # Let INIT COMMAND run, then wait 3 seconds, then show some messages and check system status.
   ( \
+     echo "Waiting 3 seconds for systemd to start..." &&
      sleep ${INIT_COMMAND_WAIT:-3} && \
      echo "System Status: " && $SYSTEM_STATUS_COMMAND && \
      echo $WELCOME_MESSAGE \

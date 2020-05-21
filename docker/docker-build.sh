@@ -18,6 +18,10 @@ docker build . --file=base/Dockerfile.${OS} --tag devshop/base:${OS}
 # devshop/ansible is FROM devshop/base
 docker build . --file=ansible/Dockerfile.${OS} --tag devshop/ansible:${OS}
 
+# ANSIBLE ROLE container.
+docker build . --file=ansible-role/Dockerfile.${OS} --tag devshop/ansible-role:${OS}
+
+
 # DEVSHOP
 # devshop/server is FROM devshop/ansible
 # @TODO: Build new devshop/server dockerfiles.
@@ -39,7 +43,4 @@ docker run \
     --volume /var/lib/mysql \
     --publish "80:80" \
     --hostname ${HOSTNAME} \
-    devshop/${IMAGE}:${OS}
-
-docker exec -ti devshop-${IMAGE}-${OS} \
-    bash ${DEVSHOP_SOURCE_PATH}/install/install.sh
+    devshop/ansible:${OS}
