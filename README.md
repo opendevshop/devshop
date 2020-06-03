@@ -10,55 +10,24 @@ The philosophy of DevShop is simplicity, transparency, and compatibility. Devsho
 works within a standard LAMP stack or inside containers. It can coexist with configuration
 management tools like Puppet or Chef, or it can manage itself with Ansible.
 
-## DevShop 2020 Development
+## DevShop Components
 
-The main branch of DevShop is now `develop`. Many changes are going into this branch
-as soon as possible, such as:
+The following components make up the OpenDevShop Framework:
 
-1. Composer Tools & Plugins to be merged into Monorepo and redistributed to Packagist:
-    1. [`devshop/git-split`](https://github.com/devshop-packages/git-split): Git Split & Import tools.
-    2. `devshop/bash-tools`: DevShop Bash Tools. New scripts in `./bin` that are useful for all machines.
-    3. `devshop/power-process`: Migrated from `provision-ops/power-process`.
-    4. `devshop/yaml-commands`: Migrated from `provision-ops/yaml-tests`. 
-    5. `devshop/ansible-roles-installer`: New plugin to be created to allow Ansible 
-        roles to be defined in `composer.json`.
-    6. `devshop/ansible-playbook`: New plugin to allow easy running of "ansible-playbook"
-        with the expected options.  
-    6. `devshop/ansible-inventory`: New plugin to allow generation of ansible inventory.
-    6. `devshop/ansible-hosts`: Command to replace /etc/ansible/hosts: Dynamic inventory provider that reaches out to `server.owner` for configuration.
-    7. `devshop/server`: Basic class for managing Servers and their metadata.
-    8. `devshop/site`: Basic class for managing Sites and their metadata
-    7. `drupal/devmaster`: Pushed to drupal.org repo. Ensure compatibility with 
+1. [`devshop/git-split`](https://github.com/devshop-packages/git-split). Commands to split the git monorepo into multiple child repos. Uses the same [splitsh-lite]() script that Symfony and Drupal uses.
+    - Reads list of repositories from `composer.json` config.
+    - Could be used by Drupal core instead of the "drupalorg" scripts currently in use.
+3. [`devshop/power-process`](https://github.com/devshop-packages/power-process). Enhanced Symfony Process component.  
+    - Improved command-line user experience, metadata reporting (executed time, PID, logs).
+    - Pluggable output through monologger: pipe to screen, file, or remote monologger compatible REST API.
+    - Base tool for the rest. Any shell execution should be done through PowerProcess.
+    - Migrated from `provision-ops/power-process`.
+4. `devshop/yaml-commands`: Migrated from `provision-ops/yaml-tests`. 
+5. `drupal/devmaster`: Pushed to drupal.org repo. Ensure compatibility with 
         Drupal.org packaging and composer packagist systems. 
-    
-    8. Decide what to do with `provision-ops/provision`. Aegir team is showing interest 
-        in 4.x branch. DevShop might stay simpler if we focus on Ansible.
-2. Fully Embrace Ansible.
-    1. All open source software tools and server config has been solved by Ansible 
-        Roles, mostly thanks to @geerlingguy. All DevShop has to do is generate 
-        the right variables and playbook and run `ansible-playbook`.
-    2. Consider importing [`jonpugh/director`][3] project, or pieces of it.
-3. Complete the DevShop CLI toolset.    
-    1. Finish the `devshop verify:system` command as the core configuration command for all servers.
-    2. Finish Server/Site CRUD commands that work via CLI and WEBUI
-    3. Add "Config" component for DevShop CLI config so servers can store basic config.
-        1. `server.name`: Unique hostname of this server.
-        2. `server.owner`: The name of the server that controls this servers inventory. 
-            May be same as `server.name` if server is the parent.
-        3. These properties will be used to setup the Ansible hosts 
-3. Evaluate `devshop/devmaster` project installation method.
-    1. Option 1: Create a Composer Project Template. Every new Devmaster is a separate 
-        unique composer project. Users could commit their project to git and easily add new
-        modules via `composer require`. Updating the site would just be `git pull && composer install`
-    2. Option 2:
-        Technically, the main devshop repo could be converted to require devmaster  
-       via composer.  Then the Drupal front-end would be right in the `/usr/share/devshop/web` 
-       folder. Having a separation between the "devshop platform" and hosted sites
-       could be good. 
-
-# DevShop 1.x
-
-![DevShop Project Dashboard](https://github.com/opendevshop/documentation/raw/master/images/devshop.png "A screenshot of the DevShop Project Dashboard")
+5. devshop/composer-common.
+6. devshop/github-api-cli
+7. opend
 
 # Resources
 
