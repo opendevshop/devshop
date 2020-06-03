@@ -17,12 +17,8 @@
     ],
     "require": {
         "php": ">=5.5.9|>=7.0.8",
-        "symfony/process": "^3",
+        "symfony/process": "^3.4.0",
         "consolidation/robo": "^1"
-    },
-    "conflict": {
-        "symfony/console": ">=4",
-        "symfony/process": ">=4"
     },
     "extra": {
         "branch-alias": {

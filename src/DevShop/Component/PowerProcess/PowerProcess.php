@@ -61,12 +61,12 @@ class PowerProcess extends BaseProcess {
      * @throws RuntimeException When process can't be launched
      * @throws RuntimeException When process stopped after receiving signal
      * @throws LogicException   In case a callback is provided and output has been disabled
-     *
-     * @final since version 3.3
      */
-    public function run($callback = null, $env = [])
+    public function run($callback = null/*, array $env = []*/)
     {
-        // Handle a null $env variable.
+      $env = 1 < \func_num_args() ? func_get_arg(1) : null;
+
+      // Handle a null $env variable.
         if (!array($env)) {
           $env = [];
         }
