@@ -14,20 +14,35 @@ management tools like Puppet or Chef, or it can manage itself with Ansible.
 
 The following components make up the OpenDevShop Framework:
 
-1. [`devshop/git-split`](https://github.com/devshop-packages/git-split). Commands to split the git monorepo into multiple child repos. Uses the same [splitsh-lite]() script that Symfony and Drupal uses.
-    - Reads list of repositories from `composer.json` config.
-    - Could be used by Drupal core instead of the "drupalorg" scripts currently in use.
-3. [`devshop/power-process`](https://github.com/devshop-packages/power-process). Enhanced Symfony Process component.  
-    - Improved command-line user experience, metadata reporting (executed time, PID, logs).
-    - Pluggable output through monologger: pipe to screen, file, or remote monologger compatible REST API.
-    - Base tool for the rest. Any shell execution should be done through PowerProcess.
-    - Migrated from `provision-ops/power-process`.
-4. `devshop/yaml-commands`: Migrated from `provision-ops/yaml-tests`. 
-5. `drupal/devmaster`: Pushed to drupal.org repo. Ensure compatibility with 
+1. Composer Packages
+    1. [`devshop/git-split`](https://github.com/devshop-packages/git-split)
+        - Commands to split the git monorepo into multiple child repos. 
+        - Uses the same [splitsh-lite]() script that Symfony and Drupal uses.
+        - Reads list of repositories from `composer.json` config.
+        - In theory, could be used by Drupal core instead of the "drupalorg" scripts currently in use.
+    2. [`devshop/composer-common`](https://github.com/devshop-packages/composer-common). Useful tools for any Composer project.
+    3. [`devshop/power-process`](https://github.com/devshop-packages/power-process). Enhanced Symfony Process component.  
+        - Improved command-line user experience, metadata reporting (executed time, PID, logs).
+        - Pluggable output through monologger: pipe to screen, file, or remote monologger compatible REST API.
+        - Base tool for the rest. Any shell execution should be done through PowerProcess.
+        - Migrated from `provision-ops/power-process`.
+    4. [devshop/github-api-cli](https://github.com/devshop-packages/github-api-cli) 
+        - Simple CLI wrapper for the GitHub API.
+        - Base command posts to any resource, passes any option.
+        - Additional commands for specific purposes, such as to create and update "deployments".
+    4. [`devshop/yaml-tasks`](https://github.com/devshop-packages/yaml-tasks)
+        - Keep tests and standard commands in a Yaml file.
+        - Run all commands with a single command.
+        - Send command results to GitHub as Commit Status, to show pass/fail results in Pull Request pages.
+        - Migrated from `provision-ops/yaml-tests`. 
+1. Drupal Projects
+    1. [`drupal/devmaster`](https://www.drupal.org): Pushed to drupal.org repo. Ensure compatibility with 
         Drupal.org packaging and composer packagist systems. 
-5. devshop/composer-common.
-6. devshop/github-api-cli
-7. opend
+3. Ansible Roles
+    1. opendevshop.apache
+    2. opendevshop.devmaster
+    3. opendevshop.users
+    4. devshop.server - Meta role used to create the `devshop/server` container.
 
 # Resources
 
