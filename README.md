@@ -1,14 +1,49 @@
 ![DevShop Logo](./assets/logo-new-light-bg.png)
 
-[DevShop][1] is an **Open Source DevOps Framework** for web applications like Drupal, and a 
-set of reusable **components**. It is written in PHP, Ansible, & Drupal, allowing extensive customization.
+[DevShop][1] is an **Open Source DevOps Framework** and a 
+set of reusable **components** designed to improve the web development and 
+server management process.
 
-The goal of DevShop is to provide a fully automated development and systems administration 
-experience while remaining as flexible as possible. DevShop leverages [Ansible & Ansible Galaxy][2] for server configuration.
+The goal of DevShop is to provide a complete **web development pipeline** out of the
+box, while empowering users to choose their own server infrastructure and systems 
+architecture.
+ 
+DevShop uses [Ansible & Ansible Galaxy][2] for server configuration, [Symfony 
+Console][3] for command line tools, and [Drupal][3] for the web interface.
 
-The philosophy of DevShop is simplicity, transparency, and compatibility. Devshop 
-works within a standard LAMP stack or inside containers. It can coexist with configuration
-management tools like Puppet or Chef, or it can manage itself with Ansible.
+### Philosophy
+
+The philosophy of DevShop is transparency, simplicity, and modularity:
+ 
+  - **Transparency:** *Control systems at the service level.* 
+    
+    DevShop manages services like 
+    Apache and MySQL using Ansible to give total control to users. Docker images
+    are built on top of that, using the same configuration. 
+    
+    This enables
+    parity between traditional servers and the Docker containers, and allows 
+    people to use DevShop along side tools they are familiar with like Ansible, Chef and Puppet.
+  - **Simplicity:** *Avoid unneeded dependencies on build systems.* 
+  
+    DevShop manages servers and
+    site code like a traditional web server, using Git, MySQL, and Apache to 
+    maintain the broadest possible compatibility. 
+    
+    Build-based systems such as 
+    Docker add time and complexity to the deployment process, prevent easy 
+    access to servers, and force web developers to learn more skills and tools. 
+    
+  - **Modularity**: *Allow full customization of servers, processes, and interfaces.* 
+  
+    DevShop leverages Ansible for server 
+    configuration and Drupal for the web interface, providing an easy way 
+    to customize of all aspects of the system.
+    
+    DevShop follows the *core principles of Drupal:* community, collaboration, and
+    customization. By following these guidelines, we hope to achieve a sustainable, 
+    community-driven platform that can fit most users needs out of the box, without 
+    restricting the rest from building their dream system.
 
 ## DevShop Components
 
