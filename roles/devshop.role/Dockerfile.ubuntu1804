@@ -13,7 +13,7 @@ ENV DEVSHOP_PATH /usr/share/devshop
 ENV DEVSHOP_ANSIBLE_ROLES_DESTINATION /etc/ansible/roles
 
 # The path to the default ansible playbook for this container.
-ENV DEVSHOP_ANSIBLE_PLAYBOOK ./playbook.role-default.yml
+ENV DEVSHOP_ANSIBLE_PLAYBOOK ./role-playbook.yml
 ENV DEVSHOP_ANSIBLE_PLAYBOOK_DESTINATION /etc/ansible/playbook.yml
 
 # Options passed to ansible-playbook during docker build.
