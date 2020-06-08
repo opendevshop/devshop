@@ -10,7 +10,7 @@ services:
       - ./aegir-home:/var/aegir:delegated
       - ./devmaster:/var/aegir/devmaster-1.x/profiles/devmaster
       - ./:/usr/share/devshop:delegated
-      - ./provision:/usr/share/drush/commands/provision:delegated
+      - ./provision:/var/aegir/.drush/commands/provision:delegated
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
       - /var/lib/mysql
       - /var/logs/aegir
