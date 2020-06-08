@@ -28,11 +28,11 @@ COPY ./ $ANSIBLE_ROLES_PATH
 COPY ansible.cfg $ANSIBLE_PATH
 
 # Put role-playbook.yml into the default playbook location.
-COPY devshop-server/role-playbook.yml $ANSIBLE_PLAYBOOK
+COPY devshop.server/role-playbook.yml $ANSIBLE_PLAYBOOK
 
 # Put a generic localhost ansible inventory in place. Must be generic during build-time. 
 # Dynamic inventory based on HOSTNAME or remote inventory script can only be used at runtime.
-COPY devshop-server/role-inventory /etc/ansible/hosts
+COPY devshop.server/role-inventory /etc/ansible/hosts
 RUN cat /etc/ansible/hosts
 
 # Run ansible-playbook with build-time tag.
