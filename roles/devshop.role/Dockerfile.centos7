@@ -35,7 +35,7 @@ ENV DEVSHOP_DOCKER_COMMAND_RUN ansible-playbook \
 COPY $DEVSHOP_ANSIBLE_PLAYBOOK $DEVSHOP_ANSIBLE_PLAYBOOK_DESTINATION
 RUN echo "Running $DEVSHOP_DOCKER_COMMAND_BUILD ...\n" && $DEVSHOP_DOCKER_COMMAND_BUILD
 
-# Set CMD to ansible-playbook with run-time tag.
+# Set CMD to ansible-playbook with runtime tag.
 # REMEMBER: This command is not run until a container using this image is started.
 CMD $DEVSHOP_DOCKER_COMMAND_RUN
 
