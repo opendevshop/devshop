@@ -2,4 +2,3 @@
 ---
 - hosts: local
   become: true
-
