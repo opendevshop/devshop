@@ -474,7 +474,7 @@ class RoboFile extends \Robo\Tasks {
    * @option volumes Set to TRUE to use the docker-compose.volumes.yml file to map local folders into the container.
    * @option install-at-runtime Launch bare containers and then install devshop.
    */
-  public function up($docker_command = 'devshop-ansible-playbook', $opts = [
+  public function up($docker_command = '', $opts = [
     'follow' => 1,
     'test' => FALSE,
     'test-upgrade' => FALSE,
@@ -848,7 +848,7 @@ class RoboFile extends \Robo\Tasks {
   /**
    * Run a command in the devshop container.
    */
-  public function exec($cmd = "devshop-ansible-playbook") {
+  public function exec($cmd = '') {
     return $this->_exec("docker-compose exec -T \
       --env ANSIBLE_TAGS \
       --env ANSIBLE_SKIP_TAGS \
