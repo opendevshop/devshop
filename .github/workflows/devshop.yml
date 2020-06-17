@@ -60,9 +60,9 @@ jobs:
         run: docker-compose build
 
       # Launch Container
-      - name: "Launch: devshop/server:${{ matrix.os }}-local"
+      - name: "Launch: devshop/server:${{ matrix.os }}"
         env:
-          DOCKER_IMAGE: "devshop/server:${{ matrix.os }}-local"
+          DOCKER_IMAGE: "devshop/server:${{ matrix.os }}"
           DOCKER_CONTAINER: "devshop-server-${{ matrix.os }}"
         run: |
           docker run \
