@@ -13,9 +13,6 @@ env:
   GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}
   GITHUB_PR_SHA: ${{ github.event.pull_request.head.sha  }}
   GITHUB_RUN_LOG_URL: https://github.com/opendevshop/devshop/actions/runs/${{ github.run_id }}
-  DOCKER_DIR: "docker"
-  DEVSHOP_SOURCE_PATH: "/usr/share/devshop"
-  DEVSHOP_SCRIPT_PATH: "/usr/share/devshop/install/install.sh"
 
 jobs:
   docker:
@@ -27,15 +24,9 @@ jobs:
         os:
           - 'ubuntu1804'
           - 'centos7'
-        image:
-          - 'ansible'
     env:
       OS: "${{ matrix.os }}"
-      DOCKERFILE: "docker/${{ matrix.image }}/Dockerfile.${{ matrix.os }}"
-      DOCKER_IMAGE: "devshop/${{ matrix.image }}:${{ matrix.os }}-local"
-      DOCKER_CONTAINER: "devshop-${{ matrix.image }}-${{ matrix.os }}"
       HOSTNAME: "devshop.${{ github.event.pull_request.number }}.${{ matrix.os }}.actions.github.com"
-      DOCKER_BUILD_COMMAND: "docker build . --file ${IMAGE}/Dockerfile.${OS} --tag devshop/${IMAGE}:${OS}"
 
     runs-on: ubuntu-latest
     steps:
@@ -45,23 +36,23 @@ jobs:
 
       # Build "base"
       - name: "Build: devshop/base:${{ matrix.os }}"
-        working-directory: ${{env.DOCKER_DIR}}
-        run: "docker build . --file base/Dockerfile.${{env.OS}} --tag devshop/base:${{env.OS}}"
+        working-directory: docker
+        run: docker-compose build base
 
       # Build "ansible"
       - name: "Build: devshop/ansible:${{ matrix.os }}"
-        working-directory: ${{env.DOCKER_DIR}}
-        run: "docker build . --file ansible/Dockerfile.${{env.OS}} --tag devshop/ansible:${{env.OS}}"
+        working-directory: docker
+        run: docker-compose build ansible
 
-      # Build "ansible-role"
-      - name: "Build: devshop/ansible:role-${{ matrix.os }}"
-        working-directory: roles
-        run: "docker build . --file devshop.role/Dockerfile.${OS} --tag devshop/ansible:role-${OS}"
+      # Build "core"
+      - name: "Build: devshop/core:${{ matrix.os }}"
+        working-directory: docker
+        run: docker-compose build core
 
-      # Build "devshop/server"
-      - name: "Build: devshop/server:${{ matrix.os }}"
-        working-directory: roles
-        run: "docker build . --file devshop.server/Dockerfile.${OS} --tag devshop/server:${OS}-local"
+      # Build "role"
+      - name: "Build: devshop/role:${{ matrix.os }}"
+        working-directory: docker
+        run: docker-compose build role
 
       # Launch Container
       - name: "Launch: devshop/server:${{ matrix.os }}-local"
