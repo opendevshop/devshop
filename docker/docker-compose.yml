@@ -26,11 +26,11 @@ services:
 
   # DevShop Core Image
   # devshop/ansible + php + composer + devshop/cli
-#  core:
-#    image: "devshop/core:${OS:-ubuntu1804}"
-#    build:
-#      context: "."
-#      dockerfile: "core/Dockerfile.${OS:-ubuntu1804}"
+  core:
+    image: "devshop/core:${OS:-ubuntu1804}"
+    build:
+      context: "."
+      dockerfile: "core/Dockerfile.${OS:-ubuntu1804}"
 
   # DevShop Role Image
   # devshop/core + tools to use any Ansible role at runtime.
