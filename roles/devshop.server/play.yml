@@ -1,11 +1,8 @@
 ###
-# DevShop Server Container
+# DevShop Server
 #
 # All-in-one DevShop. Includes all services required to run on one instance.
 #
-# Container name: devshop/server
-#
-###
 ---
 - hosts: devshop.server
   become: true
