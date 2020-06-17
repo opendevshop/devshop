@@ -30,18 +30,19 @@ This list will grow as we finish stabilizing the testing system.
 ## DevShop Docker Images
 
 
-1. **devshop/base**
+- **devshop/base**
 
     The base operating system with as few changes as possible. Prepares environment variables and SystemD for running in a container.
-2. **devshop/ansible**
+- **devshop/ansible**
 
     Base image plus Python, PIP, and Ansible installed. Identical to the geerlingguy/docker-*-ansible containers.
 
-3. **devshop/core**
+<!-- 
+- **devshop/core**
 
     Ansible image plus PHP, Composer, and the DevShop CLI (including Ansible Roles). 
-
-4. **devshop/role**
+-->
+- **devshop/role**
 
     Core image plus the tools needed to easily assign containers a role at runtime or build-time. This container is what all other devshop containers are built from.
     
