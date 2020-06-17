@@ -21,7 +21,6 @@ services:
     image: "devshop/ansible:${OS:-ubuntu1804}"
     build:
       context: "."
-      image: "devshop/base:${OS:-ubuntu1804}"
       dockerfile: "ansible/Dockerfile.${OS:-ubuntu1804}"
 
 
@@ -35,8 +34,8 @@ services:
 
   # DevShop Role Image
   # devshop/core + tools to use any Ansible role at runtime.
-#  role:
-#    image: "devshop/role:${OS:-ubuntu1804}"
-#      build:
-#        context: "."
-#        dockerfile: "core/Dockerfile.${OS:-ubuntu1804}"
+  role:
+    image: "devshop/role:${OS:-ubuntu1804}"
+    build:
+      context: "."
+      dockerfile: "role/Dockerfile.${OS:-ubuntu1804}"
