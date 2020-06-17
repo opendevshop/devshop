@@ -14,7 +14,7 @@ ENV DEVSHOP_ANSIBLE_ROLES_DESTINATION /etc/ansible/roles
 
 # The path to the default ansible playbook for this container.
 ENV DEVSHOP_ANSIBLE_PLAYBOOK ./role-playbook.yml
-ENV DEVSHOP_ANSIBLE_PLAYBOOK_DESTINATION /etc/ansible/playbook.yml
+ENV DEVSHOP_ANSIBLE_PLAYBOOK_DESTINATION /etc/ansible/play.yml
 
 # Options passed to ansible-playbook during docker build.
 ENV DEVSHOP_ANSIBLE_BUILDTIME_OPTIONS "-vv --skip-tags runtime"
