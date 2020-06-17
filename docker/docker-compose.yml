@@ -1,0 +1,42 @@
+# DevShop Docker Images
+# Build Tool
+#
+# This docker-compose file is only for building containers.
+#
+
+version: '3'
+services:
+
+  # DevShop Base Image
+  # The OS and SystemD changes to allow it to run in containers.
+  base:
+    image: "devshop/base:${OS:-ubuntu1804}"
+    build:
+      context: "."
+      dockerfile: "base/Dockerfile.${OS:-ubuntu1804}"
+
+  # DevShop Ansible Image
+  # devshop/base + ansible + python
+  ansible:
+    image: "devshop/ansible:${OS:-ubuntu1804}"
+    build:
+      context: "."
+      image: "devshop/base:${OS:-ubuntu1804}"
+      dockerfile: "ansible/Dockerfile.${OS:-ubuntu1804}"
+
+
+  # DevShop Core Image
+  # devshop/ansible + php + composer + devshop/cli
+#  core:
+#    image: "devshop/core:${OS:-ubuntu1804}"
+#    build:
+#      context: "."
+#      dockerfile: "core/Dockerfile.${OS:-ubuntu1804}"
+
+  # DevShop Role Image
+  # devshop/core + tools to use any Ansible role at runtime.
+#  role:
+#    image: "devshop/role:${OS:-ubuntu1804}"
+#      build:
+#        context: "."
+#        dockerfile: "core/Dockerfile.${OS:-ubuntu1804}"
