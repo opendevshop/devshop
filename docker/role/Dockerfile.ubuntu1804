@@ -10,7 +10,7 @@ ENV DEVSHOP_ANSIBLE_PLAYBOOK_DESTINATION /etc/ansible/play.yml
 
 # Ansible Inventory file
 ENV DEVSHOP_ANSIBLE_INVENTORY ./role/inventory
-ENV DEVSHOP_ANSIBLE_INVENTORY_DESTINATION /etc/ansible/inventory
+ENV DEVSHOP_ANSIBLE_INVENTORY_DESTINATION /etc/ansible/hosts
 ENV DEVSHOP_ANSIBLE_INVENTORY_INFO_COMMAND "ansible-inventory --list --yaml"
 
 # Options passed to ansible-playbook during docker build.ENV DEVSHOP_ANSIBLE_BUILDTIME_OPTIONS "-vv --skip-tags runtime"
