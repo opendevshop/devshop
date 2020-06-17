@@ -54,6 +54,11 @@ jobs:
         working-directory: docker
         run: docker-compose build role
 
+      # Build DevShop Role Images
+      - name: "Build all DevShop Roles (${{ matrix.os }})"
+        working-directory: roles
+        run: docker-compose build
+
       # Launch Container
       - name: "Launch: devshop/server:${{ matrix.os }}-local"
         env:
