@@ -3,7 +3,7 @@
 #
 # This docker-compose file is only for building containers.
 #
-
+---
 version: '3'
 services:
 
