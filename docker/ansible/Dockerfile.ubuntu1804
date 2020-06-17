@@ -3,7 +3,7 @@ LABEL maintainer="Jon Pugh"
 
 # Common Ansible Settings
 ENV ANSIBLE_FORCE_COLOR 1
-ENV ANSIBLE_PYTHON_INTERPRETER /usr/bin/python3
+ENV ANSIBLE_PYTHON_INTERPRETER auto
 
 # Ansible configuration path
 ENV DEVSHOP_ANSIBLE_PATH /etc/ansible
