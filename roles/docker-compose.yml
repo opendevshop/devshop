@@ -1,0 +1,16 @@
+# DevShop Roles
+# Build Tool
+#
+# This docker-compose file is only for building containers.
+#
+
+version: '3'
+services:
+
+  devshop.server:
+    image: "devshop/server:${OS:-ubuntu1804}"
+    build:
+      context: "."
+      dockerfile: "devshop.server/Dockerfile"
+      args:
+        OS: "${OS:-ubuntu1804}"
