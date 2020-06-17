@@ -1,4 +1,0 @@
-###
----
-- hosts: local
-  become: true

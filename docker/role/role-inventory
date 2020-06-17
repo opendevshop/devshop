@@ -1,3 +1,0 @@
-# The group name here must match the "hosts" string in role-playbook.yml.
-[local]
-localhost ansible_connection=local
