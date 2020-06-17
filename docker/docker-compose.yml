@@ -13,7 +13,9 @@ services:
     image: "devshop/base:${OS:-ubuntu1804}"
     build:
       context: "."
-      dockerfile: "base/Dockerfile.${OS:-ubuntu1804}"
+      dockerfile: "base/Dockerfile"
+      args:
+        FROM: "${FROM:-'ubuntu:18.04'}"
 
   # DevShop Ansible Image
   # devshop/base + ansible + python
@@ -21,7 +23,9 @@ services:
     image: "devshop/ansible:${OS:-ubuntu1804}"
     build:
       context: "."
-      dockerfile: "ansible/Dockerfile.${OS:-ubuntu1804}"
+      dockerfile: "ansible/Dockerfile"
+      args:
+        OS: "${OS:-ubuntu1804}"
 
 
   # DevShop Core Image
@@ -30,7 +34,9 @@ services:
     image: "devshop/core:${OS:-ubuntu1804}"
     build:
       context: "."
-      dockerfile: "core/Dockerfile.${OS:-ubuntu1804}"
+      dockerfile: "core/Dockerfile"
+      args:
+        OS: "${OS:-ubuntu1804}"
 
   # DevShop Role Image
   # devshop/core + tools to use any Ansible role at runtime.
@@ -38,4 +44,6 @@ services:
     image: "devshop/role:${OS:-ubuntu1804}"
     build:
       context: "."
-      dockerfile: "role/Dockerfile.${OS:-ubuntu1804}"
+      dockerfile: "role/Dockerfile"
+      args:
+        OS: "${OS:-ubuntu1804}"

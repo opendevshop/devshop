@@ -1,4 +1,10 @@
+#
+# DevShop Base Dockerfile Template
+#
 FROM ubuntu:18.04
+ARG FROM=${FROM:-'ubuntu:18.04'}
+FROM ${FROM:-'ubuntu:18.04'}
+
 LABEL maintainer="Jon Pugh"
 ENV bin_dir /usr/local/bin
 ENV INIT_COMMAND /lib/systemd/systemd
