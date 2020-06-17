@@ -1,17 +1,12 @@
 FROM devshop/base:centos7
 LABEL maintainer="Jon Pugh"
 
-# Tell the "run-quiet" script to only show us stderr.
-ENV OUTPUT err
-
-# Install Ansible
-# The script is put into /tmp because it is only needed once.
-COPY ./bin/docker-ansible-prepare /tmp/docker-ansible-prepare
-RUN run-quiet bash /tmp/docker-ansible-prepare
+# Ansible configuration path
+ENV DEVSHOP_ANSIBLE_PATH /etc/ansible
 
 # Prepare Ansible folder & inventory
-RUN mkdir -p /etc/ansible
-RUN echo "[local]\nlocalhost ansible_connection=local" > /etc/ansible/hosts
+RUN mkdir -p ${DEVSHOP_ANSIBLE_PATH}
+COPY ./ansible/inventory  ${DEVSHOP_ANSIBLE_PATH}/hosts
 
 RUN \
 echo "\n\n\
