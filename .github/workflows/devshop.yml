@@ -61,29 +61,8 @@ jobs:
 
       # Launch Container
       - name: "Launch: devshop/server:${{ matrix.os }}"
-        env:
-          DOCKER_IMAGE: "devshop/server:${{ matrix.os }}"
-          DOCKER_CONTAINER: "devshop-server-${{ matrix.os }}"
-        run: |
-          docker run \
-            --name ${DOCKER_CONTAINER} \
-            --detach \
-            --privileged \
-            --volume /sys/fs/cgroup:/sys/fs/cgroup:ro \
-            --volume ${PWD}:${DEVSHOP_SOURCE_PATH} \
-            --volume /var/lib/mysql \
-            --hostname ${HOSTNAME} \
-            ${DOCKER_IMAGE} \
-            cat ${DEVSHOP_SOURCE_PATH}/.git/HEAD && \
-          sleep 5 && docker logs ${DOCKER_CONTAINER}
-
-      - name: "Verify Server: Run ansible-playbook"
-        env:
-          DOCKER_CONTAINER: "devshop-server-${{ matrix.os }}"
-
-        run: |
-          docker exec ${DOCKER_CONTAINER} \
-            /bin/sh -c \$DOCKER_COMMAND_RUN
+        working-directory: roles
+        run: docker-compose up devshop.server
 
       - name: Save Assets
         if: always()
