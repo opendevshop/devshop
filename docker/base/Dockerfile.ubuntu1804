@@ -1,0 +1,25 @@
+FROM ubuntu:18.04
+LABEL maintainer="Jon Pugh"
+ENV bin_dir /usr/local/bin
+ENV INIT_COMMAND /lib/systemd/systemd
+
+# Tell the "run-quiet" script to only show us stderr.
+ENV OUTPUT err
+
+# Copy only needed files, then run systemd prep, to speed up builds.
+# docker-systemd-prepare layer will only be rebuild if these files change.
+COPY ./bin/run-quiet $bin_dir
+COPY ./bin/docker-systemd-prepare $bin_dir
+RUN chmod +x $bin_dir/run-quiet $bin_dir/docker-systemd-prepare
+RUN run-quiet docker-systemd-prepare
+
+COPY ./bin $bin_dir
+RUN chmod +x $bin_dir/*
+
+VOLUME ["/sys/fs/cgroup", "/tmp", "/run"]
+
+# The Entrypoint script runs the CMD after starting up SystemD.
+ENTRYPOINT ["docker-systemd-entrypoint"]
+
+# CMD can be changed to run a script or command as soon as the container (and SystemD) is up.
+CMD []

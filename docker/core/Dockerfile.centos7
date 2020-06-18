@@ -1,0 +1,13 @@
+FROM devshop/ansible:centos7
+LABEL maintainer="Jon Pugh"
+
+# Prepare Ansible folder & inventory
+RUN mkdir -p /etc/ansible
+RUN echo "[local]\nlocalhost ansible_connection=local" > /etc/ansible/hosts
+
+RUN \
+echo "\n\n\
+DevShop/Ansible Container build complete! \n\n\
+Which Ansible? `which ansible && ansible --version`\n\n\
+Which Python? `which python && python --version`\n\n\
+"
