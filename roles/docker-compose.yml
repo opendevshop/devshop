@@ -11,7 +11,7 @@ services:
     image: "devshop/server:${OS:-ubuntu1804}"
     build:
       context: "."
-      dockerfile: "devshop.server/Dockerfile"
+      dockerfile: "devshop.server/Dockerfile.${OS:-ubuntu1804}"
       args:
         OS: "${OS:-ubuntu1804}"
     extra_hosts:
