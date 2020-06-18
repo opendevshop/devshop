@@ -13,10 +13,6 @@
         {
             "type": "composer",
             "url": "https://packages.drupal.org/7"
-        },
-        {
-            "type": "path",
-            "url": "../../../../devmaster"
         }
     ],
     "require": {
