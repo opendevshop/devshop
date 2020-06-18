@@ -5,10 +5,6 @@ ARG OS=${OS:-ubuntu1804}
 FROM devshop/base:${OS:-ubuntu1804}
 LABEL maintainer="Jon Pugh"
 
-# Common Ansible Settings
-ENV ANSIBLE_FORCE_COLOR 1
-ENV ANSIBLE_PYTHON_INTERPRETER auto
-
 # Ansible configuration path
 ENV DEVSHOP_ANSIBLE_PATH /etc/ansible
 
@@ -17,9 +13,10 @@ ENV DEVSHOP_ANSIBLE_PATH /etc/ansible
 COPY ./bin/docker-ansible-prepare /tmp/docker-ansible-prepare
 RUN run-quiet bash /tmp/docker-ansible-prepare
 
-# Prepare Ansible folder & inventory
+# Prepare Ansible folder, config & inventory
 RUN mkdir -p ${DEVSHOP_ANSIBLE_PATH}
 COPY ./ansible/inventory  ${DEVSHOP_ANSIBLE_PATH}/hosts
+COPY ./ansible/ansible.cfg  ${DEVSHOP_ANSIBLE_PATH}/ansible.cfg
 
 RUN \
 echo "\n\n\
