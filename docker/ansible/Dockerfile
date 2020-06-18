@@ -1,8 +1,4 @@
-#
-# DevShop Ansible Dockerfile Template
-#
-ARG OS=${OS:-ubuntu1804}
-FROM devshop/base:${OS:-ubuntu1804}
+FROM devshop/base:ubuntu1804
 LABEL maintainer="Jon Pugh"
 
 # Ansible configuration path

@@ -1,8 +1,7 @@
 #
 # DevShop Role Container Dockerfile Template
 #
-ARG OS=${OS:-ubuntu1804}
-FROM devshop/core:${OS:-ubuntu1804}
+FROM devshop/ansible:ubuntu1804
 LABEL maintainer="Jon Pugh"
 
 # The path to the default ansible playbook for this image.
