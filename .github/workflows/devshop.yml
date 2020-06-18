@@ -35,32 +35,32 @@ jobs:
         uses: actions/checkout@v2
 
       # Build "base"
-      - name: "Build: devshop/base:${{ matrix.os }}"
+      - name: "Build Docker Image: devshop/base:${{ matrix.os }}"
         working-directory: docker
         run: docker-compose build base
 
       # Build "ansible"
-      - name: "Build: devshop/ansible:${{ matrix.os }}"
+      - name: "Build Docker Image: devshop/ansible:${{ matrix.os }}"
         working-directory: docker
         run: docker-compose build ansible
 
       # Build "core"
-      - name: "Build: devshop/core:${{ matrix.os }}"
+      - name: "Build Docker Image: devshop/core:${{ matrix.os }}"
         working-directory: docker
         run: docker-compose build core
 
       # Build "role"
-      - name: "Build: devshop/role:${{ matrix.os }}"
+      - name: "Build Docker Image: devshop/role:${{ matrix.os }}"
         working-directory: docker
         run: docker-compose build role
 
       # Build DevShop Role Images
-      - name: "Build all DevShop Roles (${{ matrix.os }})"
+      - name: "Build Docker Image: devshop/server:(${{ matrix.os }})"
         working-directory: roles
-        run: docker-compose build
+        run: docker-compose build devshop.server
 
       # Launch Container
-      - name: "Launch: devshop/server:${{ matrix.os }}"
+      - name: "Launch Docker Image: devshop/server:${{ matrix.os }}"
         working-directory: roles
         run: docker-compose up devshop.server
 
