@@ -1,43 +1,27 @@
-FROM devshop/ansible:centos7
+#
+# DevShop Role: Server
+#
+# All-in-one devshop server.
+#
+FROM devshop/role:centos7
 LABEL maintainer="Jon Pugh"
 
-ENV ANSIBLE_PATH /etc/ansible
-ENV ANSIBLE_ROLES_PATH /etc/ansible/roles
-ENV ANSIBLE_PLAYBOOK /etc/ansible/playbook.yml
+# Copy this role's play.yml into the image (over the default)
+ENV DEVSHOP_ANSIBLE_PLAYBOOK ./devshop.server/play.yml
+COPY $DEVSHOP_ANSIBLE_PLAYBOOK $DEVSHOP_ANSIBLE_PLAYBOOK_DESTINATION
 
-# Options passed to ansible-playbook during docker build.
-ENV ANSIBLE_OPTIONS_BUILD "-vv --skip-tags runtime"
+ENV DEVSHOP_ANSIBLE_INVENTORY ./devshop.server/inventory
+COPY $DEVSHOP_ANSIBLE_INVENTORY $DEVSHOP_ANSIBLE_INVENTORY_DESTINATION
 
-# Options passed to ansible-playbook at runtime (container start). 
-# Runtime should be targeted toward as fast a start as possible.
-ENV ANSIBLE_OPTIONS_RUN "-vv --tags runtime"
+# Copy this roles dependencies into the image. Each role can decide what to copy in.
+COPY ./ ${DEVSHOP_ANSIBLE_PATH}/roles
+RUN \
+  echo "Ansible Directory: `ls -la ${DEVSHOP_ANSIBLE_PATH}`" &&\
+  echo "Roles Directory: `ls -la ${DEVSHOP_ANSIBLE_PATH}/roles`" &&\
+  echo "Ansible Inventory: `cat ${DEVSHOP_ANSIBLE_PATH}/hosts`" &&\
+  echo "Ansible Inventory: `ansible-inventory --yaml --list`" &&\
+  echo "Ansible Playbook: `cat ${DEVSHOP_ANSIBLE_PATH}/play.yml`"
 
-ENV DOCKER_COMMAND_RUN ansible-playbook \
-  $ANSIBLE_PLAYBOOK \
-  $ANSIBLE_OPTIONS_RUN
-
-ENV DOCKER_COMMAND_BUILD ansible-playbook \
-  $ANSIBLE_PLAYBOOK \
-  $ANSIBLE_OPTIONS_BUILD
-
-# Copy all ansible roles exactly as they exist in git tree.
-# Relative path is from docker build context path (./roles)
-COPY ./ $ANSIBLE_ROLES_PATH
-
-# Put ansible.cfg into the default location.
-COPY ansible.cfg $ANSIBLE_PATH
-
-# Put role-playbook.yml into the default playbook location.
-COPY devshop.server/role-playbook.yml $ANSIBLE_PLAYBOOK
-
-# Put a generic localhost ansible inventory in place. Must be generic during build-time. 
-# Dynamic inventory based on HOSTNAME or remote inventory script can only be used at runtime.
-COPY devshop.server/role-inventory /etc/ansible/hosts
-RUN cat /etc/ansible/hosts
-
-# Run ansible-playbook with build-time tag.
-RUN echo "Running $DOCKER_COMMAND_BUILD... " && $DOCKER_COMMAND_BUILD
-
-# Set CMD to ansible-playbook with runtime tag.
-# REMEMBER: This command is not run until a container using this image is started.
-CMD $DOCKER_COMMAND_RUN
+# Run ansible-playbook again with build-time options.
+RUN echo "Running $DEVSHOP_DOCKER_COMMAND_BUILD ...\n" && \
+  $DEVSHOP_DOCKER_COMMAND_BUILD
