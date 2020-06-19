@@ -1,3 +1,6 @@
+#
+# DevShop Role Container Dockerfile Template
+#
 FROM devshop/ansible:centos7
 LABEL maintainer="Jon Pugh"
 
