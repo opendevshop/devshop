@@ -55,7 +55,7 @@ jobs:
         run: docker-compose build role
 
       # Build DevShop Role Images
-      - name: "Build Docker Image: devshop/server:(${{ matrix.os }})"
+      - name: "Build Docker Image: devshop/server:${{ matrix.os }}"
         working-directory: roles
         run: docker-compose build devshop.server
 
