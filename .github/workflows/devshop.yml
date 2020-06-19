@@ -60,20 +60,27 @@ jobs:
         run: docker-compose build devshop.server
 
       # Launch Container
-      - name: "Launch Docker Image: devshop/server:${{ matrix.os }}"
+      - name: "Launch DevShop Server: devshop/server:${{ matrix.os }}"
         working-directory: roles
-        # Docker-compose up does not return exit codes.
-        run: docker-compose run devshop.server
+        # @TODO: MySQL isn't starting when the container goes up.
+        env:
+          COMMAND: service mysql start
+        run: docker-compose up --detach devshop.server
+
+      - name: "Install DevShop: ${{ matrix.os }}"
+        working-directory: roles
+        run: $DEVSHOP_DOCKER_COMMAND_RUN
+
+      - name: "Test DevShop: ${{ matrix.os }}"
+        working-directory: roles
+        run: docker-compose exec devshop.server devshop devmaster:test
 
       - name: Save Assets
         if: always()
-        env:
-          IMAGE: "ansible"
-          DOCKER_IMAGE: "devshop/server:${{ matrix.os }}-local"
-          DOCKER_CONTAINER: "devshop-server-${{ matrix.os }}"
+        working-directory: roles
         run: |
-          docker exec ${DOCKER_CONTAINER} systemctl status --no-pager | tee ./.github/test-assets/systemctl-status.log
-          docker logs ${DOCKER_CONTAINER} | tee ./.github/test-assets/docker-container.log
+          docker-compose exec devshop.server systemctl status --no-pager | tee ./.github/test-assets/systemctl-status.log
+          docker-composer logs devshop.server | tee ./.github/test-assets/docker-container.log
 
 
   devmaster:
