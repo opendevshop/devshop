@@ -79,7 +79,7 @@ jobs:
 
       - name: "Test DevShop: ${{ matrix.os }}"
         working-directory: roles
-        run: docker-compose exec -T devshop.server devshop devmaster:test
+        run: docker-compose exec -T --user aegir devshop.server /usr/share/devshop/tests/devshop-tests.sh
 
       - name: Save Assets
         if: always()
