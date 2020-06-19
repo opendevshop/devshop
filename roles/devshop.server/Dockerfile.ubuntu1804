@@ -18,7 +18,7 @@ COPY ./ ${DEVSHOP_ANSIBLE_PATH}/roles
 RUN \
   echo "Ansible Directory: `ls -la ${DEVSHOP_ANSIBLE_PATH}`" &&\
   echo "Roles Directory: `ls -la ${DEVSHOP_ANSIBLE_PATH}/roles`" &&\
-  echo "Ansible Inventory: `cat ${DEVSHOP_ANSIBLE_PATH}/inventory`" &&\
+  echo "Ansible Inventory: `cat ${DEVSHOP_ANSIBLE_PATH}/hosts`" &&\
   echo "Ansible Inventory: `ansible-inventory --yaml --list`" &&\
   echo "Ansible Playbook: `cat ${DEVSHOP_ANSIBLE_PATH}/play.yml`"
 
