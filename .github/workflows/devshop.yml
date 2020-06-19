@@ -73,7 +73,7 @@ jobs:
 
       - name: "Install DevShop: ${{ matrix.os }}"
         working-directory: roles
-        run: docker-compose exec -T devshop.server $DEVSHOP_DOCKER_COMMAND_RUN
+        run: docker-compose exec -T devshop.server bash -c '${DEVSHOP_DOCKER_COMMAND_RUN}'
 
       - name: "Test DevShop: ${{ matrix.os }}"
         working-directory: roles
