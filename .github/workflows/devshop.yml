@@ -62,7 +62,8 @@ jobs:
       # Launch Container
       - name: "Launch Docker Image: devshop/server:${{ matrix.os }}"
         working-directory: roles
-        run: docker-compose up devshop.server
+        # Docker-compose up does not return exit codes.
+        run: docker-compose run devshop.server
 
       - name: Save Assets
         if: always()
