@@ -83,7 +83,9 @@ jobs:
         if: always()
         working-directory: roles
         run: |
+          touch ./.github/test-assets/systemctl-status.log
           docker-compose exec -T devshop.server systemctl status --no-pager | tee ./.github/test-assets/systemctl-status.log
+          touch ./.github/test-assets/docker-container.log
           docker-composer logs devshop.server | tee ./.github/test-assets/docker-container.log
 
 
