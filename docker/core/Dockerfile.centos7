@@ -1,13 +1,24 @@
+#
+# DevShop Core Dockerfile Template
+#
+# This image contains the environment variables and DevShop source code.
+#
+# It does NOT include the ability to run the CLI because we must rely on role containers for installation.
+#
+# This image is used so that every DevShop container built from `devshop/core` will have the same version of DevShop source, including the Ansible roles.
+#
 FROM devshop/ansible:centos7
 LABEL maintainer="Jon Pugh"
 
-# Prepare Ansible folder & inventory
-RUN mkdir -p /etc/ansible
-RUN echo "[local]\nlocalhost ansible_connection=local" > /etc/ansible/hosts
+# Path to DevShop source
+ENV DEVSHOP_PATH /usr/share/devshop
 
-RUN \
-echo "\n\n\
-DevShop/Ansible Container build complete! \n\n\
-Which Ansible? `which ansible && ansible --version`\n\n\
-Which Python? `which python && python --version`\n\n\
-"
+# Tag, branch or SHA to install.
+# Use --build-arg DEVSHOP_VERSION=$VER to override default branch.
+ENV DEVSHOP_VERSION "${DEVSHOP_VERSION:-1.x}"
+
+# The command to run on container build
+ENV DEVSHOP_DOCKER_COMMAND_BUILD 'echo "\n\n DevShop Core Docker Image build complete!"'
+
+# The command to run when the container starts.
+ENV DEVSHOP_DOCKER_COMMAND_RUN 'echo "\n\n DevShop Core Docker Container started!"'
