@@ -69,7 +69,9 @@ jobs:
 
       - name: "Container Environment: ${{ matrix.os }}"
         working-directory: roles
-        run: docker-compose exec -T devshop.server env
+        run: |
+          docker-compose exec -T devshop.server env
+          docker-compose exec -T devshop.server systemctl status --no-pager
 
       - name: "Install DevShop: ${{ matrix.os }}"
         working-directory: roles
