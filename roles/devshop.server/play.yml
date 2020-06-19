@@ -78,6 +78,8 @@
 
     - role: geerlingguy.php-versions
 
+    - role: geerlingguy.php-mysql
+
     - role: geerlingguy.composer
 
     - role: opendevshop.devmaster
