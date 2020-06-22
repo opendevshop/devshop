@@ -23,7 +23,8 @@ jobs:
       matrix:
         os:
           - 'ubuntu1804'
-          - 'centos7'
+          # Sorry, centos. You must wait until the next PR.
+          # - 'centos7'
     env:
       OS: "${{ matrix.os }}"
       HOSTNAME: "devshop.${{ github.event.pull_request.number }}.${{ matrix.os }}.actions.github.com"
