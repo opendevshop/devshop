@@ -82,6 +82,11 @@
     - mysql_log_error | default(false)
   tags: ['skip_ansible_galaxy']
 
+# @TODO: Submit upstream patch?
+- name: Reload SystemD to ensure MySQL is visible.
+  command: systemctl daemon-reload
+  when: ansible_os_family == 'RedHat'
+
 - name: Ensure MySQL is started and enabled on boot.
   service: "name={{ mysql_daemon }} state=started enabled={{ mysql_enabled_on_startup }}"
   register: mysql_service_configuration

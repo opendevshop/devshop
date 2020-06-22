@@ -62,6 +62,12 @@
         mysql_enabled_on_startup: false
       when: ('runtime' not in ansible_run_tags)
 
+    - name: Reload daemons
+      command: systemctl daemon-reload
+        apache_state: stopped
+        mysql_enabled_on_startup: false
+      when: ('runtime' not in ansible_run_tags)
+
   # All roles have build-time tag here because the build-time tags are used inside the roles.
   roles:
     - role: geerlingguy.mysql
