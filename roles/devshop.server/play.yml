@@ -48,7 +48,7 @@
         apache_state: stopped
         mysql_enabled_on_startup: false
       when:
-      - ('runtime' not in ansible_run_tags)
+        - ('runtime' not in ansible_run_tags)
 
   roles:
     - role: geerlingguy.mysql
