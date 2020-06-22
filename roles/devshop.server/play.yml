@@ -36,19 +36,6 @@
     devshop_makefile: "{{ devshop_cli_path }}/build-devmaster-dev.make.yml"
 
   pre_tasks:
-#    - name: Set variables ({{ ansible_os_family}} {{ansible_distribution_major_version}})
-#      when:
-#        - ansible_os_family == 'RedHat'
-#      set_fact:
-#        apache_state: stopped
-
-    # @TODO: Remove this if ansible_python_interpreter: python3 solves it.
-    # @TODO: I was unable to get ubuntu18 installs to properly detect and install the 'mysql_python_package_debian' packages.
-    # https://github.com/opendevshop/devshop/pull/518/checks?check_run_id=517865257#step:7:523
-    # By default, geerlingguy.mysql loads this automatically. However, in the automated tests for the role, Jeff DOES force set the variable:
-    # The automated tests for geerlingguy.mysql set this variable too!
-    #   https://github.com/geerlingguy/ansible-role-drupal/blob/master/molecule/default/test-vars.yml#L24
-
     - name: Set all Debian systems to use python3 as the interpretor, and python3-mysqldb for mysql_python_package_debian.
       when:
         - ansible_os_family == 'Debian'
@@ -63,7 +50,6 @@
       when:
       - ('runtime' not in ansible_run_tags)
 
-  # All roles have build-time tag here because the build-time tags are used inside the roles.
   roles:
     - role: geerlingguy.mysql
 
