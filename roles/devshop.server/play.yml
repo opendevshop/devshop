@@ -56,13 +56,12 @@
 #        ansible_python_interpreter: python3
 #      tags: [mysql]
 
-    - name: Set build time variables for RedHat
+    - name: Set build time variables
       set_fact:
         apache_state: stopped
         mysql_enabled_on_startup: false
       when:
       - ('runtime' not in ansible_run_tags)
-      - ansible_os_family == 'RedHat'
 
   # All roles have build-time tag here because the build-time tags are used inside the roles.
   roles:
