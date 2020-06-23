@@ -29,8 +29,8 @@ services:
   core:
     image: "devshop/core:${OS:-ubuntu1804}"
     build:
-      context: "."
-      dockerfile: "core/Dockerfile.${OS:-ubuntu1804}"
+      context: ".."
+      dockerfile: "docker/core/Dockerfile.${OS:-ubuntu1804}"
 
   # DevShop Role Image
   # devshop/core + tools to use any Ansible role at runtime.

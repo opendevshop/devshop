@@ -13,9 +13,9 @@ LABEL maintainer="Jon Pugh"
 # Path to DevShop source
 ENV DEVSHOP_PATH /usr/share/devshop
 
-# Tag, branch or SHA to install.
-# Use --build-arg DEVSHOP_VERSION=$VER to override default branch.
-ENV DEVSHOP_VERSION "${DEVSHOP_VERSION:-1.x}"
+# COPY files in. It is the fastest and most reliable way to install the exact source code we expect.
+COPY ./ $DEVSHOP_PATH
+RUN echo "Copied DevShop Source. \nVersion: `cd $DEVSHOP_PATH && git log -1`"
 
 # The command to run on container build
 ENV DEVSHOP_DOCKER_COMMAND_BUILD 'echo "\n\n DevShop Core Docker Image build complete!"'
