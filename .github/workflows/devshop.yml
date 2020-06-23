@@ -49,9 +49,6 @@ jobs:
       - name: "Docker Build: devshop/core:${{ matrix.os }}"
         working-directory: docker
         run: docker-compose build core
-        env:
-          DEVSHOP_REPOSITORY: "${{ github.repositoryUrl }}"
-          DEVSHOP_VERSION: "${{ github.head_ref }}"
 
       # Build "role"
       - name: "Docker Build: devshop/role:${{ matrix.os }}"

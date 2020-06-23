@@ -31,10 +31,6 @@ services:
     build:
       context: "."
       dockerfile: "core/Dockerfile.${OS:-ubuntu1804}"
-      args:
-        # Default values are stored in Dockerfile.
-        DEVSHOP_REPOSITORY_ARG: "${DEVSHOP_REPOSITORY}"
-        DEVSHOP_VERSION_ARG: "${DEVSHOP_VERSION}"
 
   # DevShop Role Image
   # devshop/core + tools to use any Ansible role at runtime.

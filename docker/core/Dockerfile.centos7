@@ -14,16 +14,8 @@ LABEL maintainer="Jon Pugh"
 ENV DEVSHOP_PATH /usr/share/devshop
 
 # Tag, branch or SHA to install.
-ARG DEVSHOP_REPOSITORY_ARG="https://github.com/opendevshop/devshop.git"
-ENV DEVSHOP_REPOSITORY ${DEVSHOP_REPOSITORY_ARG:-"https://github.com/opendevshop/devshop.git"}
-
-ARG DEVSHOP_VERSION_ARG="1.x"
-ENV DEVSHOP_VERSION ${DEVSHOP_VERSION_ARG:-"1.x"}
-
-RUN \
-  git clone $DEVSHOP_REPOSITORY $DEVSHOP_PATH && \
-  cd $DEVSHOP_PATH && \
-  git checkout $DEVSHOP_VERSION
+# Use --build-arg DEVSHOP_VERSION=$VER to override default branch.
+ENV DEVSHOP_VERSION "${DEVSHOP_VERSION:-1.x}"
 
 # The command to run on container build
 ENV DEVSHOP_DOCKER_COMMAND_BUILD 'echo "\n\n DevShop Core Docker Image build complete!"'
