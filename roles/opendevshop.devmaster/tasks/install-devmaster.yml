@@ -41,11 +41,11 @@
     msg: "{{ devmaster_install_command }}"
   tags: [runtime]
 
-- name: Start MySQL Service
-  debug:
-    msg: "Triggering the mysql handler to ensure the service is running."
-  notify: restart mysql
+- name: Start MySQL Server
+  service: "name={{ mysql_daemon }} state=restarted sleep=5"
   tags: [runtime]
+  when:
+    - database_host == 'localhost'
 
 - name: Wait for MySQL Server to be ready.
   command: "{{ devshop_cli_bin_path }}/wait-mysql"
