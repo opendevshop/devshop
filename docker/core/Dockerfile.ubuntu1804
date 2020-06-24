@@ -22,3 +22,7 @@ ENV DEVSHOP_DOCKER_COMMAND_BUILD 'echo "\n\n DevShop Core Docker Image build com
 
 # The command to run when the container starts.
 ENV DEVSHOP_DOCKER_COMMAND_RUN 'echo "\n\n DevShop Core Docker Container started!"'
+
+RUN \
+  echo "\n \n \n DevShop Core Docker image build complete! \n\
+  Version `cd ${DEVSHOP_PATH} && ./scripts/branch-or-tag` \n \n \n"
