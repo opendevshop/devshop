@@ -18,9 +18,12 @@ echo "In a few seconds, I'm going to launch the Docker Command you specified as 
 echo "Then, I'm going to pass my process off to SystemD!"
 echo "That way, you can specify any docker CMD but it will run inside a container with SystemD running properly."
 
-echo "-----------------"
-echo "DOCKER_COMMAND: $DOCKER_COMMAND"
+echo "---------------------"
+echo "Environment Variables"
+echo "---------------------"
 echo "INIT_COMMAND: $INIT_COMMAND"
+echo "DOCKER_COMMAND: $DOCKER_COMMAND"
+echo "DEVSHOP_DOCKER_COMMAND_RUN: $DEVSHOP_DOCKER_COMMAND_RUN"
 echo "SYSTEM_STATUS_COMMAND: $SYSTEM_STATUS_COMMAND"
 echo "-----------------"
 
