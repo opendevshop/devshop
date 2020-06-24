@@ -50,6 +50,27 @@
       when:
         - ('runtime' not in ansible_run_tags)
 
+    # Copied from geerlingguy.mysql variables.yml so it will run at runtime.
+    - name: Include OS-specific variables.
+      include_vars: "{{ item }}"
+      with_first_found:
+        - files:
+            - "roles/geerlingguy.mysql/vars/{{ ansible_os_family }}-{{ ansible_distribution_major_version }}.yml"
+            - "roles/geerlingguy.mysql/vars/{{ ansible_os_family }}.yml"
+          skip: true
+      tags: [runtime]
+
+    - name: Define mysql_daemon.
+      set_fact:
+        mysql_daemon: "{{ __mysql_daemon }}"
+      when: mysql_daemon is not defined
+      tags: [runtime]
+
+    # @TODO: This works, but using Service module fails!
+    - name: Start MySQL
+      command: "service {{ mysql_daemon }} start"
+      tags: [runtime]
+
   roles:
     - role: geerlingguy.mysql
 
