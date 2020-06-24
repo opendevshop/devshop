@@ -63,9 +63,6 @@ jobs:
       # Launch Container
       - name: "Docker Run: devshop/server:${{ matrix.os }}"
         working-directory: roles
-        # @TODO: MySQL isn't starting when the container goes up.
-        env:
-          COMMAND: service mysql start
         run: docker-compose up --detach devshop.server
 
       - name: "Container Environment: ${{ matrix.os }}"
