@@ -35,6 +35,10 @@
     # build-devmaster.make is designed for standalone use, and always downloads 1.x until release.
     devshop_makefile: "{{ devshop_cli_path }}/build-devmaster-dev.make.yml"
 
+    # Set devshop_cli_skip_update to avoid resetting the /usr/share/devshop version on playbook run to `devshop_version`
+    # @TODO: figure out a system to separate test vars from prod vars.  Molecule?
+    devshop_cli_skip_update: true
+
   pre_tasks:
     - name: Set all Debian systems to use python3 as the interpretor, and python3-mysqldb for mysql_python_package_debian.
       when:
