@@ -71,8 +71,9 @@ jobs:
           docker-compose exec -T devshop.server env
           docker-compose exec -T devshop.server systemctl status --no-pager
 
-      - name: "Install DevShop: ${{ matrix.os }}"
+      - name: "Finalize DevShop Installation: ${{ matrix.os }}"
         working-directory: roles
+        # DEVSHOP_DOCKER_COMMAND_RUN is set to ansible-playbook --tags runtime by default.
         run: docker-compose exec -T devshop.server bash -c '${DEVSHOP_DOCKER_COMMAND_RUN}'
 
       - name: "Test DevShop: ${{ matrix.os }}"
