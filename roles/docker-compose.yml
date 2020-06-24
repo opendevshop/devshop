@@ -25,5 +25,3 @@ services:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
       - /var/lib/mysql
       - /var/logs/aegir
-      - ./:/etc/ansible/roles
-      - ./devshop.server/play.yml:/etc/ansible/play.yml
