@@ -15,6 +15,11 @@ COPY $DEVSHOP_ANSIBLE_INVENTORY $DEVSHOP_ANSIBLE_INVENTORY_DESTINATION
 
 # Copy this roles dependencies into the image. Each role can decide what to copy in.
 COPY ./roles ${DEVSHOP_ANSIBLE_PATH}/roles
+
+# COPY files in. It is the fastest and most reliable way to install the exact source code we expect.
+COPY ./ $DEVSHOP_PATH
+RUN echo "Copied DevShop Source. \nVersion: `cd $DEVSHOP_PATH && git log -1`"
+
 RUN \
   echo "Ansible Directory: `ls -la ${DEVSHOP_ANSIBLE_PATH}`" &&\
   echo "Roles Directory: `ls -la ${DEVSHOP_ANSIBLE_PATH}/roles`" &&\
