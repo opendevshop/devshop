@@ -10,8 +10,8 @@ services:
   devshop.server:
     image: "devshop/server:${OS:-ubuntu1804}"
     build:
-      context: "."
-      dockerfile: "devshop.server/Dockerfile.${OS:-ubuntu1804}"
+      context: ".."
+      dockerfile: "roles/devshop.server/Dockerfile.${OS:-ubuntu1804}"
       args:
         OS: "${OS:-ubuntu1804}"
     extra_hosts:
