@@ -63,6 +63,8 @@ jobs:
       # Launch Container
       - name: "Docker Run: devshop/server:${{ matrix.os }}"
         working-directory: roles
+        env:
+          COMMAND: "echo 'Container Up! Awaiting commands...'"
         run: docker-compose up --detach devshop.server
 
       - name: "Container Environment: ${{ matrix.os }}"
