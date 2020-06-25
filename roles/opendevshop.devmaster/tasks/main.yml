@@ -97,10 +97,11 @@
     force: true
   when: not devshop_cli_skip_update
 
-- name: Install DevShop Dependencies with Composer
+- name: Composer Install Devshop CLI
   command: "{{ php_executable }} {{ composer_path }} {{ devshop_cli_composer_install_command }}"
   # Changed: true is so we don't fail ansible lint.
   changed_when: true
+  tags: [runtime, always]
   args:
     chdir: "{{ devshop_cli_path }}"
 
