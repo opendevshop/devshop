@@ -17,6 +17,7 @@ COPY $DEVSHOP_ANSIBLE_INVENTORY $DEVSHOP_ANSIBLE_INVENTORY_DESTINATION
 COPY ./roles ${DEVSHOP_ANSIBLE_PATH}/roles
 
 # COPY files in. It is the fastest and most reliable way to install the exact source code we expect.
+RUN rm -rf $DEVSHOP_PATH
 COPY ./ $DEVSHOP_PATH
 RUN echo "Copied DevShop Source. \nVersion: `cd $DEVSHOP_PATH && git log -1`"
 
