@@ -37,6 +37,7 @@ jobs:
           - 'ubuntu1804'
           # - 'centos6'
           - 'centos7'
+          - 'centos8'
         vars:
           - 'php_version: 7.2'
 
