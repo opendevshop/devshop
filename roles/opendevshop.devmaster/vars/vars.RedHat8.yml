@@ -1,0 +1,14 @@
+---
+# Define any RedHat family version 8 specific variables here.
+local_bin_path: /usr/local/sbin
+apache_user: apache
+
+extra_packages:
+  - git
+  - patch
+  - postfix
+  - sendmail
+  - cronie
+  - openssl
+  - mod_ssl
+  - zip
