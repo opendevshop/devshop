@@ -1,13 +1,10 @@
 ###
-# DevShop Server Container
+# DevShop Server
 #
 # All-in-one DevShop. Includes all services required to run on one instance.
 #
-# Container name: devshop/server
-#
-###
 ---
-- hosts: devshop-server
+- hosts: devshop.server
   become: true
 
   vars:
@@ -38,35 +35,46 @@
     # build-devmaster.make is designed for standalone use, and always downloads 1.x until release.
     devshop_makefile: "{{ devshop_cli_path }}/build-devmaster-dev.make.yml"
 
-  pre_tasks:
-    - name: Set variables ({{ ansible_os_family}} {{ansible_distribution_major_version}})
-      when:
-        - ansible_os_family == 'RedHat'
-      set_fact:
-        apache_state: stopped
-      tags: [build-time]
+    # Set devshop_cli_skip_update to avoid resetting the /usr/share/devshop version on playbook run to `devshop_version`
+    # @TODO: figure out a system to separate test vars from prod vars.  Molecule?
+    devshop_cli_skip_update: true
 
-    # @TODO: Remove this if ansible_python_interpreter: python3 solves it.
-    # @TODO: I was unable to get ubuntu18 installs to properly detect and install the 'mysql_python_package_debian' packages.
-    # https://github.com/opendevshop/devshop/pull/518/checks?check_run_id=517865257#step:7:523
-    # By default, geerlingguy.mysql loads this automatically. However, in the automated tests for the role, Jeff DOES force set the variable:
-    # The automated tests for geerlingguy.mysql set this variable too!
-    #   https://github.com/geerlingguy/ansible-role-drupal/blob/master/molecule/default/test-vars.yml#L24
+  pre_tasks:
     - name: Set all Debian systems to use python3 as the interpretor, and python3-mysqldb for mysql_python_package_debian.
       when:
         - ansible_os_family == 'Debian'
       set_fact:
         mysql_python_package_debian: python3-mysqldb
         ansible_python_interpreter: python3
-      tags: [mysql]
 
     - name: Set build time variables
       set_fact:
         apache_state: stopped
         mysql_enabled_on_startup: false
-      tags: [build-time]
+      when:
+        - ('runtime' not in ansible_run_tags)
 
-  # All roles have build-time tag here because the build-time tags are used inside the roles.
+    # Copied from geerlingguy.mysql variables.yml so it will run at runtime.
+    - name: Include OS-specific variables.
+      include_vars: "{{ item }}"
+      with_first_found:
+        - files:
+            - "roles/geerlingguy.mysql/vars/{{ ansible_os_family }}-{{ ansible_distribution_major_version }}.yml"
+            - "roles/geerlingguy.mysql/vars/{{ ansible_os_family }}.yml"
+          skip: true
+      tags: [runtime]
+
+    - name: Define mysql_daemon.
+      set_fact:
+        mysql_daemon: "{{ __mysql_daemon }}"
+      when: mysql_daemon is not defined
+      tags: [runtime]
+
+    # @TODO: This works, but using Service module fails!
+    - name: Start MySQL
+      command: "service {{ mysql_daemon }} start"
+      tags: [runtime]
+
   roles:
     - role: geerlingguy.mysql
 
@@ -80,6 +88,8 @@
     - role: geerlingguy.php
 
     - role: geerlingguy.php-versions
+
+    - role: geerlingguy.php-mysql
 
     - role: geerlingguy.composer
 

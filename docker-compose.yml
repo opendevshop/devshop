@@ -33,8 +33,8 @@ services:
     image: ${DEVSHOP_DOCKER_IMAGE:-}
     command: ${DOCKER_COMMAND:-}
     build:
-      context: '.'
-      dockerfile: ${DOCKERFILE:-Dockerfile}
+      context: 'roles'
+      dockerfile: ${DOCKERFILE:-devshop.server/Dockerfile.ubuntu1804}
       args:
       # If a value for local development should be different than docker hub image,
       # set a default here.
