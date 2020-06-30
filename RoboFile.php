@@ -267,7 +267,7 @@ class RoboFile extends \Robo\Tasks {
     // If we want to just populate modules into /devmaster folder...
     if ($opts['make'] == 'profile') {
       // Populate devmaster install profile with contrib code.
-      $makefile_path = 'devmaster/drupal-org.make';
+      $makefile_path = 'build-devmaster-dev.make.yml';
       $make_destination = 'devmaster/';
       if (file_exists('devmaster/modules/contrib')) {
         $this->say("Path 'devmaster/modules/contrib' already exists.");
