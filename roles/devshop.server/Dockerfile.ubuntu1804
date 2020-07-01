@@ -20,7 +20,6 @@ COPY ./roles ${DEVSHOP_ANSIBLE_PATH}/roles
 RUN rm -rf $DEVSHOP_PATH
 COPY ./ $DEVSHOP_PATH
 RUN echo "Copied DevShop Source. \nVersion: `cd $DEVSHOP_PATH && git log -1`"
-RUN composer install --no-dev --no-progress --working-dir=$DEVSHOP_PATH
 
 RUN \
   echo "Ansible Directory: `ls -la ${DEVSHOP_ANSIBLE_PATH}`" &&\
