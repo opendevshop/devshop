@@ -4,6 +4,7 @@ DEVSHOP_PATH="$( cd "$(dirname "$0")"/.. ; pwd -P )"
 PATH="$DEVSHOP_PATH/bin:$PATH"
 
 # Install again to be sure.
+cd $DEVSHOP_PATH
 composer install --no-progress --no-suggest
 
 # NOTE: DevShop BIN scripts reside in ./scripts. Symlinks in ./bin are only created after composer install.
