@@ -215,7 +215,7 @@ ENV DEVSHOP_USER_UID ${DEVSHOP_USER_UID_ARG:-1000}
 RUN mkdir -p /var/log/devshop/
 
 ENV DEVSHOP_ENTRYPOINT_LOG_FILES="/var/log/devshop/*"
-ENV DEVSHOP_TESTS_ASSETS_PATH="${DEVSHOP_PATH}/.github/test-assets"
+ENV DEVSHOP_TEST_ARTIFACTS_PATH="${DEVSHOP_PATH}/.github/test-assets"
 
 # Set devshop_install_phase runtime here, since the Dockerfile is ALWAYS buildtime.
 ENV ANSIBLE_BUILD_COMMAND="devshop-ansible-playbook \
@@ -231,7 +231,7 @@ RUN \
 # Prepare systemd to run inside a container.
 RUN docker-systemd-prepare
 
-RUN chmod 766 $DEVSHOP_TESTS_ASSETS_PATH
+RUN chmod 766 $DEVSHOP_TEST_ARTIFACTS_PATH
 
 # Pre-build Information
 RUN \
