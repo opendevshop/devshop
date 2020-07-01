@@ -21,7 +21,7 @@
         "knplabs/github-api": "^1.4",
         "drush/drush": "^8",
         "ext-json": "*",
-        "devshop/docker-bin-tools": "*",
+        "devshop/docker-bin-tools": "@dev",
         "devshop/git-split": "self.version",
         "devshop/github-api-cli": "self.version",
         "devshop/power-process": "self.version",

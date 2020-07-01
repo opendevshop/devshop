@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "15c5692739b4324061f5a8da05c3d269",
+    "content-hash": "aea9afa7a99fd97092e907ccdccc2b11",
     "packages": [
         {
             "name": "consolidation/annotated-command",
@@ -567,8 +567,7 @@
             "dist": {
                 "type": "path",
                 "url": "scripts",
-                "reference": "b7080079793a13a53daf60b850cc6f120a7d278d",
-                "shasum": null
+                "reference": "b7080079793a13a53daf60b850cc6f120a7d278d"
             },
             "bin": [
                 "branch-or-tag",
@@ -641,10 +640,7 @@
                 }
             ],
             "description": "Tools useful for any composer-based project.",
-            "homepage": "https://getdevshop.com",
-            "transport-options": {
-                "relative": true
-            }
+            "homepage": "https://getdevshop.com"
         },
         {
             "name": "devshop/docker-bin-tools",
@@ -652,8 +648,7 @@
             "dist": {
                 "type": "path",
                 "url": "docker/bin",
-                "reference": "06dd97132a305e9cc589d8f6ca80b6bfc7d3bd7a",
-                "shasum": null
+                "reference": "06dd97132a305e9cc589d8f6ca80b6bfc7d3bd7a"
             },
             "bin": [
                 "docker-systemd",
@@ -727,10 +722,7 @@
                 }
             ],
             "description": "DevShop GitSplit Component",
-            "homepage": "https://getdevshop.com",
-            "transport-options": {
-                "relative": true
-            }
+            "homepage": "https://getdevshop.com"
         },
         {
             "name": "devshop/github-api-cli",
@@ -774,10 +766,7 @@
                 }
             ],
             "description": "Simple console wrapper for GitHub API",
-            "homepage": "https://getdevshop.com",
-            "transport-options": {
-                "relative": true
-            }
+            "homepage": "https://getdevshop.com"
         },
         {
             "name": "devshop/power-process",
@@ -824,10 +813,7 @@
                 }
             ],
             "description": "Enhanced Symfony Process component.",
-            "homepage": "https://getdevshop.com",
-            "transport-options": {
-                "relative": true
-            }
+            "homepage": "https://getdevshop.com"
         },
         {
             "name": "dflydev/dot-access-data",
@@ -2871,6 +2857,7 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
+        "devshop/docker-bin-tools": 20,
         "devshop/git-split": 20,
         "devshop/github-api-cli": 20,
         "devshop/power-process": 20,
