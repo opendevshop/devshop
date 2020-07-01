@@ -31,8 +31,6 @@
     "devshop-site-active",
     "devshop-site-info",
     "hosting-queue-runner",
-    "log",
-    "line",
     "tail-file",
     "wait-for",
     "wait-mysql",

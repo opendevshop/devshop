@@ -23,7 +23,7 @@ fi
 
 usage() {
 echo \
-" log Message
+" devshop-log Message
   Prints 'Message' with a prefix that identifies the file.
 
   Alter the message with environment variables:
