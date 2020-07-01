@@ -93,6 +93,12 @@ jobs:
           docker-compose exec -T devshop.server systemctl status --no-pager | tee ../${DEVSHOP_TEST_ARTIFACTS_PATH}/systemctl-status.log
           docker-composer logs devshop.server | tee ../${DEVSHOP_TEST_ARTIFACTS_PATH}/docker-container.log
 
+      - uses: actions/upload-artifact@v1
+        if: always()
+        with:
+          name: test-assets
+          path: ./.github/test-assets
+
   devmaster:
     name: Devmaster 
     # description: Install devmaster and run tests on a pre-built image.
