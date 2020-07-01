@@ -3,13 +3,15 @@ set -e
 DEVSHOP_PATH="$( cd "$(dirname "$0")"/.. ; pwd -P )"
 PATH="$DEVSHOP_PATH/bin:$PATH"
 
+# Install again to be sure.
+composer install --no-progress --no-suggests
+
 # NOTE: DevShop BIN scripts reside in ./scripts. Symlinks in ./bin are only created after composer install.
 if [ ! -f $DEVSHOP_PATH/bin/log ]; then
-  echo "Scripts not available. Composer install is needed."
+  echo "No 'bin/log' file found. "
   exit 1
 fi
 
-composer install
 
 devshop-logo "Running DevShop Tests"
 log echo "Path: $PATH"
