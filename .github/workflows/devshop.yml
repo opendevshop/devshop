@@ -90,8 +90,8 @@ jobs:
         env:
           DEVSHOP_TEST_ARTIFACTS_PATH: ".github/test-assets"
         run: |
-          docker-compose exec -T devshop.server systemctl status --no-pager | tee ${DEVSHOP_TEST_ARTIFACTS_PATH}/systemctl-status.log
-          docker-composer logs devshop.server | tee ${DEVSHOP_TEST_ARTIFACTS_PATH}/docker-container.log
+          docker-compose exec -T devshop.server systemctl status --no-pager | tee ../${DEVSHOP_TEST_ARTIFACTS_PATH}/systemctl-status.log
+          docker-composer logs devshop.server | tee ../${DEVSHOP_TEST_ARTIFACTS_PATH}/docker-container.log
 
   devmaster:
     name: Devmaster 
