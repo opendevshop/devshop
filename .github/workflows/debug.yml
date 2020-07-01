@@ -17,6 +17,9 @@ jobs:
     steps:
       - name: environment vars
         run: env
+      - name: env context
+        env:
+          ENV_CONTEXT: ${{ toJson(env) }}
       - name: github context
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
