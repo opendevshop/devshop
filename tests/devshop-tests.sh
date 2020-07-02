@@ -31,7 +31,7 @@ drush @hostmaster hosting-tasks --fork=0 --strict=0 --force || true
 devshop-log "Running remaining tasks: Complete!"
 
 # Enable watchdog
-drush @hostmaster en dbdevshop-log -y
+drush @hostmaster en dblog -y
 
 # Save GitHub Token
 if [ -n "${GITHUB_TOKEN}" ]; then
