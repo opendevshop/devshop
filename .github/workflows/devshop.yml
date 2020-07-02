@@ -80,7 +80,7 @@ jobs:
 
       - name: "Test DevShop: ${{ matrix.os }}"
         working-directory: roles
-        run: docker-compose exec -T --user aegir devshop.server /usr/share/devshop/tests/devshop-tests.sh
+        run: docker-compose exec --env DEVSHOP_TEST_ARTIFACTS_PATH=/usr/share/devshop/.github/test-assets -T --user aegir devshop.server /usr/share/devshop/tests/devshop-tests.sh
         env:
           DEVSHOP_TEST_ARTIFACTS_PATH: ".github/test-assets"
 
@@ -91,7 +91,7 @@ jobs:
           DEVSHOP_TEST_ARTIFACTS_PATH: ".github/test-assets"
         run: |
           docker-compose exec -T devshop.server systemctl status --no-pager | tee ../${DEVSHOP_TEST_ARTIFACTS_PATH}/systemctl-status.log
-          docker-composer logs devshop.server | tee ../${DEVSHOP_TEST_ARTIFACTS_PATH}/docker-container.log
+          docker-compose logs devshop.server | tee ../${DEVSHOP_TEST_ARTIFACTS_PATH}/docker-container.log
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v1
