@@ -71,7 +71,6 @@ devmaster_install_command: "{{ devshop_cli_bin_path }}/devshop devmaster:install
                                 --aegir_db_host={{ database_host }} \
                                 --aegir_db_pass={{ mysql_root_password }} \
                                 --aegir_db_user={{ mysql_root_username }} \
-                                --aegir_db_grant_all_hosts=1 \
                                 --aegir_host={{ server_hostname }} \
                                 --client_name={{ aegir_client_name }} \
                                 --client_email={{ devshop_devmaster_email }} \
