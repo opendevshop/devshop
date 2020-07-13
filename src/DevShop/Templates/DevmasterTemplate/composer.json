@@ -35,6 +35,7 @@
         "drupal/aegir_config": "@beta",
         "drupal/aegir_ssh": "^1.0",
         "drupal/betterlogin": "^1.5",
+        "drupal/bootstrap": "^3.26",
         "drupal/cas": "^1.7",
         "drupal/cas_attributes": "@rc",
         "drupal/chosen": "^2.1",
