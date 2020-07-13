@@ -24,10 +24,6 @@ drush_bin_path: "{{ devshop_cli_bin_path }}/drush"
 
 devshop_devmaster_path: "{{ aegir_user_home }}/devmaster-{{ devshop_version }}"
 
-# Legacy Makefile
-# devshop_makefile: "{{ devshop_cli_path }}/build-devmaster.make"
-devshop_makefile: ""
-
 devshop_install_profile: devmaster
 devshop_working_copy: --working-copy
 
@@ -72,28 +68,23 @@ devmaster_git_ref: ''
 
 devmaster_install_command: "{{ devshop_cli_bin_path }}/devshop devmaster:install -n \
                                 --site={{ server_hostname }} \
-                                --aegir_db_host={{ database_host }}
+                                --aegir_db_host={{ database_host }} \
                                 --aegir_db_pass={{ mysql_root_password }} \
-                                --aegir_db_port=3306 \
                                 --aegir_db_user={{ mysql_root_username }} \
                                 --aegir_db_grant_all_hosts=1 \
                                 --aegir_host={{ server_hostname }} \
                                 --client_name={{ aegir_client_name }} \
                                 --client_email={{ devshop_devmaster_email }} \
                                 --http_service_type={{ aegir_server_webserver }} \
-                                --makefile={{ devshop_makefile }} \
                                 --profile={{ devshop_install_profile }} \
-                                --root={{ aegir_user_home }}/devmaster/web \
+                                --root={{ aegir_user_home }}/devmaster-{{ devshop_version }}/web \
                                 --devshop_version={{ devshop_version }} \
-                                --git_remote={{ devmaster_git_repo }} \
-                                --git_root={{ aegir_user_home }}/devmaster \
-                                --git_reference={{ devmaster_git_ref }} \
-                                --drush-path={{ devshop_cli_bin_path }}/drush \
+                                --drush-path={{ devshop_cli_bin_path }}/drush \                                --aegir_db_port=3306 \
                                 {{ devshop_working_copy }} \
 "
 
 devmaster_upgrade_command: |
-  {{ devshop_cli_bin_path }}/devshop devmaster:upgrade {{ devshop_version }} --makefile={{ devshop_makefile }} -n --run-from-playbooks
+  {{ devshop_cli_bin_path }}/devshop devmaster:upgrade {{ devshop_version }} -n --run-from-playbooks
 
 devmaster_test_command: "{{ devshop_cli_path }}/tests/devshop-tests.sh"
 
