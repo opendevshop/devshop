@@ -302,3 +302,11 @@ function devshop_hosting_update_7106() {
   variable_set('chosen_minimum_single', 0);
   variable_set('chosen_minimum_multiple', 0);
 }
+
+/**
+ * Enable composer_autoloader module and set the path to autoload.php.
+ */
+function devshop_hosting_update_7200() {
+  module_enable(array('composer_autoloader'));
+  variable_set('composer_autoloader', '../vendor/autoload.php');
+}
