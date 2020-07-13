@@ -227,8 +227,8 @@ jobs:
         run: |
           ./Tests/repo-info.php
 
-  DevmasterTemplate:
-    name: DevmasterTemplate
+  DevShopControlTemplate:
+    name: DevShopControlTemplate
 
     runs-on: ubuntu-latest
     strategy:
@@ -237,7 +237,7 @@ jobs:
           # - '5.6'
           - '7.1'
     env:
-      working-directory: ./src/DevShop/Templates/DevmasterTemplate
+      working-directory: ./src/DevShop/Templates/DevShopControlTemplate
     steps:
       - uses: actions/checkout@v1
 
