@@ -26,6 +26,8 @@
 # Ignore configuration files that may contain sensitive information.
 /web/sites/*/*.settings.php
 /web/sites/*/settings*.php
+/web/sites/*/drushrc.php
+/web/sites/sites.php
 
 # Ignore paths that contain user-generated content.
 /web/sites/*/files
