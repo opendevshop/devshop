@@ -14,7 +14,7 @@ You can set up a Git repo to hold the code for your Devmaster site just like any
 2. Clone it and `cd` into it.
 3. Run the composer command to create a new project using this repo as a template:
 
-        composer create-project devshop/devmaster-template:@dev
+        composer create-project devshop/control-template:@dev
 
   With no directory argument, the project will be built in the current directory.
 
