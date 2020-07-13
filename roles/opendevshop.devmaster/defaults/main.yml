@@ -64,7 +64,7 @@ devshop_version: 1.x
 devshop_cli_version: "{{ devshop_version }}"
 
 # Set devmaster_git_repo to deploy a devmaster instance from an existing git repo.
-devmaster_git_repo: 'https://github.com/devshop-packages/devmaster-template'
+devmaster_git_repo: 'https://github.com/devshop-packages/devshop-control-template'
 devmaster_git_repo_docroot: web
 
 # Leave empty to use default branch.

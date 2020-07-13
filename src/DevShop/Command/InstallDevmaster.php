@@ -48,7 +48,7 @@ class InstallDevmaster extends Command
   /**
    * @var string The git repo to use for the devmaster site.
    */
-  private $defaultGitRepo = 'https://github.com/devshop-packages/devmaster-template';
+  private $defaultGitRepo = 'https://github.com/devshop-packages/devshop-control-template';
 
   /**
    * Executes the command.
