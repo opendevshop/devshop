@@ -276,4 +276,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.INPUT_GITHUB_TOKEN }}
         working-directory: ./src/DevShop/Templates/
         run: |
-          composer create-project devshop/control-template:@dev temp --repository='{"type":"path","url":"DevmasterTemplate"}'
+          composer create-project devshop/control-template:@dev temp --repository='{"type":"path","url":"DevShopControlTemplate"}'
