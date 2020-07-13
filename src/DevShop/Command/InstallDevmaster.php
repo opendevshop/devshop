@@ -46,17 +46,14 @@ class InstallDevmaster extends Command
 {
 
   /**
-   * @var string The git repo to use for the devmaster site.
-   */
-  private $defaultGitRepo = 'https://github.com/devshop-packages/devshop-control-template';
-
-  /**
    * Executes the command.
    *
    * @param \Symfony\Component\Console\Input\InputInterface $input
    * @param \Symfony\Component\Console\Output\OutputInterface $output
    */
   protected function execute(InputInterface $input, OutputInterface $output) {
+    // Attaches input and output to the Command class.
+    parent::execute($input, $output);
 
     // Validate the database.
     if ($this->validateSecureDatabase()) {
@@ -144,13 +141,6 @@ class InstallDevmaster extends Command
         'root'
       )
 
-      // aegir_db_grant_all_hosts
-      ->addOption(
-        'aegir_db_grant_all_hosts', NULL, InputOption::VALUE_OPTIONAL,
-        'Set to FALSE to force database grants to use the IP of the web servers.',
-        TRUE
-      )
-
       // profile
       ->addOption(
         'profile', NULL, InputOption::VALUE_OPTIONAL,
@@ -173,25 +163,7 @@ class InstallDevmaster extends Command
       // root
       ->addOption(
         'root', NULL, InputOption::VALUE_OPTIONAL,
-        'The absolute public document root of the Devmaster codebase. If using a custom git_remote, "root" must be set to the path to the folder exposed to the web. If not specified, will be generated from other variables.'
-      )
-
-      // git_remote
-      ->addOption(
-        'git_remote', NULL, InputOption::VALUE_OPTIONAL,
-        'A git repository URL that contains a Devmaster codebase. Can be a full Drupal codebase or a composer project.'
-      )
-
-      // git_root
-      ->addOption(
-        'git_root', NULL, InputOption::VALUE_OPTIONAL,
-        'If using a custom git_remote, the path to clone the git repository into.'
-      )
-
-      // git_reference
-      ->addOption(
-        'git_reference', NULL, InputOption::VALUE_OPTIONAL,
-        'The git branch, tag, or sha to use for this Devmaster codebase.'
+        'The desired path to install to.  Example: /var/aegir/devmaster-0.x. If not specified, will be created from aegir_root, profile, and version.'
       )
 
       // http_service_type
@@ -249,7 +221,6 @@ class InstallDevmaster extends Command
    * @param OutputInterface $output An OutputInterface instance
    */
   protected function initialize(InputInterface $input, OutputInterface $output) {
-    parent::initialize($input, $output);
 
     $output->writeln('');
 
@@ -297,9 +268,9 @@ class InstallDevmaster extends Command
       $input->setOption('script_user', $this->findCurrentUser());
     }
 
-    // git_remote
-    if (!$input->getOption('git_remote')) {
-      $input->setOption('git_remote', $this->defaultGitRepo);
+    // makefile
+    if (!$input->getOption('makefile')) {
+      $input->setOption('makefile', realpath(dirname(__FILE__) . '/../../../build-devmaster.make'));
     }
 
     // aegir_root
@@ -516,7 +487,6 @@ class InstallDevmaster extends Command
         'remote_host' => $this->input->getOption('aegir_db_host'),
         'context_type' => 'server',
         'db_service_type' => 'mysql',
-        'aegir_db_grant_all_hosts' => $this->input->getOption('aegir_db_grant_all_hosts'),
         'master_db' => $master_db,
         'db_port' => $this->input->getOption('aegir_db_port'),
       ));
@@ -556,9 +526,6 @@ class InstallDevmaster extends Command
       'web_server' => $server,
       'root' => $this->input->getOption('root'),
       'makefile' => $this->input->getOption('makefile'),
-      'git_remote' => $this->input->getOption('git_remote'),
-      'git_root' =>  $this->input->getOption('git_root'),
-      'git_reference' => $this->input->getOption('git_reference'),
     ));
 
     // Save Hostmaster Site context, and flag for installation, pre-verify.
@@ -621,19 +588,43 @@ PHP;
     // If this is hostmaster, we need to install first.  provision-verify will fail, otherwise.
     if ($install) {
       $client_email = $this->input->getOption('client_email');
-      $command = "{$drush_path} @{$name} provision-install --client_email={$client_email} -v";
+      $this->output->writeln("");
+      $this->output->writeln("Running <comment>{$drush_path} @{$name} provision-install --client_email={$client_email}</comment> ...");
+      $process = $this->getProcess("{$drush_path} @{$name} provision-install --client_email={$client_email} -v");
+      $process->setTimeout(NULL);
+
+      // Ensure process runs sucessfully.
+      if ($this->runProcess($process)) {
+        $this->output->writeln("");
+        $this->output->writeln("Running <comment>drush @{$name} provision-install</comment>: <info>Done</info>");
+        $this->output->writeln("");
+      }
+      else {
+        $this->output->writeln("");
+        $this->output->writeln("<error>Unable to run drush @{$name} provision-install.");
+        $this->output->writeln("");
+        exit(1);
+      }
+    }
+
+    // Run provision-verify
+    $drush_path = $this->input->getOption('drush-path');
+    $this->output->writeln("");
+    $this->output->writeln("Running <comment>drush @{$name} provision-verify</comment> ...");
+    $process = $this->getProcess("{$drush_path} @{$name} provision-verify");
+    $process->setTimeout(NULL);
+
+    if ($this->runProcess($process)) {
+      $this->output->writeln("");
+      $this->output->writeln("Running <comment>drush @{$name} provision-verify</comment>: <info>Done</info>");
+      $this->output->writeln("");
     }
     else {
-      $command = "{$drush_path} @{$name} provision-verify -v";
+      $this->output->writeln("");
+      $this->output->writeln("<error>Unable to run drush @{$name} provision-verify.");
+      $this->output->writeln("");
+      exit(1);
     }
-
-    // Ensure process runs successfully.
-    $this->output->writeln("");
-    $this->output->writeln("Running <comment>{$command}</comment> ...");
-    $this->runProcess($command);
-    $this->output->writeln("Running <comment>{$command}</comment> ... <info>Done</info>");
-    $this->output->writeln("");
-
   }
 
   /**
