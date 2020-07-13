@@ -44,7 +44,7 @@ function devshop_dothooks_devshop_environment_alter(&$environment, $project) {
   // Attempt to parse
   if (!empty($environment->dothooks_file_name)) {
     try {
-      $environment->dothooks = Yaml::parseFile($hooks_path);
+      $environment->dothooks = Yaml::parse(file_get_contents($hooks_path));
     } catch (ParseException $e) {
       $environment->warnings[] = array(
         'text' => t('Invalid YAML in !file: !message', array(
