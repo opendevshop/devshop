@@ -23,6 +23,6 @@ You can set up a Git repo to hold the code for your Devmaster site just like any
 
   See `./roles/opendevshop.devmaster/defaults/main.yml` to see the default variable.
     
-        devmaster_git_repo: 'https://github.com/devshop-packages/devmaster-template'
+        devmaster_git_repo: 'https://github.com/devshop-packages/devshop-control-template'
 
   @TODO: Once an install.sh option is created, add to this documentation.
