@@ -209,15 +209,17 @@ class RoboFile extends \Robo\Tasks {
   ];
 
   /**
-   * Clone all needed source code.
+   * Clone all needed source code and build devmaster from the makefile.
    *
+   * @option no-dev Use build-devmaster.make instead of the development makefile.
    * @option devshop-version The directory to put the
-   * @option development Prepare development environment: Set git repo remote urls to SSH.
+   * @option make Defaults to "profile" to populate the makefile into the ./devmaster folder. Use --make=drupal to build the entire ./aegir-home/devmaster-1.x folder.
    */
   public function prepareSourcecode($opts = [
+    'no-dev' => FALSE,
     'devshop-version' => '1.x',
     'test-upgrade' => FALSE,
-    'development' => FALSE,
+    'make' => 'profile',
   ]) {
 
     if (empty($this->git_ref)) {
@@ -262,8 +264,48 @@ class RoboFile extends \Robo\Tasks {
       }
     }
 
+    // If we want to just populate modules into /devmaster folder...
+    if ($opts['make'] == 'profile') {
+      // Populate devmaster install profile with contrib code.
+      $makefile_path = 'build-devmaster-dev.make.yml';
+      $make_destination = 'devmaster/';
+      if (file_exists('devmaster/modules/contrib')) {
+        $this->say("Path 'devmaster/modules/contrib' already exists.");
+      }
+      else {
+        $this->yell("Populating devmaster profile with contrib code from $makefile_path ...");
+        $result = $this->_exec("bin/drush make {$makefile_path} {$make_destination} --working-copy --no-gitinfofile --no-core --contrib-destination=.");
+        if (!$result->wasSuccessful()) {
+          throw new \RuntimeException("Drush make failed with the exit code " . $result->getExitCode());
+        }
+      }
+    }
+    // Or if a whole Drupal build is needed.
+    elseif ($opts['make'] == 'drupal') {
+
+      // Run drush make to build the devmaster stack.
+      $makefile_path = $opts['no-dev']? 'build-devmaster.make': "build-devmaster-dev.make.yml";
+      $make_destination = $this->devshop_root_path . "/aegir-home/devmaster-" . $opts['devshop-version'];
+
+      // Append the desired devshop root path.
+      $makefile_path = $this->devshop_root_path . '/' . $makefile_path;
+
+      if (file_exists($make_destination)) {
+        $this->say("Path {$make_destination} already exists.");
+      }
+      else {
+
+        $this->yell("Building devmaster from makefile $makefile_path to $make_destination");
+
+        $result = $this->_exec("bin/drush make {$makefile_path} {$make_destination} --working-copy --no-gitinfofile");
+        if (!$result->wasSuccessful()) {
+          throw new \RuntimeException("Drush make failed with the exit code " . $result->getExitCode());
+        }
+      }
+    }
+
     // Set git remote urls
-    if ($opts['development']) {
+    if ($opts['no-dev'] == FALSE) {
       $devshop_ssh_git_url = "git@github.com:opendevshop/devshop.git";
 
       if ($this->taskExec("git remote set-url origin $devshop_ssh_git_url")->run()->wasSuccessful()) {
@@ -425,7 +467,7 @@ class RoboFile extends \Robo\Tasks {
    * @option $user-uid Override the detected current user's UID when building
    *   containers.
    * @option $xdebug Set this option to launch with an xdebug container.
-   * @option development Set up development environment,
+   * @option no-dev Use build-devmaster.make instead of the development makefile.
    * @option $build Run `robo prepare:containers` to rebuild the container first.
    * @option os-version An OS "slug" for any of the geerlingguy/docker-*-ansible images: https://hub.docker.com/u/geerlingguy/
    * @option environment pass an environment variable to docker-compose in the form --environment NAME=VALUE
@@ -441,7 +483,7 @@ class RoboFile extends \Robo\Tasks {
     'mode' => 'docker-compose',
     'user-uid' => NULL,
     'disable-xdebug' => TRUE,
-    'development' => FALSE,
+    'no-dev' => FALSE,
     'devshop-version' => '1.x',
     'build' => FALSE,
     'skip-source-prep' => FALSE,

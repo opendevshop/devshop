@@ -8,4 +8,4 @@ api = 2
 ;  - https://github.com/opendevshop/devshop/blob/1.x/build-devmaster-dev.yml
 ;  - https://github.com/opendevshop/devshop/blob/1.x/build-devmaster-travis-forks.make.yml
 projects[drupal][type] = core
-projects[drupal][version] = 7.67
+projects[drupal][version] = 7.72
