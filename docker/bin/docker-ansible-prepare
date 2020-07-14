@@ -2,11 +2,12 @@
 set -e
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 PATH="$DIR:$PATH"
+pip_packages="ansible"
 
 #
-# docker-systemd-prepare
+# docker-ansible-prepare
 #
-# This script prepares the operating system to run a full systemd setup inside a docker container.
+# This script prepares the operating system to run Ansible and Python
 #
 # It was appropriated from Jeff Geerling's Dockerfiles:
 #
@@ -41,58 +42,42 @@ get_distribution() {
 }
 
 prepare_ubuntu1804() {
+  PYTHON_DEFAULT=/usr/bin/python3
+  DEBIAN_FRONTEND=noninteractive
   apt-get update \
-    && apt-get install -y --no-install-recommends \
-       apt-utils locales rsyslog systemd systemd-cron sudo iproute2 curl \
-    && rm -Rf /var/lib/apt/lists/* \
-    && rm -Rf /usr/share/doc && rm -Rf /usr/share/man \
-    && apt-get clean
+      && apt-get install -y --no-install-recommends \
+         apt-utils \
+         locales \
+         python3-setuptools \
+         python3-pip \
+         software-properties-common \
+         git \
+      && rm -Rf /var/lib/apt/lists/* \
+      && rm -Rf /usr/share/doc && rm -Rf /usr/share/man \
+      && apt-get clean
 
-  sed -i 's/^\($ModLoad imklog\)/#\1/' /etc/rsyslog.conf
-  locale-gen en_US.UTF-8
+  # Set Python3 to be the default (allow users to call "python" and "pip" instead of "python3" "pip3"
+  update-alternatives --install /usr/bin/python python /usr/bin/python3 1
 
-  # Install the initctl faker script from @geerlingguy
-  initctl_faker_url="https://raw.githubusercontent.com/geerlingguy/docker-ubuntu1804-ansible/d75f3d7/initctl_faker"
-  initctl_faker_path="/sbin/initctl"
-
-  curl -ksSL $initctl_faker_url -o $initctl_faker_path
-  chmod +x $initctl_faker_path
-
-  # Remove unnecessary getty and udev targets that result in high CPU usage when using
-  # multiple containers with Molecule (https://github.com/ansible/molecule/issues/1104)
-  rm -f /lib/systemd/system/systemd*udev* \
-    && rm -f /lib/systemd/system/getty.target
+  pip3 install $pip_packages
 }
 
 prepare_centos7() {
-  # Install systemd -- See https://hub.docker.com/_/centos/
-  yum -y update; yum clean all; \
-    (cd /lib/systemd/system/sysinit.target.wants/; for i in *; do [ $i == systemd-tmpfiles-setup.service ] || rm -f $i; done); \
-    rm -f /lib/systemd/system/multi-user.target.wants/*;\
-    rm -f /etc/systemd/system/*.wants/*;\
-    rm -f /lib/systemd/system/local-fs.target.wants/*; \
-    rm -f /lib/systemd/system/sockets.target.wants/*udev*; \
-    rm -f /lib/systemd/system/sockets.target.wants/*initctl*; \
-    rm -f /lib/systemd/system/basic.target.wants/*;\
-    rm -f /lib/systemd/system/anaconda.target.wants/*;
+    system_packages_pre="\
+        deltarpm \
+        epel-release \
+        initscripts \
+        git \
+    "
+    system_packages="python-pip"
 
-# Install requirements.
-  yum makecache fast \
-    && yum -y install deltarpm epel-release initscripts \
-    && yum -y update \
-    && yum -y install \
-      sudo \
-      which \
-      python-pip \
-    && yum clean all
+    yum makecache fast
+    yum -y install $system_packages_pre
+    yum -y update
+    yum -y install $system_packages
+    yum clean all
 
-  # Disable requiretty.
-  sed -i -e 's/^\(Defaults\s*requiretty\)/#--- \1/'  /etc/sudoers
-
-}
-
-prepareAll() {
-  mkdir -p /etc/ansible
+    pip install $pip_packages
 }
 
 # perform some very rudimentary platform detection
@@ -100,7 +85,6 @@ lsb_dist=$( get_distribution )
 lsb_dist="$(echo "$lsb_dist" | tr '[:upper:]' '[:lower:]')"
 
 case "$lsb_dist" in
-
   ubuntu)
     if command_exists lsb_release; then
       dist_version="$(lsb_release --release | cut -f2)"
@@ -173,6 +157,3 @@ case "$lsb_dist $dist_version" in
     prepare_centos7
   ;;
 esac
-
-# Run OS-agnostic preparation scripts.
-prepareAll

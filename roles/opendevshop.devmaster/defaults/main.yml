@@ -15,7 +15,7 @@ devshop_github_token: ''
 php_version: '7.1'
 
 devshop_cli_repo: http://github.com/opendevshop/devshop.git
-devshop_cli_update: true
+devshop_cli_skip_update: false
 devshop_cli_path: /usr/share/devshop
 devshop_cli_bin_path: "{{ devshop_cli_path }}/bin"
 devshop_cli_composer_install_command: "install"

@@ -57,17 +57,19 @@ class FeatureContext extends \Drupal\DrupalExtension\Context\BatchContext implem
             $alias = $drush_config['alias'];
 
             // If environment variable is set, save assets to that.
-            if (isset($_SERVER['DEVSHOP_TESTS_ASSETS_PATH']) && is_writable($_SERVER['DEVSHOP_TESTS_ASSETS_PATH'])) {
-              $files_path = $_SERVER['DEVSHOP_TESTS_ASSETS_PATH'];
-              $logged_string = "$files_path";
+            if (isset($_SERVER['DEVSHOP_TEST_ARTIFACTS_PATH']) && is_writable($_SERVER['DEVSHOP_TEST_ARTIFACTS_PATH'])) {
+              $files_path = $_SERVER['DEVSHOP_TEST_ARTIFACTS_PATH'];
             }
             // If not, load the public writable files folder for devshop, so the asset can be served over HTTP.
             else {
               // Lookup file_directory_path
               $cmd = "drush @$alias vget file_public_path --format=string";
               $files_path = trim(shell_exec($cmd));
-              $logged_string = "$base_url/$files_path/output.html";
             }
+
+            // @TODO: Only show if $files_path is within this site's public_html directory.
+            /** @var string $file_display_string The string printed to logs. */
+            $file_display_string = "$base_url/$files_path/output.html";
 
             // Check for various problems.
             if (empty($files_path)) {
@@ -99,8 +101,7 @@ class FeatureContext extends \Drupal\DrupalExtension\Context\BatchContext implem
             }
 
             if ($wrote) {
-                echo "Last Page Output Saved to: $output_path \n";
-                echo "Last Page Output: $logged_string \n";
+                echo "Last Response saved to: $file_display_string \n";
             }
             else {
                 throw new \Exception("Something failed when writing output to $files_path ... \n");
@@ -108,6 +109,9 @@ class FeatureContext extends \Drupal\DrupalExtension\Context\BatchContext implem
 
             echo "\nWatchdog Errors:\n";
             $this->drushContext->assertDrushCommand('wd-show');
+            $this->drushContext->printLastDrushOutput();
+
+            echo "\n\nLast Drush Output\n";
             $this->drushContext->printLastDrushOutput();
         }
     }

@@ -370,13 +370,13 @@ class RoboFile extends \Robo\Tasks {
   public function prepareContainers($user_uid = NULL, $hostname = 'devshop.local.computer', $opts = [
       'docker-image' => 'devshop/server:local',
       'from' => NULL,
-      'dockerfile' => 'Dockerfile',
+      'dockerfile' => 'roles/devshop.server/Dockerfile.ubuntu1804',
       'build-command' => NULL,
       'os' => 'ubuntu1804',
       'vars' => '',
       'tags' => '',
       'skip-tags' => '',
-      'playbook' => 'roles/server.playbook.yml',
+      'playbook' => 'roles/devshop.server/role-playbook.yml',
       'environment' => [],
       'roles-path' => '/usr/share/devshop/roles',
       'config' => '/usr/share/devshop/ansible.cfg',
@@ -474,7 +474,7 @@ class RoboFile extends \Robo\Tasks {
    * @option volumes Set to TRUE to use the docker-compose.volumes.yml file to map local folders into the container.
    * @option install-at-runtime Launch bare containers and then install devshop.
    */
-  public function up($docker_command = 'devshop-ansible-playbook', $opts = [
+  public function up($docker_command = '', $opts = [
     'follow' => 1,
     'test' => FALSE,
     'test-upgrade' => FALSE,
@@ -494,8 +494,8 @@ class RoboFile extends \Robo\Tasks {
     'vars' => '',
     'tags' => '',
     'skip-tags' => '',
-    'file' => 'Dockerfile',
-    'playbook' => 'roles/server.playbook.yml',
+    'file' => 'roles/devshop.server/Dockerfile.ubuntu1804',
+    'playbook' => 'roles/devshop.server/role-playbook.yml',
     'roles-path' => '/usr/share/devshop/roles',
     'config' => '/usr/share/devshop/ansible.cfg',
     'local' => FALSE,
@@ -848,7 +848,7 @@ class RoboFile extends \Robo\Tasks {
   /**
    * Run a command in the devshop container.
    */
-  public function exec($cmd = "devshop-ansible-playbook") {
+  public function exec($cmd = '') {
     return $this->_exec("docker-compose exec -T \
       --env ANSIBLE_TAGS \
       --env ANSIBLE_SKIP_TAGS \

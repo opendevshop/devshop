@@ -32,7 +32,7 @@ if [ -z "${ALIAS}" ]; then
   exit 1
 fi
 
-OPTIONS=-n log "Checking database... "
+OPTIONS=-n devshop-log "Checking database... "
 
 # Returns true once mysql can connect.
 # Thanks to http://askubuntu.com/questions/697798/shell-script-how-to-run-script-after-mysql-is-ready
@@ -48,12 +48,12 @@ wait-for devshop-site-active "$ALIAS" && \
 INSTALLED_FILE_PATH="${HOME}/clients/${CLIENT_NAME}/${URI}/settings.php"
 
 if [ -f $INSTALLED_FILE_PATH ]; then
-  # Log without a newline at the end
-  OPTIONS=-n log "Checking installation... "
+  # devshop-log without a newline at the end
+  OPTIONS=-n devshop-log "Checking installation... "
   echo "Success: https://$URI"
 else
-  # Log without a newline at the end
-  OPTIONS=-n log "Waiting for installation to complete... (Waiting for file: $INSTALLED_FILE_PATH)"
+  # devshop-log without a newline at the end
+  OPTIONS=-n devshop-log "Waiting for installation to complete... (Waiting for file: $INSTALLED_FILE_PATH)"
   export TIMEOUT=300
   wait-for ls $INSTALLED_FILE_PATH && \
     echo "Success: https://$URI" || \

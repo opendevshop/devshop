@@ -30,11 +30,11 @@ services:
     #    By using the non-docker-hub image "devshop/server:local" in this docker-compose file, we force the
     #    the developer to finish that first build before any container can be launched.
     #
-    image: ${DEVSHOP_DOCKER_IMAGE:-devshop/server:local}
+    image: ${DEVSHOP_DOCKER_IMAGE:-}
     command: ${DOCKER_COMMAND:-}
     build:
-      context: '.'
-      dockerfile: ${DOCKERFILE:-Dockerfile}
+      context: 'roles'
+      dockerfile: ${DOCKERFILE:-devshop.server/Dockerfile.ubuntu1804}
       args:
       # If a value for local development should be different than docker hub image,
       # set a default here.
@@ -85,7 +85,7 @@ services:
 
       # Add additional files you would like to output in the container logs here, separated by a space.
       # - DEVSHOP_ENTRYPOINT_LOG_FILES="/var/log/aegir/*"
-      # - DEVSHOP_TESTS_ASSETS_PATH="/usr/share/devshop/.github/test-assets"
+      # - DEVSHOP_TEST_ARTIFACTS_PATH="/usr/share/devshop/.github/test-assets"
 
     privileged: true
     volumes:

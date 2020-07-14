@@ -26,5 +26,5 @@ exec ansible-playbook $ANSIBLE_PLAYBOOK \
     --extra-vars="$ANSIBLE_EXTRA_VARS" \
     $ANSIBLE_PLAYBOOK_COMMAND_OPTIONS \
     $* || \
-    log "Call to ansible-playbook failed. (exit $?) Running $ON_FAIL ..." && \
+    devshop-log "Call to ansible-playbook failed. (exit $?) Running $ON_FAIL ..." && \
     $ON_FAIL; exit $?

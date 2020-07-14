@@ -40,19 +40,19 @@ COMMAND=${COMMAND:-"mysqladmin ping --host=$DATABASE_HOST --user=$MYSQL_ROOT_USE
 
 # Check for required variables
 if [ -z "${DATABASE_HOST}" ]; then
-  log "No DATABASE_HOST variable found. Unable to check for database."
+  echo "No DATABASE_HOST variable found. Unable to check for database."
   exit 1
 fi
 if [ -z "${MYSQL_ROOT_PASSWORD}" ]; then
-  log "No MYSQL_ROOT_PASSWORD variable found. Unable to check for database."
+  echo "No MYSQL_ROOT_PASSWORD variable found. Unable to check for database."
   exit 1
 fi
 
-log "Waiting for access to database server $MYSQL_ROOT_USER@$DATABASE_HOST ..."
+echo "Waiting for access to database server $MYSQL_ROOT_USER@$DATABASE_HOST ..."
 
 # Set SILENT=1 to tell `wait-for` script not to print the command.
-# DO NOT CHANGE unless you want to expose MYSQL_ROOT_PASSWORD in your logs.
+# DO NOT CHANGE unless you want to expose MYSQL_ROOT_PASSWORD in your echos.
 export SILENT=1
 wait-for $COMMAND && \
-  log "Database connected and accessible!" || \
+  echo "Database connected and accessible!" || \
   exit 1
