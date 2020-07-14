@@ -85,7 +85,9 @@ services:
 
       # Add additional files you would like to output in the container logs here, separated by a space.
       # - DEVSHOP_ENTRYPOINT_LOG_FILES="/var/log/aegir/*"
-      # - DEVSHOP_TEST_ARTIFACTS_PATH="/usr/share/devshop/.github/test-assets"
+
+      # Set path for test artifacts from "docker-compose" execution environment.
+      - DEVSHOP_TEST_ARTIFACTS_PATH="/usr/share/devshop/${DEVSHOP_TEST_ARTIFACTS_PATH:-.github/test-assets}"
 
     privileged: true
     volumes:
