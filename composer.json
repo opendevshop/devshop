@@ -24,10 +24,10 @@
         "devshop/docker-bin-tools": "self.version",
         "devshop/git-split": "self.version",
         "devshop/github-api-cli": "self.version",
-        "devshop/power-process": "self.version"
+        "devshop/power-process": "self.version",
+        "devshop/bin-tools": "self.version"
     },
     "replace": {
-        "devshop/bin-tools": "self.version",
         "devshop/yaml-tasks": "self.version"
     },
     "require-dev": {
