@@ -21,11 +21,11 @@
         "knplabs/github-api": "^1.4",
         "drush/drush": "^8",
         "ext-json": "*",
-        "devshop/docker-bin-tools": "@dev",
+        "devshop/docker-bin-tools": "self.version",
         "devshop/git-split": "self.version",
         "devshop/github-api-cli": "self.version",
         "devshop/power-process": "self.version",
-        "devshop/bin-tools": "@dev"
+        "devshop/bin-tools": "self.version"
     },
     "replace": {
         "devshop/yaml-tasks": "self.version"
