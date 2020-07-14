@@ -222,6 +222,8 @@ class InstallDevmaster extends Command
    */
   protected function initialize(InputInterface $input, OutputInterface $output) {
 
+    parent::initialize($input, $output);
+
     $output->writeln('');
 
     $output->writeln('This command will operate the following changes in your system:');
