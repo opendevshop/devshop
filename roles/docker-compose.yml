@@ -17,7 +17,9 @@ services:
     command: "${COMMAND:-}"
     extra_hosts:
       - "drpl8.testenv.devshop.local.computer:127.0.0.1"
-    hostname: devshop.local.computer
+    # @TODO: Change back to devshop.local.computer
+    # Windows WSL2 Docker was not allowing me to load by devshop.local.computer. This is a workaround.
+    hostname: localhost
     ports:
       - "80:80"
       - "2222:22"
@@ -26,3 +28,7 @@ services:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
       - /var/lib/mysql
       - /var/logs/aegir
+    environment: 
+      # TODO: Make ansible options easier to alter.
+      # @TODO: Change back to devshop.local.computer
+      DEVSHOP_DOCKER_COMMAND_RUN: ansible-playbook /etc/ansible/play.yml -vv --tags runtime --extra-vars server_hostname=localhost
