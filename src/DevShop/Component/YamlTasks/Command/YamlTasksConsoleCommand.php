@@ -428,6 +428,9 @@ class YamlTasksConsoleCommand extends BaseCommand
                     $process->disableOutput();
                 }
 
+                // Set the dir relative to the task file.
+                $process->setWorkingDirectory(dirname($input->getOption('tasks-file')));
+
                 // Set a commit status for this REF
                 $params = new \stdClass();
                 $params->state = 'in_progress';
