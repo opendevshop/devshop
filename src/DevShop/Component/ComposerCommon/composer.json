@@ -1,6 +1,6 @@
 {
   "name": "devshop/composer-common",
-  "type": "library",
+  "type": "composer-plugin",
   "description": "Tools useful for any composer-based project.",
   "keywords": [],
   "homepage": "https://getdevshop.com",
@@ -17,6 +17,7 @@
   ],
   "require": {
     "php": "^7.1",
+    "composer-plugin-api": "^1.1",
     "consolidation/robo": "^1.0",
     "knplabs/github-api": "^1.0",
     "teqneers/php-stream-wrapper-for-git": "^2.0@dev"
@@ -26,7 +27,8 @@
   "extra": {
     "branch-alias": {
       "dev-master": "1.x-dev"
-    }
+    },
+    "class": "DevShop\\Component\\ComposerCommon\\Composer\\Plugin"
   },
   "autoload": {
     "psr-4": {
