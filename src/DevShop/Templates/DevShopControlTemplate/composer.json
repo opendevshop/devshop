@@ -42,6 +42,7 @@
         "drupal/composer_autoloader": "^1.0",
         "drupal/ctools": "^1.15",
         "drupal/devel": "^1.7",
+        "drupal/devshop_stats": "@dev",
         "drupal/drupal": "^7.62",
         "drupal/entity": "^1.9",
         "drupal/features": "^2.11",
