@@ -1,0 +1,18 @@
+base:
+    command: docker-compose build base
+    working-directory: docker
+ansible:
+    command: docker-compose build ansible
+    working-directory: docker
+core:
+    command: docker-compose build core
+    working-directory: docker
+role:
+    command: docker-compose build role
+    working-directory: docker
+server:
+    command: docker-compose build devshop.server
+    working-directory: roles
+run:
+    command: docker-compose up --detach devshop.server
+    working-directory: roles
