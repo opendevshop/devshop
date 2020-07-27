@@ -26,7 +26,7 @@
         "composer/installers": "^1.2",
         "composer/semver": "^1.4",
         "cweagans/composer-patches": "^1.6.5",
-        "devshop/devmaster": "dev-component/composer/devmaster",
+        "devshop/devmaster": "dev-integration",
         "drupal-composer/preserve-paths": "^0.1",
         "drupal/admin_menu": "@rc",
         "drupal/adminrole": "^1.1",
