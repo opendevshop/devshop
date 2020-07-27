@@ -427,9 +427,16 @@ class YamlTasksConsoleCommand extends BaseCommand
                 if ($task['show-output'] == false) {
                     $process->disableOutput();
                 }
-
-                // Set the dir relative to the task file.
-                $process->setWorkingDirectory(dirname($input->getOption('tasks-file')));
+                
+                // Allow "working-directory" property on a single task.
+                if ($task['working-directory']) {
+                    $this->io->text("Working directory <fg=white>{$task['working-directory']}</>");
+                    $process->setWorkingDirectory(dirname($input->getOption('tasks-file')) . "/" . $task['working-directory']);
+                }
+                else {
+                    // Set the dir relative to the task file.
+                    $process->setWorkingDirectory(dirname($input->getOption('tasks-file')));
+                }
 
                 // Set a commit status for this REF
                 $params = new \stdClass();
