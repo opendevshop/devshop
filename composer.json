@@ -25,9 +25,7 @@
         "devshop/git-split": "self.version",
         "devshop/github-api-cli": "self.version",
         "devshop/power-process": "self.version",
-        "devshop/bin-tools": "@dev"
-    },
-    "replace": {
+        "devshop/bin-tools": "@dev",
         "devshop/yaml-tasks": "self.version"
     },
     "require-dev": {
@@ -65,6 +63,10 @@
         {
             "type": "path",
             "url": "src/DevShop/Component/PowerProcess"
+        },
+        {
+            "type": "path",
+            "url": "src/DevShop/Component/YamlTasks"
         }
     ],
     "bin": [
