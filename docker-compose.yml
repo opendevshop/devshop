@@ -22,5 +22,6 @@ services:
 
       - ./aegir-home:/var/aegir:delegated
       - ./src/DevShop/Templates/DevShopControlTemplate:/var/aegir/devmaster-1.x
+      - ./devmaster:/var/aegir/devmaster-1.x/web/profiles/devmaster
       - ./:/usr/share/devshop:delegated
       - $HOME/.ssh:/var/aegir/.ssh
