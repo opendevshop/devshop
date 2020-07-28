@@ -25,7 +25,6 @@ drush_bin_path: "{{ devshop_cli_bin_path }}/drush"
 devshop_devmaster_path: "{{ aegir_user_home }}/devmaster-{{ devshop_version }}"
 
 devshop_install_profile: devmaster
-devshop_working_copy: --working-copy
 
 aegir_server_webserver: apache
 mysql_root_password_update: false
@@ -79,7 +78,6 @@ devmaster_install_command: "{{ devshop_cli_bin_path }}/devshop devmaster:install
                                 --root={{ aegir_user_home }}/devmaster-{{ devshop_version }}/web \
                                 --devshop_version={{ devshop_version }} \
                                 --drush-path={{ devshop_cli_bin_path }}/drush \                                --aegir_db_port=3306 \
-                                {{ devshop_working_copy }} \
 "
 
 devmaster_upgrade_command: |

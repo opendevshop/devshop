@@ -197,15 +197,15 @@ class InstallDevmaster extends Command
       // Git properties
       ->addOption(
         'git-root', NULL, InputOption::VALUE_OPTIONAL,
-        'Path to git repository root.',
+        'Path to git repository root.'
       )
       ->addOption(
         'git-remote', NULL, InputOption::VALUE_OPTIONAL,
-        'URL to clone.',
+        'URL to clone.'
       )
       ->addOption(
         'git-reference', NULL, InputOption::VALUE_OPTIONAL,
-        'Git reference to use.',
+        'Git reference to use.'
       )
 
       // path_to_drush
