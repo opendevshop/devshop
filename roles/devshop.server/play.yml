@@ -76,6 +76,9 @@
       tags: [runtime]
 
   roles:
+    - role: opendevshop.users
+      tags: [runtime]
+
     - role: geerlingguy.mysql
 
     - role: geerlingguy.repo-remi
