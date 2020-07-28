@@ -49,6 +49,9 @@
     state: present
     gid: "{{ aegir_user_gid }}"
 
+- name: Stop all processes running as aegir.
+  command: killall -u aegir
+
 - name: Create Aegir user
   when: aegir_create_user
   ignore_errors: true
@@ -64,6 +67,7 @@
 - name: Ensure /var/aegir is owned by aegir user.
   file:
     state: directory
+    recurse: yes
     path: "{{ aegir_user_home }}"
     group: "{{ aegir_user_name }}"
     owner: "{{ aegir_user_name }}"
