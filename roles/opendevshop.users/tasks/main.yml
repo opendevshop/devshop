@@ -50,7 +50,7 @@
     gid: "{{ aegir_user_gid }}"
 
 - name: Stop all processes running as aegir.
-  command: killall -u aegir
+  command: killall -u "{{ aegir_user_name }}"
 
 - name: Create Aegir user
   when: aegir_create_user
