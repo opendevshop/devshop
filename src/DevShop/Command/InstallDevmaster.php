@@ -194,11 +194,20 @@ class InstallDevmaster extends Command
         'The email to use for the administrator user.'
       )
 
-      // working_copy
+      // Git properties
       ->addOption(
-        'working-copy', NULL, InputOption::VALUE_NONE,
-        'Passed to drush make: use to clone the source code using git.'
+        'git-root', NULL, InputOption::VALUE_OPTIONAL,
+        'Path to git repository root.',
       )
+      ->addOption(
+        'git-remote', NULL, InputOption::VALUE_OPTIONAL,
+        'URL to clone.',
+      )
+      ->addOption(
+        'git-reference', NULL, InputOption::VALUE_OPTIONAL,
+        'Git reference to use.',
+      )
+
       // path_to_drush
       ->addOption(
         'drush-path', NULL, InputOption::VALUE_OPTIONAL,
