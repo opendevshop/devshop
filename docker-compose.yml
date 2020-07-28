@@ -10,8 +10,12 @@ services:
     hostname: devshop.local.computer
     extra_hosts:
       - "drpl8.testenv.devshop.local.computer:127.0.0.1"
+    command: echo 'Hello World! DevShop Development Image here. To run as a single process, override 'command' in docker-compose.yml. '
     environment:
-      DEVSHOP_DOCKER_COMMAND_RUN: ansible-playbook /etc/ansible/play.yml -vv --tags runtime --extra-vars @/etc/ansible/vars.yml
+      DEVSHOP_TEST: x
+      # By default, devshop container will run 'ansible-playbook --tags' runtime after running the "command"
+      # Change the DEVSHOP_DOCKER_COMMAND_RUN if you want to manually run commands instead.
+      # DEVSHOP_DOCKER_COMMAND_RUN: echo "Overrided DEVSHOP_DOCKER_COMMAND_RUN. Doing nothing."
     privileged: true
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
@@ -26,3 +30,5 @@ services:
       - ./vars.yml:/etc/ansible/vars.yml
       - ./roles:/etc/ansible/roles
       - $HOME/.ssh:/var/aegir/.ssh
+      # To develop the docker-systemd-entrypoint without having to rebuild the container, set this volume.
+      - ./docker/bin/docker-systemd-entrypoint:/usr/local/bin/docker-systemd-entrypoint
