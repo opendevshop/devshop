@@ -15,7 +15,9 @@ services:
       DEVSHOP_TEST: x
       # By default, devshop container will run 'ansible-playbook --tags' runtime after running the "command"
       # Change the DEVSHOP_DOCKER_COMMAND_RUN if you want to manually run commands instead.
-      # DEVSHOP_DOCKER_COMMAND_RUN: echo "Overrided DEVSHOP_DOCKER_COMMAND_RUN. Doing nothing."
+      # DEVSHOP_DOCKER_COMMAND_RUN: ansible-playbook /etc/ansible/play.yml --tags runtime --extra-vars @/etc/ansible/vars.yml
+      ANSIBLE_VERBOSITY: 2
+
     privileged: true
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro

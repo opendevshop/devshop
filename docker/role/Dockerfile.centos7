@@ -14,10 +14,10 @@ ENV DEVSHOP_ANSIBLE_INVENTORY_DESTINATION /etc/ansible/hosts
 ENV DEVSHOP_ANSIBLE_INVENTORY_INFO_COMMAND "ansible-inventory --list --yaml"
 
 # Options passed to ansible-playbook during docker build.ENV DEVSHOP_ANSIBLE_BUILDTIME_OPTIONS "-vv --skip-tags runtime"
-ENV DEVSHOP_ANSIBLE_BUILDTIME_OPTIONS "-vv --skip-tags runtime"
+ENV DEVSHOP_ANSIBLE_BUILDTIME_OPTIONS "--skip-tags runtime"
 
 # Options passed to ansible-playbook during docker run or exec.
-ENV DEVSHOP_ANSIBLE_RUNTIME_OPTIONS "-vv --tags runtime"
+ENV DEVSHOP_ANSIBLE_RUNTIME_OPTIONS "--tags runtime"
 
 # The command to run on container build
 ENV DEVSHOP_DOCKER_COMMAND_BUILD ansible-playbook \
