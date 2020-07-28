@@ -60,3 +60,19 @@ Every DevShop server and container will be based on the **devshop/role** configu
     
 The *devshop/role* image is a template for all other server images to be built from.
 
+# Docker Environment
+
+This container is magic. It runs SystemD in the backend, but still runs the Docker Command in the init.
+
+### Docker Command (`DOCKER_COMMAND`)
+
+This is the main CMD of the Docker images. By default, it runs whatever is in `DEVSHOP_DOCKER_BUILD_COMMAND`.
+
+The `docker-entrypoint` script will keep the containers running after the command passes.
+
+If it fails, it will kill the container, as expected.
+
+### DevShop Docker Command (`DEVSHOP_DOCKER_RUN_COMMAND`)
+
+To allow the container to stay open even if it fails, you can use the `DEVSHOP_DOCKER_BUILD_COMMAND` variable.
+
