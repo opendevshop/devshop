@@ -432,7 +432,7 @@ class YamlTasksConsoleCommand extends BaseCommand
                 if (!empty($task['working-directory'])) {
                     $this->io->text("Working directory <fg=white>{$task['working-directory']}</>");
                     $process->setWorkingDirectory(dirname($input->getOption('tasks-file')) . "/" . $task['working-directory']);
-                } 
+                }
                 else {
                     // Set the dir relative to the task file.
                     $process->setWorkingDirectory(dirname($input->getOption('tasks-file')));
