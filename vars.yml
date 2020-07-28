@@ -1,0 +1,4 @@
+# Use this file to alter variables in the devshop container.
+server_hostname: localhost
+aegir_user_uid: 1000
+aegir_user_gid: 1000

@@ -13,7 +13,7 @@ services:
     environment:
       # TODO: Make ansible options easier to alter.
       # @TODO: Change back to devshop.local.computer
-      DEVSHOP_DOCKER_COMMAND_RUN: ansible-playbook /etc/ansible/play.yml -vv --tags runtime --extra-vars server_hostname=localhost
+      DEVSHOP_DOCKER_COMMAND_RUN: ansible-playbook /etc/ansible/play.yml -vv --tags runtime --extra-vars @/etc/ansible/vars.yml
     privileged: true
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
@@ -24,4 +24,7 @@ services:
       - ./src/DevShop/Templates/DevShopControlTemplate:/var/aegir/devmaster-1.x
       - ./devmaster:/var/aegir/devmaster-1.x/web/profiles/devmaster
       - ./:/usr/share/devshop:delegated
+      - ./roles/devshop.server/play.yml:/etc/ansible/play.yml
+      - ./vars.yml:/etc/ansible/vars.yml
+      - ./roles:/etc/ansible/roles
       - $HOME/.ssh:/var/aegir/.ssh
