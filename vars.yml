@@ -1,4 +1,6 @@
 # Use this file to alter variables in the devshop container.
 server_hostname: localhost
+
+# Set these to your local UID so docker paths map correctly.
 aegir_user_uid: 1000
 aegir_user_gid: 1000
