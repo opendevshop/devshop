@@ -36,10 +36,15 @@ if [ ! -z "$DOCKER_COMMAND" ]; then
       echo "System Status before running DOCKER_COMMAND: " && $SYSTEM_STATUS_COMMAND &&
       echo "Running Docker Command '$DOCKER_COMMAND' ..." && $DOCKER_COMMAND &&
         # If not successful, kill the container.
-        # If successful, mention that system D continues.
-        echo "The DOCKER_COMMAND completed. (exit 0) Remember: INIT_COMMAND may continue to run." && \
+        # If successful, run DEVSHOP_DOCKER_COMMAND_RUN and mention that system D continues.
+        echo "The DOCKER_COMMAND completed. (exit 0) Continuing on." && \
         echo "System Status after running Docker command: " && $SYSTEM_STATUS_COMMAND && \
-        echo $WELCOME_MESSAGE \
+        (
+          echo "Running DEVSHOP_DOCKER_COMMAND_RUN Command '$DEVSHOP_DOCKER_COMMAND_RUN' ..." && $DEVSHOP_DOCKER_COMMAND_RUN &&
+          echo "The DEVSHOP_DOCKER_COMMAND_RUN completed. (exit 0) Continuing on."
+        ) || (
+          echo "The DEVSHOP_DOCKER_COMMAND_RUN failed. (exit $?) Continuing on. If you wish to exit on failure, set docker command."
+        )
 
     ) || ( \
         echo "The DOCKER_COMMAND failed. (exit $?) Triggering a shutdown to end INIT_COMMAND ..." && \
