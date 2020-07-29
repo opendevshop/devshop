@@ -18,12 +18,12 @@ default:
       blackbox: ~
       api_driver: 'drupal'
       drupal:
-        # We do not include root here because then we cannot override it on the command line.
-        # drupal_root: /var/aegir/devmaster-1.x
+          # We do not include root here because then we cannot override it on the command line.
+      # drupal_root: /var/aegir/devshop-control-1.x
       drush:
         alias: 'hostmaster'
         # We do not include root here because then we cannot override it on the command line.
-        # root: /var/aegir/devmaster-0.x
+        # root: /var/aegir/devshop-control-1.x
       region_map:
         main: "#block-system-main"
 
@@ -36,7 +36,7 @@ devmaster:
       base_url: http://devshop.local.computer
     Drupal\DrupalExtension:
       drupal:
-        drupal_root: /var/aegir/devmaster-1.x
+        drupal_root: /var/aegir/devshop-control-1.x
       drush:
         alias: 'hostmaster'
-        root: /var/aegir/devmaster-1.x
+        root: /var/aegir/devshop-control-1.x
