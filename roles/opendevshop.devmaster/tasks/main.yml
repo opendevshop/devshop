@@ -101,6 +101,7 @@
   command: "{{ php_executable }} {{ composer_path }} {{ devshop_cli_composer_install_command }}"
   # Changed: true is so we don't fail ansible lint.
   changed_when: true
+  tags: [always]
   args:
     chdir: "{{ devshop_cli_path }}"
 
