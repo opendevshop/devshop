@@ -14,7 +14,9 @@
     path: "{{ ansible_share_path }}"
     state: directory
 
+# @TODO: remove this. Ansible.cfg will point to
 - name: Install Ansible Roles
+  when: false
   file:
     src: "{{ devshop_cli_path }}/roles"
     dest: "{{ ansible_share_path }}/roles"
