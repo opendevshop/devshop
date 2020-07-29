@@ -107,7 +107,6 @@ class RoboFile extends \Robo\Tasks {
    */
   private function generateEnvironment(array $opts, array $env = []) {
     $env += $this->optionsToArray($opts['environment']);
-    $env['ANSIBLE_VERBOSITY'] = $this->ansibleVerbosityMap[$this->output()->getVerbosity()];
 
     foreach ($this->serverOptionsMap as $opt_name => $var_name) {
       // Use $_SERVER var if it exists...
@@ -116,6 +115,9 @@ class RoboFile extends \Robo\Tasks {
         // If not, set to empty string.
         (!empty($opts[$opt_name])? $opts[$opt_name]: '');
     }
+
+    $env['ANSIBLE_VERBOSITY'] = $this->ansibleVerbosityMap[$this->output()->getVerbosity()];
+
     return $env;
   }
 
