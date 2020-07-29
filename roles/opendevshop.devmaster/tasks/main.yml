@@ -160,10 +160,10 @@
   become_method: "{{ ansible_become_method_aegir }}"
   tags: [runtime]
 
-- name: "Remove existing Devmaster Source Code from {{ devshop_devmaster_path }} before installing, if requested."
+- name: "Remove existing Devmaster Source Code from {{ devshop_control_path }} before installing, if requested."
   when: devshop_danger_remove_devmaster
   file:
-    path: "{{ devshop_devmaster_path }}"
+    path: "{{ devshop_control_path }}"
     state: absent
   tags: [never, remove-devmaster, rebuild-devmaster]
 
