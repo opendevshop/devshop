@@ -471,7 +471,6 @@ class RoboFile extends \Robo\Tasks {
    * @option $build Run `robo prepare:containers` to rebuild the container first.
    * @option os-version An OS "slug" for any of the geerlingguy/docker-*-ansible images: https://hub.docker.com/u/geerlingguy/
    * @option environment pass an environment variable to docker-compose in the form --environment NAME=VALUE
-   * @option volumes Set to TRUE to use the docker-compose.volumes.yml file to map local folders into the container.
    * @option install-at-runtime Launch bare containers and then install devshop.
    */
   public function up($docker_command = '', $opts = [
@@ -500,7 +499,6 @@ class RoboFile extends \Robo\Tasks {
     'config' => '/usr/share/devshop/ansible.cfg',
     'local' => FALSE,
     'environment' => [],
-    'volumes' => true,
     'install-at-runtime' => FALSE,
     'build-command' => NULL,
   ]) {
@@ -568,21 +566,6 @@ class RoboFile extends \Robo\Tasks {
     }
 
     if ($opts['mode'] == 'docker-compose') {
-
-      // Volumes
-      if ($opts['volumes']) {
-        $this->yell('Volume mounts requested. Adding docker-compose.volumes.yml');
-        $this->say(' - ' . __DIR__ . '/aegir-home to /var/aegir');
-        $this->say(' - ' . __DIR__ . '/devmaster to /var/aegir/devmaster-1.x/profiles/devmaster');
-
-        // Set COMPOSE_FILE to include volumes.
-        putenv('COMPOSE_FILE=docker-compose.yml:docker-compose.volumes.yml');
-
-        if (!file_exists('aegir-home/devmaster-' . $this::DEVSHOP_LOCAL_VERSION) && !$opts['skip-source-prep']) {
-          $this->io()->warning('The aegir-home folder not present. Running prepare source code command.');
-          $this->prepareSourcecode($opts);
-        }
-      }
 
       $cmd[] = "docker-compose up --detach --force-recreate";
 
