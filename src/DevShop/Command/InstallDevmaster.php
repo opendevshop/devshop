@@ -525,7 +525,7 @@ class InstallDevmaster extends Command
       'server' => $server,
       'web_server' => $server,
       'root' => $this->input->getOption('root'),
-      'git_root' => $this->input->getOption('root'),
+      'git_root' => $this->input->getOption('git_root'),
       'git_remote' => $this->input->getOption('git_remote'),
       'git_reference' => $this->input->getOption('git_reference'),
     ));
