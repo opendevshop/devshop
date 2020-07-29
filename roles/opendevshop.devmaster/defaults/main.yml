@@ -81,9 +81,9 @@ devmaster_install_command: "{{ devshop_cli_bin_path }}/devshop devmaster:install
                                 --root={{ aegir_user_home }}/devshop-control-{{ devshop_version }}/{{ devshop_control_git_docroot }} \
                                 --devshop_version={{ devshop_version }} \
                                 --drush-path={{ devshop_cli_bin_path }}/drush \
-                                --git-root={{ aegir_user_home }}/devshop-control-{{ devshop_version }} \
-                                --git-remote={{ devshop_control_git_remote }} \
-                                --git-reference={{ devshop_control_git_reference }}
+                                --git_root={{ aegir_user_home }}/devshop-control-{{ devshop_version }} \
+                                --git_remote={{ devshop_control_git_remote }} \
+                                --git_reference={{ devshop_control_git_reference }}
 "
 
 devmaster_upgrade_command: |

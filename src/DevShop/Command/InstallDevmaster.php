@@ -196,15 +196,15 @@ class InstallDevmaster extends Command
 
       // Git properties
       ->addOption(
-        'git-root', NULL, InputOption::VALUE_OPTIONAL,
+        'git_root', NULL, InputOption::VALUE_OPTIONAL,
         'Path to git repository root.'
       )
       ->addOption(
-        'git-remote', NULL, InputOption::VALUE_OPTIONAL,
+        'git_remote', NULL, InputOption::VALUE_OPTIONAL,
         'URL to clone.'
       )
       ->addOption(
-        'git-reference', NULL, InputOption::VALUE_OPTIONAL,
+        'git_reference', NULL, InputOption::VALUE_OPTIONAL,
         'Git reference to use.'
       )
 
@@ -525,7 +525,9 @@ class InstallDevmaster extends Command
       'server' => $server,
       'web_server' => $server,
       'root' => $this->input->getOption('root'),
-      // @TODO: add git remote git root and git ref properties.
+      'git_root' => $this->input->getOption('root'),
+      'git_remote' => $this->input->getOption('git_remote'),
+      'git_reference' => $this->input->getOption('git_reference'),
     ));
 
     // Save Hostmaster Site context, and flag for installation, pre-verify.
