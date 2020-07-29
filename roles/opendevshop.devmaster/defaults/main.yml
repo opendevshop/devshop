@@ -25,12 +25,12 @@ drush_bin_path: "{{ devshop_cli_bin_path }}/drush"
 devshop_devmaster_path: "{{ aegir_user_home }}/devmaster-{{ devshop_version }}"
 
 devshop_install_profile: devmaster
-devshop_working_copy: --working-copy
 
 aegir_server_webserver: apache
 mysql_root_password_update: false
 
 database_host: localhost
+database_host_port: 3306
 aegir_client_name: admin
 aegir_logs_path: /var/log/aegir
 
@@ -60,8 +60,9 @@ devshop_version: 1.x
 devshop_cli_version: "{{ devshop_version }}"
 
 # Set devmaster_git_repo to deploy a devmaster instance from an existing git repo.
-devmaster_git_repo: 'https://github.com/devshop-packages/devshop-control-template'
-devmaster_git_repo_docroot: web
+devshop_control_git_remote: 'https://github.com/devshop-packages/devshop-control-template'
+devshop_control_git_docroot: web
+devshop_control_git_reference: integration
 
 # Leave empty to use default branch.
 devmaster_git_ref: ''
@@ -71,15 +72,18 @@ devmaster_install_command: "{{ devshop_cli_bin_path }}/devshop devmaster:install
                                 --aegir_db_host={{ database_host }} \
                                 --aegir_db_pass={{ mysql_root_password }} \
                                 --aegir_db_user={{ mysql_root_username }} \
+                                --aegir_db_port={{ database_host_port }} \
                                 --aegir_host={{ server_hostname }} \
                                 --client_name={{ aegir_client_name }} \
                                 --client_email={{ devshop_devmaster_email }} \
                                 --http_service_type={{ aegir_server_webserver }} \
                                 --profile={{ devshop_install_profile }} \
-                                --root={{ aegir_user_home }}/devmaster-{{ devshop_version }}/web \
+                                --root={{ aegir_user_home }}/devshop-control-{{ devshop_version }}/{{ devshop_control_git_docroot }} \
                                 --devshop_version={{ devshop_version }} \
-                                --drush-path={{ devshop_cli_bin_path }}/drush \                                --aegir_db_port=3306 \
-                                {{ devshop_working_copy }} \
+                                --drush-path={{ devshop_cli_bin_path }}/drush \
+                                --git_root={{ aegir_user_home }}/devshop-control-{{ devshop_version }} \
+                                --git_remote={{ devshop_control_git_remote }} \
+                                --git_reference={{ devshop_control_git_reference }}
 "
 
 devmaster_upgrade_command: |
