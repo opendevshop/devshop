@@ -135,7 +135,7 @@
 
 - name: Create /var/aegir/.drush
   file:
-    path: "{{ aegir_user_home }}/.drush"
+    path: "{{ aegir_user_home }}/.drush/commands"
     owner: "{{ aegir_user_name }}"
     group: "{{ aegir_user_name }}"
     mode: 0744
