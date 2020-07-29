@@ -71,6 +71,10 @@
         "drupal/token": "^1.7",
         "drupal/views": "^3.24",
         "drupal/views_bulk_operations": "^3.5",
+        "npm-asset/backbone": "^1.4",
+        "npm-asset/chosen": "^0.0.2",
+        "npm-asset/modernizr": "^2010.07",
+        "npm-asset/underscore": "^1.10",
         "symfony/filesystem": "~2.7|^3",
         "webflo/drupal-finder": "^1.0.0"
     },
