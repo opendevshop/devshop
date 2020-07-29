@@ -30,6 +30,7 @@ aegir_server_webserver: apache
 mysql_root_password_update: false
 
 database_host: localhost
+database_host_port: 3306
 aegir_client_name: admin
 aegir_logs_path: /var/log/aegir
 
@@ -70,6 +71,7 @@ devmaster_install_command: "{{ devshop_cli_bin_path }}/devshop devmaster:install
                                 --aegir_db_host={{ database_host }} \
                                 --aegir_db_pass={{ mysql_root_password }} \
                                 --aegir_db_user={{ mysql_root_username }} \
+                                --aegir_db_port={{ database_host_port }} \
                                 --aegir_host={{ server_hostname }} \
                                 --client_name={{ aegir_client_name }} \
                                 --client_email={{ devshop_devmaster_email }} \
@@ -77,7 +79,7 @@ devmaster_install_command: "{{ devshop_cli_bin_path }}/devshop devmaster:install
                                 --profile={{ devshop_install_profile }} \
                                 --root={{ aegir_user_home }}/devmaster-{{ devshop_version }}/web \
                                 --devshop_version={{ devshop_version }} \
-                                --drush-path={{ devshop_cli_bin_path }}/drush \                                --aegir_db_port=3306 \
+                                --drush-path={{ devshop_cli_bin_path }}/drush \
 "
 
 devmaster_upgrade_command: |
