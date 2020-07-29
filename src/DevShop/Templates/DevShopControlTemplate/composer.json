@@ -73,8 +73,9 @@
         "drupal/views_bulk_operations": "^3.5",
         "npm-asset/backbone": "^1.4",
         "npm-asset/chosen": "^0.0.2",
-        "npm-asset/modernizr": "^2010.07",
+        "npm-asset/modernizr": "^3.11",
         "npm-asset/underscore": "^1.10",
+        "oomphinc/composer-installers-extender": "^1.1",
         "symfony/filesystem": "~2.7|^3",
         "webflo/drupal-finder": "^1.0.0"
     },
@@ -107,11 +108,12 @@
         ]
     },
     "extra": {
-        "installer-paths": {
+      "installer-types": ["library", "npm-asset"],
+      "installer-paths": {
             "web/": ["type:drupal-core"],
             "web/profiles/{$name}/": ["type:drupal-profile"],
             "web/sites/all/drush/{$name}/": ["type:drupal-drush"],
-            "web/sites/all/libraries/{$name}/": ["type:drupal-library"],
+            "web/sites/all/libraries/{$name}/": ["type:drupal-library","type:bower-asset","type:npm-asset"],
             "web/sites/all/modules/contrib/{$name}/": ["type:drupal-module"],
             "web/sites/all/themes/contrib/{$name}/": ["type:drupal-theme"]
         },
