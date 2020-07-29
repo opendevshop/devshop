@@ -266,46 +266,6 @@ class RoboFile extends \Robo\Tasks {
       }
     }
 
-    // If we want to just populate modules into /devmaster folder...
-    if ($opts['make'] == 'profile') {
-      // Populate devmaster install profile with contrib code.
-      $makefile_path = 'build-devmaster-dev.make.yml';
-      $make_destination = 'devmaster/';
-      if (file_exists('devmaster/modules/contrib')) {
-        $this->say("Path 'devmaster/modules/contrib' already exists.");
-      }
-      else {
-        $this->yell("Populating devmaster profile with contrib code from $makefile_path ...");
-        $result = $this->_exec("bin/drush make {$makefile_path} {$make_destination} --working-copy --no-gitinfofile --no-core --contrib-destination=.");
-        if (!$result->wasSuccessful()) {
-          throw new \RuntimeException("Drush make failed with the exit code " . $result->getExitCode());
-        }
-      }
-    }
-    // Or if a whole Drupal build is needed.
-    elseif ($opts['make'] == 'drupal') {
-
-      // Run drush make to build the devmaster stack.
-      $makefile_path = $opts['no-dev']? 'build-devmaster.make': "build-devmaster-dev.make.yml";
-      $make_destination = $this->devshop_root_path . "/aegir-home/devmaster-" . $opts['devshop-version'];
-
-      // Append the desired devshop root path.
-      $makefile_path = $this->devshop_root_path . '/' . $makefile_path;
-
-      if (file_exists($make_destination)) {
-        $this->say("Path {$make_destination} already exists.");
-      }
-      else {
-
-        $this->yell("Building devmaster from makefile $makefile_path to $make_destination");
-
-        $result = $this->_exec("bin/drush make {$makefile_path} {$make_destination} --working-copy --no-gitinfofile");
-        if (!$result->wasSuccessful()) {
-          throw new \RuntimeException("Drush make failed with the exit code " . $result->getExitCode());
-        }
-      }
-    }
-
     // Set git remote urls
     if ($opts['no-dev'] == FALSE) {
       $devshop_ssh_git_url = "git@github.com:opendevshop/devshop.git";
