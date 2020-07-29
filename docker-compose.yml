@@ -92,3 +92,9 @@ services:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
       - /var/lib/mysql
       - /var/logs/aegir
+
+      - ./aegir-home:/var/aegir:delegated
+      - ./src/DevShop/Templates/DevShopControlTemplate:/var/aegir/devmaster-1.x
+      - $PWD:/usr/share/devshop:delegated
+      - ./provision:/usr/share/drush/commands/provision:delegated
+      - $HOME/.ssh:/var/aegir/.ssh
