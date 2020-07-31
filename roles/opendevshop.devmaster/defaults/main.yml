@@ -39,7 +39,7 @@ aegir_log_files_touch:
   - "{{ aegir_logs_path }}/hostmaster.error.log"
   - "{{ aegir_logs_path }}/hostmaster.access.log"
 
-drush_dl_method: wget
+drush_dl_method: git_drupalorg
 
 devshop_drush_packages:
   provision: 7.x-4.x
