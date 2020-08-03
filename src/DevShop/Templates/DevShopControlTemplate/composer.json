@@ -9,20 +9,16 @@
             "role": ""
         }
     ],
-    "repositories": {
-        "0": {
+    "repositories": [
+        {
             "type": "composer",
             "url": "https://packages.drupal.org/7"
         },
-        "1": {
+        {
             "type": "composer",
             "url": "https://asset-packagist.org"
-        },
-        "devmaster": {
-            "type": "path",
-            "url": "/usr/share/devshop/devmaster"
         }
-    },
+    ],
     "require": {
         "php": ">=5.3.3",
         "ext-curl": "*",
@@ -88,14 +84,14 @@
     "conflict": {
         "drupal/core": "8.*"
     },
-    "replace": {
-        "drupal/hosting_server": "3.180",
-        "drupal/hosting_site": "3.180",
-        "drupal/hosting_client": "3.180",
-        "drupal/hosting_db_server": "3.180",
-        "drupal/hosting_web_server": "3.180",
-        "drupal/hosting_task": "3.180"
-    },
+   "replace": {
+       "drupal/hosting_server": "3.180",
+       "drupal/hosting_site": "3.180",
+       "drupal/hosting_client": "3.180",
+       "drupal/hosting_db_server": "3.180",
+       "drupal/hosting_web_server": "3.180",
+       "drupal/hosting_task": "3.180"
+   },
     "config": {
         "sort-packages": true
     },
@@ -122,35 +118,18 @@
         ]
     },
     "extra": {
-        "installer-types": [
-            "library",
-            "npm-asset"
-        ],
-        "installer-paths": {
-            "web/": [
-                "type:drupal-core"
-            ],
-            "web/profiles/{$name}/": [
-                "type:drupal-profile"
-            ],
-            "web/sites/all/drush/{$name}/": [
-                "type:drupal-drush"
-            ],
-            "web/sites/all/libraries/{$name}/": [
-                "type:drupal-library",
-                "type:bower-asset",
-                "type:npm-asset"
-            ],
-            "web/sites/all/modules/contrib/{$name}/": [
-                "type:drupal-module"
-            ],
-            "web/sites/all/themes/contrib/{$name}/": [
-                "type:drupal-theme"
-            ]
+      "installer-types": ["library", "npm-asset"],
+      "installer-paths": {
+            "web/": ["type:drupal-core"],
+            "web/profiles/{$name}/": ["type:drupal-profile"],
+            "web/sites/all/drush/{$name}/": ["type:drupal-drush"],
+            "web/sites/all/libraries/{$name}/": ["type:drupal-library","type:bower-asset","type:npm-asset"],
+            "web/sites/all/modules/contrib/{$name}/": ["type:drupal-module"],
+            "web/sites/all/themes/contrib/{$name}/": ["type:drupal-theme"]
         },
         "patches": {
             "cweagans/composer-patches": {
-                "Call the preserve paths hooks": "https://github.com/SebCorbin/composer-patches/commit/1cb9bacba51f8bba0c5f3f322c3bb61e4ceae974.patch"
+                "Call the preserve paths hooks" : "https://github.com/SebCorbin/composer-patches/commit/1cb9bacba51f8bba0c5f3f322c3bb61e4ceae974.patch"
             }
         },
         "preserve-paths": [
