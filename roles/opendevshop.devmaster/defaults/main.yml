@@ -61,6 +61,8 @@ devshop_control_git_docroot: web
 devshop_control_git_reference: component/composer/devmaster
 devshop_control_path: "{{ aegir_user_home }}/devshop-control-{{ devshop_version }}"
 
+devshop_control_drush_alias: "@hostmaster"
+
 devshop_install_profile: devmaster
 
 # Leave empty to use default branch.
