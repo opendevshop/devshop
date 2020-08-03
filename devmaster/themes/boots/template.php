@@ -810,8 +810,8 @@ function boots_preprocess_page(&$vars){
   $vars['sidebar_first_rendered'] = render($vars['page']['sidebar_first']);
 
   // Indicate the project is inactive.
-  if ((int) $vars['node']->status == NODE_NOT_PUBLISHED) {
-    $vars['subtitle'] .= ' <small>' . t('Inactive') .  '</small>';
+  if (isset($project_node) && isset($project_node->nid) && (int) $project_node->status == NODE_NOT_PUBLISHED) {
+    $vars['subtitle'] .= ' <small>' . t('Inactive Project') .  '</small>';
   }
 }
 
