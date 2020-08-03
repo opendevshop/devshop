@@ -25,7 +25,7 @@ class DevmasterTest extends Command {
         '',
         InputOption::VALUE_OPTIONAL,
         'The root path to the site to test, if @hostmaster alias is not found.',
-        '/var/aegir/devmaster-1.x'
+        '/var/aegir/devshop-control-1.x'
       )
       ->addOption(
         'name',
