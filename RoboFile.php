@@ -206,9 +206,8 @@ class RoboFile extends \Robo\Tasks {
   }
 
   private $repos = [
-    'provision' => 'http://git.drupal.org/project/provision.git',
-    'aegir-home/.drush/commands/registry_rebuild' => 'http://git.drupal.org/project/registry_rebuild.git',
-    'documentation' => 'http://github.com/opendevshop/documentation.git',
+    'provision' => 'http://git.drupal.org/project/provision.git#7.x-4.x',
+    'aegir-home/.drush/commands/registry_rebuild' => 'http://git.drupal.org/project/registry_rebuild.git#',
   ];
 
   /**
@@ -247,12 +246,15 @@ class RoboFile extends \Robo\Tasks {
 
     // Clone all git repositories.
     foreach ($this->repos as $path => $url) {
+      // Allow repos to specify a branch after #.
+      list($url, $branch) = explode('#', $url);
+
       if (file_exists($this->devshop_root_path . '/' . $path)) {
         $this->say("$path already exists.");
       }
       else {
         $this->taskGitStack()
-          ->cloneRepo($url, $this->devshop_root_path . '/' . $path)
+          ->cloneRepo($url, $this->devshop_root_path . '/' . $path, $branch)
           ->run();
       }
     }
