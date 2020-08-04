@@ -9,18 +9,15 @@ services:
     volumes:
       # Development volumes
 
-      # DevShop Core. Includes:
-      #  - CLI, Ansible Roles
-      #  - Devmaster: src/DevShop/Templates/DevShopControlTemplate
-
+      # DevShop Core.
+      # Includes:
+      #   DevShop Control Composer Template: /usr/share/devshop/src/DevShop/Templates/DevShopControlTemplate
+      #   Ansible Roles: /usr/share/devshop/roles
       - ./:/usr/share/devshop:delegated
 
-# @TODO: Remove if we can get all of devmaster working under /usr/share/devshop.
-#      # DevShop Control root
-#      - ./src/DevShop/Templates/DevShopControlTemplate:/var/aegir/devshop-control-1.x
-#
-#      # Devmaster Drupal Install Profile
-#      - ./devmaster:/var/aegir/devshop-control-1.x/web/profiles/devmaster
+      # Devmaster Drupal Install Profile
+      # This volume injects the folder `./devmaster` into the "hostmaster" platform in the container.
+      - ./devmaster:/usr/share/devshop/src/DevShop/Templates/DevShopControlTemplate/web/profiles/devmaster
 
       # Provision Drush Extension
       - ./provision:/var/aegir/.drush/commands/provision:delegated
