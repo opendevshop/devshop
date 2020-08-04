@@ -451,7 +451,7 @@ class RoboFile extends \Robo\Tasks {
     'config' => '/usr/share/devshop/ansible.cfg',
     'local' => FALSE,
     'environment' => [],
-    'volumes' => true,
+    'volumes' => TRUE,
     'install-at-runtime' => FALSE,
     'build-command' => NULL,
   ]) {
