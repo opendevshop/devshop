@@ -115,6 +115,7 @@ jobs:
         ANSIBLE_SKIP_TAGS: "${{ matrix.run_skip_tags }}"
       run: |
         bin/github deployment:update --state=in_progress --description="Installing DevShop with devshop-ansible-playbook..." --log_url=${GITHUB_RUN_LOG_URL}#step:10:1
+        bin/robo exec "chown aegir:aegir /usr/share/devshop -R"
         bin/robo exec devshop-ansible-playbook \
           && bin/github deployment:update --state=success --description="Installing DevShop with devshop-ansible-playbook... Done"  --log_url=${GITHUB_RUN_LOG_URL}#step:10:1 --environment_url=${GITHUB_RUN_LOG_URL}#step:8:1 \
           || ( bin/github deployment:update --state=failure --description="Installing DevShop with devshop-ansible-playbook... Failed" --log_url=${GITHUB_RUN_LOG_URL}#step:10:1 --environment_url=${GITHUB_RUN_LOG_URL}#step:8:1 && exit 1 )
