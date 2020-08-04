@@ -568,10 +568,12 @@ class RoboFile extends \Robo\Tasks {
       // Runtime Environment for the $cmd list.
       $env_run = $this->generateEnvironmentArgs($opts);
 
-      // Set extra ansible vars just for development & testing environment.
-      $env_run['ANSIBLE_EXTRA_VARS'] = json_encode(array(
-        'devshop_control_path' => '/usr/share/devshop/src/DevShop/Templates/DevShopControlTemplate',
-      ));
+      // Set extra ansible vars when not in CI.
+      if (empty($_ENV['CI'])) {
+        $env_run['ANSIBLE_EXTRA_VARS'] = json_encode(array(
+          'devshop_control_path' => '/usr/share/devshop/src/DevShop/Templates/DevShopControlTemplate',
+        ));
+      }
 
       // Run a secondary command after the docker command.
       if ($test_command) {
