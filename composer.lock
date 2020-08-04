@@ -1,10 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d7334c6d1b9ac5c928305c68b9dad82c",
+    "content-hash": "1aa105f1cb8b7a0745f6dbbee19b7727",
     "packages": [
         {
             "name": "consolidation/annotated-command",
@@ -567,8 +567,7 @@
             "dist": {
                 "type": "path",
                 "url": "src/DevShop/Component/ComposerCommon",
-                "reference": "87a089704d0efd73223dfbda00bd903876eb094b",
-                "shasum": null
+                "reference": "87a089704d0efd73223dfbda00bd903876eb094b"
             },
             "require": {
                 "consolidation/robo": "^1.0",
@@ -612,8 +611,7 @@
             "dist": {
                 "type": "path",
                 "url": "src/DevShop/Component/GitSplit",
-                "reference": "43c140153da25bb227a2e3d43903be533439bffd",
-                "shasum": null
+                "reference": "43c140153da25bb227a2e3d43903be533439bffd"
             },
             "require": {
                 "composer-plugin-api": "^1.1",
@@ -651,7 +649,10 @@
                 }
             ],
             "description": "DevShop GitSplit Component",
-            "homepage": "https://getdevshop.com"
+            "homepage": "https://getdevshop.com",
+            "transport-options": {
+                "relative": true
+            }
         },
         {
             "name": "devshop/github-api-cli",
@@ -659,8 +660,7 @@
             "dist": {
                 "type": "path",
                 "url": "src/DevShop/Component/GitHubApiCli",
-                "reference": "394e2043abb214e57c89c2f53fd908cb13fee2dd",
-                "shasum": null
+                "reference": "394e2043abb214e57c89c2f53fd908cb13fee2dd"
             },
             "require": {
                 "consolidation/robo": "^1.0",
@@ -707,8 +707,7 @@
             "dist": {
                 "type": "path",
                 "url": "src/DevShop/Component/PowerProcess",
-                "reference": "7a2fcfd9b70057036b2265ff8f1198ef69d790ee",
-                "shasum": null
+                "reference": "7a2fcfd9b70057036b2265ff8f1198ef69d790ee"
             },
             "require": {
                 "consolidation/robo": "^1",
@@ -2800,5 +2799,6 @@
     "platform-dev": [],
     "platform-overrides": {
         "php": "7.1.3"
-    }
+    },
+    "plugin-api-version": "1.1.0"
 }
