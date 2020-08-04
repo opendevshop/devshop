@@ -256,14 +256,6 @@ class RoboFile extends \Robo\Tasks {
           ->cloneRepo($url, $this->devshop_root_path . '/' . $path)
           ->run();
       }
-
-      // Checkout provision to the 7.x-3.x-devshop branch.
-      if ($path == 'provision') {
-        $this->taskGitStack()
-          ->dir($this->devshop_root_path . '/' . $path)
-          ->checkout('7.x-3.x-devshop')
-          ->run();
-      }
     }
 
     // Set git remote urls
