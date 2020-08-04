@@ -24,13 +24,14 @@ PATH="$DIR:$PATH"
 
 # Prepare arguments and options.
 ALIAS=$1
-URI=$(devshop-site-info ${ALIAS} uri)
-CLIENT_NAME=${CLIENT_NAME:-admin}\
 
 if [ -z "${ALIAS}" ]; then
   echo "Usage: site-wait @site_alias"
   exit 1
 fi
+
+URI=$(devshop-site-info ${ALIAS} uri)
+CLIENT_NAME=${CLIENT_NAME:-admin}\
 
 OPTIONS=-n log "Checking database... "
 
