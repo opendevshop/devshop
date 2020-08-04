@@ -36,7 +36,7 @@
     # ansible_python_interpreter: python3
 
     # Supervisor will start when the container and systemd start.
-    supervisor_started: false
+    supervisor_started: true
 
   pre_tasks:
     - name: Set variables ({{ ansible_os_family}} {{ansible_distribution_major_version}})
