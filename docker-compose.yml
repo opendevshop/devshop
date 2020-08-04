@@ -92,3 +92,17 @@ services:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
       - /var/lib/mysql
       - /var/logs/aegir
+
+    # Resource allocation.
+    # 4GB, 2CPUs is a good minimum.
+
+    # mem_limit is a hard upper limit for the container.
+    # If using linux, make sure this is below your system's idle free memory or your desktop will slow down.
+    mem_limit: 10g
+
+    # mem_reservation is a minimum that your system will reserve for the container.
+    # DevShop needs about 4GB to provide a good user experience.
+    mem_reservation: 4g
+
+    # Restrict the containers to only use the first 2 CPUs
+    cpuset: 0,1
