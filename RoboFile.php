@@ -569,7 +569,7 @@ class RoboFile extends \Robo\Tasks {
       $env_run = $this->generateEnvironmentArgs($opts);
 
       // Set extra ansible vars when not in CI.
-      if (empty($_ENV['CI'])) {
+      if (empty($_SERVER['CI'])) {
         $env_run['ANSIBLE_EXTRA_VARS'] = json_encode(array(
           'devshop_control_path' => '/usr/share/devshop/src/DevShop/Templates/DevShopControlTemplate',
         ));
