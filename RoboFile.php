@@ -79,6 +79,7 @@ class RoboFile extends \Robo\Tasks {
     'from' => 'FROM_IMAGE',
     'os' => 'OS_VERSION',
     'dockerfile' => 'DOCKERFILE',
+    'compose-file' => 'COMPOSE_FILE',
   ];
 
   /**
@@ -454,6 +455,7 @@ class RoboFile extends \Robo\Tasks {
     'volumes' => TRUE,
     'install-at-runtime' => FALSE,
     'build-command' => NULL,
+    'compose-file' => NULL,
   ]) {
 
     // Define docker-image (name for the "image" in docker-compose.
@@ -522,17 +524,13 @@ class RoboFile extends \Robo\Tasks {
 
       // Volumes
       if ($opts['volumes']) {
-        $this->yell('Volume mounts requested. Adding docker-compose.volumes.yml');
-        $this->say(' - ' . __DIR__ . '/aegir-home to /var/aegir');
-        $this->say(' - ' . __DIR__ . '/devmaster to /var/aegir/devmaster-1.x/profiles/devmaster');
+        $this->yell('Volume mounts requested. Using docker-compose.volumes.yml.');
 
         // Set COMPOSE_FILE to include volumes.
-        putenv('COMPOSE_FILE=docker-compose.yml:docker-compose.volumes.yml');
+        $opts['compose-file'] = 'docker-compose.yml:docker-compose.volumes.yml';
 
-        if (!file_exists('aegir-home/devmaster-' . $this::DEVSHOP_LOCAL_VERSION) && !$opts['skip-source-prep']) {
-          $this->io()->warning('The aegir-home folder not present. Running prepare source code command.');
-          $this->prepareSourcecode($opts);
-        }
+        $this->io()->note('Preparing source code on host since volumes were requested.');
+        $this->prepareSourcecode($opts);
       }
 
       $cmd[] = "docker-compose up --detach --force-recreate";
@@ -561,6 +559,11 @@ class RoboFile extends \Robo\Tasks {
 
       // Runtime Environment for the $cmd list.
       $env_run = $this->generateEnvironmentArgs($opts);
+
+      // Set extra ansible vars just for development & testing environment.
+      $env_run['ANSIBLE_EXTRA_VARS'] = json_encode(array(
+        'devshop_control_path' => '/usr/share/devshop/src/DevShop/Templates/DevShopControlTemplate',
+      ));
 
       // Run a secondary command after the docker command.
       if ($test_command) {
