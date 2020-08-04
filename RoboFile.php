@@ -213,15 +213,13 @@ class RoboFile extends \Robo\Tasks {
   /**
    * Clone all needed source code and build devmaster from the makefile.
    *
-   * @option no-dev Use build-devmaster.make instead of the development makefile.
+   * @option no-dev Ensure git remote URLs are SSH format so developers can push.
    * @option devshop-version The directory to put the
-   * @option make Defaults to "profile" to populate the makefile into the ./devmaster folder. Use --make=drupal to build the entire ./aegir-home/devmaster-1.x folder.
    */
   public function prepareSourcecode($opts = [
     'no-dev' => FALSE,
     'devshop-version' => '1.x',
     'test-upgrade' => FALSE,
-    'make' => 'profile',
   ]) {
 
     if (empty($this->git_ref)) {
@@ -421,7 +419,6 @@ class RoboFile extends \Robo\Tasks {
    * @option $user-uid Override the detected current user's UID when building
    *   containers.
    * @option $xdebug Set this option to launch with an xdebug container.
-   * @option no-dev Use build-devmaster.make instead of the development makefile.
    * @option $build Run `robo prepare:containers` to rebuild the container first.
    * @option os-version An OS "slug" for any of the geerlingguy/docker-*-ansible images: https://hub.docker.com/u/geerlingguy/
    * @option environment pass an environment variable to docker-compose in the form --environment NAME=VALUE
