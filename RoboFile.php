@@ -262,7 +262,7 @@ class RoboFile extends \Robo\Tasks {
     // Run composer install on devmaster stack so it's ready before the container launches and devmaster install command is faster.
     $this->taskExecStack()
       ->dir('src/DevShop/Templates/DevShopControlTemplate')
-      ->exec("composer install --ansi")
+      ->exec("composer install --prefer-source --ansi")
       ->run();
 
     // Set git remote urls
