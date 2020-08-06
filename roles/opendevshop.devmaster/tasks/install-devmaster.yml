@@ -10,7 +10,7 @@
   tags: [runtime]
 
 - name: Get Devmaster root
-  command: "{{ devshop_cli_bin_path }}/devshop-site-info @hostmaster root"
+  command: "{{ devshop_cli_bin_path }}/devshop-site-info {{ devshop_control_drush_alias }} root"
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
@@ -20,7 +20,7 @@
   tags: [runtime]
 
 - name: Get Devmaster URI
-  command: "{{ devshop_cli_bin_path }}/devshop-site-info @hostmaster uri"
+  command: "{{ devshop_cli_bin_path }}/devshop-site-info {{ devshop_control_drush_alias }} uri"
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
@@ -85,7 +85,7 @@
   tags: [runtime]
 
 - name: Clear the drush cache.
-  command: "{{ drush_bin_path }} cc drush"
+  command: "{{ drush_bin_path }} @{{ devshop_control_site_drush_alias }} cc drush"
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
