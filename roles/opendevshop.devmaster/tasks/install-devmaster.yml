@@ -84,8 +84,8 @@
     - not devmaster_skip_upgrade
   tags: [runtime]
 
-- name: Clear the drush cache.
-  command: "{{ drush_bin_path }} @{{ devshop_control_site_drush_alias }} cc drush"
+- name: Clear all DevShop Control Caches.
+  command: "{{ drush_bin_path }} @{{ devshop_control_site_drush_alias }} cc all"
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
