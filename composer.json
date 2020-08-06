@@ -23,10 +23,12 @@
         "ext-json": "*",
         "devshop/git-split": "self.version",
         "devshop/github-api-cli": "self.version",
-        "devshop/power-process": "self.version"
+        "devshop/power-process": "self.version",
+        "drupal/provision": "dev-4.x"
     },
     "replace": {
-        "devshop/yaml-tasks": "self.version"
+        "devshop/yaml-tasks": "self.version",
+        "drupal/drupal": "*"
     },
     "require-dev": {
         "composer/composer": "^1.9"
@@ -40,6 +42,10 @@
         }
     },
     "repositories": [
+        {
+            "type": "composer",
+            "url": "https://packages.drupal.org/7"
+        },
         {
             "type": "path",
             "url": "src/DevShop/Component/ComposerCommon"
