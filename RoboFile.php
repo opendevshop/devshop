@@ -276,6 +276,7 @@ class RoboFile extends \Robo\Tasks {
 
     // Set git remote urls
     if ($opts['no-dev'] == FALSE) {
+      // @TODO: Set git url for others like provision
       $devshop_ssh_git_url = "git@github.com:opendevshop/devshop.git";
 
       if ($this->taskExec("git remote set-url origin $devshop_ssh_git_url")->run()->wasSuccessful()) {
