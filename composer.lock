@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0bd7e1eea9be328aff75311a9fc813bb",
+    "content-hash": "d60c4c8aba85c52ea19794fbc4c01cc3",
     "packages": [
         {
             "name": "consolidation/annotated-command",
@@ -849,7 +849,7 @@
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/provision.git",
-                "reference": "4aa96cd770e61c8038e238a8813436450642eda7"
+                "reference": "cbc63faafe970eb4da3c42fa62dacc1224f12a36"
             },
             "require": {
                 "drupal/drupal": "~7.0",
@@ -948,7 +948,7 @@
                 "issues": "https://www.drupal.org/project/issues/provision",
                 "docs": "http://docs.aegirproject.org/"
             },
-            "time": "2020-08-06T13:00:28+00:00"
+            "time": "2020-08-06T13:11:53+00:00"
         },
         {
             "name": "drush/drush",
