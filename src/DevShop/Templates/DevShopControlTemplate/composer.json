@@ -128,7 +128,8 @@
             "web/sites/all/themes/contrib/{$name}/": ["type:drupal-theme"]
         },
         "preserve-paths": [
-            "web/sites"
+            "web/sites",
+            "web/profiles"
         ]
     }
 }
