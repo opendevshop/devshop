@@ -5,6 +5,7 @@
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
   command: "env"
+  changed_when: true
   register: devmaster_install_environment
   tags: [runtime]
 
