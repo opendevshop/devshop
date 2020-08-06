@@ -97,6 +97,7 @@
     "prefer-stable": true,
     "scripts": {
         "post-install-cmd": [
+            "ln -s drushrc.php vendor/drush/drush"
         ],
         "pre-update-cmd": [
         ],
