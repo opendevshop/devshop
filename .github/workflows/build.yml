@@ -74,12 +74,6 @@ jobs:
     - name: Install Composer dependencies
       run: composer install --prefer-dist --no-progress --no-suggest
 
-    - name: Install DevShop Control Composer dependencies (Twice to work around error).
-      run: |
-        composer install --prefer-dist --no-progress --no-suggest
-        composer install --prefer-dist --no-progress --no-suggest
-      working-directory: src/DevShop/Templates/DevShopControlTemplate
-
     - name: Create a GitHub Deployment to PR environment
       if: ${{ github.event_name == 'pull_request' }}
       run: |
