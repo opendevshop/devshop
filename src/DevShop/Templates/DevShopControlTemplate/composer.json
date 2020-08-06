@@ -31,7 +31,7 @@
         "composer/semver": "^1.4",
         "cweagans/composer-patches": "^1.6.5",
         "devshop/devmaster": "dev-component/composer/devmaster",
-        "drupal-composer/preserve-paths": "^0.1",
+        "drupal-composer/preserve-paths": "dev-master#4c5f62fe97f48e38c5e80cf2f9be8666f683e454",
         "drupal/admin_menu": "@rc",
         "drupal/adminrole": "^1.1",
         "drupal/aegir_ansible": "@dev",
