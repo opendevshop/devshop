@@ -64,9 +64,9 @@ function devshop_github_form_alter(&$form, &$form_state, $form_id) {
   );
 
   if (!$token_exists) {
-    $form['server']['devshop_github_ssh_key']['ssh_key_status'] ['#prefix'] = ' <div class="text ">';
+    $form['server']['devshop_github_ssh_key']['ssh_key_status'] ['#prefix'] = ' <div class="alert alert-warning">';
     $form['server']['devshop_github_ssh_key']['ssh_key_status'] ['#suffix'] = '</div>';
-    $form['server']['devshop_github_ssh_key']['ssh_key_status'] ['#markup'] = t('You must enter a GitHub token before SSH access can be setup and confirmed.');
+    $form['server']['devshop_github_ssh_key']['ssh_key_status'] ['#markup'] = '<i class="fa fa-warning"></i>' . t('You must enter a GitHub token before SSH access can be setup and confirmed.');
   }
   elseif (!$ssh_key_exists) {
     $form['server']['devshop_github_ssh_key']['ssh_key_status'] ['#prefix'] = ' <div class="alert alert-warning">';
