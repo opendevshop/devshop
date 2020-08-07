@@ -48,7 +48,7 @@ function devshop_bitbucket_settings_form($form, &$form_state) {
         $form['bitbucket_public_keys']['#prefix'] = '<div class="alert alert-danger">';
         $form['bitbucket_public_keys']['#suffix'] = l('<i class="fa fa-bitbucket"></i> ' . t('Add devshop public key to your bitbucket account'), 'admin/devshop/bitbucket/add-key', array(
             'attributes' => array(
-              'class' => 'btn btn-primary btn-large'
+              'class' => array('btn btn-primary btn-large'),
             ),
             'html' => TRUE,
           )) . '</div>';

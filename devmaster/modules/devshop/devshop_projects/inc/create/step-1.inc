@@ -114,7 +114,7 @@ function devshop_project_create_step_git($form, $form_state) {
         'destination' => $_GET['q'],
       ),
       'attributes' => array(
-        'class' => 'btn btn-default'
+        'class' => array('btn btn-default')
       ),
     ));
     $output = <<<HTML
