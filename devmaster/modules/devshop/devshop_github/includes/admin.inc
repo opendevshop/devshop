@@ -157,13 +157,13 @@ function devshop_github_get_repositories_page() {
   $token = variable_get('devshop_github_token', '');
   if (empty($token)) {
     drupal_set_message('GitHub API Token is not set.', 'error');
-    drupal_goto('admin/devshop/github');
+    drupal_goto('admin/devshop');
     return;
   }
 
   devshop_github_refresh_repositories();
 
-  drupal_goto('admin/devshop/github');
+  drupal_goto('admin/devshop');
   return;
 }
 

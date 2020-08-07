@@ -101,16 +101,6 @@ function devshop_github_client($must_authenticate = FALSE) {
 function devshop_github_menu() {
   $items = array();
 
-  $items['admin/devshop/github'] = array(
-    'title' => 'GitHub',
-    'description' => 'DevShop GitHub Integration Settings',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('devshop_github_settings_form'),
-    'access arguments' => array('administer projects'),
-    'file' => 'admin.inc',
-    'file path' => drupal_get_path('module', 'devshop_github') . '/includes',
-    'type' => MENU_LOCAL_TASK,
-  );
   $items['admin/devshop/github/add-key'] = array(
     'title' => 'Add public key to GitHub Account',
     'page callback' => 'drupal_get_form',
@@ -378,7 +368,7 @@ function devshop_github_pr_options($project, $key = 'id', $prs = array()) {
       drupal_set_message(t('Unable to reach GitHub API to load Pull Request Data. [Error: %error]', array(
         '%error' => $e->getMessage(),
       )), 'error');
-      drupal_set_message(l(t('Check your GitHub Settings'), 'admin/devshop/github'), 'error');
+      drupal_set_message(l(t('Check your GitHub Settings'), 'admin/devshop'), 'error');
       return $pr_options;
     }
   }
@@ -459,7 +449,7 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
 
   if (!devshop_github_check_key(TRUE)) {
 
-    drupal_set_message( '<p class="alert text-center"><i class="fa fa-exclamation-circle"></i> ' . t('DevShop GitHub Integration is not set up. You should complete setup on the Settings page before continuing.') . '</p><p class="alert text-center">' .  l( '<i class="fa fa-github"></i> ' . t('DevShop GitHub Settings'),'admin/devshop/github', array(
+    drupal_set_message( '<p class="alert text-center"><i class="fa fa-exclamation-circle"></i> ' . t('DevShop GitHub Integration is not set up. You should complete setup on the Settings page before continuing.') . '</p><p class="alert text-center">' .  l( '<i class="fa fa-github"></i> ' . t('DevShop GitHub Settings'),'admin/devshop', array(
       'html' => TRUE,
       'attributes' => array(
         'class' => array('btn btn-default text-center'),
@@ -882,7 +872,7 @@ function devshop_github_form_devshop_project_create_step_environments_alter(&$fo
       '#items' => array(
         t('GitHub authentication failed. Check your token at !link. The error was: %message', array(
           '%message' => $e->getMessage(),
-          '!link' => l('DevShop GitHub Settings', 'admin/devshop/github'),
+          '!link' => l('DevShop GitHub Settings', 'admin/devshop'),
         )),
         $settings_link,
       ),
@@ -1006,7 +996,7 @@ function devshop_github_form_devshop_project_create_step_sites_alter(&$form, &$f
       'items' => array(
         t('GitHub authentication failed. Check your token at !link. The error was: %message', array(
           '%message' => $e->getMessage(),
-          '!link' => l('DevShop GitHub Settings', 'admin/devshop/github'),
+          '!link' => l('DevShop GitHub Settings', 'admin/devshop'),
         )),
         $settings_link,
       ),
