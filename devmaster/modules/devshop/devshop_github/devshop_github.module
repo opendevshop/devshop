@@ -5,6 +5,7 @@
  */
 
 require_once('includes/queue.inc');
+require_once('includes/admin.inc');
 
 /**
  * Retrieve the token from either environment variable or drupal variable.
