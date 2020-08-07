@@ -28,7 +28,7 @@ function devshop_github_form_alter(&$form, &$form_state, $form_id) {
   $form['devshop_github_token_step']['description'] = array(
     '#prefix' => '<div class="alert alert-info">',
     '#markup' =>
-      '<p>' . t('Connect GitHub to your DevShop Server by creating a Github token and adding it here.') . '<p>' .
+      '<p>' . t('Connect GitHub to your DevShop Server by creating a Github token and adding it here.') . '</p>' .
       '<p>' . l(t('Create a new GitHub API Token'), 'https://github.com/settings/tokens/new?scopes=repo,admin:public_key,admin:repo_hook&description=' . $_SERVER['HTTP_HOST'], array('attributes' => array(
         'target' => '_blank',
         'class' => array('btn btn-sm btn-default form-submit'),
@@ -71,7 +71,7 @@ function devshop_github_form_alter(&$form, &$form_state, $form_id) {
   elseif (!$ssh_key_exists) {
     $form['server']['devshop_github_ssh_key']['ssh_key_status'] ['#prefix'] = ' <div class="alert alert-warning">';
     $form['server']['devshop_github_ssh_key']['ssh_key_status'] ['#suffix'] = '</div>';
-    $form['server']['devshop_github_ssh_key']['ssh_key_status'] ['#markup'] = t('DevShop does not know what this server\'s public SSH Key is. Run the following command on the server to import the aegir user\'s public key <textarea class="form-control" onclick="this.focus();this.select()" >drush @hostmaster vset devshop_public_key "$(cat ~/.ssh/id_rsa.pub)" --yes</textarea>');
+    $form['server']['devshop_github_ssh_key']['ssh_key_status'] ['#markup'] = '<i class="fa fa-warning"></i>' . t('The Public Key of this DevShop is missing. Run the following command on the server to import the aegir user\'s public key <textarea class="form-control" onclick="this.focus();this.select()" >drush @hostmaster vset devshop_public_key "$(cat ~/.ssh/id_rsa.pub)" --yes</textarea>');
   }
   elseif (devshop_github_check_key()) {
     $form['server']['devshop_github_ssh_key']['ssh_key_status'] ['#prefix'] = ' <div class="alert alert-success">';
@@ -79,25 +79,18 @@ function devshop_github_form_alter(&$form, &$form_state, $form_id) {
     $form['server']['devshop_github_ssh_key']['ssh_key_status'] ['#markup'] = '<i class="fa fa-check"></i>' . t("This DevShop's Public Key was found in the GitHub account associated with the GitHub Token.");
   }
   else {
-    $form['server']['devshop_github_ssh_key']['ssh_key_status'] ['#markup'] = t("This DevShop's Public Key was not found in your GitHub account.");
-    $form['server']['devshop_github_ssh_key']['ssh_key_status_buttons'] ['#markup'] .= '<div class="btn-group" role="group">' . l(t('Add public key to your GitHub account'), 'admin/devshop/github/add-key', array(
-        'query' => array(
-          'destination' => $_GET['q'],
-        ),
-        'attributes' => array(
-          'class' => array('btn btn-info'),
-        ),
-      ));
-    $form['server']['devshop_github_ssh_key']['ssh_key_status_buttons'] ['#markup'] .= l(t('Configure Public Key'), 'admin/devshop', array(
-        'query' => array(
-          'destination' => $_GET['q'],
-        ),
-        'attributes' => array(
-          'class' => array('btn btn-default')
-        ),
-      )) . '</div>';
-    $form['server']['devshop_github_ssh_key']['ssh_key_status'] ['#prefix'] = '<div class="alert alert-warning">';
+
+    $form['server']['devshop_github_ssh_key']['ssh_key_status'] ['#prefix'] = ' <div class="alert alert-warning">';
     $form['server']['devshop_github_ssh_key']['ssh_key_status'] ['#suffix'] = '</div>';
+    $form['server']['devshop_github_ssh_key']['ssh_key_status'] ['#markup'] = '<p><i class="fa fa-warning"></i> ' . t("This DevShop's Public Key was not found in your GitHub account.") . '</p>';
+    $form['server']['devshop_github_ssh_key']['ssh_key_status'] ['#markup'] .= '<p>' . l(t('Add this public key to your GitHub account'), 'admin/devshop/github/add-key', array(
+        'query' => array(
+          'destination' => $_GET['q'],
+        ),
+        'attributes' => array(
+          'class' => array('btn btn-default btn-sm'),
+        ),
+      )) . '</p>';
   }
 
   $repos = variable_get('devshop_github_available_repositories', array());
