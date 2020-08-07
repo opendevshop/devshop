@@ -112,12 +112,20 @@ function devshop_projects_settings_form($form, &$form_state) {
 
   // Server settings.
   $form['server'] = array(
-      '#type' => 'fieldset',
-      '#title' => t('DevShop Server'),
+    '#type' => 'fieldset',
+    '#title' => t('DevShop Server Access'),
+    '#weight' => -1,
   );
   $form['server']['devshop_public_key'] = array(
-    '#title' => t('Aegir User Public Key'),
-    '#description' => t('The public key of the aegir user on this server. If you change the SSH keys located at <code>/var/aegir/.ssh/id_rsa.pub</code>, then you should update this variable. This variable is for user reference only. If using GitHub API, then devshop will check to make sure the server has access using this public key.'),
+    '#title' => t('Public Key'),
+    '#description' => theme('item_list', array(
+      'items' => array(
+        t('The public key for this server. This key will be used when cloning code and syncing data from remote servers.'),
+        t('Add this key to your git host to allow this DevShop to clone protected code.'),
+        t('Add this key to other hosts to authorize this DevShop to connect and copy data from your existing sites.'),
+        t('<em class="text-warning">Warning:</em> If you authorize this key on a production server, any user who can access this DevShop will be able to access that server.')
+      ),
+    )),
     '#type' => 'textarea',
     '#default_value' => variable_get('devshop_public_key', ''),
   );
