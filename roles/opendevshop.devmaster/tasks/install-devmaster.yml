@@ -85,7 +85,7 @@
   tags: [runtime]
 
 - name: Clear all DevShop Control Caches.
-  command: "{{ drush_bin_path }} @{{ devshop_control_site_drush_alias }} cc all"
+  command: "{{ drush_bin_path }} @{{ devshop_control_drush_alias }} cc all"
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
