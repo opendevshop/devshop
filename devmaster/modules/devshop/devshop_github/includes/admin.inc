@@ -109,8 +109,9 @@ function devshop_github_form_alter(&$form, &$form_state, $form_id) {
   );
 
   $form['projects']['message'] = array(
-    '#prefix' => "<div class='alert alert-info'>",
+    '#prefix' => "<div class='alert alert-success'><i class='fa fa-check'></i>",
     '#suffix' => '</div>',
+    '#weight' => -1,
     '#markup' =>  t('@count_string associated with this GitHub token.', array(
       '@count_string' => format_plural($count, t('1 repository found'), t('@count repositories found'))
   )));
@@ -118,8 +119,9 @@ function devshop_github_form_alter(&$form, &$form_state, $form_id) {
   $orgs = variable_get('devshop_github_available_organizations', array());
   $count = count($orgs);
   $form['projects']['message_orgs'] = array(
-    '#prefix' => "<div class='alert alert-info'>",
+    '#prefix' => "<div class='alert alert-success'><i class='fa fa-check'></i>",
     '#suffix' => '</div>',
+    '#weight' => -1,
     '#markup' =>  t('@count_string with create repo privileges.', array(
       '@count_string' => format_plural($count, t('1 GitHub organization'), t('@count GitHub organizations'))
   )));
