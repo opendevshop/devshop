@@ -155,14 +155,16 @@ HTML;
 
   // No Projects
   if (empty($rows)) {
-    $link = url('projects/add');
-    $welcome = t('Welcome to DevShop!');
-    $text = t('Create your first project to get started.');
-    $button = t('Start a Project');
+    $link = url('admin/devshop');
+    $welcome = t('Welcome to <em>your</em> DevShop!');
+    $subtitle = t("You are almost ready to start working.");
+    $text = t("Complete DevShop Setup to connect and deploy your sites.");
+    $button = t('Complete Setup');
     $output = <<<HTML
 <div class="jumbotron">
   <h1>$welcome</h1>
-  <p>$text</p>
+  <h3>$subtitle</h3>
+  <p class="text-muted">$text</p>
   <p><a class="btn btn-success btn-lg" href="$link" role="button"><i class="fa fa-chevron-right"></i> $button </a></p>
 </div>
 
