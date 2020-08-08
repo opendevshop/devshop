@@ -57,7 +57,16 @@ function devshop_project_create_step_settings($form, &$form_state) {
   $form['buttons']['next']['#submit'] = $actions['submit']['#submit'];
   $form['buttons']['next']['#submit'][] = 'ctools_wizard_submit';
 
+  // Add create.js script and pass an object.
   drupal_add_js(drupal_get_path('module', 'devshop_projects') . '/inc/create/create.js');
+  // @TODO This is only here because create.js is currently coded to expect the array.
+  // I tried, I really tried to check for this prop in create.js.
+  drupal_add_js(array(
+    'devshop' => array(
+      'projectNameSourceElements' => array(
+      ),
+    ),
+  ), 'setting');
 
   // Remove "live environment" selector.
   $form['project']['codebase']['live_environment']['#type'] = 'value';
