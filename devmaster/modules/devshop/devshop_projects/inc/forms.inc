@@ -1389,15 +1389,15 @@ function devshop_prepare_platform_node($project, $environment_name, $git_ref, $w
   $platform_node->type = 'platform';
   $platform_node->title = $project->name . '_' . $environment_name;
 
-  // Specify GIT Url for hosting_git.module
+  // Specify GIT Url for hosting_platform.module
   if (empty($git_remote)) {
-    $platform_node->git['repo_url'] = $project->git_url;
+    $platform_node->git_remote = $project->git_url;
   }
   else {
-    $platform_node->git['repo_url'] = $git_remote;
+    $platform_node->git_remote = $git_remote;
   }
 
-  $platform_node->git['git_ref'] = $git_ref;
+  $platform_node->git_reference = $git_ref;
 
 
   // Enable git pull queue for this platform if chosen.
@@ -1420,15 +1420,15 @@ function devshop_prepare_platform_node($project, $environment_name, $git_ref, $w
     $platform_node->web_server = $web_server;
   }
 
-  $platform_node->git['repo_path'] = $project->code_path . '/' . $environment_name;
+  $platform_node->git_root = $project->code_path . '/' . $environment_name;
 
   // Append drupal_path to repo_path if there is one. If not, repo_path is publish_path.
   if ($project->drupal_path) {
-    $platform_node->publish_path = $platform_node->git['repo_path'] . '/' . $project->drupal_path;
-    $platform_node->git['repo_docroot'] = $project->drupal_path;
+    $platform_node->publish_path = $platform_node->git_root . '/' . $project->drupal_path;
+    $platform_node->git_docroot = $project->drupal_path;
   }
   else {
-    $platform_node->publish_path = $platform_node->git['repo_path'];
+    $platform_node->publish_path = $platform_node->git_root;
   }
   return $platform_node;
 }
