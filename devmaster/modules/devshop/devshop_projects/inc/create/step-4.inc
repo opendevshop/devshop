@@ -253,12 +253,6 @@ HTML;
       $default_profile = 'drupal';
     }
 
-    // @TODO: TECH DEBT: Do not allow devmaster install profile to appear?
-    // hosting_packages at  db9f25e475789c048a14b535e7ed2730849e2361 imports EXTRA packages. DST-93
-    if (isset($available_profiles['devmaster'])) {
-      unset($available_profiles['devmaster']);
-    }
-
     $form['install_profile'] = array(
       '#type' => 'radios',
       '#options' => $available_profiles,
