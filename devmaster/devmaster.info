@@ -24,11 +24,9 @@ dependencies[] = hosting_server
 dependencies[] = hosting_clone
 dependencies[] = hosting_cron
 dependencies[] = hosting_migrate
-
-; Scheduled for deletion/refactor.
-;dependencies[] = hosting_git_checkout
-;dependencies[] = hosting_git_tag
-;dependencies[] = hosting_git_commit
+dependencies[] = hosting_git_checkout
+dependencies[] = hosting_git_tag
+dependencies[] = hosting_git_commit
 
 ; DevShop Aegir
 dependencies[] = hosting_alias
