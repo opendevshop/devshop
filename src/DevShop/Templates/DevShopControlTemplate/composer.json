@@ -50,7 +50,7 @@
         "drupal/drupal": "^7.62",
         "drupal/entity": "^1.9",
         "drupal/features": "^2.11",
-        "drupal/hosting": "4.x-dev@dev",
+        "drupal/hosting": "4.x-dev#1ee1911b3de182bdc0914724e6c347a60857ecc1",
         "drupal/hosting_filemanager": "dev-1.x",
         "drupal/hosting_git": "^3.181",
         "drupal/hosting_https": "^3.182",
