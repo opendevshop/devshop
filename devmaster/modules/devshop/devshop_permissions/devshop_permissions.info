@@ -16,10 +16,11 @@ dependencies[] = hosting_backup_queue
 dependencies[] = hosting_client
 dependencies[] = hosting_clone
 dependencies[] = hosting_filemanager
-dependencies[] = hosting_git_checkout
-dependencies[] = hosting_git_commit
-dependencies[] = hosting_git_pull
-dependencies[] = hosting_git_tag
+
+;dependencies[] = hosting_git_checkout
+;dependencies[] = hosting_git_commit
+;dependencies[] = hosting_git_pull
+;dependencies[] = hosting_git_tag
 dependencies[] = hosting_https
 dependencies[] = hosting_logs
 dependencies[] = hosting_migrate
