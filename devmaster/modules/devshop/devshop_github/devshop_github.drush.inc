@@ -41,10 +41,10 @@ function drush_devshop_github_pre_hosting_task()
   $task =& drush_get_context('HOSTING_TASK');
 
   // Pass github_deployment_id from task node to drush options.
-  if ($task->task_type == 'devshop-deploy' && !empty($task->task_args['github_deployment_id'])) {
+  if ($task->task_type == 'deploy' && !empty($task->task_args['github_deployment_id'])) {
     $task->options['github_deployment_id'] = $task->task_args['github_deployment_id'];
   }
-  // @TODO If task is install or devshop-deploy, erase the deployment status from the PR so a new one is created.
+  // @TODO If task is install or deploy, erase the deployment status from the PR so a new one is created.
   // @TODO: We should erase and create a "pending" status when the task nodes are created.
 
   drush_set_option('devshop_github_token', variable_get('devshop_github_token', null));
@@ -76,14 +76,14 @@ function devshop_github_hosting_task_update_status($task, $status) {
   // Every type of task listed here will have a GitHub "deployment" object
   // created for it, and that deployment will have it's status updated.
   if (!in_array($task->task_type, variable_get('devshop_github_deployment_tasks', array(
-    'devshop-deploy',
+    'deploy',
     'install',
     'test'
   )))) {
     return;
   }
 
-  // @TODO: If this is a test task, should we just update the deployment of the last "devshop-deploy" task to "error"?
+  // @TODO: If this is a test task, should we just update the deployment of the last "deploy" task to "error"?
   // Or, do we let it ride with a 1-to-1 devshop task = github deployment relationship?
   // It would not be hard to run a DevShopGithubAPI:deploy() here if ths were a test (or other kind of task).
 
@@ -110,7 +110,7 @@ function devshop_github_hosting_task_update_status($task, $status) {
     ));
   }
 
-  // @TODO: Local SHA is only accurate after the git pull in "devshop-deploy".
+  // @TODO: Local SHA is only accurate after the git pull in "deploy".
   // @TODO: Might be able to decide based on $status if we grab the SHA or branch.
 //  $sha = devshop_environment_get_git_sha($environment->repo_path);
   $sha = NULL;

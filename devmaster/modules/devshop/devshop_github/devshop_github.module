@@ -1131,7 +1131,7 @@ function devshop_github_node_insert($node) {
 function devshop_github_node_update($node) {
 
   // Only act on test triggers.
-  if ($node->type != 'task' || $node->type == 'task' && ($node->task_type != 'test' || $node->task_type != 'devshop-deploy')) {
+  if ($node->type != 'task' || $node->type == 'task' && ($node->task_type != 'test' || $node->task_type != 'deploy')) {
     return;
   }
 
@@ -1352,7 +1352,7 @@ function devshop_github_webhook($project_node) {
 
                 // Trigger deploy task to get latest code.
                 // Pass no args to skip DB updates, cache clearing, etc.
-                hosting_add_task($environment->site, 'devshop-deploy', array(
+                hosting_add_task($environment->site, 'deploy', array(
                   'git_ref' => $environment->git_ref,
                 ));
 
@@ -1366,7 +1366,7 @@ function devshop_github_webhook($project_node) {
                 // Default args to the environments deploy settings.
                 $args = $environment->settings->deploy;
                 $args['git_ref'] = $environment->git_ref;
-                hosting_add_task($environment->site, 'devshop-deploy', $args);
+                hosting_add_task($environment->site, 'deploy', $args);
               }
             }
           }
@@ -1415,10 +1415,10 @@ function devshop_github_webhook($project_node) {
                 $source_env = $project->settings->github['pull_request_environments_method'];
                 $environment = hosting_create_environment($project, $environment_name, $branch, $source_env, $git_url);
 
-                // Queue up a "devshop-deploy" task so that the same hooks are run post-clone.
+                // Queue up a "deploy" task so that the same hooks are run post-clone.
                 // @TODO: Decide if a setting is needed to control this behavior.
                 // @TODO: Reduce duplication with the github queue.
-                $deploy_task = hosting_add_task($environment->site, 'devshop-deploy', array(
+                $deploy_task = hosting_add_task($environment->site, 'deploy', array(
                   'git_ref' => $branch,
                 ));
                 $message .= "Environment $environment_name created for $project_node->title via cloning $source_env \n";
@@ -1946,13 +1946,13 @@ function devshop_github_create_all_pr_environments($project_node) {
 
 
       // Check for queued deploy tasks. If there are none, create one.
-      $queued_deploy_tasks = hosting_get_new_tasks(1, $environment->site, 'devshop-deploy');
+      $queued_deploy_tasks = hosting_get_new_tasks(1, $environment->site, 'deploy');
       if (count($queued_deploy_tasks) == 0) {
 
         // Trigger deploy task to get latest code.
         // Pass no args to skip DB updates, cache clearing, etc.
         drush_log("PR environment scheduled for deployment: $environment->name $environment->git_ref [$site_url]", "ok");
-        hosting_add_task($environment->site, 'devshop-deploy', array(
+        hosting_add_task($environment->site, 'deploy', array(
           'git_ref' => $environment->git_ref,
         ));
         $deployed_environments++;
@@ -2041,12 +2041,12 @@ function devshop_github_create_all_pr_environments($project_node) {
       devshop_github_save_pr_env_data($pr, $environment);
       drush_log("Environment $environment_name created for $project_node->title via cloning $source_env...", "ok");
 
-      // Queue up a "devshop-deploy" task so that the same hooks are run post-clone.
+      // Queue up a "deploy" task so that the same hooks are run post-clone.
       // @TODO: Decide if a setting is needed to control this behavior.
       // @TODO: Reduce duplication with the github webhook.
       // @TODO: Make this a global setting for all "clone" environment installs.
       drush_log("PR environment scheduled for deployment: $environment->name $environment->git_ref [$site_url]", "ok");
-      hosting_add_task($environment->site, 'devshop-deploy', array(
+      hosting_add_task($environment->site, 'deploy', array(
         'git_ref' => $branch,
       ));
 

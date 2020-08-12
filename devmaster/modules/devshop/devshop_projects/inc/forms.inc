@@ -587,12 +587,12 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
         break;
 
       // Deploy task form
-      case 'devshop-deploy':
+      case 'deploy':
 
         // Alter title of deploy task.
         $node = node_load($form['nid']['#value']);
-        drupal_set_title(t('Deploy code to Environment "@env"', array('@env' => $node->environment->name)), PASS_THROUGH);
-        $form['actions']['cancel']['#value'] = l(t('Cancel'), "node/{$node->project->nid}");
+//        drupal_set_title(t('Deploy code to Environment "@env"', array('@env' => $node->environment->name)), PASS_THROUGH);
+//        $form['actions']['cancel']['#value'] = l(t('Cancel'), "node/{$node->project->nid}");
         break;
 
       // Sync task form
@@ -1658,7 +1658,7 @@ function devshop_environment_deploy_hooks_form($project, $environment = NULL, $t
   if (
     // Environment form
     ($is_environment_form && !$project->settings->deploy['allow_environment_deploy_config']) ||
-    ($task_type == 'devshop-deploy' && !$project->settings->deploy['allow_environment_deploy_hooks_override'])
+    ($task_type == 'deploy' && !$project->settings->deploy['allow_environment_deploy_hooks_override'])
   ) {
 
     foreach (element_children($return) as $i) {

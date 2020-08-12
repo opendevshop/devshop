@@ -586,7 +586,7 @@ function devshop_projects_menu_alter(&$items) {
   $items['node/%node/edit']['weight'] = -9;
 
   // Hosting now hides all but migrate and clone tasks.
-  $path = sprintf("hosting_confirm/%hosting_%s_wildcard/site_devshop-deploy", 'deploy', 'deploy', 'devshop-deploy');
+  $path = sprintf("hosting_confirm/%hosting_%s_wildcard/site_deploy", 'deploy', 'deploy', 'deploy');
   $items[$path]['access callback'] = 'devshop_hosting_task_menu_access_csrf';
 
   // Redirect hosting/task/% to the node
@@ -607,13 +607,13 @@ function drupal_goto_nid($nid) {
 
 /**
  * Access callback helper for hosting task menu items.
- * A copy of hosting_task_menu_access() except we allow devshop-deploy tasks.
+ * A copy of hosting_task_menu_access() except we allow deploy tasks.
  * @see hosting_task_menu_access()
  */
 function devshop_hosting_task_menu_access_csrf($node, $task) {
   global $user;
 
-  $interactive_tasks = array('migrate', 'clone', 'devshop-deploy');
+  $interactive_tasks = array('migrate', 'clone', 'deploy');
 
   // To prevent CSRF attacks, a unique token based upon user is used. Deny
   // access if the token is missing or invalid. We only do this on

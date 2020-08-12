@@ -76,7 +76,7 @@ function drush_devshop_projects_pre_hosting_task()
   }
 
   // Deploy
-  if ($task->ref->type == 'site' && $task->task_type == 'devshop-deploy') {
+  if ($task->ref->type == 'site' && $task->task_type == 'deploy' && !empty($task->args['git_reference'])) {
 
     // The git_ref is the only argument
     $task->args['git_ref'] = $task->task_args['git_ref'];
