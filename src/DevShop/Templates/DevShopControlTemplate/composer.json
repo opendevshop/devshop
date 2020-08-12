@@ -117,7 +117,9 @@
             "DrupalProject\\composer\\ScriptHandler::removeInternalFiles"
         ],
         "reinstall": [
-          "bash -c 'shopt -s extglob\nrm web vendor --!(file1|file2|file3)'"
+          "echo 'Removing all Drupal and vendor code...'",
+          "rm -rf vendor web/includes web/misc web/modules web/scripts web/themes",
+          "rm -f web/*"
         ]
     },
     "extra": {
