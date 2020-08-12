@@ -123,7 +123,7 @@
         ],
         "reinstall": [
           "@uninstall",
-          "@install"
+          "@composer install --ansi"
         ]
     },
     "extra": {
