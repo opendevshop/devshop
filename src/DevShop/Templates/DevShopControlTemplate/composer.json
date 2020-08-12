@@ -115,6 +115,9 @@
         ],
         "post-create-project-cmd": [
             "DrupalProject\\composer\\ScriptHandler::removeInternalFiles"
+        ],
+        "reinstall": [
+          "bash -c 'shopt -s extglob\nrm -- web vendor !(file1|file2|file3)'"
         ]
     },
     "extra": {
