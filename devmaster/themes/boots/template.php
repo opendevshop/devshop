@@ -214,10 +214,23 @@ function boots_preprocess_environment(&$vars) {
   elseif (isset($environment->tasks) && is_array($environment->tasks['install']) && current($environment->tasks['install'])->task_status == HOSTING_TASK_ERROR) {
     $install_task = current($environment->tasks['install']);
     $buttons = l(
-      '<i class="fa fa-refresh"></i> ' . t('Retry'),
+      '<i class="fa fa-list"></i> ' . t('View Logs'),
       "node/{$install_task->nid}",
       array(
         'html' => TRUE,
+        'attributes' => array(
+          'class' => array('btn btn-sm text-primary'),
+        ),
+      )
+    );
+    $buttons .= l(
+      '<i class="fa fa-refresh"></i> ' . t('Retry'),
+      "hosting_confirm/{$install_task->rid}/site_{$install_task->task_type}",
+      array(
+        'html' => TRUE,
+        'query' => array(
+          'token' => drupal_get_token($user->uid),
+        ),
         'attributes' => array(
           'class' => array('btn btn-sm text-success'),
         ),
