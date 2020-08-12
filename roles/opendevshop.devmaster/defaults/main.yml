@@ -42,6 +42,7 @@ aegir_log_files_touch:
 drush_dl_method: git_drupalorg
 
 devshop_drush_packages:
+  # @TODO: Remove once confirmed provision is loaded from devshop vendor dir.
   provision: 7.x-4.x
   registry_rebuild: 7.x-2.2
 
