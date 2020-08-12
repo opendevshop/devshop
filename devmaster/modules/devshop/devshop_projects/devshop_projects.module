@@ -641,12 +641,8 @@ function devshop_hosting_project_tab_title($default, $node) {
   if ($default == 'Edit' && $node->type == 'site' && isset($node->project)) {
     return t('Environment Settings');
   }
-  if ($node->type == 'task') {
-    if ($default == 'View') {
-      $tasks = hosting_available_tasks('site');
-      $label = drupal_ucfirst($tasks[$node->task_type]['title']);
-      return t('Task: !type', array('!type' => $label));
-    }
+  if ($default == 'View' && $node->type == 'task') {
+    return t('Task Logs');
   }
 
   // Otherwise, just return the page text
