@@ -94,15 +94,16 @@
       </span>
     </p>
 
+    <!-- Terminal Tasks modal -->
+    <button type="button" class="pull-right btn btn-group-sm btn-default btn-sm" data-toggle="modal" data-target="#exampleModal">
+      <i class="fa fa-terminal"></i>
+      <?php print t('Run in Terminal'); ?>
+    </button>
+
     <?php if (isset($site_url)): ?>
       <?php print $site_url ?>
     <?php endif; ?>
 
-      <!-- Terminal Tasks modal -->
-      <button type="button" class="pull-right btn btn-group-sm btn-default btn-sm" data-toggle="modal" data-target="#exampleModal">
-          <i class="fa fa-terminal"></i>
-        <?php print t('Run in Terminal'); ?>
-      </button>
 
     <?php if (isset($task_well)): ?>
       <?php print $task_well; ?>
@@ -150,9 +151,9 @@
                 <div class="modal-body">
                   <?php if ($node->task_status == HOSTING_TASK_QUEUED): ?>
                     <?php print t('To run this task, run the following command on the DevShop server:'); ?>
-                      <kbd><pre>
+                    <kbd class="alert">
                         drush @hm hosting-task <?php print $node->nid; ?>
-                      </pre></kbd>
+                    </kbd>
                   <?php elseif ($node->task_status != HOSTING_TASK_QUEUED): ?>
                     <?php foreach ($node->task_args as $i => $v){
                       $name = escapeshellarg($i);
@@ -160,14 +161,13 @@
                       $args[] = "$name=$value";
                     } ?>
                     <?php print t('This task has already started. To run this task again, run the following command on the DevShop server.'); ?>
-                      <div class="well well-sm"><kbd>
+                    <kbd class="alert">
                         drush @hm hosting-task @<?php print $node->ref->hosting_name; ?> <?php print $node->task_type;  ?> <?php print implode(' ', $args); ?>
-                      </kbd></div>
+                    </kbd>
                   <?php endif; ?>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save changes</button>
                 </div>
             </div>
         </div>
