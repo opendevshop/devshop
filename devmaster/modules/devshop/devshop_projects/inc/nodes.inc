@@ -29,18 +29,15 @@ function devshop_projects_node_info() {
 function devshop_projects_node_load($nodes, $types) {
 
   // Only act on project and related nodes.
-  $types = array(
+  $allowed_types = array(
     'project',
     'site',
     'platform',
     'task',
   );
-  if (count(array_intersect($types, $types)) == 0) {
+  if (count(array_intersect($allowed_types, $types)) == 0) {
     return;
   }
-
-  global $user;
-  $project = new stdClass();
 
   $refs_types = db_select('node', 'n')
     ->fields('n', array('nid', 'type'))

@@ -172,10 +172,12 @@ function devshop_project_load($node) {
         LEFT JOIN {node} pn ON e.project_nid = pn.nid
         LEFT JOIN {hosting_site_alias} a ON a.vid = s.vid
         WHERE project_nid = :nid AND
-        e.name != ''
+        e.name != '' AND 
+        s.status IN (:site_status)
         ORDER BY
           name;   ", array(
-    ':nid' => $node->nid
+    ':nid' => $node->nid,
+    ':site_status' => [HOSTING_SITE_QUEUED, HOSTING_SITE_ENABLED]
   ));
   foreach ($environment_data as $environment) {
 
