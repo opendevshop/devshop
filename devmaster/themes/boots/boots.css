@@ -1339,3 +1339,8 @@ form .well .form-type-radios .form-type-radio
 .form-control.chosen-container.chosen-container-single .chosen-single {
     height: 34px;
 }
+
+
+kbd.alert {
+  display: block;
+}
