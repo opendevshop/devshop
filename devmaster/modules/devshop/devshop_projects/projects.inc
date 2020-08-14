@@ -173,10 +173,16 @@ function devshop_project_load($node) {
         LEFT JOIN {hosting_site_alias} a ON a.vid = s.vid
         WHERE project_nid = :nid 
           AND e.name != ''
-          AND (s.nid IS NULL OR s.status IN (:site_status))
+          AND (
+            s.status IN (:site_status)
+            OR s.verified = 0 
+            OR s.nid IS NULL
+          ) 
         ORDER BY
           name;   ", array(
     ':nid' => $node->nid,
+
+    // Query includes sites that are either enabled, queued, unverified, or have no site NID.
     ':site_status' => [HOSTING_SITE_QUEUED, HOSTING_SITE_ENABLED]
   ));
   foreach ($environment_data as $environment) {
