@@ -158,8 +158,8 @@ HTML;
     $link = url('admin/devshop');
     $welcome = t('Welcome to <em>your</em> DevShop!');
     $subtitle = t("You are almost ready to start working.");
-    $text = t("Complete DevShop Setup to connect and deploy your sites.");
-    $button = t('Complete Setup');
+    $text = t("Check your DevShop settings or get started with a new Project.");
+    $button = t('DevShop Settings');
 
     $link_create = url('projects/add');
     $button_create = t('Create your first Project');
@@ -169,8 +169,10 @@ HTML;
   <h1>$welcome</h1>
   <h3>$subtitle</h3>
   <p class="text-muted">$text</p>
-  <p><a class="btn btn-success btn-lg" href="$link" role="button"><i class="fa fa-chevron-right"></i> $button </a>
-   <a class="btn btn-primary btn-lg" href="$link_create" role="button"><i class="fa fa-plus"></i> $button_create </a></p>
+  <p>
+   <a class="btn btn-primary btn-lg" href="$link" role="button"><i class="fa fa-gear"></i> $button </a>
+   <a class="btn btn-success btn-lg" href="$link_create" role="button"><i class="fa fa-plus"></i> $button_create </a>
+  </p>
 </div>
 
 HTML;
