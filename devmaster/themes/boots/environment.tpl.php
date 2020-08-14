@@ -281,9 +281,11 @@
             <?php if ($icon): ?><i class="fa fa-<?php print $icon ?>"></i><?php endif; ?>
             <?php print $warning['text'] ?>
           </div>
+          <?php if (!empty($warning['buttons'])): ?>
           <div class="buttons">
             <?php print $warning['buttons'] ?>
           </div>
+          <?php endif; ?>
         </div>
         <?php endforeach; ?>
     <?php endif; ?>
