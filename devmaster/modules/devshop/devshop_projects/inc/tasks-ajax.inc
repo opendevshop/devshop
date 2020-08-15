@@ -21,7 +21,6 @@ function devshop_projects_tasks_status_json() {
 
   $results = db_query($sql);
 
-  $task_types = hosting_available_tasks();
   $nids = array();
 
   // Ensure we always load our task
@@ -29,7 +28,7 @@ function devshop_projects_tasks_status_json() {
     $nids[] = $_GET['task'];
   }
 
-    // Get all environments and their status.
+  // Get all environments and their status.
   foreach ($results as $result) {
 
     // Save NIDs for later
