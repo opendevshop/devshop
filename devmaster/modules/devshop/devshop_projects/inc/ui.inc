@@ -210,9 +210,12 @@ function devshop_projects_inactive_tab_title() {
 }
 
 /**
- *
+ * Access check for "inactive projects" tab.
  */
 function devshop_projects_inactive_tab_access() {
+  if (arg(0) == 'projects' && arg(1) == 'add') {
+    return FALSE;
+  }
   static $count;
   if (!isset($count)) {
     $count = devshop_projects_count(NODE_NOT_PUBLISHED);
