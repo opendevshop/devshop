@@ -1,160 +1,160 @@
 <?php
-
-/**
- * Implements hook_drush_command().
- * Provides the "platform-delete" command.  This command triggers a delete task on a platform specified by it's path.
- *
- * This allows taking the final step in an upgrade: deleting the old devmaster.
- */
-function devshop_github_drush_command()
-{
-  $items['github-deploy'] = array(
-    'description' => 'Create a deployment and deployment status for the chosen environment.',
-    'bootstrap' => DRUSH_BOOTSTRAP_DRUPAL_SITE,
-  );
-  return $items;
-}
-
-/**
- *
- */
-function drush_devshop_github_github_deploy($alias, $state, $description = NULL) {
-  drush_log("Git Reference: " . d($alias)->platform->git_ref, 'ok');
-
-  $project_name = d($alias)->project;
-  $environment_name = d($alias)->environment;
-  $project_node = devshop_projects_load_by_name($project_name);
-
-  $environment = $project_node->project->environments[$environment_name];
-  $environment->project = $project_node->project;
-
-//  DevShopGitHubApi::createDeployment($environment, $state, $description);
-
-}
-/**
- * Pass github token variable to the back end.
- *
- * @param $task
- */
-function drush_devshop_github_pre_hosting_task()
-{
-  $task =& drush_get_context('HOSTING_TASK');
-
-  // Pass github_deployment_id from task node to drush options.
-  if ($task->task_type == 'deploy' && !empty($task->task_args['github_deployment_id'])) {
-    $task->options['github_deployment_id'] = $task->task_args['github_deployment_id'];
-  }
-  // @TODO If task is install or deploy, erase the deployment status from the PR so a new one is created.
-  // @TODO: We should erase and create a "pending" status when the task nodes are created.
-
-  drush_set_option('devshop_github_token', variable_get('devshop_github_token', null));
-}
-
-/**
- * Implements hook_hosting_task_update_status().
- * This hook fires multiple times throughout the life of a hosting task.
- *
- * @param $task
- *   The task node being updated. @see hosting_task.module
- *   $task->task_status is the LAST status of the task.
- *   See $status for the state you want to trigger from.
- *
- * @param $status
- *    The "task_status" value the node is about to be updated with. This is the
- *    state you should check for.
- *
- *    $status can be:
- *      HOSTING_TASK_QUEUED;
- *      HOSTING_TASK_PROCESSING;
- *      HOSTING_TASK_ERROR;
- *      HOSTING_TASK_SUCCESS;
- *      HOSTING_TASK_WARNING;
- */
-function devshop_github_hosting_task_update_status($task, $status) {
-
-  // Only trigger deployments for the specified tasks.
-  // Every type of task listed here will have a GitHub "deployment" object
-  // created for it, and that deployment will have it's status updated.
-  if (!in_array($task->task_type, variable_get('devshop_github_deployment_tasks', array(
-    'deploy',
-    'install',
-    'test'
-  )))) {
-    return;
-  }
-
-  // @TODO: If this is a test task, should we just update the deployment of the last "deploy" task to "error"?
-  // Or, do we let it ride with a 1-to-1 devshop task = github deployment relationship?
-  // It would not be hard to run a DevShopGithubAPI:deploy() here if ths were a test (or other kind of task).
-
-  // Reload the ref no matter what: we want fresh data.
-  $task_reloaded = node_load($task->nid, NULL, TRUE);
-  $task->ref = node_load($task->rid, NULL, TRUE);
-
-  if (!isset($task->ref->environment)) {
-    return;
-  }
-
-  $environment = $task->ref->environment;
-  if ($status == HOSTING_TASK_WARNING) {
-    $description = t('DevShop: !type success with warnings. [!url]', array(
-      '!url' => $environment->url,
-      '!type' => $task->task_type,
-    ));
-  }
-  else {
-    $description = t('DevShop: !type !status [!url]', array(
-      '!status' => $status,
-      '!url' => $environment->url,
-      '!type' => $task->task_type,
-    ));
-  }
-
-  // @TODO: Local SHA is only accurate after the git pull in "deploy".
-  // @TODO: Might be able to decide based on $status if we grab the SHA or branch.
-//  $sha = devshop_environment_get_git_sha($environment->repo_path);
-  $sha = NULL;
-
-  // Update the log URL because we know the Task NID now.
-  $task_url = url("node/$task->nid", array(
-    'absolute' => TRUE,
-  ));
-
-  // No Deployment ID. Create deployment.
-  if (empty($task_reloaded->github_deployment->id)) {
-    drush_log(dt('GitHub Deployment was not found for Task !url', array(
-      '!url' => url("node/{$task_reloaded->nid}", array(
-        'absolute' => TRUE,
-      )),
-    )), 'p_log');
-  }
-  else {
-    drush_log(dt('GitHub Deployment !id was found for Task !url', array(
-      '!id' => $task_reloaded->github_deployment->id,
-      '!url' => url("node/{$task_reloaded->nid}", array(
-        'absolute' => TRUE,
-      )),
-    )), 'p_log');
-  }
-
-  // @TODO: Change this to a simple task status/github state hash.
-  if ($status == HOSTING_TASK_SUCCESS || $status == HOSTING_TASK_WARNING) {
-    $state = 'success';
-  }
-  // @TODO: Enable preview queued and in_progress with:
-  // media type in the Accept header:
-  // application/vnd.github.flash-preview+json
-  elseif ($status == HOSTING_TASK_QUEUED) {
-    $state = 'queued';
-    $state = 'pending';
-  }
-  elseif ($status == HOSTING_TASK_PROCESSING) {
-    $state = 'in_progress';
-    $state = 'pending';
-  }
-  else {
-    $state = 'failure';
-  }
+//
+///**
+// * Implements hook_drush_command().
+// * Provides the "platform-delete" command.  This command triggers a delete task on a platform specified by it's path.
+// *
+// * This allows taking the final step in an upgrade: deleting the old devmaster.
+// */
+//function devshop_github_drush_command()
+//{
+//  $items['github-deploy'] = array(
+//    'description' => 'Create a deployment and deployment status for the chosen environment.',
+//    'bootstrap' => DRUSH_BOOTSTRAP_DRUPAL_SITE,
+//  );
+//  return $items;
+//}
+//
+///**
+// *
+// */
+//function drush_devshop_github_github_deploy($alias, $state, $description = NULL) {
+//  drush_log("Git Reference: " . d($alias)->platform->git_ref, 'ok');
+//
+//  $project_name = d($alias)->project;
+//  $environment_name = d($alias)->environment;
+//  $project_node = devshop_projects_load_by_name($project_name);
+//
+//  $environment = $project_node->project->environments[$environment_name];
+//  $environment->project = $project_node->project;
+//
+////  DevShopGitHubApi::createDeployment($environment, $state, $description);
+//
+//}
+///**
+// * Pass github token variable to the back end.
+// *
+// * @param $task
+// */
+//function drush_devshop_github_pre_hosting_task()
+//{
+//  $task =& drush_get_context('HOSTING_TASK');
+//
+//  // Pass github_deployment_id from task node to drush options.
+//  if ($task->task_type == 'deploy' && !empty($task->task_args['github_deployment_id'])) {
+//    $task->options['github_deployment_id'] = $task->task_args['github_deployment_id'];
+//  }
+//  // @TODO If task is install or deploy, erase the deployment status from the PR so a new one is created.
+//  // @TODO: We should erase and create a "pending" status when the task nodes are created.
+//
+//  drush_set_option('devshop_github_token', variable_get('devshop_github_token', null));
+//}
+//
+///**
+// * Implements hook_hosting_task_update_status().
+// * This hook fires multiple times throughout the life of a hosting task.
+// *
+// * @param $task
+// *   The task node being updated. @see hosting_task.module
+// *   $task->task_status is the LAST status of the task.
+// *   See $status for the state you want to trigger from.
+// *
+// * @param $status
+// *    The "task_status" value the node is about to be updated with. This is the
+// *    state you should check for.
+// *
+// *    $status can be:
+// *      HOSTING_TASK_QUEUED;
+// *      HOSTING_TASK_PROCESSING;
+// *      HOSTING_TASK_ERROR;
+// *      HOSTING_TASK_SUCCESS;
+// *      HOSTING_TASK_WARNING;
+// */
+//function devshop_github_hosting_task_update_status($task, $status) {
+//
+//  // Only trigger deployments for the specified tasks.
+//  // Every type of task listed here will have a GitHub "deployment" object
+//  // created for it, and that deployment will have it's status updated.
+//  if (!in_array($task->task_type, variable_get('devshop_github_deployment_tasks', array(
+//    'deploy',
+//    'install',
+//    'test'
+//  )))) {
+//    return;
+//  }
+//
+//  // @TODO: If this is a test task, should we just update the deployment of the last "deploy" task to "error"?
+//  // Or, do we let it ride with a 1-to-1 devshop task = github deployment relationship?
+//  // It would not be hard to run a DevShopGithubAPI:deploy() here if ths were a test (or other kind of task).
+//
+//  // Reload the ref no matter what: we want fresh data.
+//  $task_reloaded = node_load($task->nid, NULL, TRUE);
+//  $task->ref = node_load($task->rid, NULL, TRUE);
+//
+//  if (!isset($task->ref->environment)) {
+//    return;
+//  }
+//
+//  $environment = $task->ref->environment;
+//  if ($status == HOSTING_TASK_WARNING) {
+//    $description = t('DevShop: !type success with warnings. [!url]', array(
+//      '!url' => $environment->url,
+//      '!type' => $task->task_type,
+//    ));
+//  }
+//  else {
+//    $description = t('DevShop: !type !status [!url]', array(
+//      '!status' => $status,
+//      '!url' => $environment->url,
+//      '!type' => $task->task_type,
+//    ));
+//  }
+//
+//  // @TODO: Local SHA is only accurate after the git pull in "deploy".
+//  // @TODO: Might be able to decide based on $status if we grab the SHA or branch.
+////  $sha = devshop_environment_get_git_sha($environment->repo_path);
+//  $sha = NULL;
+//
+//  // Update the log URL because we know the Task NID now.
+//  $task_url = url("node/$task->nid", array(
+//    'absolute' => TRUE,
+//  ));
+//
+//  // No Deployment ID. Create deployment.
+//  if (empty($task_reloaded->github_deployment->id)) {
+//    drush_log(dt('GitHub Deployment was not found for Task !url', array(
+//      '!url' => url("node/{$task_reloaded->nid}", array(
+//        'absolute' => TRUE,
+//      )),
+//    )), 'p_log');
+//  }
+//  else {
+//    drush_log(dt('GitHub Deployment !id was found for Task !url', array(
+//      '!id' => $task_reloaded->github_deployment->id,
+//      '!url' => url("node/{$task_reloaded->nid}", array(
+//        'absolute' => TRUE,
+//      )),
+//    )), 'p_log');
+//  }
+//
+//  // @TODO: Change this to a simple task status/github state hash.
+//  if ($status == HOSTING_TASK_SUCCESS || $status == HOSTING_TASK_WARNING) {
+//    $state = 'success';
+//  }
+//  // @TODO: Enable preview queued and in_progress with:
+//  // media type in the Accept header:
+//  // application/vnd.github.flash-preview+json
+//  elseif ($status == HOSTING_TASK_QUEUED) {
+//    $state = 'queued';
+//    $state = 'pending';
+//  }
+//  elseif ($status == HOSTING_TASK_PROCESSING) {
+//    $state = 'in_progress';
+//    $state = 'pending';
+//  }
+//  else {
+//    $state = 'failure';
+//  }
 
 //  // The method ::deploy() should return the existing deployment object for the $task_reloaded.
 //  $deployment_object = DevShopGitHubApi::deploy($environment, $state, $task_reloaded, $description, $sha, $task_url);
@@ -318,4 +318,4 @@ function devshop_github_hosting_task_update_status($task, $status) {
 ////        drush_log('Commit status created for devshop/tests', 'success');
 //
 //      }
-}
+//}
