@@ -24,7 +24,7 @@
         "devshop/git-split": "self.version",
         "devshop/github-api-cli": "self.version",
         "devshop/power-process": "self.version",
-        "drupal/provision": "dev-4.x#f4fd0fc1"
+        "drupal/provision": "4.x-dev#f4fd0fc1"
     },
     "replace": {
         "devshop/yaml-tasks": "self.version",
