@@ -1,5 +1,5 @@
 # DevShop Development Dockerfile
-version: '3'
+version: '2.2'
 services:
 
   devshop:
