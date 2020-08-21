@@ -13,10 +13,11 @@ services:
     command: echo 'Hello World! DevShop Development Image here. To run as a single process, override 'command' in docker-compose.yml. '
     environment:
       DEVSHOP_TEST: x
-      # By default, devshop container will run 'ansible-playbook --tags' runtime after running the "command"
-      # Change the DEVSHOP_DOCKER_COMMAND_RUN if you want to manually run commands instead.
-      # DEVSHOP_DOCKER_COMMAND_RUN: ansible-playbook /etc/ansible/play.yml --tags runtime --extra-vars @/etc/ansible/vars.yml
-      ANSIBLE_VERBOSITY: 1
+      # By default, devshop container will run 'ansible-playbook --tags runtime' after running the "command"
+      # Keep DEVSHOP_DOCKER_COMMAND_RUN uncommented to use this command to provision the server instead.
+      # @TODO: Create single value ENV vars for AEGIR_USER_UID
+      DEVSHOP_DOCKER_COMMAND_RUN: ansible-playbook /etc/ansible/play.yml --tags runtime --extra-vars @/etc/ansible/vars.yml
+      ANSIBLE_VERBOSITY: "${ANSIBLE_VERBOSITY:-}"
 
     privileged: true
     volumes:
@@ -30,7 +31,9 @@ services:
       - ./devmaster:/usr/share/devshop/src/DevShop/Templates/DevShopControlTemplate/web/profiles/devmaster
       - ./:/usr/share/devshop:delegated
       - ./roles/devshop.server/play.yml:/etc/ansible/play.yml
-      - ./vars.yml:/etc/ansible/vars.yml
+
+      # This file is used in the default DEVSHOP_DOCKER_COMMAND_RUN.
+      - ./vars.development.yml:/etc/ansible/vars.yml
       - ./roles:/etc/ansible/roles
       - $HOME/.ssh:/var/aegir/.ssh
       # To develop the docker-systemd-entrypoint without having to rebuild the container, set this volume.
