@@ -11,5 +11,10 @@
  * @see composer.json.
  */
 
-// Remember: Drush reads this file from the Drush source path, so __DIR__ == vendor/drush/drush
-$options['include']['provision'] = dirname(dirname(dirname(__DIR__))) . '/drupal/provision';
+// Remember: This file is symlinked FROM /usr/share/devshop/drushrc.provision-include.php.
+// drush follows the symlink. Call `drush status` and you will see
+//   Drush configuration    :  /usr/share/devshop/drushrc.provision-include.php
+$provision_path = dirname(__FILE__) . '/vendor/drupal/provision';
+if (file_exists($provision_path)) {
+  $options['include']['provision'] = $provision_path;
+}
