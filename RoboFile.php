@@ -265,15 +265,6 @@ class RoboFile extends \Robo\Tasks {
       ->exec("composer install --prefer-source --ansi")
       ->run();
 
-    // @TODO: DO IT AGAIN until we can figure out why the first composer installs:
-    //   - Installing drupal-composer/preserve-paths (0.1.5): Cloning 7f99622800 from cache
-    //  [ErrorException]
-    //  Trying to access array offset on value of type null
-    $this->taskExecStack()
-      ->dir('src/DevShop/Templates/DevShopControlTemplate')
-      ->exec("composer install --prefer-source --ansi")
-      ->run();
-
     // Set git remote urls
     if ($opts['no-dev'] == FALSE) {
       // @TODO: Set git url for others like provision
