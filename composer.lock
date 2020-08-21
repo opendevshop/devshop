@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8dc82c8527dad4328dddc576ea8f9022",
+    "content-hash": "953033e6c43454bd1b2ad4aef5dbd0e9",
     "packages": [
         {
             "name": "consolidation/annotated-command",
@@ -567,7 +567,7 @@
             "dist": {
                 "type": "path",
                 "url": "scripts",
-                "reference": "b4055ce346ab134e733b84e65f8743e33d3508f8"
+                "reference": "2daaece98142d25c9432b0be9ef74e0b79e30f93"
             },
             "bin": [
                 "branch-or-tag",
@@ -604,7 +604,10 @@
                 }
             ],
             "description": "Useful shell scripts",
-            "homepage": "https://getdevshop.com"
+            "homepage": "https://getdevshop.com",
+            "transport-options": {
+                "relative": true
+            }
         },
         {
             "name": "devshop/composer-common",
@@ -612,7 +615,7 @@
             "dist": {
                 "type": "path",
                 "url": "src/DevShop/Component/ComposerCommon",
-                "reference": "87a089704d0efd73223dfbda00bd903876eb094b"
+                "reference": "add97e88d1891143d37b2275f97dce64e12eb602"
             },
             "require": {
                 "consolidation/robo": "^1.0",
@@ -645,7 +648,10 @@
                 }
             ],
             "description": "Tools useful for any composer-based project.",
-            "homepage": "https://getdevshop.com"
+            "homepage": "https://getdevshop.com",
+            "transport-options": {
+                "relative": true
+            }
         },
         {
             "name": "devshop/docker-bin-tools",
@@ -653,7 +659,7 @@
             "dist": {
                 "type": "path",
                 "url": "docker/bin",
-                "reference": "06dd97132a305e9cc589d8f6ca80b6bfc7d3bd7a"
+                "reference": "7e029f692818e4bbbb8a25e69dc8e13115b66c21"
             },
             "bin": [
                 "docker-systemd",
@@ -681,7 +687,10 @@
                 }
             ],
             "description": "All of the scripts used in Docker containers and images.",
-            "homepage": "https://getdevshop.com"
+            "homepage": "https://getdevshop.com",
+            "transport-options": {
+                "relative": true
+            }
         },
         {
             "name": "devshop/git-split",
@@ -689,7 +698,7 @@
             "dist": {
                 "type": "path",
                 "url": "src/DevShop/Component/GitSplit",
-                "reference": "43c140153da25bb227a2e3d43903be533439bffd"
+                "reference": "dce3249b77d959ffa9a0b11bb24f3723a2b8ceee"
             },
             "require": {
                 "composer-plugin-api": "^1.1",
@@ -735,7 +744,7 @@
             "dist": {
                 "type": "path",
                 "url": "src/DevShop/Component/GitHubApiCli",
-                "reference": "394e2043abb214e57c89c2f53fd908cb13fee2dd"
+                "reference": "2007f16cce9ab7e51a506cfadcae0e18c496951c"
             },
             "require": {
                 "consolidation/robo": "^1.0",
@@ -771,7 +780,10 @@
                 }
             ],
             "description": "Simple console wrapper for GitHub API",
-            "homepage": "https://getdevshop.com"
+            "homepage": "https://getdevshop.com",
+            "transport-options": {
+                "relative": true
+            }
         },
         {
             "name": "devshop/power-process",
@@ -779,7 +791,7 @@
             "dist": {
                 "type": "path",
                 "url": "src/DevShop/Component/PowerProcess",
-                "reference": "7a2fcfd9b70057036b2265ff8f1198ef69d790ee"
+                "reference": "5a6089e20c5baa08df1773092b256286b7a1505f"
             },
             "require": {
                 "consolidation/robo": "^1",
@@ -4068,6 +4080,7 @@
         "devshop/git-split": 20,
         "devshop/github-api-cli": 20,
         "devshop/bin-tools": 20,
+        "devshop/yaml-tasks": 20,
         "devshop/power-process": 20,
         "drupal/provision": 20
     },
