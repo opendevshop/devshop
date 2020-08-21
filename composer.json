@@ -113,7 +113,7 @@
     "prefer-stable": true,
     "scripts": {
         "post-install-cmd": [
-            "ln -s drushrc.php vendor/drush/drush || echo 'drushrc.php file already linked to vendor/drush/drush'"
+            "ln -sf ../../../drushrc.provision-include.php vendor/drush/drush"
         ],
         "pre-update-cmd": [
         ],
