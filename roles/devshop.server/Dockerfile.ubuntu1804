@@ -21,6 +21,9 @@ RUN rm -rf $DEVSHOP_PATH
 COPY ./ $DEVSHOP_PATH
 RUN echo "Copied DevShop Source. \nVersion: `cd $DEVSHOP_PATH && git log -1`"
 
+# Set WORKDIR to expected users home.
+WORKDIR /var/aegir
+
 RUN \
   echo "Ansible Directory: `ls -la ${DEVSHOP_ANSIBLE_PATH}`" &&\
   echo "Roles Directory: `ls -la ${DEVSHOP_ANSIBLE_PATH}/roles`" &&\
