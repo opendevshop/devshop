@@ -580,6 +580,7 @@ class RoboFile extends \Robo\Tasks {
 
       // Set extra ansible vars when not in CI.
       if (empty($_SERVER['CI'])) {
+        // Set the "hostmaster platform" path to the full DevShopControlTemplate root so we can use it directly.
         $env_run['ANSIBLE_EXTRA_VARS'] = json_encode(array(
           'devshop_control_path' => '/usr/share/devshop/src/DevShop/Templates/DevShopControlTemplate',
         ));
