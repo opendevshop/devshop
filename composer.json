@@ -24,7 +24,6 @@
         "devshop/docker-bin-tools": "@dev",
         "devshop/git-split": "self.version",
         "devshop/github-api-cli": "self.version",
-        "devshop/power-process": "self.version",
         "devshop/bin-tools": "@dev",
         "devshop/yaml-tasks": "self.version",
         "devshop/power-process": "self.version",
@@ -115,7 +114,7 @@
     "prefer-stable": true,
     "scripts": {
         "post-install-cmd": [
-            "ln -s drushrc.php vendor/drush/drush || echo 'drushrc.php file already linked to vendor/drush/drush'"
+            "ln -sf ../../../drushrc.provision-include.php vendor/drush/drush"
         ],
         "pre-update-cmd": [
         ],

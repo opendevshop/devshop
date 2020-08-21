@@ -27,7 +27,6 @@ services:
       # @TODO: In docker/ansible branch, these are here. In composer devmaster branch, these are in docker-compose.volumes.yml.
       - ./aegir-home:/var/aegir:delegated
       - ./devmaster:/usr/share/devshop/src/DevShop/Templates/DevShopControlTemplate/web/profiles/devmaster
-      - ./provision:/var/aegir/.drush/commands/provision:delegated
       - ./:/usr/share/devshop:delegated
       - ./roles/devshop.server/play.yml:/etc/ansible/play.yml
       - ./vars.yml:/etc/ansible/vars.yml
