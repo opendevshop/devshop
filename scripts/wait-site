@@ -24,15 +24,13 @@ PATH="$DIR:$PATH"
 
 # Prepare arguments and options.
 ALIAS=$1
-URI=$(devshop-site-info ${ALIAS} uri)
-CLIENT_NAME=${CLIENT_NAME:-admin}\
 
 if [ -z "${ALIAS}" ]; then
   echo "Usage: site-wait @site_alias"
   exit 1
 fi
 
-OPTIONS=-n devshop-log "Checking database... "
+OPTIONS=-n log "Waiting for DevShop Site... "
 
 # Returns true once mysql can connect.
 # Thanks to http://askubuntu.com/questions/697798/shell-script-how-to-run-script-after-mysql-is-ready
@@ -42,6 +40,9 @@ export SILENT=1
 wait-for devshop-site-active "$ALIAS" && \
   echo "Success." || \
   exit 1
+
+URI=$(devshop-site-info ${ALIAS} uri)
+CLIENT_NAME=${CLIENT_NAME:-admin}
 
 # In drush_provision_drupal_post_provision_install(), _provision_client_create_symlink() is called, creating the /var/aegir/clients/URI symlinks.
 # For now, this is the best way to determine if a provision site install completed.

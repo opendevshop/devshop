@@ -18,7 +18,6 @@
 namespace DevShop\Console;
 
 use DevShop\Component\Common\GitHubRepositoryAwareTrait;
-use TQ\Git\Repository\Repository;
 
 use DevShop\DevShop;
 use Symfony\Component\Console\Input\InputInterface;

@@ -14,7 +14,9 @@
     path: "{{ ansible_share_path }}"
     state: directory
 
+# @TODO: remove this. Ansible.cfg will point to
 - name: Install Ansible Roles
+  when: false
   file:
     src: "{{ devshop_cli_path }}/roles"
     dest: "{{ ansible_share_path }}/roles"
@@ -134,7 +136,7 @@
 
 - name: Create /var/aegir/.drush
   file:
-    path: "{{ aegir_user_home }}/.drush"
+    path: "{{ aegir_user_home }}/.drush/commands"
     owner: "{{ aegir_user_name }}"
     group: "{{ aegir_user_name }}"
     mode: 0744
@@ -143,9 +145,10 @@
 
 - name: Install required drush packages.
   command: |
-    {{ drush_bin_path }} dl {{ item.key }}-{{ item.value }} --destination={{ aegir_user_home }}/.drush/commands --package-handler={{ drush_dl_method }} -y
+    {{ drush_bin_path }} dl {{ item.key }}-{{ item.value }} --destination={{ aegir_user_home }}/.drush/commands --package-handler={{ drush_dl_method }}
   with_dict: "{{ devshop_drush_packages }}"
   changed_when: true
+  ignore_errors: true
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
@@ -159,10 +162,10 @@
   become_method: "{{ ansible_become_method_aegir }}"
   tags: [runtime]
 
-- name: "Remove existing Devmaster Source Code from {{ devshop_devmaster_path }} before installing, if requested."
+- name: "Remove existing Devmaster Source Code from {{ devshop_control_path }} before installing, if requested."
   when: devshop_danger_remove_devmaster
   file:
-    path: "{{ devshop_devmaster_path }}"
+    path: "{{ devshop_control_path }}"
     state: absent
   tags: [never, remove-devmaster, rebuild-devmaster]
 

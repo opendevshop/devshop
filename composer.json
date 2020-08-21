@@ -26,7 +26,13 @@
         "devshop/github-api-cli": "self.version",
         "devshop/power-process": "self.version",
         "devshop/bin-tools": "@dev",
-        "devshop/yaml-tasks": "self.version"
+        "devshop/yaml-tasks": "self.version",
+        "devshop/power-process": "self.version",
+        "drupal/provision": "4.x-dev#f4fd0fc1"
+    },
+    "replace": {
+        "devshop/yaml-tasks": "self.version",
+        "drupal/drupal": "*"
     },
     "require-dev": {
         "composer/composer": "^1.9"
@@ -40,6 +46,10 @@
         }
     },
     "repositories": [
+        {
+            "type": "composer",
+            "url": "https://packages.drupal.org/7"
+        },
         {
             "type": "path",
             "url": "docker/bin"
@@ -105,6 +115,7 @@
     "prefer-stable": true,
     "scripts": {
         "post-install-cmd": [
+            "ln -s drushrc.php vendor/drush/drush || echo 'drushrc.php file already linked to vendor/drush/drush'"
         ],
         "pre-update-cmd": [
         ],

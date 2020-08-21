@@ -1,7 +1,16 @@
 ---
 
+- name: Get Install Devmaster Environment (DEBUG)
+  become: true
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
+  command: "env"
+  changed_when: true
+  register: devmaster_install_environment
+  tags: [runtime]
+
 - name: Get Devmaster root
-  command: "{{ devshop_cli_bin_path }}/devshop-site-info @hostmaster root"
+  command: "{{ devshop_cli_bin_path }}/devshop-site-info {{ devshop_control_drush_alias }} root"
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
@@ -11,7 +20,7 @@
   tags: [runtime]
 
 - name: Get Devmaster URI
-  command: "{{ devshop_cli_bin_path }}/devshop-site-info @hostmaster uri"
+  command: "{{ devshop_cli_bin_path }}/devshop-site-info {{ devshop_control_drush_alias }} uri"
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
@@ -36,9 +45,14 @@
     msg: "{{ devmaster_site_uri }}"
   tags: [runtime]
 
-- name: Devmaster Install Command
+- name: Devmaster Install Command (DEBUG)
   debug:
     msg: "{{ devmaster_install_command }}"
+  tags: [runtime]
+
+- name: Devmaster Install Environment (DEBUG)
+  debug:
+    msg: "{{ devmaster_install_environment }}"
   tags: [runtime]
 
 - name: Wait for MySQL Server to be ready.
@@ -70,8 +84,8 @@
     - not devmaster_skip_upgrade
   tags: [runtime]
 
-- name: Clear the drush cache.
-  command: "{{ drush_bin_path }} cc drush"
+- name: Clear all DevShop Control Caches.
+  command: "{{ drush_bin_path }} {{ devshop_control_drush_alias }} cc all"
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"

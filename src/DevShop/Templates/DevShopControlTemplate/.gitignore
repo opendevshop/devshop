@@ -9,7 +9,7 @@
 
 # Ignore Drupal 7 core files.
 /web/*
-!/web/*/
+/*/.git
 /web/includes/
 /web/misc/
 /web/modules/

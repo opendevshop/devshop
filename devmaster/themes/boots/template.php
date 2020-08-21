@@ -38,9 +38,10 @@ function boots_preprocess_environment(&$vars) {
   // Load git refs and create links
   $vars['git_refs'] = array();
   foreach ($project->settings->git['refs'] as $ref => $type) {
-    $href = url('hosting_confirm/ENV_NID/site_devshop-deploy', array(
+    $href = url('hosting_confirm/ENV_NID/site_deploy', array(
         'query' => array(
-            'git_ref' => $ref,
+            'token' => drupal_get_token($user->uid),
+            'git_reference' => $ref,
         )
     ));
     $icon = $type == 'tag' ? 'tag' : 'code-fork';
@@ -178,7 +179,7 @@ function boots_preprocess_environment(&$vars) {
 
   // Determine Environment State. Only one of these may be active at a time.
   // State: Platform verify failed.
-  if (current($environment->tasks['verify'])->ref_type == 'platform' && current($environment->tasks['verify'])->task_status == HOSTING_TASK_ERROR) {
+  if (!empty($environment->tasks['verify']) && current($environment->tasks['verify'])->ref_type == 'platform' && current($environment->tasks['verify'])->task_status == HOSTING_TASK_ERROR) {
     $verify_task = current($environment->tasks['verify']);
     $buttons = l(
       '<i class="fa fa-refresh"></i> ' . t('Retry'),
@@ -211,13 +212,26 @@ function boots_preprocess_environment(&$vars) {
   }
 
   // State: Site install failed.
-  elseif (isset($environment->tasks) && is_array($environment->tasks['install']) && current($environment->tasks['install'])->task_status == HOSTING_TASK_ERROR) {
+  elseif (!empty($environment->tasks['install'])  && current($environment->tasks['install'])->task_status == HOSTING_TASK_ERROR) {
     $install_task = current($environment->tasks['install']);
     $buttons = l(
-      '<i class="fa fa-refresh"></i> ' . t('Retry'),
+      '<i class="fa fa-list"></i> ' . t('View Logs'),
       "node/{$install_task->nid}",
       array(
         'html' => TRUE,
+        'attributes' => array(
+          'class' => array('btn btn-sm text-primary'),
+        ),
+      )
+    );
+    $buttons .= l(
+      '<i class="fa fa-refresh"></i> ' . t('Retry'),
+      "hosting_confirm/{$install_task->rid}/site_{$install_task->task_type}",
+      array(
+        'html' => TRUE,
+        'query' => array(
+          'token' => drupal_get_token($user->uid),
+        ),
         'attributes' => array(
           'class' => array('btn btn-sm text-success'),
         ),
@@ -367,15 +381,19 @@ function boots_preprocess_environment(&$vars) {
     $environment->git_sha = trim(shell_exec("cd {$environment->repo_path}; git rev-parse HEAD  2> /dev/null"));
     
     // Determine the type of git ref the stored version is
-    $stored_git_ref_type = $project->settings->git['refs'][$environment->git_ref_stored];
+    $stored_git_ref_type = !empty($project->settings->git['refs'][$environment->git_ref_stored])
+      ? $project->settings->git['refs'][$environment->git_ref_stored]
+      : 'branch';
     $stored_git_sha =  trim(shell_exec("cd {$environment->repo_path}; git rev-parse {$environment->git_ref_stored} 2> /dev/null"));
     
     // Get the actual tag or branch. If a branch and tag have the same SHA, the tag will be output here.
     // "2> /dev/null" ensures errors don't get printed like "fatal: no tag exactly matches".
     $environment->git_ref = trim(str_replace('refs/heads/', '', shell_exec("cd {$environment->repo_path}; git describe --tags --exact-match 2> /dev/null || git symbolic-ref -q HEAD 2> /dev/null")));
     
-    $environment->git_ref_type = $project->settings->git['refs'][$environment->git_ref];
-    
+    $environment->git_ref_type = !empty($project->settings->git['refs'][$environment->git_ref])
+      ? $project->settings->git['refs'][$environment->git_ref]
+      : 'branch';
+
     // If the git sha for stored branch are the same, but the type is different, detect if HEAD is detached so we know if this is on a branch or a tag.
     if ($stored_git_sha == $environment->git_sha && $stored_git_ref_type != $environment->git_ref_type) {
       $git_status = shell_exec("cd {$environment->repo_path}; git status");
@@ -810,8 +828,8 @@ function boots_preprocess_page(&$vars){
   $vars['sidebar_first_rendered'] = render($vars['page']['sidebar_first']);
 
   // Indicate the project is inactive.
-  if ((int) $vars['node']->status == NODE_NOT_PUBLISHED) {
-    $vars['subtitle'] .= ' <small>' . t('Inactive') .  '</small>';
+  if (isset($project_node) && isset($project_node->nid) && (int) $project_node->status == NODE_NOT_PUBLISHED) {
+    $vars['subtitle'] .= ' <small>' . t('Inactive Project') .  '</small>';
   }
 }
 
@@ -901,9 +919,10 @@ function boots_preprocess_node_project(&$vars){
     $vars['deploy_label'] = t('Deploy a tag or branch');
 
     foreach ($node->project->settings->git['refs'] as $ref => $type){
-      $href = url('hosting_confirm/ENV_NID/site_devshop-deploy', array(
+      $href = url('hosting_confirm/ENV_NID/site_deploy', array(
         'query' =>array(
-          'git_ref' => $ref,
+          'token' => drupal_get_token($user->uid),
+          'git_reference' => $ref,
         )
       ));
       $icon = $type == 'tag'? 'tag': 'code-fork';

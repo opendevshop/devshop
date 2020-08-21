@@ -24,8 +24,9 @@ services:
       - /var/lib/mysql
       - /var/logs/aegir
 
+      # @TODO: In docker/ansible branch, these are here. In composer devmaster branch, these are in docker-compose.volumes.yml.
       - ./aegir-home:/var/aegir:delegated
-      - ./src/DevShop/Templates/DevShopControlTemplate:/var/aegir/devmaster-1.x
+      - ./devmaster:/usr/share/devshop/src/DevShop/Templates/DevShopControlTemplate/web/profiles/devmaster
       - ./provision:/var/aegir/.drush/commands/provision:delegated
       - ./:/usr/share/devshop:delegated
       - ./roles/devshop.server/play.yml:/etc/ansible/play.yml
@@ -34,3 +35,17 @@ services:
       - $HOME/.ssh:/var/aegir/.ssh
       # To develop the docker-systemd-entrypoint without having to rebuild the container, set this volume.
       - ./docker/bin/docker-systemd-entrypoint:/usr/local/bin/docker-systemd-entrypoint
+
+    # Resource allocation.
+    # 4GB, 2CPUs is a good minimum.
+
+    # mem_limit is a hard upper limit for the container.
+    # If using linux, make sure this is below your system's idle free memory or your desktop will slow down.
+    mem_limit: 10g
+
+    # mem_reservation is a minimum that your system will reserve for the container.
+    # DevShop needs about 4GB to provide a good user experience.
+    mem_reservation: 4g
+
+    # Restrict the containers to only use the first 2 CPUs
+    cpuset: 0,1

@@ -1,0 +1,24 @@
+#
+# docker-compose.volumes.yml
+#
+# This dockerfile is for local development only. It maps the development folders to volumes,
+#
+version: '2.2'
+services:
+  devshop:
+    volumes:
+      # Development volumes
+
+      # DevShop Core.
+      # Includes:
+      #   DevShop Control Composer Template: /usr/share/devshop/src/DevShop/Templates/DevShopControlTemplate
+      #   Ansible Roles: /usr/share/devshop/roles
+      - ./:/usr/share/devshop:delegated
+
+      # Devmaster Drupal Install Profile
+      # This volume injects the folder `./devmaster` into the "hostmaster" platform in the container.
+      - ./devmaster:/usr/share/devshop/src/DevShop/Templates/DevShopControlTemplate/web/profiles/devmaster
+
+      # Provision Drush Extension
+      - ./provision:/var/aegir/.drush/commands/provision:delegated
+      - $HOME/.ssh:/var/aegir/.ssh

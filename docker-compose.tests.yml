@@ -16,4 +16,5 @@ services:
     - CI=CI
 
     volumes:
+      - ./:/usr/share/devshop:delegated
       - ./.github/.test-assets:/usr/share/devshop/.github/test-assets

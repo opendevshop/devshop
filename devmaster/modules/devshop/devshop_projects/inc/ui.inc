@@ -40,7 +40,7 @@ function devshop_projects_projects_page($show_inactive = FALSE) {
     $first_environment = current($project->environments);
     if ($first_environment) {
       $platform_node = node_load($first_environment->platform);
-      $version = isset($platform_node->release->version)?: t('unknown');
+      $version = $platform_node->release->version?: t('unknown');
     }
     else {
       $version = '';
@@ -155,15 +155,24 @@ HTML;
 
   // No Projects
   if (empty($rows)) {
-    $link = url('projects/add');
-    $welcome = t('Welcome to DevShop!');
-    $text = t('Create your first project to get started.');
-    $button = t('Start a Project');
+    $link = url('admin/devshop');
+    $welcome = t('Welcome to <em>your</em> DevShop!');
+    $subtitle = t("You are almost ready to start working.");
+    $text = t("Check your DevShop settings or get started with a new Project.");
+    $button = t('DevShop Settings');
+
+    $link_create = url('projects/add');
+    $button_create = t('Create your first Project');
+
     $output = <<<HTML
 <div class="jumbotron">
   <h1>$welcome</h1>
-  <p>$text</p>
-  <p><a class="btn btn-success btn-lg" href="$link" role="button"><i class="fa fa-chevron-right"></i> $button </a></p>
+  <h3>$subtitle</h3>
+  <p class="text-muted">$text</p>
+  <p>
+   <a class="btn btn-primary btn-lg" href="$link" role="button"><i class="fa fa-gear"></i> $button </a>
+   <a class="btn btn-success btn-lg" href="$link_create" role="button"><i class="fa fa-plus"></i> $button_create </a>
+  </p>
 </div>
 
 HTML;
@@ -201,9 +210,12 @@ function devshop_projects_inactive_tab_title() {
 }
 
 /**
- *
+ * Access check for "inactive projects" tab.
  */
 function devshop_projects_inactive_tab_access() {
+  if (arg(0) == 'projects' && arg(1) == 'add') {
+    return FALSE;
+  }
   static $count;
   if (!isset($count)) {
     $count = devshop_projects_count(NODE_NOT_PUBLISHED);

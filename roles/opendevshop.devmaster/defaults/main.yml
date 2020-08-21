@@ -22,10 +22,6 @@ devshop_cli_composer_install_command: "install"
 
 drush_bin_path: "{{ devshop_cli_bin_path }}/drush"
 
-devshop_devmaster_path: "{{ aegir_user_home }}/devmaster-{{ devshop_version }}"
-
-devshop_install_profile: devmaster
-
 aegir_server_webserver: apache
 mysql_root_password_update: false
 
@@ -43,10 +39,11 @@ aegir_log_files_touch:
   - "{{ aegir_logs_path }}/hostmaster.error.log"
   - "{{ aegir_logs_path }}/hostmaster.access.log"
 
-drush_dl_method: wget
+drush_dl_method: git_drupalorg
 
 devshop_drush_packages:
-  provision: 7.x-3.x-devshop
+  # @TODO: Remove once confirmed provision is loaded from devshop vendor dir.
+  provision: 7.x-4.x
   registry_rebuild: 7.x-2.2
 
 php_date_timezone: "America/New_York"
@@ -59,10 +56,15 @@ php_date_timezone: "America/New_York"
 devshop_version: 1.x
 devshop_cli_version: "{{ devshop_version }}"
 
-# Set devmaster_git_repo to deploy a devmaster instance from an existing git repo.
+# Set devshop_control_git_remote to deploy a devmaster instance from an existing git repo.
 devshop_control_git_remote: 'https://github.com/devshop-packages/devshop-control-template'
-devshop_control_git_docroot: web
 devshop_control_git_reference: integration
+devshop_control_git_docroot: web
+
+devshop_control_path: "{{ aegir_user_home }}/devshop-control-{{ devshop_version }}"
+devshop_control_drush_alias: "@hostmaster"
+
+devshop_install_profile: devmaster
 
 # Leave empty to use default branch.
 devmaster_git_ref: ''
@@ -78,10 +80,10 @@ devmaster_install_command: "{{ devshop_cli_bin_path }}/devshop devmaster:install
                                 --client_email={{ devshop_devmaster_email }} \
                                 --http_service_type={{ aegir_server_webserver }} \
                                 --profile={{ devshop_install_profile }} \
-                                --root={{ aegir_user_home }}/devshop-control-{{ devshop_version }}/{{ devshop_control_git_docroot }} \
+                                --root={{ devshop_control_path }}/{{ devshop_control_git_docroot }} \
                                 --devshop_version={{ devshop_version }} \
                                 --drush-path={{ devshop_cli_bin_path }}/drush \
-                                --git_root={{ aegir_user_home }}/devshop-control-{{ devshop_version }} \
+                                --git_root={{ devshop_control_path }} \
                                 --git_remote={{ devshop_control_git_remote }} \
                                 --git_reference={{ devshop_control_git_reference }}
 "
@@ -110,7 +112,7 @@ devshop_support_license_key: ""
 # The path to the script to use for the Hosting Task Queue Runner. See opendevshop/devshop/bin/hosting-queue-runner
 hosting_queue_runner_bin_path: "{{ devshop_cli_bin_path }}/hosting-queue-runner"
 
-# Triggers the removal of devshop_devmaster_path: `rm -rf {{ devshop_devmaster_path }}`
+# Triggers the removal of devshop_control_path: `rm -rf {{ devshop_control_path }}`
 devshop_danger_remove_devmaster: false
 
 # By default, devshop assumes it is being installed at "runtime" (like on a running server).
