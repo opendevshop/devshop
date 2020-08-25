@@ -65,8 +65,11 @@ jobs:
       - name: "Docker Run: devshop/server:${{ matrix.os }}"
         working-directory: roles
         env:
-          COMMAND: "echo 'Container Up! Awaiting commands...'"
-        run: docker-compose up --detach devshop.server
+          COMMAND: "echo 'DevShop Server Online, launched by GitHub Actions.'"
+        run: |
+          docker-compose up --detach devshop.server
+          sleep 3
+          docker-compose logs
 
       - name: "Container Environment: ${{ matrix.os }}"
         working-directory: roles
