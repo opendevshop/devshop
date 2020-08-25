@@ -10,12 +10,13 @@ services:
     hostname: devshop.local.computer
     extra_hosts:
       - "drpl8.testenv.devshop.local.computer:127.0.0.1"
-    command: echo 'Hello World! DevShop Development Image here. To run as a single process, override 'command' in docker-compose.yml. '
+    command: "${COMMAND:-'echo DevShop Server Online from main docker-compose.yml'}"
     environment:
       DEVSHOP_TEST: x
       # By default, devshop container will run 'ansible-playbook --tags runtime' after running the "command"
       # Keep DEVSHOP_DOCKER_COMMAND_RUN uncommented to use this command to provision the server instead.
       # @TODO: Create single value ENV vars for AEGIR_USER_UID
+      # @TODO: Make this vars file standard for the base ansible role containers.
       DEVSHOP_DOCKER_COMMAND_RUN: ansible-playbook /etc/ansible/play.yml --tags runtime --extra-vars @/etc/ansible/vars.yml
       ANSIBLE_VERBOSITY: "${ANSIBLE_VERBOSITY:-}"
 
