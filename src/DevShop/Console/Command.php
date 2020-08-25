@@ -31,6 +31,7 @@ use Symfony\Component\Process\Exception\ProcessFailedException;
 use Github\Exception\RuntimeException;
 
 use Symfony\Component\Console\Command\Command as BaseCommand;
+use TQ\Git\Repository\Repository;
 
 /**
  * Base class for DevShop commands
