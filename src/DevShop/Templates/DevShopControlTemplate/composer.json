@@ -124,7 +124,7 @@
         ],
         "reinstall": [
           "@uninstall",
-          "@composer install --prefer-source --ansi"
+          "@composer install --ansi"
         ]
     },
     "extra": {
