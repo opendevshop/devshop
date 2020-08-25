@@ -1,7 +1,8 @@
 skip_list:
+  - '106'
+  - '208'
   - '302'
   - '303'
-  - '306'
 exclude_paths:
    - ./geerlingguy.apache
    - ./geerlingguy.composer
