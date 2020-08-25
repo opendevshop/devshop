@@ -26,11 +26,10 @@ services:
       - /var/lib/mysql
       - /var/logs/aegir
 
-      # @TODO: In docker/ansible branch, these are here. In composer devmaster branch, these are in docker-compose.volumes.yml.
       - ./aegir-home:/var/aegir:delegated
-      - ./src/DevShop/Templates/DevShopControlTemplate:/usr/share/devshop/src/DevShop/Templates/DevShopControlTemplate
       - ./devmaster:/usr/share/devshop/src/DevShop/Templates/DevShopControlTemplate/web/profiles/devmaster
       - ./:/usr/share/devshop:delegated
+
       - ./roles/devshop.server/play.yml:/etc/ansible/play.yml
 
       # This file is used in the default DEVSHOP_DOCKER_COMMAND_RUN.
