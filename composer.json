@@ -101,7 +101,7 @@
         ],
         "pre-update-cmd": [
         ],
-        "update-roles": [
+        "roles:update": [
             "DevShop\\Composer::updateRoles"
         ]
     }
