@@ -81,11 +81,9 @@ jobs:
       - name: "Install DevShop: ${{ matrix.os }}"
         working-directory: roles
 
-        # Since the container is launched with a new DEVSHOP_DOCKER_COMMAND_RUN to prevent the playbook run in the action step, we need to reset it here.
-        env:
-          DEVSHOP_GITHUB_ACTIONS_COMMAND_RUN: "ansible-playbook /etc/ansible/play.yml --tags runtime --extra-vars @/etc/ansible/vars.yml"
+        # Since the container is launched with a new DEVSHOP_DOCKER_COMMAND_RUN, run the default.
         run: |
-          docker-compose exec -T devshop.server $DEVSHOP_GITHUB_ACTIONS_COMMAND_RUN
+          docker-compose exec -T devshop.server bash -c '${DEFAULT_DEVSHOP_DOCKER_COMMAND_RUN}'
 
       - name: "Test DevShop: ${{ matrix.os }}"
         working-directory: roles
