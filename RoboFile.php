@@ -831,22 +831,17 @@ class RoboFile extends \Robo\Tasks {
       // Remove devmaster site folder
       $version = self::DEVSHOP_LOCAL_VERSION;
       $uri = self::DEVSHOP_LOCAL_URI;
-      $this->_exec("sudo rm -rf aegir-home/.drush");
-      $this->_exec("sudo rm -rf aegir-home/config");
-      $this->_exec("sudo rm -rf aegir-home/clients");
-      $this->_exec("sudo rm -rf aegir-home/projects");
       $this->_exec("sudo rm -rf src/DevShop/Templates/DevShopControlTemplate/web/sites/{$uri}");
-      $this->_exec("sudo rm -rf aegir-home/devmaster-1.0.0-beta10/sites/{$uri}");
     }
 
     // Don't run when -n is specified,
-    if ($opts['force'] || !$opts['no-interaction'] && $this->confirm("Destroy local source code? (aegir-home)")) {
+    if ($opts['no-interaction'] || $this->confirm("Destroy container home directory? (aegir-home)")) {
       if ($this->_exec("sudo rm -rf aegir-home")->wasSuccessful()) {
         $this->say("Entire aegir-home folder deleted.");
       }
     }
-    elseif ($opts['no-interaction']) {
-      $this->say("Local source code was retained. Use 'robo destroy --force' option to remove it, or run 'rm -rf aegir-home'.");
+    else {
+      $this->say("The aegir-home directory was retained. It will be  present when 'robo up' is run again.");
     }
   }
 
