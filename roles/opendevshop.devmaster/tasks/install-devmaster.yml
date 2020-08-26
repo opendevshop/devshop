@@ -45,14 +45,14 @@
     msg: "{{ devmaster_site_uri }}"
   tags: [runtime]
 
-- name: Devmaster Install Command (DEBUG)
-  debug:
-    msg: "{{ devmaster_install_command }}"
-  tags: [runtime]
-
 - name: Devmaster Install Environment (DEBUG)
   debug:
     msg: "{{ devmaster_install_environment }}"
+  tags: [runtime]
+
+- name: Devmaster Install Command (DEBUG)
+  debug:
+    msg: "{{ devmaster_install_command }}"
   tags: [runtime]
 
 - name: Wait for MySQL Server to be ready.
