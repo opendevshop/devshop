@@ -111,6 +111,9 @@
   copy:
     dest: /etc/profile.d/devshop-cli-path.sh
     content: 'PATH=$PATH:{{ devshop_cli_path }}/bin'
+  tags: [always]
+  args:
+    mode: 0644
 
 - name: Debug environment
   command: "env"
