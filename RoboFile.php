@@ -876,10 +876,10 @@ class RoboFile extends \Robo\Tasks {
   public function shell($user = 'aegir') {
 
     if ($user) {
-        $process = new \Symfony\Component\Process\Process("docker-compose exec --user $user devshop bash --init-file /etc/profile");
+        $process = new \Symfony\Component\Process\Process("docker-compose exec --user $user devshop bash");
     }
     else {
-        $process = new \Symfony\Component\Process\Process("docker-compose exec devshop bash --init-file /etc/profile");
+        $process = new \Symfony\Component\Process\Process("docker-compose exec devshop bash");
     }
     $process->setTty(TRUE);
     $process->setTimeout(NULL);
