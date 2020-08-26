@@ -568,8 +568,8 @@ class RoboFile extends \Robo\Tasks {
         $env_run['DOCKER_COMMAND_POST'] = $test_command;
       }
 
-      // Override the docker commmand.
-      $env_run['DOCKER_COMMAND'] = $docker_command;
+      // Override the docker command.
+      $env_run['COMMAND'] = $docker_command;
 
       // @TODO: Write to .env file so user does not have to keep using CLI args.
 
