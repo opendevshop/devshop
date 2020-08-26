@@ -35,7 +35,13 @@ services:
       # This file is used in the default DEVSHOP_DOCKER_COMMAND_RUN.
       - ./vars.development.yml:/etc/ansible/vars.yml
       - ./roles:/etc/ansible/roles
+
+      # NOTE: This will NOT work if docker is installed with Snap. Snaps change HOME for each app: https://snapcraft.io/docs/environment-variables
+      # To fix, symlink your ssh dir into the snap/docker/current directory:
+      #   ln -s ~/.ssh ~/snap/docker/current
+      # @TODO: Detect this situation with the robo up command.
       - $HOME/.ssh:/var/aegir/.ssh
+
       # To develop the docker-systemd-entrypoint without having to rebuild the container, set this volume.
       - ./docker/bin/docker-systemd-entrypoint:/usr/local/bin/docker-systemd-entrypoint
 
