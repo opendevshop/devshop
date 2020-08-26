@@ -918,7 +918,8 @@ class RoboFile extends \Robo\Tasks {
    * Get a one-time login link to Devamster.
    */
   public function login($user = 'aegir') {
-    $this->_exec("docker-compose exec --user $user -T devshop drush @hostmaster uli");
+      // @TODO: Figure out why PATH is gone.
+    $this->_exec("docker-compose exec --user $user -T devshop /usr/share/devshop/bin/drush @hostmaster uli");
   }
 
   /**
