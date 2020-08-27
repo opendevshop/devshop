@@ -2,22 +2,35 @@
 
 namespace DevShop\Component\Deploy;
 
+use DevShop\Component\Common\GitRepository;
+use DevShop\Component\Common\GitRepositoryAwareTrait;
+
 class DeployStage {
+
+    use GitRepositoryAwareTrait;
 
     /**
      * @var string The stage name.
      */
-    public $name = 'deploy';
+    public $name = 'none';
 
     /**
      * @var string The stage command
      */
-    private $command = 'echo "DeployStage command not set. Define DeployStage::command property."';
+    private $command = null;
 
-    public function __construct($name, $command = null)
+    /**
+     * DeployStage constructor.
+     *
+     * @param $name
+     * @param null $command
+     * @param \DevShop\Component\Common\GitRepository|null $repository
+     */
+    public function __construct($name, $command = null, GitRepository $repository = NULL)
     {
         $this->name = $name;
         $this->command = $command?: $this->command;
+        $this->setRepository($repository);
     }
 
     /**
