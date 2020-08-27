@@ -5,7 +5,7 @@ namespace DevShop\Component\Deploy;
 use DevShop\Component\Common\GitRepository;
 use DevShop\Component\Common\GitRepositoryAwareTrait;
 
-class DeployStage {
+class DeployStage implements DeployStageInterface {
 
     use GitRepositoryAwareTrait;
 
