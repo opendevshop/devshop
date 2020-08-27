@@ -30,9 +30,6 @@
     }
   },
   "extra": {
-    "branch-alias": {
-      "dev-integration": "1.7.x-dev"
-    }
   },
   "autoload": {
     "psr-4": {

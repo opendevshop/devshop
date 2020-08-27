@@ -19,6 +19,7 @@
     "require": {
         "php": "^7.1",
         "knplabs/github-api": "^1.4",
+        "devshop/deploy": "self.version",
         "drush/drush": "^8",
         "ext-json": "*",
         "devshop/docker-bin-tools": "@dev",
@@ -76,6 +77,10 @@
         {
             "type": "path",
             "url": "src/DevShop/Component/YamlTasks"
+        },
+        {
+            "type": "path",
+            "url": "src/DevShop/Component/Deploy"
         }
     ],
     "bin": [
