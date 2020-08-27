@@ -18,8 +18,8 @@
   "require": {
     "php": "^7.1",
     "consolidation/robo": "^1.0",
-    "eloquent/composer-config-reader": "^2.1",
-    "devshop/composer-common": "1.x-dev"
+    "devshop/composer-common": "1.x-dev",
+    "eloquent/composer-config-reader": "^2.1"
   },
   "require-dev": {
   },
@@ -30,6 +30,9 @@
     }
   },
   "extra": {
+    "branch-alias": {
+      "dev-integration": "1.7.x-dev"
+    }
   },
   "autoload": {
     "psr-4": {
@@ -39,5 +42,6 @@
   "bin": [
     "deploy"
   ],
-  "minimum-stability": "dev"
+  "minimum-stability": "dev",
+  "prefer-stable": true
 }
