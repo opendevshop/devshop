@@ -2,6 +2,9 @@
 
 namespace DevShop\Component\Deploy;
 
+use Eloquent\Composer\Configuration\Element\Configuration;
+use TQ\Git\Repository\Repository;
+
 class DeployStages {
 
     const STAGES = [
@@ -10,12 +13,6 @@ class DeployStages {
         'install' => 'Install the application data.',
         'deploy' => 'Update application data after code changes.',
         'test' => 'Run a command to verify functionality of the site.'
-    ];
-
-    const DEFAULT_DEPLOY = [
-        'git',
-        'build',
-        'deploy',
     ];
 
     /**
@@ -27,19 +24,25 @@ class DeployStages {
     }
 
     /**
-     * Get the list of stages run by default.
-     * @return string[] List of stages that will be run by default during a deploy.
-     */
-    public static function getDefaultDeploy(){
-      return self::DEFAULT_DEPLOY;
-    }
-
-    /**
-     * Get the list of stages that are run by default.
+     * Prepare DeployStages from:
+     *   1. TBD
+     *   2. Project's composer.json:extra.deploy.stages
      *
-     * @return string[] List of stages that run by default during a "deploy" command.
+     * @param \TQ\Git\Repository\Repository $repository
+     * @param \Eloquent\Composer\Configuration\Element\Configuration $configuration
      */
-    public static function isDefaultStage($stage_name){
-      return in_array($stage_name, self::getDefaultDeploy());
+    static public function prepareStages(Repository $repository, Configuration $configuration) {
+
+        // @TODO: Look up default DeployStages for common projects.
+        if (empty($configuration->extra()->deploy)) {
+            throw new \Exception("No 'extra.deploy' section found in composer.json in directory " . $repository->getRepositoryPath());
+        }
+        else {
+            $deploy_extra_config = $configuration->extra()->deploy;
+print_r($deploy_extra_config);
+            // @TODO...
+
+
+        }
     }
 }

@@ -14,7 +14,7 @@ namespace DevShop\Component\Deploy;
 use Composer\Composer;
 use Composer\Config;
 use DevShop\Component\Common\ComposerRepositoryAwareTrait;
-use DevShop\Component\Deploy\DeployStages;
+use DevShop\Component\Deploy\DeployStage;
 use Robo\Common\OutputAwareTrait;
 use Symfony\Component\Console\Command\Command as BaseCommand;
 use Symfony\Component\Console\Input\InputInterface;
@@ -103,29 +103,81 @@ EOF
     }
 
     /**
-     * Load deploy stage config from composer.json
-     */
-    public function loadStages()
-    {
-        if (empty($this->getComposerConfig()->extra()->deploy)) {
-            // @TODO: Allow Fail or Warn
-            $this->io->warning(
-              "No deploy stages found in composer.json:extra.deploy"
-            );
-        }
-    }
-
-    /**
      * {@inheritdoc}
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->io->title('Deploy');
 
-        // Validate Stages
-        $this->loadStages();
+        // @TODO: Convert to use the Deploy class to load config from anywhere.
+        // @TODO: Create common DeployTemplates so every project does not need extras.deploy.stages
+        if (empty($this->getComposerConfig()->extra()->deploy)) {
+            // @TODO: Allow Fail or Warn
+            $this->io->warning(
+              "No 'extra.deploy' section found in composer.json in directory " . $this->getRepository()->getRepositoryPath()
+            );
+        }
+        else {
+            // @TODO: Create a simple config class so stage commands can be loaded from many places.
+            $deploy_extra_config = $this->getComposerConfig()->extra()->deploy;
 
-        return 0;
+            if ($this->io->isVerbose()) {
+                print_r($deploy_extra_config);
+            }
+
+            // Load all possible deploy stages
+            $stages = [];
+            $deploy_plan = [];
+            $skipped_stages = [];
+
+            foreach (DeployStages::getStages() as $stage_name => $description) {
+                // Check if --stage is set and --skip-stage is not.
+                if ((Deploy::isDefaultStage($stage_name) || $input->getOption($stage_name)) && !$input->getOption("skip-{$stage_name}") && !empty($deploy_extra_config->stages->{$stage_name})) {
+                    $stages[$stage_name] = new DeployStage($stage_name, $deploy_extra_config->stages->{$stage_name});
+                    $deploy_plan[] = [$stage_name, $stages[$stage_name]->command()];
+                }
+                // Messages on why stage was skipped.
+                // Because: --skip-stage was used
+                elseif (Deploy::isDefaultStage($stage_name) && $input->getOption("skip-{$stage_name}")) {
+                    $deploy_plan[] = ["<fg=black>$stage_name</>", "<fg=black>Stage skipped: --skip-{$stage_name} option was used.</>"];
+                    $skipped_stages[] = $stage_name;
+                }
+                // Because: Stage is not default and --stage option was not set.
+                elseif (!Deploy::isDefaultStage($stage_name) && !$input->getOption($stage_name)) {
+                    $deploy_plan[] = ["<fg=black>$stage_name</>", "<fg=black>Stage skipped: '{$stage_name}' is not a default stage and --{$stage_name} option was not used.</>"];
+                }
+                // Because: Specific stage was not found in config.
+                elseif (empty($deploy_extra_config->stages->{$stage_name})){
+                    $deploy_plan[] = ["<fg=black>$stage_name</>", "<fg=black>Stage skipped: '{$stage_name}' stage command was not found in extras.deploy.stages.{$stage_name}.</>"];
+                }
+            }
+
+            $this->io->section('Deploy Plan');
+            $this->io->text('Path: ' . $this->getRepository()->getRepositoryPath());
+            $this->io->table(['Stages'], $deploy_plan);
+
+            if (!empty($skipped_stages)) {
+                $count = count($skipped_stages);
+                $skipped_stages = implode(', ', $skipped_stages);
+                $plural = $count == 0 || $count > 1? 'stages': 'stage';
+                $this->io->note("Skipping $count default $plural: $skipped_stages");
+            }
+
+            $deploy = new Deploy($stages);
+
+            if (empty($stages)) {
+                $this->io->warning("There were no stages to run.");
+            }
+            else {
+                // @TODO: Make deploy's ComposerRepositoryAware
+                $pwd = getenv("PWD");
+                chdir($this->getRepository()->getRepositoryPath());
+                $deploy->runStages();
+                chdir($pwd);
+            }
+            return 0;
+        }
+
+        return 1;
     }
-
 }

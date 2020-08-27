@@ -90,6 +90,15 @@
         "sort-packages:": "true"
     },
     "extra": {
+        "deploy": {
+            "stages": {
+                "git": "echo 'Git Stage command will be defined in DeployStageGit.'",
+                "build": "composer install --no-suggest --no-progress --ansi",
+                "install": "install.sh",
+                "deploy": "bin/devshop status --help",
+                "test": "devshop devmaster:test"
+            }
+        },
         "git-split": {
             "repos": {
                 "docs": "https://github.com/opendevshop/documentation.git",
