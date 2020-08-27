@@ -97,7 +97,6 @@
     "extra": {
         "deploy": {
             "stages": {
-                 "git": "git ls-remote https://github.com/opendevshop/devshop",
                 "build": "composer install --no-suggest --no-progress --ansi",
                 "install": "install.sh",
                 "deploy": "bin/devshop status --help",
