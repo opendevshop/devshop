@@ -50,7 +50,7 @@ class Deploy {
             $time = date(DATE_RFC2822);
             echo " -----------------------------------------------------------------------\n";
             echo " Deploy Stage: $stage->name $time \n";
-            echo " > {$stage->command()} \n";
+            echo " > {$stage->getCommand()} \n";
             echo " -----------------------------------------------------------------------\n";
             $stage->runStage();
         }

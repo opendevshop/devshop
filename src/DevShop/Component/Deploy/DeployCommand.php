@@ -134,7 +134,7 @@ EOF
                 // Check if --stage is set and --skip-stage is not.
                 if ((Deploy::isDefaultStage($stage_name) || $input->getOption($stage_name)) && !$input->getOption("skip-{$stage_name}") && !empty($deploy_extra_config->stages->{$stage_name})) {
                     $stages[$stage_name] = new DeployStage($stage_name, $deploy_extra_config->stages->{$stage_name});
-                    $deploy_plan[] = [$stage_name, $stages[$stage_name]->command()];
+                    $deploy_plan[] = [$stage_name, $stages[$stage_name]->getCommand()];
                 }
                 // Messages on why stage was skipped.
                 // Because: --skip-stage was used

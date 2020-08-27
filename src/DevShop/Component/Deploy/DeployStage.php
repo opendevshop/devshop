@@ -31,7 +31,7 @@ class DeployStage {
     /**
      * @return string
      */
-    public function command(){
+    public function getCommand(){
         return $this->command;
     }
 }
