@@ -22,27 +22,4 @@ class DeployStages {
     public static function getStages(){
       return self::STAGES;
     }
-
-    /**
-     * Prepare DeployStages from:
-     *   1. TBD
-     *   2. Project's composer.json:extra.deploy.stages
-     *
-     * @param \TQ\Git\Repository\Repository $repository
-     * @param \Eloquent\Composer\Configuration\Element\Configuration $configuration
-     */
-    static public function prepareStages(Repository $repository, Configuration $configuration) {
-
-        // @TODO: Look up default DeployStages for common projects.
-        if (empty($configuration->extra()->deploy)) {
-            throw new \Exception("No 'extra.deploy' section found in composer.json in directory " . $repository->getRepositoryPath());
-        }
-        else {
-            $deploy_extra_config = $configuration->extra()->deploy;
-print_r($deploy_extra_config);
-            // @TODO...
-
-
-        }
-    }
 }
