@@ -47,8 +47,11 @@ class Deploy {
     public function runStages() {
         foreach ($this->stages as $stage) {
             // @TODO: Make IOAware
-            echo ">>>>>>>>>>>>>>>LAUNCHING STAGE: $stage->name <<<<<<<<<<<<<<<<<<<<<<<<\n";
-            echo ">>>>>>>>>>>>>>>{$stage->command()}<<<<<<<<<<<<<<<<<<<<<<<<\n";
+            $time = date(DATE_RFC2822);
+            echo " -----------------------------------------------------------------------\n";
+            echo " Deploy Stage: $stage->name $time \n";
+            echo " > {$stage->command()} \n";
+            echo " -----------------------------------------------------------------------\n";
             $stage->runStage();
         }
     }
