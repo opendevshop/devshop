@@ -1,0 +1,35 @@
+#!/usr/bin/env php
+<?php
+
+/**
+ *
+ */
+
+// Include autoloader
+function includeIfExists(string $file): bool
+{
+    return file_exists($file) && include $file;
+}
+
+if (
+    !includeIfExists(__DIR__ . '/../../autoload.php') &&
+    !includeIfExists(__DIR__ . '/vendor/autoload.php') &&
+    !includeIfExists(__DIR__ . '/../../../../vendor/autoload.php')
+) {
+    fwrite(STDERR, 'Dependencies not found. Install with Composer.'.PHP_EOL);
+    exit(1);
+}
+
+$input = new \Symfony\Component\Console\Input\ArgvInput($argv);
+$output = new \Symfony\Component\Console\Output\ConsoleOutput();
+
+// Load command from everything after the filename.
+// This stand-alone bin file does not use Composer, so it must use the Console command class.
+$command = new \DevShop\Component\Deploy\DeployCommand();
+$command->initialize($input, $output);
+
+(new \Symfony\Component\Console\Application())->add($command)
+    ->getApplication()
+    ->setDefaultCommand($command->getName(), true)
+    ->run()
+;

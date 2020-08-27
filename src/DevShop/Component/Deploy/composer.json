@@ -1,0 +1,43 @@
+{
+  "name": "devshop/deploy",
+  "type": "composer-plugin",
+  "description": "Simplified tooling for managing your apps deployment in code.",
+  "keywords": [],
+  "homepage": "https://getdevshop.com",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Jon Pugh",
+      "email": "jon@thinkdrop.net"
+    },
+    {
+      "name": "DevShop Community",
+      "homepage": "https://github.com/opendevshop/devshop/graphs/contributors"
+    }
+  ],
+  "require": {
+    "php": "^7.1",
+    "consolidation/robo": "^1.0",
+    "eloquent/composer-config-reader": "^2.1",
+    "devshop/composer-common": "1.x-dev"
+  },
+  "require-dev": {
+  },
+  "repositories": {
+    "devshop/composer-common": {
+      "type": "path",
+      "url": "../ComposerCommon"
+    }
+  },
+  "extra": {
+  },
+  "autoload": {
+    "psr-4": {
+      "DevShop\\Component\\Deploy\\": ""
+    }
+  },
+  "bin": [
+    "deploy"
+  ],
+  "minimum-stability": "dev"
+}
