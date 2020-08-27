@@ -38,7 +38,10 @@ class DeployStage implements DeployStageInterface {
      * @TODO: Use Process component or ProcessAwareTrait.
      */
     public function runStage() {
+        $pwd = getenv("PWD");
+        chdir($this->getRepository()->getRepositoryPath());
         print shell_exec($this->command);
+        chdir($pwd);
     }
 
     /**

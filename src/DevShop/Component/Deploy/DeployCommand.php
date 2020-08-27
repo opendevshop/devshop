@@ -133,7 +133,7 @@ EOF
             foreach (DeployStages::getStages() as $stage_name => $description) {
                 // Check if --stage is set and --skip-stage is not.
                 if ((Deploy::isDefaultStage($stage_name) || $input->getOption($stage_name)) && !$input->getOption("skip-{$stage_name}") && !empty($deploy_extra_config->stages->{$stage_name})) {
-                    $stages[$stage_name] = new DeployStage($stage_name, $deploy_extra_config->stages->{$stage_name});
+                    $stages[$stage_name] = new DeployStage($stage_name, $deploy_extra_config->stages->{$stage_name}, $this->getRepository());
                     $deploy_plan[] = [$stage_name, $stages[$stage_name]->getCommand()];
                 }
                 // Messages on why stage was skipped.
@@ -163,17 +163,13 @@ EOF
                 $this->io->note("Skipping $count default $plural: $skipped_stages");
             }
 
-            $deploy = new Deploy($stages);
+            $deploy = new Deploy($stages, $this->getRepository());
 
             if (empty($stages)) {
                 $this->io->warning("There were no stages to run.");
             }
             else {
-                // @TODO: Make deploy's ComposerRepositoryAware
-                $pwd = getenv("PWD");
-                chdir($this->getRepository()->getRepositoryPath());
                 $deploy->runStages();
-                chdir($pwd);
             }
             return 0;
         }

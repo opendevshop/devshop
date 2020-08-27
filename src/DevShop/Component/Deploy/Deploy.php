@@ -7,7 +7,12 @@
 
 namespace DevShop\Component\Deploy;
 
+use DevShop\Component\Common\GitRepository;
+use DevShop\Component\Common\GitRepositoryAwareTrait;
+
 class Deploy {
+
+    use GitRepositoryAwareTrait;
 
     const DEFAULT_STAGES = [
       'git',
@@ -36,8 +41,9 @@ class Deploy {
      */
     private $stages = [];
 
-    function __construct($stages) {
+    function __construct($stages, GitRepository $repository = NULL) {
         $this->stages = $stages;
+        $this->setRepository($repository);
     }
 
     /**
@@ -48,8 +54,11 @@ class Deploy {
         foreach ($this->stages as $stage) {
             // @TODO: Make IOAware
             $time = date(DATE_RFC2822);
+            $path = $stage->getRepository()->getRepositoryPath();
             echo " -----------------------------------------------------------------------\n";
-            echo " Deploy Stage: $stage->name $time \n";
+            echo " Deploy Stage: $stage->name  |  $time \n";
+
+            echo " > $path \n";
             echo " > {$stage->getCommand()} \n";
             echo " -----------------------------------------------------------------------\n";
             $stage->runStage();
