@@ -169,6 +169,15 @@ EOF
                 $this->io->warning("There were no stages to run.");
             }
             else {
+
+                // Confirm plan before executing.
+                if ($input->isInteractive()) {
+                    if (!$this->io->confirm('Execute Deploy Plan? (Hit CTRL+C to cancel.)', true)) {
+                        $this->io->text('Deploy Cancelled');
+                        return 1;
+                    }
+                }
+
                 $deploy->runStages();
             }
             return 0;
