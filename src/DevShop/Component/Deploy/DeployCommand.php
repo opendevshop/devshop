@@ -104,7 +104,6 @@ EOF
               'Composer Project',
               $this->getComposerConfig()->name(),
             ];
-
             $this->io->table(['Debug Information'], $verbose_rows);
         }
     }
@@ -127,10 +126,6 @@ EOF
         else {
             // @TODO: Create a simple config class so stage commands can be loaded from many places.
             $deploy_extra_config = $this->getComposerConfig()->extra()->deploy;
-
-            if ($this->io->isVerbose()) {
-                print_r($deploy_extra_config);
-            }
 
             // Create Deploy class.
             $deploy = new Deploy(null, $this->getRepository());
@@ -177,8 +172,27 @@ EOF
                 }
             }
 
+            $remote = $this->getRepository()->getCurrentRemote();
+
             $this->io->section('Deploy Plan');
-            $this->io->text('Path: ' . $this->getRepository()->getRepositoryPath());
+            $this->io->table([], [
+              ['Remote', $remote['origin']['fetch']],
+              ['Path', $this->getRepository()->getRepositoryPath()],
+              ['Git Branch', $this->getRepository()->getCurrentBranch()],
+              ['Local Commit', $this->getRepository()->showCommit()],
+              ['Remote Commit', $this->getRepository()->getRemoteSha()],
+              ['Merge Base', $this->getRepository()->getMergeSha()],
+            ]);
+
+            // @TODO: Create a prepare/validate phase
+            if ($this->getRepository()->isAhead()) {
+              $this->io->warning('Local git repo has commits not pushed to the remote. Run "git push" to ensure they are not lost.');
+            }
+
+          if ($this->getRepository()->isBehind()) {
+            $this->io->warning('Remote git repo has new commits.');
+          }
+
             $this->io->table(['Stages'], $deploy_plan);
 
             if (!empty($skipped_stages)) {

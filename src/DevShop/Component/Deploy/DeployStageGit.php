@@ -36,7 +36,7 @@ class DeployStageGit extends DeployStage {
         // If git reference was specified, use it.
         if ($this->deploy->getOption('git_reference')) {
             $this->gitReference = $this->deploy->getOption('git_reference');
-            $this->command = "git fetch --all && git reset --hard origin/{$this->gitReference}";
+            $this->command = "git reset --hard origin/{$this->gitReference}";
         }
         // If git reference was not specified, infer it from the current git ref.
         // If repository is in a "detached" state, its checked out by tag or SHA. Nothing to do here.
@@ -46,7 +46,7 @@ class DeployStageGit extends DeployStage {
         }
         else {
             $this->gitReference = $repository->getCurrentBranch();
-            $this->command = "git fetch --all && git reset --hard origin/{$this->gitReference}";
+            $this->command = "git reset --hard origin/{$this->gitReference}";
         }
     }
 
@@ -55,12 +55,19 @@ class DeployStageGit extends DeployStage {
      */
     public function runStage() {
 
+        // @TODO: Throw exception if git local is ahead, so remote reset does not orphan the commits.
+        if ($this->getRepository()->isAhead()) {
+          throw new RuntimeException('Local git repo has commits not pushed to the remote. Run "git push" to ensure they are not lost.');
+        }
+
         // If repository working copy changes exist, abort unless git_reset was set.
         if ($this->getRepository()->isDirty() && !$this->deploy->getOption('git_reset')) {
             throw new RuntimeException('Git repository working directory is dirty. Commit or clean changes, or use deploy command option "--option=git_reset=1"');
         }
 
-        // @TODO: Throw exception if git local is ahead, so remote reset does not orphan the commits.
+        // @TODO: continue and warn if git_reset is true.
+        // @TODO: Run "git fetch --all" as a pre-deploy stage.
+
         parent::runStage();
     }
 }
