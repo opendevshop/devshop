@@ -54,6 +54,14 @@ The <info>%command.name%</info> runs the commands defined in a project's compose
 EOF
           );
 
+        $this
+          ->addOption(
+            'option',
+            'o',
+            InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
+            "Set deploy options in the format NAME=VALUE."
+          );
+
         // Add CLI options for default stages.
         foreach ([false, true] as $skip) {
             $i = 0;
@@ -128,7 +136,10 @@ EOF
             $deploy = new Deploy(null, $this->getRepository());
 
             // Pass all options as deploy options.
-//            $deploy->setOption('git_reference', $input->getArguments());
+            foreach ($input->getOption('option') as $option) {
+                list($name, $value) = explode('=', $option);
+                $deploy->setOption($name, $value);
+            }
 
             // Load all possible deploy stages
             $deploy_plan = [];
@@ -142,6 +153,9 @@ EOF
             // @TODO: Move this logic to the Deploy Class.
             foreach (DeployStages::getStages() as $stage_name => $description) {
 
+                // Skip git stage
+                if ($stage_name =='git') continue;
+
                 // Check if --stage is set and --skip-stage is not and stage exists in "$deploy_extra_config";
                 if ((Deploy::isDefaultStage($stage_name) || $input->getOption($stage_name)) && !$input->getOption("skip-{$stage_name}") && !empty($deploy_extra_config->stages->{$stage_name})) {
                     $deploy->stages[$stage_name] = new DeployStage($stage_name, $deploy_extra_config->stages->{$stage_name}, $this->getRepository(), $deploy);
@@ -150,16 +164,16 @@ EOF
                 // Messages on why stage was skipped.
                 // Because: --skip-stage was used
                 elseif (Deploy::isDefaultStage($stage_name) && $input->getOption("skip-{$stage_name}")) {
-                    $deploy_plan[] = ["<fg=black>$stage_name</>", "<fg=black>Stage skipped: --skip-{$stage_name} option was used.</>"];
+                    $deploy_plan[$stage_name] = ["<fg=black>$stage_name</>", "<fg=black>Stage skipped: --skip-{$stage_name} option was used.</>"];
                     $skipped_stages[$stage_name] = $stage_name;
                 }
                 // Because: Stage is not default and --stage option was not set.
                 elseif (!Deploy::isDefaultStage($stage_name) && !$input->getOption($stage_name)) {
-                    $deploy_plan[] = ["<fg=black>$stage_name</>", "<fg=black>Stage skipped: '{$stage_name}' is not a default stage and --{$stage_name} option was not used.</>"];
+                    $deploy_plan[$stage_name] = ["<fg=black>$stage_name</>", "<fg=black>Stage skipped: '{$stage_name}' is not a default stage and --{$stage_name} option was not used.</>"];
                 }
                 // Because: Specific stage was not found in config.
                 elseif (empty($deploy_extra_config->stages->{$stage_name})){
-                    $deploy_plan[] = ["<fg=black>$stage_name</>", "<fg=black>Stage skipped: '{$stage_name}' stage command was not found in extras.deploy.stages.{$stage_name}.</>"];
+                    $deploy_plan[$stage_name] = ["<fg=black>$stage_name</>", "<fg=black>Stage skipped: '{$stage_name}' stage command was not found in extras.deploy.stages.{$stage_name}.</>"];
                 }
             }
 
