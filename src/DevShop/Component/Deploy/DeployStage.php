@@ -17,19 +17,26 @@ class DeployStage implements DeployStageInterface {
     /**
      * @var string The stage command
      */
-    private $command = null;
+    protected $command = null;
+
+    /**
+     * @var \DevShop\Component\Deploy\Deploy The Deploy object this stage belongs to.
+     */
+    protected $deploy = null;
 
     /**
      * DeployStage constructor.
      *
-     * @param $name
-     * @param null $command
-     * @param \DevShop\Component\Common\GitRepository|null $repository
+     * @param string $name
+     * @param string $command
+     * @param \DevShop\Component\Common\GitRepository $repository
+     * @param \DevShop\Component\Deploy\Deploy $deploy
      */
-    public function __construct($name, $command = null, GitRepository $repository = NULL)
+    public function __construct($name, $command, GitRepository $repository, Deploy $deploy)
     {
         $this->name = $name;
         $this->command = $command?: $this->command;
+        $this->deploy = $deploy;
         $this->setRepository($repository);
     }
 

@@ -9,6 +9,7 @@ namespace DevShop\Component\Deploy;
 
 use DevShop\Component\Common\GitRepository;
 use DevShop\Component\Common\GitRepositoryAwareTrait;
+use DevShop\Component\DeployStageGit;
 
 class Deploy {
 
@@ -38,12 +39,47 @@ class Deploy {
 
     /**
      * @var DeployStage[] The stages to run during this deploy.
+     * @TODO: replace with protected access and addStage() method.
      */
-    private $stages = [];
+    public $stages = [];
 
-    function __construct($stages, GitRepository $repository = NULL) {
+    /**
+     * @var DeployStage[] The stages to run during this deploy.
+     * @TODO: replace with protected access and addStage() method.
+     */
+    public $options = [];
+
+    /**
+     * Deploy constructor.
+     *
+     * @param $stages
+     * @param \DevShop\Component\Common\GitRepository|null $repository
+     */
+    function __construct($stages = null, GitRepository $repository = NULL) {
         $this->stages = $stages;
         $this->setRepository($repository);
+    }
+
+    /**
+     * @param $name
+     * @param null $value
+     *
+     * @return mixed|null
+     */
+    public function setOption($name, $value = null) {
+        return $this->options[$name] = $value;
+    }
+
+    /**
+     * @param $name
+     * @param null $value
+     *
+     * @return string
+     */
+    public function getOption($name, $value = null) {
+        return isset($this->options[$name])
+          ? $this->options[$name]
+          : $value;
     }
 
     /**
