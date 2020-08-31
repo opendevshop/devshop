@@ -31,7 +31,7 @@ class DeployStageGit extends DeployStage {
      */
     public function __construct($name, $command, GitRepository $repository, Deploy $deploy)
     {
-        parent::__construct($name, $command, $repository, $deploy);
+        parent::__construct('git', $command, $repository, $deploy);
 
         // If git reference was specified, use it.
         if ($this->deploy->getOption('git_reference')) {
