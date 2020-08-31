@@ -60,6 +60,7 @@ class DeployStageGit extends DeployStage {
             throw new RuntimeException('Git repository working directory is dirty. Commit or clean changes, or use deploy command option "--option=git_reset=1"');
         }
 
+        // @TODO: Throw exception if git local is ahead, so remote reset does not orphan the commits.
         parent::runStage();
     }
 }
