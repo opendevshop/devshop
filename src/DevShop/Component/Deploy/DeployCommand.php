@@ -219,7 +219,7 @@ EOF
 
                 // Confirm plan before executing.
                 if ($input->isInteractive()) {
-                    if (!$this->io->confirm('Execute Deploy Plan? Press [enter] to continue, [n] or [CTRL+C] to cancel.)', true)) {
+                    if (!$this->io->confirm('Execute Deploy Plan? Press [enter] to continue, [n] or [CTRL+C] to cancel.', true)) {
                         $this->io->text('Deploy Cancelled');
                         return 1;
                     }
