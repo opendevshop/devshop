@@ -143,19 +143,22 @@ EOF
 
             // Load built in stage "git", but allow extra config to override it.
             $command = !empty($deploy_extra_config->stages->git)? $deploy_extra_config->stages->git: null;
-            $deploy->stages['git'] = new DeployStageGit(null, $command, $this->getRepository(), $deploy);
-            $deploy_plan['git'] = ['git', $deploy->stages['git']->getCommand()];
 
             // @TODO: Move this logic to the Deploy Class.
             foreach (DeployStages::getStages() as $stage_name => $description) {
 
-                // Skip git stage
-                if ($stage_name =='git') continue;
-
                 // Check if --stage is set and --skip-stage is not and stage exists in "$deploy_extra_config";
-                if ((Deploy::isDefaultStage($stage_name) || $input->getOption($stage_name)) && !$input->getOption("skip-{$stage_name}") && !empty($deploy_extra_config->stages->{$stage_name})) {
-                    $deploy->stages[$stage_name] = new DeployStage($stage_name, $deploy_extra_config->stages->{$stage_name}, $this->getRepository(), $deploy);
-                    $deploy_plan[$stage_name] = [$stage_name, $deploy->stages[$stage_name]->getCommand()];
+                if ((Deploy::isDefaultStage($stage_name) || $input->getOption($stage_name)) && !$input->getOption("skip-{$stage_name}") && (!empty($deploy_extra_config->stages->{$stage_name}) || $stage_name == 'git')) {
+
+                    // If this is the git state, use the DeployStageGit class.
+                    if ($stage_name == 'git') {
+                        $deploy->stages['git'] = new DeployStageGit(null, $command, $this->getRepository(), $deploy);
+                        $deploy_plan['git'] = ['git', $deploy->stages['git']->getCommand()];
+                    }
+                    else {
+                        $deploy->stages[$stage_name] = new DeployStage($stage_name, $deploy_extra_config->stages->{$stage_name}, $this->getRepository(), $deploy);
+                        $deploy_plan[$stage_name] = [$stage_name, $deploy->stages[$stage_name]->getCommand()];
+                    }
                 }
                 // Messages on why stage was skipped.
                 // Because: --skip-stage was used
