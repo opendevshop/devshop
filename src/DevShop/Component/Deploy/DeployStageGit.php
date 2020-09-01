@@ -56,8 +56,14 @@ class DeployStageGit extends DeployStage {
     public function runStage() {
 
         // Throw exception if git local is ahead, so remote reset does not orphan the commits.
+        $message = 'Local git repo has commits not pushed to the remote. Cancelling deploy to avoid losing commits. Run "git push" or use deploy command option "--option=git_reset=1" to force the repo back to the remote SHA or "--skip-git" to skip the git stage and run the rest of the deploy.';
         if ($this->getRepository()->isAhead()) {
-          throw new RuntimeException('Local git repo has commits not pushed to the remote. Cancelling deploy to avoid losing commits. Run "git push" or use deploy command option "--option=git_reset=1" to force the repo back to the remote SHA or "--skip-git" to skip the git stage and run the rest of the deploy.');
+          if ($this->deploy->getOption('git_reset')) {
+            // @TODO: Print warning.
+          }
+          else {
+            throw new RuntimeException($message);
+          }
         }
 
         // If repository working copy changes exist, abort unless git_reset was set.
