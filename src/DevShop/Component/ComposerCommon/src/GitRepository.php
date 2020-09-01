@@ -8,6 +8,10 @@ use TQ\Vcs\Cli\CallResult;
 
 class GitRepository extends Repository
 {
+  const REMOTE_TRACKING_STATE_BEHIND = -1;
+  const REMOTE_TRACKING_STATE_SYNCED = 0;
+  const REMOTE_TRACKING_STATE_AHEAD  = 1;
+  const REMOTE_TRACKING_STATE_DIVERGED  = 2;
 
   /**
    * Run a git command in the repository directory.
@@ -95,13 +99,38 @@ class GitRepository extends Repository
   }
 
   /**
+   * Check ahead/behind state of this repository.
+   *
+   * @see https://stackoverflow.com/a/3278427
+   * @return int
+   */
+  public function remoteTrackingState(){
+    $local = $this->getLocalSha();
+    $remote = $this->getRemoteSha();
+    $base = $this->getMergeSha();
+
+    if ($local == $remote) {
+      return self::REMOTE_TRACKING_STATE_SYNCED;
+    }
+    elseif ($local == $base) {
+      return self::REMOTE_TRACKING_STATE_BEHIND;
+    }
+    elseif ($remote == $base) {
+      return self::REMOTE_TRACKING_STATE_AHEAD;
+    }
+    else {
+      return self::REMOTE_TRACKING_STATE_DIVERGED;
+    }
+  }
+
+  /**
    * Returns TRUE if the working directory has commits that have not been pushed to the remote.
    *
    * @return  boolean
    */
   public function isUpToDate()
   {
-    return $this->getLocalSha() == $this->getRemoteSha();
+    return $this->remoteTrackingState() == self::REMOTE_TRACKING_STATE_SYNCED;
   }
 
   /**
@@ -111,7 +140,7 @@ class GitRepository extends Repository
    */
   public function isAhead()
   {
-    return $this->getRemoteSha() == $this->getMergeSha();
+    return $this->remoteTrackingState() == self::REMOTE_TRACKING_STATE_AHEAD;
   }
 
   /**
@@ -121,7 +150,7 @@ class GitRepository extends Repository
    */
   public function isBehind()
   {
-    return $this->getLocalSha() == $this->getMergeSha();
+    return $this->remoteTrackingState() == self::REMOTE_TRACKING_STATE_BEHIND;
   }
 
   /**

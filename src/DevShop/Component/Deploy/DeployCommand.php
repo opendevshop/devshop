@@ -14,6 +14,7 @@ namespace DevShop\Component\Deploy;
 use Composer\Composer;
 use Composer\Config;
 use DevShop\Component\Common\ComposerRepositoryAwareTrait;
+use DevShop\Component\Common\GitRepository;
 use Robo\Common\OutputAwareTrait;
 use Symfony\Component\Console\Command\Command as BaseCommand;
 use Symfony\Component\Console\Input\InputInterface;
@@ -132,7 +133,7 @@ EOF
 
             // Pass all options as deploy options.
             foreach ($input->getOption('option') as $option) {
-                list($name, $value) = explode('=', $option);
+                [$name, $value] = explode('=', $option);
                 $deploy->setOption($name, $value);
             }
 
@@ -179,19 +180,19 @@ EOF
               ['Remote', $remote['origin']['fetch']],
               ['Path', $this->getRepository()->getRepositoryPath()],
               ['Git Branch', $this->getRepository()->getCurrentBranch()],
-              ['Local Commit', $this->getRepository()->showCommit()],
+              ['Local Commit', $this->getRepository()->getLocalSha()],
               ['Remote Commit', $this->getRepository()->getRemoteSha()],
               ['Merge Base', $this->getRepository()->getMergeSha()],
             ]);
 
-            // @TODO: Create a prepare/validate phase
-            if ($this->getRepository()->isAhead()) {
-              $this->io->warning('Local git repo has commits not pushed to the remote. Run "git push" to ensure they are not lost.');
+            switch ($this->getRepository()->remoteTrackingState()) {
+              case GitRepository::REMOTE_TRACKING_STATE_BEHIND:
+                $this->io->note('Remote git repo has new commits.');
+                break;
+              case GitRepository::REMOTE_TRACKING_STATE_AHEAD:
+                $this->io->warning('Local git repo has commits not pushed to the remote. Run "git push" to ensure they are not lost.');
+                break;
             }
-
-          if ($this->getRepository()->isBehind()) {
-            $this->io->warning('Remote git repo has new commits.');
-          }
 
             $this->io->table(['Stages'], $deploy_plan);
 

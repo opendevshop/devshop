@@ -55,9 +55,9 @@ class DeployStageGit extends DeployStage {
      */
     public function runStage() {
 
-        // @TODO: Throw exception if git local is ahead, so remote reset does not orphan the commits.
+        // Throw exception if git local is ahead, so remote reset does not orphan the commits.
         if ($this->getRepository()->isAhead()) {
-          throw new RuntimeException('Local git repo has commits not pushed to the remote. Run "git push" to ensure they are not lost.');
+          throw new RuntimeException('Local git repo has commits not pushed to the remote. Run "git push" to ensure they are not lost. Use --skip-git option to skip this stage.');
         }
 
         // If repository working copy changes exist, abort unless git_reset was set.
