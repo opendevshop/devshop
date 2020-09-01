@@ -190,7 +190,12 @@ EOF
                 $this->io->note('Remote git repo has new commits.');
                 break;
               case GitRepository::REMOTE_TRACKING_STATE_AHEAD:
-                $this->io->warning('Local git repo has commits not pushed to the remote. Run "git push" to ensure they are not lost.');
+                if ($deploy->getOption('git_reset')) {
+                  $this->io->warning('Local git repo has commits not pushed to the remote and the git_reset option was passed, so the working copy will be reset to the origin. Unpushed commits may be lost! Run "git push" in the repo path or "git reflog" to view all commits.');
+                }
+                else {
+                  $this->io->warning('Local git repo has commits not pushed to the remote. The deployment will abort. Run "git push" or use deploy command option "--option=git_reset=1" to force the repo back to the remote SHA or "--skip-git" to skip the git stage and run the rest of the deploy.');
+                }
                 break;
             }
 
