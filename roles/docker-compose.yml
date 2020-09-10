@@ -29,7 +29,6 @@ services:
       - /var/lib/mysql
       - /var/logs/aegir
     environment:
-      # TODO: Make ansible options easier to alter.
       # @TODO: Change back to devshop.local.computer
       # DEVSHOP_DOCKER_COMMAND_RUN: ansible-playbook /etc/ansible/play.yml -vv --tags runtime --extra-vars server_hostname=localhost
       # This is listed here so that it can be set by the calling system (github actions).
