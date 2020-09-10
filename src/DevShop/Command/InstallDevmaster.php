@@ -214,6 +214,10 @@ class InstallDevmaster extends Command
         'Path to drush executable',
         '/usr/local/bin/drush'
       )
+      ->addOption(
+        'force-reinstall', NULL, InputOption::VALUE_NONE,
+        'Delete any existing site with the specified URI'
+      )
     ;
   }
 
@@ -590,9 +594,10 @@ PHP;
     // If this is hostmaster, we need to install first.  provision-verify will fail, otherwise.
     if ($install) {
       $client_email = $this->input->getOption('client_email');
+      $options = $this->input->getOption('force-reinstall')? '--force-reinstall --verbose': '--verbose';
       $this->output->writeln("");
-      $this->output->writeln("Running <comment>{$drush_path} @{$name} provision-install --client_email={$client_email}</comment> ...");
-      $process = $this->getProcess("{$drush_path} @{$name} provision-install --client_email={$client_email} -v");
+      $this->output->writeln("Running <comment>{$drush_path} @{$name} provision-install --client_email={$client_email} {$options}</comment> ...");
+      $process = $this->getProcess("{$drush_path} @{$name} provision-install --client_email={$client_email} {$options}");
       $process->setTimeout(NULL);
 
       // Ensure process runs sucessfully.

@@ -61,6 +61,7 @@ devshop_control_git_docroot: web
 
 devshop_control_path: "{{ aegir_user_home }}/devshop-control-{{ devshop_version }}"
 devshop_control_drush_alias: "@hostmaster"
+devshop_control_install_options: ""
 
 devshop_install_profile: devmaster
 
@@ -84,6 +85,7 @@ devmaster_install_command: "{{ devshop_cli_bin_path }}/devshop devmaster:install
                                 --git_root={{ devshop_control_path }} \
                                 --git_remote={{ devshop_control_git_remote }} \
                                 --git_reference={{ devshop_control_git_reference }}
+                                {{ devshop_control_install_options }}
 "
 
 devmaster_upgrade_command: |

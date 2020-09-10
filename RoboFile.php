@@ -462,6 +462,7 @@ class RoboFile extends \Robo\Tasks {
     'install-at-runtime' => FALSE,
     'build-command' => NULL,
     'compose-file' => NULL,
+    'force-reinstall' => FALSE,
   ]) {
 
     // Define docker-image (name for the "image" in docker-compose.
@@ -561,6 +562,13 @@ class RoboFile extends \Robo\Tasks {
         $env_run['ANSIBLE_EXTRA_VARS'] = json_encode(array(
           'devshop_control_path' => '/usr/share/devshop/src/DevShop/Templates/DevShopControlTemplate',
         ));
+
+        if ($opts['force-reinstall']) {
+          $env_run['ANSIBLE_EXTRA_VARS'] = json_encode(array(
+            'devshop_control_path' => '/usr/share/devshop/src/DevShop/Templates/DevShopControlTemplate',
+            'devshop_control_install_options' => '--force-reinstall',
+          ));
+        }
       }
 
       // Run a secondary command after the docker command.
