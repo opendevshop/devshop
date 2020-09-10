@@ -20,6 +20,11 @@ class DeployStage implements DeployStageInterface {
     protected $command = null;
 
     /**
+     * @var string The directory to run the command in.
+     */
+    protected $directory = null;
+
+    /**
      * @var \DevShop\Component\Deploy\Deploy The Deploy object this stage belongs to.
      */
     protected $deploy = null;
@@ -31,12 +36,14 @@ class DeployStage implements DeployStageInterface {
      * @param string $command
      * @param \DevShop\Component\Common\GitRepository $repository
      * @param \DevShop\Component\Deploy\Deploy $deploy
+     * @param string $directory The directory to run $command in. If not specified, $repository->getRepositoryPath() is used.
      */
-    public function __construct($name, $command, GitRepository $repository, Deploy $deploy)
+    public function __construct($name, $command, GitRepository $repository, Deploy $deploy, $directory = null)
     {
         $this->name = $name;
         $this->command = $command?: $this->command;
         $this->deploy = $deploy;
+        $this->directory = $directory?: $repository->getRepositoryPath();
         $this->setRepository($repository);
     }
 
@@ -46,7 +53,7 @@ class DeployStage implements DeployStageInterface {
      */
     public function runStage() {
         $pwd = getenv("PWD");
-        chdir($this->getRepository()->getRepositoryPath());
+        chdir($this->directory);
         print shell_exec($this->command);
         chdir($pwd);
     }
