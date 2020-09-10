@@ -121,15 +121,12 @@ EOF
         if (empty($this->getComposerConfig()->extra()->deploy)) {
             // @TODO: Allow Fail or Warn
             $this->io->warning(
-              "No 'extra.deploy' section found in composer.json in directory " . $this->getRepository()->getRepositoryPath()
+              "No 'extra.deploy' section found in composer.json in directory " . $this->composerPath
             );
         }
         else {
             // @TODO: Create a simple config class so stage commands can be loaded from many places.
             $deploy_extra_config = $this->getComposerConfig()->extra()->deploy;
-
-            // Create Deploy class.
-            $deploy = new Deploy(null, $this->getRepository());
 
             // Pass all options as deploy options.
             foreach ($input->getOption('option') as $option) {
@@ -156,7 +153,7 @@ EOF
                         $deploy_plan['git'] = ['git', $deploy->stages['git']->getCommand()];
                     }
                     else {
-                        $deploy->stages[$stage_name] = new DeployStage($stage_name, $deploy_extra_config->stages->{$stage_name}, $this->getRepository(), $deploy);
+                        $deploy->stages[$stage_name] = new DeployStage($stage_name, $deploy_extra_config->stages->{$stage_name}, $this->getRepository(), $deploy, $this->composerPath);
                         $deploy_plan[$stage_name] = [$stage_name, $deploy->stages[$stage_name]->getCommand()];
                     }
                 }
@@ -181,7 +178,8 @@ EOF
             $this->io->section('Deploy Plan');
             $this->io->table([], [
               ['Remote', $remote['origin']['fetch']],
-              ['Path', $this->getRepository()->getRepositoryPath()],
+              ['Composer Project Path', $this->composerPath],
+              ['Git Repo Path', $this->getRepository()->getRepositoryPath()],
               ['Git Branch', $this->getRepository()->getCurrentBranch()],
               ['Local Commit', $this->getRepository()->getLocalSha()],
               ['Remote Commit', $this->getRepository()->getRemoteSha()],
