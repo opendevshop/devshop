@@ -128,6 +128,9 @@ EOF
             // @TODO: Create a simple config class so stage commands can be loaded from many places.
             $deploy_extra_config = $this->getComposerConfig()->extra()->deploy;
 
+            // Create Deploy class.
+            $deploy = new Deploy(null, $this->getRepository());
+
             // Pass all options as deploy options.
             foreach ($input->getOption('option') as $option) {
                 [$name, $value] = explode('=', $option);
@@ -178,7 +181,7 @@ EOF
             $this->io->section('Deploy Plan');
             $this->io->table([], [
               ['Remote', $remote['origin']['fetch']],
-              ['Composer Project Path', $this->composerPath],
+              ['Composer Project Path', getcwd()],
               ['Git Repo Path', $this->getRepository()->getRepositoryPath()],
               ['Git Branch', $this->getRepository()->getCurrentBranch()],
               ['Local Commit', $this->getRepository()->getLocalSha()],
