@@ -21,7 +21,7 @@ services:
       ANSIBLE_EXTRA_VARS: "${ANSIBLE_EXTRA_VARS:-}"
       ANSIBLE_VERBOSITY: "${ANSIBLE_VERBOSITY:-}"
       ANSIBLE_PLAYBOOK_COMMAND_OPTIONS: --extra-vars @/etc/ansible/vars.yml
-      DEVSHOP_DOCKER_COMMAND_RUN: "${DEVSHOP_DOCKER_COMMAND_RUN:-}"
+      DEVSHOP_DOCKER_COMMAND_RUN: "${DEVSHOP_DOCKER_COMMAND_RUN:-/usr/share/devshop/scripts/devshop-ansible-playbook}"
 
     privileged: true
     volumes:
