@@ -16,9 +16,12 @@ services:
       # By default, devshop container will run 'ansible-playbook --tags runtime' after running the "command"
       # Keep DEVSHOP_DOCKER_COMMAND_RUN uncommented to use this command to provision the server instead.
       # @TODO: Create single value ENV vars for AEGIR_USER_UID
-      # @TODO: Make this vars file standard for the base ansible role containers.
-      DEVSHOP_DOCKER_COMMAND_RUN: "${DEVSHOP_DOCKER_COMMAND_RUN:-ansible-playbook /etc/ansible/play.yml --tags runtime --extra-vars @/etc/ansible/vars.yml}"
+      ANSIBLE_TAGS: "${ANSIBLE_TAGS:-runtime}"
+      ANSIBLE_SKIP_TAGS: "${ANSIBLE_TAGS:-}"
+      ANSIBLE_EXTRA_VARS: "${ANSIBLE_EXTRA_VARS:-}"
       ANSIBLE_VERBOSITY: "${ANSIBLE_VERBOSITY:-}"
+      ANSIBLE_PLAYBOOK_COMMAND_OPTIONS: --extra-vars @/etc/ansible/vars.yml
+      DEVSHOP_DOCKER_COMMAND_RUN: "${DEVSHOP_DOCKER_COMMAND_RUN:-}"
 
     privileged: true
     volumes:
