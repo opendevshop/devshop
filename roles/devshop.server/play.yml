@@ -73,6 +73,7 @@
     # @TODO: This works, but using Service module fails!
     - name: Start MySQL
       command: "service {{ mysql_daemon }} start"
+      ignore_errors: true
       tags: [runtime]
 
   roles:
