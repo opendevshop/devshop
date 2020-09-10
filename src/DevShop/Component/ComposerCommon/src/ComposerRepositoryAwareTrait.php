@@ -15,6 +15,11 @@ trait ComposerRepositoryAwareTrait
   protected $composerConfig = NULL;
 
   /**
+   * @var string The path to composer.json.
+   */
+  protected $composerPath = NULL;
+
+  /**
    * @param Configuration $config If left empty, Configuration object will be loaded from composer.json from the repository root.
    *
    * @return $this
@@ -26,7 +31,14 @@ trait ComposerRepositoryAwareTrait
       $this->composerConfig = $configuration;
     }
     else {
-      $this->composerConfig =  $reader->read($this->getRepository()->getRepositoryPath() . '/composer.json');
+      if (file_exists(getcwd() . '/composer.json' )) {
+        $path = getcwd();
+      }
+      else {
+        $path = $this->getRepository()->getRepositoryPath();
+      }
+      $this->composerConfig =  $reader->read($path . '/composer.json');
+      $this->composerPath = $path;
     }
 
     return $this;
