@@ -48,6 +48,11 @@
     state: present
   when: ansible_os_family == "RedHat"
 
+- name: Install pip packages
+  pip:
+    name: '{{ devshop_pip_packages }}'
+    state: present
+
 - name: Detect currently installed version of DevShop.
   command: "{{ devshop_cli_path }}/bin/branch-or-tag"
   register: __devshop_version_installed
