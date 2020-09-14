@@ -64,7 +64,7 @@
         "drupal/navbar": "^1.7",
         "drupal/openidadmin": "^1.0",
         "drupal/overlay_paths": "^1.3",
-        "drupal/provision": "4.x-dev#00cacfb1",
+        "drupal/provision": "4.x-dev#9dd62af5",
         "drupal/r4032login": "^1.8",
         "drupal/sshkey": "^2.0",
         "drupal/statsd": "^1.1",
