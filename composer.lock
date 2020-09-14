@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c495d8a451c04e22ff785fa343d34b01",
+    "content-hash": "d62641ef8040046a00e56d9d4190d8f3",
     "packages": [
         {
             "name": "consolidation/annotated-command",
@@ -913,7 +913,7 @@
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/provision.git",
-                "reference": "6ce98e9e"
+                "reference": "2167a976"
             },
             "require": {
                 "drupal/drupal": "~7.0",
