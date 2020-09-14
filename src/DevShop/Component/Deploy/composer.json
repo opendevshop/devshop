@@ -1,6 +1,6 @@
 {
   "name": "devshop/deploy",
-  "type": "composer-plugin",
+  "type": "library",
   "description": "Simplified tooling for managing your apps deployment in code.",
   "keywords": [],
   "homepage": "https://getdevshop.com",
