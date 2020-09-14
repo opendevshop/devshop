@@ -120,6 +120,14 @@
   args:
     mode: 0644
 
+- name: Add DevShop bin via symlink so path does not matter.
+  file:
+    src: "{{ devshop_cli_path }}/bin/devshop"
+    dest: "{{ local_bin_path }}/devshop"
+    state: link
+    force: true
+  tags: [always]
+
 - name: Debug environment
   command: "env"
   become: true
