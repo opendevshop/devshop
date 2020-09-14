@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f639ca81332c6bb188ccc4bf0868a9f2",
+    "content-hash": "e49431970061743dc9ce948e14b23872",
     "packages": [
         {
             "name": "consolidation/annotated-command",
@@ -3012,14 +3012,14 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
+        "devshop/deploy": 20,
         "devshop/docker-bin-tools": 20,
         "devshop/git-split": 20,
         "devshop/github-api-cli": 20,
         "devshop/bin-tools": 20,
         "devshop/yaml-tasks": 20,
         "devshop/power-process": 20,
-        "drupal/provision": 20,
-        "devshop/deploy": 20
+        "drupal/provision": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,
