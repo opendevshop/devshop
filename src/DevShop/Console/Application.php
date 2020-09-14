@@ -16,6 +16,7 @@
 
 namespace DevShop\Console;
 
+use DevShop\Component\Deploy\DeployCommand;
 use DevShop\DevShop;
 use DevShop\Command;
 
@@ -109,6 +110,7 @@ class Application extends BaseApplication
     $commands[] = new Command\RemoteInstall();
     $commands[] = new Command\SelfUpdate();
     $commands[] = new Command\Verify\VerifySystem();
+    $commands[] = new DeployCommand();
 
     return $commands;
   }
