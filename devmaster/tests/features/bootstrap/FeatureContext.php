@@ -57,9 +57,17 @@ class FeatureContext extends \Drupal\DrupalExtension\Context\BatchContext implem
             $alias = $drush_config['alias'];
 
             // If environment variable is set, save assets to that.
-            if (isset($_SERVER['DEVSHOP_TESTS_ASSETS_PATH']) && is_writable($_SERVER['DEVSHOP_TESTS_ASSETS_PATH'])) {
-              $files_path = $_SERVER['DEVSHOP_TESTS_ASSETS_PATH'];
-              $output_notification_string =  $files_path .'/output.html';
+            if (isset($_SERVER['DEVSHOP_TESTS_ASSETS_PATH'])) {
+              if (is_writable($_SERVER['DEVSHOP_TESTS_ASSETS_PATH'])) {
+                $files_path = $_SERVER['DEVSHOP_TESTS_ASSETS_PATH'];
+                $output_notification_string = $files_path.'/output.html';
+              }
+              elseif (!file_exists($_SERVER['DEVSHOP_TESTS_ASSETS_PATH'])) {
+                throw new \Exception("DEVSHOP_TESTS_ASSETS_PATH was set, but the directory does not exist. Change the environment variable or create the directory: " . $_SERVER['DEVSHOP_TESTS_ASSETS_PATH']);
+              }
+              else {
+                throw new \Exception("DEVSHOP_TESTS_ASSETS_PATH was set, but is not writable: Change the environment variable or create the directory: " . $_SERVER['DEVSHOP_TESTS_ASSETS_PATH']);
+              }
             }
             // If not, load the public writable files folder for devshop, so the asset can be served over HTTP.
             else {
