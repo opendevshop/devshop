@@ -121,7 +121,7 @@ jobs:
 
     - name: Test DevShop
       run: |
-        bin/robo test --compose-file=docker-compose.yml:docker-compose.test.yml
+        bin/robo test --compose-file=docker-compose.yml:docker-compose.tests.yml
 
     - name: Save Assets
       if: always()
