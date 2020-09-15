@@ -16,4 +16,4 @@ services:
     - CI=CI
 
     volumes:
-      - ./.github/.test-assets:/usr/share/devshop/.github/test-assets
+      - ./.github/.test-assets:/var/aegir/test-assets

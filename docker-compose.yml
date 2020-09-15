@@ -82,10 +82,9 @@ services:
       # To allow the devmaster container to launch other docker containers, we need the host's path to aegir home directory.
       - HOST_AEGIR_HOME=/home/jon/Projects/devshop/aegir-home
 
-
       # Add additional files you would like to output in the container logs here, separated by a space.
       # - DEVSHOP_ENTRYPOINT_LOG_FILES="/var/log/aegir/*"
-      # - DEVSHOP_TESTS_ASSETS_PATH="/usr/share/devshop/.github/test-assets"
+      - DEVSHOP_TESTS_ASSETS_PATH="/var/aegir/test-assets"
 
     privileged: true
     volumes:
