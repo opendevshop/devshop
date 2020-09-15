@@ -242,6 +242,9 @@ class RoboFile extends \Robo\Tasks {
       $this->taskExecStack()
         ->exec("mkdir -p {$this->devshop_root_path}/aegir-home/.drush/commands")
         ->run();
+      $this->taskExecStack()
+        ->exec("mkdir -p {$this->devshop_root_path}/aegir-home/test-assets")
+        ->run();
     }
 
     // Clone all git repositories.
