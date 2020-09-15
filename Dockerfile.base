@@ -230,8 +230,6 @@ RUN \
 # Prepare systemd to run inside a container.
 RUN docker-systemd-prepare
 
-RUN chmod 766 $DEVSHOP_TESTS_ASSETS_PATH
-
 # Pre-build Information
 RUN \
   devshop-logo "Ansible Playbook Build Environment" && \
