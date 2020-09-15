@@ -953,7 +953,7 @@ class RoboFile extends \Robo\Tasks {
     // If running in CI, create the test-artifacts directory and ensure ownership first.
     // @TODO: Move logic to a special CI container.
     if (!empty($_SERVER['CI'])) {
-      $commands[] = "docker-compose exec $no_tty devshop mkdir /var/aegir/test-artifacts";
+      $commands[] = "docker-compose exec $no_tty devshop mkdir -p /var/aegir/test-artifacts";
       $commands[] = "docker-compose exec $no_tty devshop chown aegir:aegir /var/aegir/test-artifacts -R";
     }
 
