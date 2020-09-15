@@ -95,4 +95,3 @@ services:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
       - /var/lib/mysql
       - /var/logs/aegir
-      - ./devmaster:/var/aegir/devmaster-1.x/profiles/devmaster
