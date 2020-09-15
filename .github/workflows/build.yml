@@ -126,12 +126,12 @@ jobs:
     - name: Save Assets
       if: always()
       run: |
-        docker ps -a > ./.github/test-assets/build-docker-ps.log && \
-        $DEBUG_COMMAND > ./.github/test-assets/build-debug-command.log && \
-        docker-compose logs > ./.github/test-assets/build-docker-compose.log
+        docker ps -a > ./.github/test-artifacts/build-docker-ps.log && \
+        $DEBUG_COMMAND > ./.github/test-artifacts/build-debug-command.log && \
+        docker-compose logs > ./.github/test-artifacts/build-docker-compose.log
 
     - uses: actions/upload-artifact@v1
       if: always()
       with:
-        name: test-assets
-        path: ./.github/test-assets
+        name: test-artifacts
+        path: ./.github/test-artifacts

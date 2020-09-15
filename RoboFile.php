@@ -243,7 +243,7 @@ class RoboFile extends \Robo\Tasks {
         ->exec("mkdir -p {$this->devshop_root_path}/aegir-home/.drush/commands")
         ->run();
       $this->taskExecStack()
-        ->exec("mkdir -p {$this->devshop_root_path}/aegir-home/test-assets")
+        ->exec("mkdir -p {$this->devshop_root_path}/aegir-home/test-artifacts")
         ->run();
     }
 
