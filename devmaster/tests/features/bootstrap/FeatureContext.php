@@ -57,7 +57,7 @@ class FeatureContext extends \Drupal\DrupalExtension\Context\BatchContext implem
             $alias = $drush_config['alias'];
 
             // If environment variable is set, save assets to that.
-            if (isset($_SERVER['DEVSHOP_TESTS_ASSETS_PATH'])) {
+            if (!empty(($_SERVER['DEVSHOP_TESTS_ASSETS_PATH']))) {
               if (is_writable($_SERVER['DEVSHOP_TESTS_ASSETS_PATH'])) {
                 $files_path = $_SERVER['DEVSHOP_TESTS_ASSETS_PATH'];
                 $output_notification_string = $files_path.'/output.html';
