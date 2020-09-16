@@ -17,4 +17,4 @@ services:
     - DEVSHOP_TESTS_ASSETS_PATH=/var/aegir/test-artifacts
 
     volumes:
-      - ./.github/.test-artifacts:/var/aegir/test-artifacts
+      - ./.github/test-artifacts:/var/aegir/test-artifacts
