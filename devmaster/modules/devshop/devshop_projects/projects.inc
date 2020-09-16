@@ -174,7 +174,7 @@ function devshop_project_load($node) {
         LEFT JOIN {hosting_site_alias} a ON a.vid = s.vid
         WHERE project_nid = :nid AND
         e.name != '' AND 
-        s.status IN (:site_status)
+        (s.status IN (:site_status) OR s.nid IS NULL)
         ORDER BY
           name;   ", array(
     ':nid' => $node->nid,
