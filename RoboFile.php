@@ -955,6 +955,7 @@ class RoboFile extends \Robo\Tasks {
     if (!empty($_SERVER['CI'])) {
       $commands[] = "docker-compose exec $no_tty devshop mkdir -p /var/aegir/test-artifacts";
       $commands[] = "docker-compose exec $no_tty devshop chown aegir:aegir /var/aegir/test-artifacts -R";
+      $commands[] = "docker-compose exec $no_tty devshop chmod 777 /var/aegir/test-artifacts -R";
     }
 
     $commands[] = "docker-compose exec $no_tty --user $user devshop /usr/share/devshop/tests/devshop-tests.sh";
