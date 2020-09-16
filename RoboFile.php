@@ -241,6 +241,9 @@ class RoboFile extends \Robo\Tasks {
       $this->taskExecStack()
         ->exec("mkdir -p {$this->devshop_root_path}/aegir-home/.drush/commands")
         ->run();
+      $this->taskExecStack()
+        ->exec("mkdir -p {$this->devshop_root_path}/aegir-home/test-artifacts")
+        ->run();
     }
 
     // Clone all git repositories.
@@ -903,22 +906,34 @@ class RoboFile extends \Robo\Tasks {
   )) {
     $is_tty = !empty($_SERVER['XDG_SESSION_TYPE']) && $_SERVER['XDG_SESSION_TYPE'] == 'tty';
     $no_tty = !$is_tty? '-T': '';
-    $command = "docker-compose exec $no_tty --user $user devshop /usr/share/devshop/tests/devshop-tests.sh";
+
+    // If running in CI, create the test-artifacts directory and ensure ownership first.
+    // @TODO: Move logic to a special CI container.
+    if (!empty($_SERVER['CI'])) {
+      $commands[] = "docker-compose exec $no_tty devshop mkdir -p /var/aegir/test-artifacts";
+      $commands[] = "docker-compose exec $no_tty devshop chown aegir:aegir /var/aegir/test-artifacts -R";
+      $commands[] = "docker-compose exec $no_tty devshop chmod 777 /var/aegir/test-artifacts -R";
+    }
+
+    $commands[] = "docker-compose exec $no_tty --user $user devshop /usr/share/devshop/tests/devshop-tests.sh";
     $provision_io = new \DevShop\Component\PowerProcess\PowerProcessStyle($this->input, $this->output);
-    $process = new \DevShop\Component\PowerProcess\PowerProcess($command, $provision_io);
+    foreach ($commands as $command) {
+      $process = new \DevShop\Component\PowerProcess\PowerProcess($command, $provision_io);
 
-    $process->setTty(!empty($_SERVER['XDG_SESSION_TYPE']) && $_SERVER['XDG_SESSION_TYPE'] == 'tty');
+      $process->setTty(!empty($_SERVER['XDG_SESSION_TYPE']) && $_SERVER['XDG_SESSION_TYPE'] == 'tty');
 
-    $process->setEnv([
-      'COMPOSE_FILE' => $opts['compose-file'],
-    ]);
-    $process->setTimeout(NULL);
-    $process->disableOutput();
-
-
+      $process->setEnv([
+        'COMPOSE_FILE' => $opts['compose-file'],
+      ]);
+      $process->setTimeout(NULL);
+      $process->disableOutput();
     // @TODO: Figure out why PowerProcess::mustRun() fails so miserably: https://github.com/opendevshop/devshop/pull/541/checks?check_run_id=518074346#step:7:45
     // $process->mustRun();
-    $process->run();
+      $process->run();
+      if (!$process->isSuccessful()) {
+        return $process->getExitCode();
+      }
+    }
     return $process->getExitCode();
   }
 

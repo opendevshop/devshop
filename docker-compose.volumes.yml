@@ -22,3 +22,4 @@ services:
       # Provision Drush Extension
       - ./provision:/var/aegir/.drush/commands/provision:delegated
       - $HOME/.ssh:/var/aegir/.ssh
+      - ./.github/.test-artifacts:/var/aegir/test-artifacts

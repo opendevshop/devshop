@@ -1,0 +1,145 @@
+name: Build
+
+on:
+ push:
+   branches: 1.x
+ pull_request:
+   types: [opened, synchronize]
+ schedule:
+   # Once per day. https://crontab.guru/#*_0_*_*_*
+   - cron: "0 6 * * *"
+
+env:
+  # Set ANSIBLE_VERBOSITY to 1,2 or 3 when needed for development.
+  ANSIBLE_VERBOSITY: 0
+  COMPOSE_FILE: "docker-compose.yml:docker-compose.tests.yml"
+  DEBUG_COMMAND: "docker-compose exec -T devshop systemctl status --no-pager"
+  GITHUB_TOKEN: ${{ secrets.INPUT_GITHUB_TOKEN }}
+  GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}
+  GITHUB_PR_SHA: ${{ github.event.pull_request.head.sha  }}
+  GITHUB_RUN_LOG_URL: https://github.com/opendevshop/devshop/actions/runs/${{ github.run_id }}
+
+jobs:
+  build:
+    name: "${{ matrix.os }} / ${{ matrix.vars }}"
+    strategy:
+      fail-fast: false
+      matrix:
+        # Default build/run tags.
+        # For simpler testing, install everything at runtime here.
+        # @TODO: Add a build-time test specifically for the docker image build. (Same thing docker hub runs)
+        build_tags: ['none']
+        build_skip_tags: ['']
+        run_tags: ['all']
+        run_skip_tags: ['none']
+
+        os:
+          - 'ubuntu1804'
+          # - 'centos6'
+          - 'centos7'
+        vars:
+          - 'php_version: 7.2'
+
+    env:
+      ANSIBLE_TAGS: "${{ matrix.build_tags }}"
+      ANSIBLE_SKIP_TAGS: "${{ matrix.build_skip_tags }}"
+      ANSIBLE_VARS: "${{ matrix.vars }}"
+      DEVSHOP_SERVER_HOSTNAME: "${{ matrix.os }}.actions.github.com"
+      OS: "${{ matrix.os }}"
+
+    runs-on: ubuntu-18.04
+    steps:
+
+    # @TODO: Implement a github-api-cli generated CURL command to notify GitHub that a deployment has started.
+
+    - name: Prepare CI (ubuntu)
+      if: matrix.os == 'ubuntu1804'
+      run: |
+        echo "::set-env name=ANSIBLE_TAGS::mysql"
+
+    - uses: actions/checkout@v2
+
+    - name: Get Composer Cache Directory
+      id: composer-cache
+      run: |
+        echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+    - uses: actions/cache@v1
+      with:
+        path: ${{ steps.composer-cache.outputs.dir }}
+        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-composer-
+
+    - name: Install Composer dependencies
+      run: composer install --prefer-dist --no-progress --no-suggest
+
+    - name: Create a GitHub Deployment to PR environment
+      if: ${{ github.event_name == 'pull_request' }}
+      run: |
+        bin/github deployment:start --environment=github.pr${GITHUB_PR_NUMBER}.${OS} --ref=${GITHUB_PR_SHA} --description="Triggered from ./.github/workflows/build.yml"
+
+    - name: Create a GitHub Deployment to branch environment
+      if: ${{ github.event_name != 'pull_request' }}
+      run: |
+        bin/github deployment:start --environment=github.$(bin/branch-or-tag).${OS} --ref=${GITHUB_SHA}  --description="Triggered from ./.github/workflows/build.yml"
+
+    - name: Docker & Docker Compose Version
+      run: |
+        docker --version
+        docker-compose --version
+
+      # NOTE: The env vars shown below should be loaded into the Robo options automatically.
+    # They are added to the command here for visibility.
+    - name: Launch Server Container (${{ matrix.os }})
+      run: |
+        bin/github deployment:update --state=in_progress --description="Preparing Containers with robo up..." --log_url=${GITHUB_RUN_LOG_URL}#step:8:1
+        bin/robo up ps  \
+          --build \
+          --follow 0 \
+          --os "${OS}" \
+          --vars "${ANSIBLE_VARS}" \
+          --tags "${ANSIBLE_TAGS}" \
+          --skip-tags "${ANSIBLE_SKIP_TAGS}" \
+          --volumes 0 \
+          && bin/github deployment:update --state=in_progress --description="Preparing Containers with robo up... Done." --log_url=${GITHUB_RUN_LOG_URL}#step:8:1 \
+          || ( bin/github deployment:update --state=failure --description="Preparing Containers with robo up... Failed." --log_url=${GITHUB_RUN_LOG_URL}#step:8:1 && exit 1 )
+
+    - name: Wait for yum
+      if: matrix.os == 'centos7'
+      run: sleep 4
+
+    - name: Install DevShop
+      env:
+        ANSIBLE_TAGS: "${{ matrix.run_tags }}"
+        ANSIBLE_SKIP_TAGS: "${{ matrix.run_skip_tags }}"
+      run: |
+        bin/github deployment:update --state=in_progress --description="Installing DevShop with devshop-ansible-playbook..." --log_url=${GITHUB_RUN_LOG_URL}#step:10:1
+        bin/robo exec devshop-ansible-playbook \
+          && bin/github deployment:update --state=success --description="Installing DevShop with devshop-ansible-playbook... Done"  --log_url=${GITHUB_RUN_LOG_URL}#step:10:1 --environment_url=${GITHUB_RUN_LOG_URL}#step:8:1 \
+          || ( bin/github deployment:update --state=failure --description="Installing DevShop with devshop-ansible-playbook... Failed" --log_url=${GITHUB_RUN_LOG_URL}#step:10:1 --environment_url=${GITHUB_RUN_LOG_URL}#step:8:1 && exit 1 )
+
+    - name: Test DevShop
+      run: |
+        bin/robo test --compose-file=docker-compose.yml:docker-compose.tests.yml
+
+    - name: Save Docker Logs as Artifacts
+      if: always()
+      run: |
+        docker ps -a >        artifact-docker-ps.log && \
+        $DEBUG_COMMAND >      artifact-debug-command-output.log && \
+        docker-compose logs > artifact-docker-compose.log
+
+    - name: Upload Test Artifacts
+      uses: actions/upload-artifact@v2
+      if: always()
+      with:
+        name: TestFailures
+        path: ./.github/test-artifacts
+
+    - name: Upload Log Artifacts
+      uses: actions/upload-artifact@v2
+      if: always()
+      with:
+        name: DockerLogs
+        path: artifact-*
