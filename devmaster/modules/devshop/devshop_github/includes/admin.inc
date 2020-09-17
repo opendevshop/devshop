@@ -102,7 +102,7 @@ function devshop_github_settings_form($form, &$form_state) {
           'destination' => $_GET['q'],
         ),
         'attributes' => array(
-          'class' => 'btn btn-info'
+          'class' => array('btn btn-info'),
         ),
       ));
     $form['devshop_github_ssh_key']['ssh_key_status_buttons'] ['#markup'] .= l(t('Configure Public Key'), 'admin/devshop', array(
@@ -110,7 +110,7 @@ function devshop_github_settings_form($form, &$form_state) {
           'destination' => $_GET['q'],
         ),
         'attributes' => array(
-          'class' => 'btn btn-default'
+          'class' => array('btn btn-default')
         ),
       )) . '</div>';
     $form['devshop_github_ssh_key']['ssh_key_status'] ['#prefix'] = '<div class="alert alert-warning">';

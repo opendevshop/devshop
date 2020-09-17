@@ -461,6 +461,11 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
     $form['options']['status']['#title'] = t('Active');
     $form['options']['status']['#description'] = t('Uncheck this box to hide the project from the main dashboard. Users who have permission to "view unpublished nodes" will still be able to view inactive projects.');
 
+    // On "project/add/settings" page, don't show the checkbox.
+    if (current_path() == 'projects/add/settings') {
+      $form['options']['status']['#access'] = 0;
+    }
+
     unset($form['actions']['delete']);
     unset($form['actions']['preview']);
     if (isset($form['retry']['#value'])) {
