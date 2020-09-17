@@ -75,7 +75,7 @@ Feature: Create a project and check settings
     And I should see the link "dev"
     And I should see the link "live"
 
-    Then I break
+#    Then I break
     And I should see the link "http://drpl8.dev.devshop.local.computer"
     And I should see the link "Aegir Site"
 
