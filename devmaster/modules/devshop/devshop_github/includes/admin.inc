@@ -91,6 +91,16 @@ function devshop_github_form_alter(&$form, &$form_state, $form_id) {
           'class' => array('btn btn-default btn-sm'),
         ),
       )) . '</p>';
+    $form['devshop_github_ssh_key']['ssh_key_status_buttons'] ['#markup'] .= l(t('Configure Public Key'), 'admin/devshop', array(
+        'query' => array(
+          'destination' => $_GET['q'],
+        ),
+        'attributes' => array(
+          'class' => array('btn btn-default')
+        ),
+      )) . '</div>';
+    $form['devshop_github_ssh_key']['ssh_key_status'] ['#prefix'] = '<div class="alert alert-warning">';
+    $form['devshop_github_ssh_key']['ssh_key_status'] ['#suffix'] = '</div>';
   }
 
   $repos = variable_get('devshop_github_available_repositories', array());

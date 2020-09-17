@@ -30,7 +30,7 @@ if [ -z "${ALIAS}" ]; then
   exit 1
 fi
 
-OPTIONS=-n devshop-log "Waiting for DevShop Site... "
+OPTIONS=-n devshop-log "Checking database... "
 
 # Returns true once mysql can connect.
 # Thanks to http://askubuntu.com/questions/697798/shell-script-how-to-run-script-after-mysql-is-ready

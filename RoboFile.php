@@ -434,6 +434,7 @@ class RoboFile extends \Robo\Tasks {
    * @option $build Run `robo prepare:containers` to rebuild the container first.
    * @option os-version An OS "slug" for any of the geerlingguy/docker-*-ansible images: https://hub.docker.com/u/geerlingguy/
    * @option environment pass an environment variable to docker-compose in the form --environment NAME=VALUE
+   * @option ci Set to TRUE when run in CI, such as in build.yml. If not set, docker-compose.volumes.yml will be included to produce a development environment.
    * @option install-at-runtime Launch bare containers and then install devshop.
    */
   public function up($docker_command = '', $opts = [
@@ -462,6 +463,7 @@ class RoboFile extends \Robo\Tasks {
     'config' => '/usr/share/devshop/ansible.cfg',
     'local' => FALSE,
     'environment' => [],
+    'ci' => FALSE,
     'install-at-runtime' => FALSE,
     'build-command' => NULL,
     'compose-file' => NULL,
@@ -531,6 +533,21 @@ class RoboFile extends \Robo\Tasks {
     }
 
     if ($opts['mode'] == 'docker-compose') {
+
+      // Volumes
+      if (!$opts['ci']) {
+        $this->yell('Volume mounts requested. Adding docker-compose.volumes.yml');
+        $this->say(' - ' . __DIR__ . '/aegir-home to /var/aegir');
+        $this->say(' - ' . __DIR__ . '/devmaster to /var/aegir/devmaster-1.x/profiles/devmaster');
+
+        // Set COMPOSE_FILE to include volumes.
+        $opts['compose-file'] = 'docker-compose.yml:docker-compose.volumes.yml';
+
+        if (!file_exists('aegir-home/devmaster-' . $this::DEVSHOP_LOCAL_VERSION) && !$opts['skip-source-prep']) {
+          $this->io()->warning('The aegir-home folder not present. Running prepare source code command.');
+          $this->prepareSourcecode($opts);
+        }
+      }
 
       $cmd[] = "docker-compose up --detach --force-recreate";
 
@@ -902,7 +919,8 @@ class RoboFile extends \Robo\Tasks {
    * Run all devshop tests on the containers.
    */
   public function test($user = 'aegir', $opts = array(
-    'compose-file' => 'docker-compose.yml',
+    'compose-file' => 'docker-compose.yml:docker-compose.volumes.yml',
+    'reinstall' => FALSE
   )) {
     $is_tty = !empty($_SERVER['XDG_SESSION_TYPE']) && $_SERVER['XDG_SESSION_TYPE'] == 'tty';
     $no_tty = !$is_tty? '-T': '';
@@ -913,6 +931,10 @@ class RoboFile extends \Robo\Tasks {
       $commands[] = "docker-compose exec $no_tty devshop mkdir -p /var/aegir/test-artifacts";
       $commands[] = "docker-compose exec $no_tty devshop chown aegir:aegir /var/aegir/test-artifacts -R";
       $commands[] = "docker-compose exec $no_tty devshop chmod 777 /var/aegir/test-artifacts -R";
+    }
+
+    if ($opts['reinstall']) {
+      $commands[] = "docker-compose exec $no_tty --user $user devshop drush @hostmaster provision-install --force-reinstall";
     }
 
     $commands[] = "docker-compose exec $no_tty --user $user devshop /usr/share/devshop/tests/devshop-tests.sh";
