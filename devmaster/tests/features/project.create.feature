@@ -75,8 +75,7 @@ Feature: Create a project and check settings
     And I should see the link "dev"
     And I should see the link "live"
 
-#    Then I break
-    And I should see the link "http://drpl8.dev.devshop.local.computer"
+    And I should see the link "http://composer.dev.devshop.local.computer"
     And I should see the link "Aegir Site"
 
     When I run drush "hosting-tasks --force --fork=0 --strict=0"
@@ -86,7 +85,7 @@ Feature: Create a project and check settings
     And I reload the page
     Then I should see the link "dev"
     Then I should see the link "live"
-#    Given I go to "http://dev.drpl8.devshop.travis"
+#    Given I go to "http://dev.composer.devshop.travis"
 #    When I click "Visit Environment"
 
 # @TODO: Fix our site installation.
@@ -105,7 +104,7 @@ Feature: Create a project and check settings
     And I fill in "What's the password?" for "Message"
 
     Then I press "Create New Environment"
-    Then I should see "Environment testenv created in project drpl8."
+    Then I should see "Environment testenv created in project composer."
 
     When I run drush "hosting-tasks --force --fork=0 --strict=0"
 
@@ -122,13 +121,13 @@ Feature: Create a project and check settings
     Then I select "testenv" from "Primary Environment"
     And I press "Save"
 
-    Then I should see "DevShop Project drpl8 has been updated."
+    Then I should see "DevShop Project composer has been updated."
     And I should see an ".environment-link .fa-bolt" element
 
     # When I click "Visit Site"
-    Given I am on "http://drpl8.testenv.devshop.local.computer"
+    Given I am on "http://composer.testenv.devshop.local.computer"
 # TODO: Figure out how to test this in travis!
 #    Then the response status code should be 401
 
-    Given I am on "http://testuser:testpassword@drpl8.testenv.devshop.local.computer"
-    Then I should see "Welcome to drpl8.testenv"
+    Given I am on "http://testuser:testpassword@composer.testenv.devshop.local.computer"
+    Then I should see "Welcome to composer.testenv"
