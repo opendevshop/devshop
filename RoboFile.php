@@ -220,7 +220,6 @@ class RoboFile extends \Robo\Tasks {
     'no-dev' => FALSE,
     'devshop-version' => '1.x',
     'test-upgrade' => FALSE,
-    'make' => 'profile',
   ]) {
 
     if (empty($this->git_ref)) {
@@ -269,7 +268,7 @@ class RoboFile extends \Robo\Tasks {
     }
 
     // If we want to just populate modules into /devmaster folder...
-    if ($opts['make'] == 'profile') {
+   // MAKE inside the devmaster profile
       // Populate devmaster install profile with contrib code.
       $makefile_path = 'build-devmaster-dev.make.yml';
       $make_destination = 'devmaster/';
@@ -283,10 +282,8 @@ class RoboFile extends \Robo\Tasks {
           throw new \RuntimeException("Drush make failed with the exit code " . $result->getExitCode());
         }
       }
-    }
-    // Or if a whole Drupal build is needed.
-    elseif ($opts['make'] == 'drupal') {
 
+    // Also MAKE the entire drupal stack.
       // Run drush make to build the devmaster stack.
       $makefile_path = $opts['no-dev']? 'build-devmaster.make': "build-devmaster-dev.make.yml";
       $make_destination = $this->devshop_root_path . "/aegir-home/devmaster-" . $opts['devshop-version'];
@@ -306,7 +303,6 @@ class RoboFile extends \Robo\Tasks {
           throw new \RuntimeException("Drush make failed with the exit code " . $result->getExitCode());
         }
       }
-    }
 
     // Set git remote urls
     if ($opts['no-dev'] == FALSE) {
