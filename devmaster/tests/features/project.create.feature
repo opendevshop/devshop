@@ -11,21 +11,21 @@ Feature: Create a project and check settings
     When I click "Projects"
     And I click "Start a new Project"
     Then I should see "Step 1"
-    Then I fill in "drpl8" for "Project Code Name"
-    And I fill in "http://github.com/opendevshop/drupal_docroot.git" for "Git Repository URL"
+    Then I fill in "composer" for "Project Code Name"
+    And I fill in "http://github.com/opendevshop/devshop-composer-template.git" for "Git Repository URL"
     When I press "Next"
 
     # Step 2
-    Then I should see "drpl8"
-    And I should see "http://github.com/opendevshop/drupal_docroot.git"
+    Then I should see "composer"
+    And I should see "http://github.com/opendevshop/devshop-composer-template.git"
     Then I should see "Please wait while we connect and analyze your repository."
     When I run drush "hosting-tasks --force --fork=0 --strict=0"
     # Then print last drush output
     And I reload the page
 
-    Then I fill in "docroot" for "Document Root"
+    Then I fill in "web" for "Document Root"
     When I press "Next"
-    And I should see "DOCUMENT ROOT docroot"
+    And I should see "DOCUMENT ROOT web"
 
     When I run drush "hosting-tasks --force --fork=0 --strict=0"
     And I reload the page
@@ -33,18 +33,18 @@ Feature: Create a project and check settings
 
     Then I should see "Create as many new environments as you would like."
     When I fill in "dev" for "project[environments][NEW][name]"
-    And I select "master" from "project[environments][NEW][git_ref]"
+    And I select "8.x" from "project[environments][NEW][git_ref]"
 
     And I press "Add environment"
     And I fill in "live" for "project[environments][NEW][name]"
-    And I select "master" from "project[environments][NEW][git_ref]"
+    And I select "8.x" from "project[environments][NEW][git_ref]"
     And I press "Add environment"
     Then I press "Next"
 
     # Step 4
     And I should see "dev"
     And I should see "live"
-    And I should see "master"
+    And I should see "8.x"
 
     When I run drush "hosting-tasks --force --fork=0 --strict=0"
     # Then print last drush output
