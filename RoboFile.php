@@ -946,6 +946,7 @@ class RoboFile extends \Robo\Tasks {
    */
   public function test($user = 'aegir', $opts = array(
     'compose-file' => 'docker-compose.yml',
+    'reinstall' => FALSE
   )) {
     $is_tty = !empty($_SERVER['XDG_SESSION_TYPE']) && $_SERVER['XDG_SESSION_TYPE'] == 'tty';
     $no_tty = !$is_tty? '-T': '';
@@ -956,6 +957,10 @@ class RoboFile extends \Robo\Tasks {
       $commands[] = "docker-compose exec $no_tty devshop mkdir -p /var/aegir/test-artifacts";
       $commands[] = "docker-compose exec $no_tty devshop chown aegir:aegir /var/aegir/test-artifacts -R";
       $commands[] = "docker-compose exec $no_tty devshop chmod 777 /var/aegir/test-artifacts -R";
+    }
+
+    if ($opts['reinstall']) {
+      $commands[] = "docker-compose exec $no_tty --user $user devshop drush @hostmaster provision-install --force-reinstall";
     }
 
     $commands[] = "docker-compose exec $no_tty --user $user devshop /usr/share/devshop/tests/devshop-tests.sh";
