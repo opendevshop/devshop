@@ -20,7 +20,9 @@ projects:
       url: devmaster
 
   devel:
-    version: 1
+    download:
+      type: git
+      tag: 7.x-1.7
 
   # The modules listed below override the settings in devmaster/drupal-org.make
   # Each module is downloaded and checked out to the version specified here.
@@ -29,6 +31,11 @@ projects:
     download:
       type: git
       tag: 7.x-3.180-devshop
+
+  eldir:
+    download:
+      type: git
+      tag: 7.x-3.180
 
   hosting_git:
     download:
