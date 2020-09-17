@@ -302,3 +302,10 @@ function devshop_hosting_update_7106() {
   variable_set('chosen_minimum_single', 0);
   variable_set('chosen_minimum_multiple', 0);
 }
+
+/**
+ * Disable DevShop.Support Client!
+ */
+function devshop_hosting_update_7101() {
+  module_disable(array('devshop_support_network_client'));
+}
