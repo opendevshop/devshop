@@ -101,7 +101,7 @@ jobs:
           --vars "${ANSIBLE_VARS}" \
           --tags "${ANSIBLE_TAGS}" \
           --skip-tags "${ANSIBLE_SKIP_TAGS}" \
-          --volumes 0 \
+          --ci \
           && bin/github deployment:update --state=in_progress --description="Preparing Containers with robo up... Done." --log_url=${GITHUB_RUN_LOG_URL}#step:8:1 \
           || ( bin/github deployment:update --state=failure --description="Preparing Containers with robo up... Failed." --log_url=${GITHUB_RUN_LOG_URL}#step:8:1 && exit 1 )
 
