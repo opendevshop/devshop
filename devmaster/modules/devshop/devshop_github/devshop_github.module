@@ -135,7 +135,7 @@ function devshop_github_menu() {
  */
 function devshop_github_form_project_node_form_alter(&$form, &$form_state, $form_id) {
   $node = $form['#node'];
-
+  $project = &$form_state['project'];
   if ($node->project->git_provider != 'github') {
     return;
   }
@@ -160,52 +160,40 @@ function devshop_github_form_project_node_form_alter(&$form, &$form_state, $form
     $prs = [];
   }
   $pr_count = count($prs);
-  if ($pr_count > 0) {
-    $form['project']['settings']['github']['found_prs'] = array(
-      '#type' => 'markup',
-      '#prefix' => '<div class="alert alert-success">',
-      '#suffix' => '</div>',
-      '#markup' => t('Pull Request Environments are enabled because !link. Please confirm your desired settings below.', array(
-        '!link' => l(format_plural($pr_count, t('there is 1 open Pull Request in your project'), t('there are @number open Pull Requests in your project', array('@number' => $pr_count))), $node->project->git_repo_url . '/pulls', array(
-          'attributes' => array(
-            'target' => '_blank',
-          ),
-        )),
-      )),
-    );
-    $pr_envs_default_value = 1;
-  }
-  else {
-    $pr_envs_default_value = isset($node->project->settings->github) ? $node->project->settings->github['pull_request_environments'] : 0;
-  }
-
-  $form['project']['settings']['github']['pull_request_environments'] = array(
-      '#type' => 'checkbox',
-      '#title' => t('Enable Pull Request Environments <div class="help-block">Automatically create a copy of your site with the code from a Pull Request\'s branch.</div>'),
-      '#default_value' => $pr_envs_default_value,
+  $form['found_prs'] = array(
+    '#type' => 'markup',
+    '#prefix' => '<div class="alert alert-success">',
+    '#suffix' => '</div>',
+    '#weight' => -1000,
+    '#markup' => implode(' ', array(
+      format_plural($pr_count, t('There is 1 open Pull Request in your project'), t('There are @number open Pull Requests in your project', array('@number' => $pr_count))),
+      t('Confirm your desired behavior in the "GitHub Integration" section.'),
+      l(t('View Pull Requests on GitHub.com'), $node->project->git_repo_url . '/pulls', array(
+        'attributes' => array(
+          'target' => '_blank',
+        ),
+      ))
+    )),
   );
 
-  $form['project']['settings']['github']['pull_request_create_policy'] = array(
-    '#title' => t('Environment Creation Policy'),
-    '#type' => 'radios',
+  $form['project']['settings']['github']['pull_request_environments'] = array(
+    '#title' => t('Pull Request Environments'),
+    '#description' => t('Maintain an environment for every !open_pull_request. There are currently @count', array(
+      '@count' => $pr_count,
+      '!open_pull_request' => l('open Pull Request', $project->git_repo_url . '/pulls', array(
+        'attributes' => array(
+          'target' => '_blank',
+        ),
+      )),
+    )),
+    '#type' => 'checkbox',
     '#field_prefix' => '<span class="text-success">' . format_plural($pr_count,
       t('The project has one open Pull Request'),
       t('The project has @number open Pull Requests', array(
         '@number' => $pr_count,
       )) . '</span>'
     ),
-    '#options' => array(
-      'all' => t('Create Environments for all open Pull Requests.  <div class="help-block">Environments will be created and deleted as Pull Requests are opened, closed, and re-opened.</div>'),
-      'create' => t('Only Create Environments when Pull Requests are opened or re-opened. <div class="help-block">Recommended if you have a large number of open Pull Requests or if PRs have unstable or unknown code.</div>'),
-    ),
-    '#default_value' => !empty($node->project->settings->github['pull_request_create_policy'])?
-      $node->project->settings->github['pull_request_create_policy']:
-      'all',
-    '#states' => array(
-      'visible' => array(
-        ':input[name="project[settings][github][pull_request_environments]"]' => array('checked' => TRUE),
-      ),
-    ),
+    '#default_value' => variable_get('devshop_github_pull_request_environments_default', 1),
   );
 
   // Delete Pull Request environments?
@@ -775,11 +763,6 @@ function devshop_github_create_project_form_set_values($element, &$form_state, &
  */
 function devshop_github_form_devshop_project_create_step_environments_alter(&$form, &$form_state, $form_id) {
 
-  // Don't try to load PRs if there isn't even a token.
-  if (empty(variable_get('devshop_github_token', ''))) {
-    return;
-  }
-
   $project = &$form_state['project'];
   $form['pr_environments'] = array(
     '#type' => 'container',
@@ -815,7 +798,7 @@ function devshop_github_form_devshop_project_create_step_environments_alter(&$fo
       );
 
       // Only add to $form if configured to keep all environments.
-      if ($project->settings->github['pull_request_create_policy'] == 'all') {
+      if ($project->settings->github['pull_request_environments']) {
         $form['pr_environments']['environments_table'][$environment->name] = $element;
       }
     }
@@ -836,7 +819,7 @@ function devshop_github_form_devshop_project_create_step_environments_alter(&$fo
     ));
 
     // Project with PR environments disabled.
-    if (!$project->settings->github['pull_request_environments']) {
+    if (empty($project->settings->github['pull_request_environments'])) {
       $help_display['help'] = array(
         '#theme' => 'item_list',
         '#items' => array(
@@ -849,24 +832,11 @@ function devshop_github_form_devshop_project_create_step_environments_alter(&$fo
       );
     }
     // Project configured to maintain all PR environments.
-    elseif ($project->settings->github['pull_request_create_policy'] == 'all') {
+    elseif (!empty($project->settings->github['pull_request_environments'])) {
       $help_display['help'] = array(
         '#theme' => 'item_list',
         '#items' => array(
-          t('Project is configured to create environments for all Pull Requests.'),
-          $settings_link,
-          $prs_link,
-        ),
-        '#prefix' => '<div class="alert alert-info">',
-        '#suffix' => '</div>',
-      );
-    }
-    // Project configured to only create environments on PR open or re-open.
-    elseif ($project->settings->github['pull_request_create_policy'] == 'create') {
-      $help_display['help'] = array(
-        '#theme' => 'item_list',
-        '#items' => array(
-          t('Project is configured to create environments only for new or reopened Pull Requests.'),
+          t('Project is configured to create environments for every open Pull Request.'),
           $settings_link,
           $prs_link,
         ),
