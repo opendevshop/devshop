@@ -178,9 +178,10 @@ function devshop_github_form_project_node_form_alter(&$form, &$form_state, $form
 
   $form['project']['settings']['github']['pull_request_environments'] = array(
     '#title' => t('Pull Request Environments'),
-    '#description' => t('Maintain an environment for every !open_pull_request. There are currently @count', array(
-      '@count' => $pr_count,
-      '!open_pull_request' => l('open Pull Request', $project->git_repo_url . '/pulls', array(
+    '#description' => t('Maintain an environment for every !open_pull_request.', array(
+      '!open_pull_request' => l(t('open Pull Request (@count)', array(
+        '@count' => $pr_count,
+      )), $project->git_repo_url . '/pulls', array(
         'attributes' => array(
           'target' => '_blank',
         ),
@@ -764,16 +765,6 @@ function devshop_github_create_project_form_set_values($element, &$form_state, &
 function devshop_github_form_devshop_project_create_step_environments_alter(&$form, &$form_state, $form_id) {
 
   $project = &$form_state['project'];
-  $form['pr_environments'] = array(
-    '#type' => 'container',
-    '#prefix' => '<h3 class="title">' . t('Pull Request Environments') . '</h3>',
-    '#weight' => -100,
-  );
-  $form['pr_environments']['environments_table'] = array(
-    '#tree' => TRUE,
-    '#theme' => 'devshop_projects_create_settings_form',
-  );
-
   // Load the PRs.
   try{
     $prs = devshop_github_client()->pullRequests()->all($project->github_owner, $project->github_repo);
