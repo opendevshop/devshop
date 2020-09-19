@@ -944,37 +944,6 @@ function devshop_github_form_devshop_project_create_step_sites_alter(&$form, &$f
     'fragment' => 'edit-project-settings-github',
   ));
 
-  // Load the PRs.
-  try {
-    $prs = devshop_github_client()
-      ->pullRequests()
-      ->all($project->github_owner, $project->github_repo);
-
-    foreach ($prs as $pr) {
-      $form['platforms']['#rows'][] = array(
-        'name' => "pr{$pr['number']}",
-        'branch' => $pr['head']['ref'],
-        'version' => array(
-          'colspan' => 3,
-          'data' => "<a href='{$pr['html_url']}' class='btn btn-link btn-sm' target='_blank'><img src='{$pr['user']['avatar_url']}' width='32'> {$pr['title']}</a>",
-        ),
-      );
-    }
-  }
-  catch (\Exception $e) {
-    drupal_set_message(theme('item_list', array(
-      'items' => array(
-        t('GitHub authentication failed. Check your token at !link. The error was: %message', array(
-          '%message' => $e->getMessage(),
-          '!link' => l('DevShop GitHub Settings', 'admin/devshop/github'),
-        )),
-        $settings_link,
-      ),
-    )), 'error');
-
-    drupal_set_message(get_class($e));
-  }
-
   // Return if deploy method is not webhook.
   if ($project->settings->deploy['method'] != 'webhook') {
     return;
