@@ -206,68 +206,9 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
     $environment->settings = (object) $environment->settings;
     $name = trim($environment->name);
 
+    // @TODO: VALIDATE CONTEXT DOES NOT EXIST!!
     if (!empty($name)) {
-      $id = db_insert('hosting_devshop_project_environment')
-        ->fields(array(
-          'project_nid' => $form_state['values']['nid'],
-          'name' => $environment->name,
-          'platform' => $environment->platform,
-          'settings' => serialize($environment->settings),
-        ))
-        ->execute();
-    }
-
-    // Create platform node if we don't have one.
-    if (empty($environment->platform)) {
-      //If platform hasn't been created yet, build platform node
-      $platform = new stdClass;
-      $platform->type = 'platform';
-      $platform->title = $project->name . '_' . $name;
-
-      // Platform publish_path
-  
-      // If drupal path is set, repo path and platform path are different. Append drupal_path to repo path to create publish path.
-      if ($project->drupal_path) {
-        $platform->git['repo_path'] = $project->code_path . '/' . $environment->name;
-        $platform->publish_path = $project->code_path . '/' . $environment->name . '/' . $project->drupal_path;
-      }
-      else {
-        $platform->git['repo_path'] = $project->code_path . '/' . $environment->name;
-        $platform->publish_path = $project->code_path . '/' . $environment->name;
-      }
-
-      // Git information
-      $platform->git['repo_url'] = $project->git_url;
-      $platform->git['git_ref'] = $environment->git_ref;
-
-      // Other attributes
-      $platform->web_server = $environment->settings->web_server;
-      $platform->db_server = $environment->settings->db_server;
-
-      // Save the node
-      global $user;
-      node_object_prepare($platform);
-      $platform->language = LANGUAGE_NONE; // Or e.g. 'en' if locale is enabled
-      $platform->uid = $user->uid;
-      $platform->status = 1;
-      $platform->promote = 0;
-      $platform->comment = 0;
-      $platform = node_submit($platform);
-      node_save($platform);
-
-      if (!$platform->nid) {
-        form_set_error('projects', t('An unknown problem has occured: the platform node was not created for the %env environment.', array('%env' => $environment->name)));
-      }
-      $environment->platform = $platform->nid;
-
-      // Update environment with our platform
-      db_update('hosting_devshop_project_environment')
-        ->fields(array(
-          'platform' => $environment->platform,
-        ))
-        ->condition('project_nid', $form_state['values']['nid'])
-        ->condition('name', $environment->name)
-        ->execute();
+      $environment = hosting_create_environment($project, $name, $environment->git_ref, NULL, $environment->settings, 'create', NULL, FALSE); ;
     }
   }
 
