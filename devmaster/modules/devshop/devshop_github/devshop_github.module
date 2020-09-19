@@ -195,7 +195,7 @@ function devshop_github_form_project_node_form_alter(&$form, &$form_state, $form
         '@number' => $pr_count,
       )) . '</span>'
     ),
-    '#default_value' => variable_get('devshop_github_pull_request_environments_default', 1),
+    '#default_value' => $project->settings->github['pull_request_environments'],
   );
 
   // Delete Pull Request environments?
@@ -787,14 +787,15 @@ function devshop_github_form_devshop_project_create_step_environments_alter(&$fo
 
         // Create a disabled textfield for display to user, and convert original element to "value" type so the info is passed.
         $environment_forms[$environment->name]['name']['#default_value'] = $environment->name;
-        $environment_forms[$environment->name]['name']['name_display'] = $environment_forms[$environment->name]['name'];
-        $environment_forms[$environment->name]['name']['name_display']['#attributes']['disabled'] = true;
-        $environment_forms[$environment->name]['name']['#type'] = 'value';
+        $environment_forms[$environment->name]['name']['#attributes']['disabled'] = true;
 
         $environment_forms[$environment->name]['git_ref']['#default_value'] = $environment->git_ref;
-        $environment_forms[$environment->name]['git_ref']['git_ref_display'] = $environment_forms[$environment->name]['git_ref'];
-        $environment_forms[$environment->name]['git_ref']['git_ref_display']['#attributes']['disabled'] = true;
-        $environment_forms[$environment->name]['git_ref']['#type'] = 'value';
+        $environment_forms[$environment->name]['git_ref']['#attributes']['disabled'] = true;
+
+        // Save flag that this is a new environment.
+        $environment_forms[$environment->name]['new'] = array(
+          '#value' => TRUE,
+        );
       }
 
       // Merge environments fields together to put PRs on top.
@@ -805,8 +806,9 @@ function devshop_github_form_devshop_project_create_step_environments_alter(&$fo
       'fragment' => 'edit-project-settings-github',
     ));
 
-    $prs_link = l(t('Pull Requests for @repo', array(
+    $prs_link = l(t('Pull Requests for @repo: @count', array(
       '@repo' => $project->github_owner . '/' . $project->github_repo,
+      '@count' => count($prs),
     )), $prs_url, array(
       'attributes' => array('target' => '_blank')
     ));
@@ -817,15 +819,8 @@ function devshop_github_form_devshop_project_create_step_environments_alter(&$fo
         '#theme' => 'item_list',
         '#items' => array(
           t('Pull Request environments are disabled for this project.'),
-          l(t('Open Pull Requests: @count', array(
-            '@count' => count($prs)
-          ), array(
-            'attributes' => array(
-              '_target' => 'blank',
-            ),
-          ), $prs_link),
-          $settings_link
-        ),
+          $prs_link,
+          $settings_link,
         ),
         '#prefix' => '<div class="alert alert-warning">',
         '#suffix' => '</div>',
@@ -837,8 +832,8 @@ function devshop_github_form_devshop_project_create_step_environments_alter(&$fo
         '#theme' => 'item_list',
         '#items' => array(
           t('Project is configured to create environments for every open Pull Request.'),
-          $settings_link,
           $prs_link,
+          $settings_link,
         ),
         '#prefix' => '<div class="alert alert-info">',
         '#suffix' => '</div>',
@@ -865,6 +860,7 @@ function devshop_github_form_devshop_project_create_step_environments_alter(&$fo
   // Add a header to distinguish from PRs
   $form['project']['#prefix'] = '<h3 class="title">' . t('Create Additional Environments') . '</h3>';
 
+  dsm($form);
 }
 
 /**
