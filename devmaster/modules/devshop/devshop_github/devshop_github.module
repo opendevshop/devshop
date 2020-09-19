@@ -792,8 +792,8 @@ function devshop_github_form_devshop_project_create_step_environments_alter(&$fo
         $environment_forms[$environment->name]['git_ref']['#default_value'] = $environment->git_ref;
         $environment_forms[$environment->name]['git_ref']['#attributes']['disabled'] = true;
 
-        // Save flag that this is a new environment.
-        $environment_forms[$environment->name]['new'] = array(
+        // Save a flag that this is a pr_environment, so that the site knows to load the PR data later.
+        $environment_forms[$environment->name]['pr_environment'] = array(
           '#value' => TRUE,
         );
       }
