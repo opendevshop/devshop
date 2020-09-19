@@ -98,21 +98,18 @@ function devshop_project_create_step_environments_validate(&$form, &$form_state)
       // Check for illegal chars
       if ($env != 'NEW' && !empty($env_settings['name'])) {
         if (!preg_match('!^[a-z0-9_]+$!', $env_settings['name'])) {
-          $form_item = 'environments][' . $env . '][name';
+          $form_item = 'project][environments][' . $env . '][name';
           form_set_error($form_item, t('The environment name must contain only lowercase letters, numbers, and underscores.'));
         }
       }
 
-      // Check for unique names.
+      // Ensure NEW env name does not already exist in the environments array.
       if ($env == 'NEW' && array_key_exists($env_settings['name'], $values['project']['environments'])) {
-        $form_item = 'environments][' . $env . '][name';
-        form_set_error($form_item, t('The environment name must be unique.'));
+        $form_item = 'project][environments][' . $env . '][name';
+        form_set_error($form_item, t('The environment name must be unique. %name is already in use.', array(
+          '%name' => $env_settings['name'],
+        )));
       }
-      if ($env != $env_settings['name'] && array_key_exists($env_settings['name'], $values['project']['environments'])) {
-        $form_item = 'environments][' . $env . '][name';
-        form_set_error($form_item, t('The environment name must be unique.'));
-      }
-
     }
 
     // Reject if empty
