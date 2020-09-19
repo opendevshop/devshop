@@ -208,7 +208,15 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
 
     // @TODO: VALIDATE CONTEXT DOES NOT EXIST!!
     if (!empty($name)) {
-      $environment = hosting_create_environment($project, $name, $environment->git_ref, NULL, $environment->settings, 'create', NULL, FALSE); ;
+
+      if (!empty($environment->git_remote)) {
+        $git_remote = $environment->git_remote;
+      }
+      else {
+        $git_remote = NULL;
+      }
+
+      $environment = hosting_create_environment($project, $name, $environment->git_ref, NULL, $environment->settings, 'create', $git_remote, FALSE); ;
     }
   }
 

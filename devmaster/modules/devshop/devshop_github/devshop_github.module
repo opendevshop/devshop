@@ -792,6 +792,26 @@ function devshop_github_form_devshop_project_create_step_environments_alter(&$fo
         $environment_forms[$environment->name]['git_ref']['#default_value'] = $environment->git_ref;
         $environment_forms[$environment->name]['git_ref']['#attributes']['disabled'] = true;
 
+        // Handle forked environments with branches not in main repo.
+        $environment_forms[$environment->name]['git_ref']['#options'][$environment->git_ref] = $environment->git_ref;
+
+        // If PR has different remote URL, set it.
+        if ($pr->head->repo->fork) {
+          // Try to match project URL scheme
+          if (strpos($project->git_url, 'git://') === 0){
+            $remote_url = $pr->head->repo->git_url;
+          }
+          elseif (strpos($project->git_url, 'git@') === 0){
+            $remote_url = $pr->head->repo->ssh_url;
+          }
+          else {
+            $remote_url = $pr->head->repo->clone_url;
+          }
+          $environment_forms[$environment->name]['git_remote'] = array(
+            '#value' => $remote_url,
+          );
+        }
+
         // Save a flag that this is a pr_environment, so that the site knows to load the PR data later.
         $environment_forms[$environment->name]['pr_environment'] = array(
           '#value' => TRUE,
