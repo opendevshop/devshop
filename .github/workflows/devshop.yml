@@ -68,13 +68,13 @@ jobs:
           COMMAND: "echo 'Container Up! Awaiting commands...'"
         run: docker-compose up --detach devshop.server
 
-      - name: "Container Environment: ${{ matrix.os }}"
+      - name: "DevShop Server Container: Environment (${{ matrix.os }})"
         working-directory: roles
         run: |
           docker-compose exec -T devshop.server env
           docker-compose exec -T devshop.server systemctl status --no-pager
 
-      - name: "Finalize DevShop Installation: ${{ matrix.os }}"
+      - name: "Devshop Server Container: Runtime Playbook (${{ matrix.os }})"
         working-directory: roles
         # DEVSHOP_DOCKER_COMMAND_RUN is set to ansible-playbook --tags runtime by default.
         run: docker-compose exec -T devshop.server bash -c '${DEVSHOP_DOCKER_COMMAND_RUN}'
