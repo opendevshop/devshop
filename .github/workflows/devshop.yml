@@ -76,7 +76,7 @@ jobs:
           sleep 3
           docker-compose logs
 
-      - name: "DevShop Server Container: Environment (${{ matrix.os }})"
+      - name: "Container Environment: ${{ matrix.os }}"
         working-directory: roles
         run: |
           docker-compose exec -T devshop.server env
