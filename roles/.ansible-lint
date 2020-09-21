@@ -13,3 +13,4 @@ exclude_paths:
    - ./geerlingguy.php-versions
    - ./geerlingguy.supervisor
    - ./molecule
+   - ./docker-compose.yml
