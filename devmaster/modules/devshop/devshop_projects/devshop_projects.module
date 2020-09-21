@@ -335,6 +335,15 @@ function devshop_projects_menu() {
     'description' => '',
     'type' => MENU_DEFAULT_LOCAL_TASK,
   );
+  $items['projects/inactive'] = array(
+    'title' => t('Inactive Projects'),
+    'page callback' => 'devshop_projects_projects_page',
+    'page arguments' => array(1),
+    'title callback' => 'devshop_projects_inactive_tab_title',
+    'access callback' => 'devshop_projects_inactive_tab_access',
+    'description' => '',
+    'type' => MENU_LOCAL_TASK,
+  );
   $items['projects/add'] = array(
     'title' => 'Start New Project',
     'type' => MENU_LOCAL_TASK,
@@ -896,7 +905,10 @@ function devshop_projects_load_by_name($name) {
     ->fields('n', array('nid'))
     ->condition('title', $name)
     ->condition('type', 'project')
-    ->condition('status', 1)
+    // This will ensure we return both published or unpublished projects, but if
+    // there is more than one project with the same name, load the published one.
+    ->orderBy('status', 'DESC')
+    ->orderBy('created', 'DESC')
     ->execute()
     ->fetchField();
 

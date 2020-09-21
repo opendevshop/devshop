@@ -12,6 +12,7 @@ abbr -a -- gd git diff
 abbr -a -- gs git status
 abbr -a -- gt git tag
 abbr -a -- gco git checkout
+abbr -a -- gcp git cherry-pick
 abbr -a -- gp git push
 abbr -a -- gpl git pull
 abbr -a -- r bin/robo

@@ -55,19 +55,33 @@ class FeatureContext extends \Drupal\DrupalExtension\Context\BatchContext implem
             $base_url = $this->getMinkParameter('base_url');
             $drush_config = $this->drupalContext->getDrupalParameter('drush');
             $alias = $drush_config['alias'];
+            $url_to_path = preg_replace("/[^a-z0-9\.]/","", strtolower($this->getSession()->getCurrentUrl()));
 
             // If environment variable is set, save assets to that.
-            if (isset($_SERVER['DEVSHOP_TESTS_ASSETS_PATH']) && is_writable($_SERVER['DEVSHOP_TESTS_ASSETS_PATH'])) {
-              $files_path = $_SERVER['DEVSHOP_TESTS_ASSETS_PATH'];
-              $logged_string = "$files_path";
+            if (!empty(($_SERVER['DEVSHOP_TESTS_ASSETS_PATH']))) {
+              if (is_writable($_SERVER['DEVSHOP_TESTS_ASSETS_PATH'])) {
+                $files_path = $_SERVER['DEVSHOP_TESTS_ASSETS_PATH'];
+                $output_file_name = "output-{$url_to_path}.html";
+                $output_file_path = "{$files_path}/{$output_file_name}";
+                $output_notification_string = $output_file_path;
+              }
+              elseif (!file_exists($_SERVER['DEVSHOP_TESTS_ASSETS_PATH'])) {
+                throw new \Exception("DEVSHOP_TESTS_ASSETS_PATH was set, but the directory does not exist. Change the environment variable or create the directory: " . $_SERVER['DEVSHOP_TESTS_ASSETS_PATH']);
+              }
+              else {
+                throw new \Exception("DEVSHOP_TESTS_ASSETS_PATH was set, but is not writable: Change the environment variable or create the directory: " . $_SERVER['DEVSHOP_TESTS_ASSETS_PATH']);
+              }
             }
             // If not, load the public writable files folder for devshop, so the asset can be served over HTTP.
             else {
               // Lookup file_directory_path
               $cmd = "drush @$alias vget file_public_path --format=string";
               $files_path = trim(shell_exec($cmd));
-              $logged_string = "$base_url/$files_path/output.html";
+              $output_file_name = "output-{$url_to_path}.html";
+              $output_file_path = "{$files_path}/{$output_file_name}";
+              $output_notification_string = "{$base_url}/{$files_path}/{$output_file_name}}";
             }
+
 
             // Check for various problems.
             if (empty($files_path)) {
@@ -80,8 +94,6 @@ class FeatureContext extends \Drupal\DrupalExtension\Context\BatchContext implem
                 throw new \Exception("Assets path '$files_path' is not writable by the testing scipt and user.");
             }
 
-            $output_path = $files_path .'/output.html';
-
             // Print Current URL and Last reponse after any step failure.
             echo "Step Failed. \n";
             echo "Site: $alias \n";
@@ -90,24 +102,25 @@ class FeatureContext extends \Drupal\DrupalExtension\Context\BatchContext implem
             if (!file_exists($files_path)) {
                 mkdir($files_path);
             }
-            $wrote = file_put_contents($output_path, $this->getSession()->getPage()->getContent());
+            $wrote = file_put_contents($output_file_path, $this->getSession()->getPage()->getContent());
 
+            if ($wrote) {
+                echo "Last Page Output Saved to: $output_notification_string \n";
+            }
+            else {
+                throw new \Exception("Something failed when writing output to $output_file_path ... \n");
+            }
 
             if (isset($_SERVER['CI'])) {
                 echo "\nLasts Response:\n";
                 $this->minkContext->printLastResponse();
             }
 
-            if ($wrote) {
-                echo "Last Page Output Saved to: $output_path \n";
-                echo "Last Page Output: $logged_string \n";
-            }
-            else {
-                throw new \Exception("Something failed when writing output to $files_path ... \n");
-            }
-
             echo "\nWatchdog Errors:\n";
             $this->drushContext->assertDrushCommand('wd-show');
+            $this->drushContext->printLastDrushOutput();
+
+            echo "\n\nLast Drush Output\n";
             $this->drushContext->printLastDrushOutput();
         }
     }

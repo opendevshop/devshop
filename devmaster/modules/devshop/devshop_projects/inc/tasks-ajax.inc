@@ -21,7 +21,6 @@ function devshop_projects_tasks_status_json() {
 
   $results = db_query($sql);
 
-  $task_types = hosting_available_tasks();
   $nids = array();
 
   // Ensure we always load our task
@@ -29,7 +28,7 @@ function devshop_projects_tasks_status_json() {
     $nids[] = $_GET['task'];
   }
 
-    // Get all environments and their status.
+  // Get all environments and their status.
   foreach ($results as $result) {
 
     // Save NIDs for later
@@ -58,34 +57,32 @@ function devshop_projects_tasks_status_json() {
     $nids[] = $row->nid;
   }
 
-  foreach ($nids as $nid) {
-    $task_node = node_load($nid);
+  foreach (node_load_multiple($nids) as $task_node) {
+    if (isset($task_node->site)) {
+      $task_node->site_node = node_load($task_node->site);
 
-        if (isset($task_node->site)) {
-          $task_node->site_node = node_load($task_node->site);
+      if ($task_node->site_node->site_status == HOSTING_SITE_DELETED) {
+        continue;
+      }
+    }
 
-          if ($task_node->site_node->site_status == HOSTING_SITE_DELETED) {
-            continue;
-          }
-        }
+    // If no last task node was found, skip.
+    if (empty($task_node)) {
+      continue;
+    }
 
-        // If no last task node was found, skip.
-        if (empty($task_node)) {
-            continue;
-        }
+    // If page is requesting this task's logs, load them.
+    if (isset($_GET['task']) && $_GET['task'] == $task_node->nid) {
+      $messages = devshop_task_get_messages($task_node);
+      if (count($messages)) {
+        $task_node->logs = implode("\n", $messages);
+      }
+    }
 
-        // If page is requesting this task's logs, load them.
-        if (isset($_GET['task']) && $_GET['task'] == $task_node->nid) {
-            $messages = devshop_task_get_messages($task_node);
-            if (count($messages)) {
-              $task_node->logs = implode("\n", $messages);
-            }
-        }
+    // Output a rendered task node
+    $task_node->rendered = theme('devshop_task', array('task' => $task_node));
 
-        // Output a rendered task node
-        $task_node->rendered = theme('devshop_task', array('task' => $task_node));
-
-        $output[] = $task_node;
+    $output[] = $task_node;
   }
 
   print json_encode($output);

@@ -15,3 +15,4 @@ services:
       - /var/lib/mysql
       - /var/logs/aegir
       - $HOME/.ssh:/var/aegir/.ssh
+      - ./.github/.test-artifacts:/var/aegir/test-artifacts

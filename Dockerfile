@@ -220,7 +220,9 @@ RUN mkdir -p /var/log/aegir/ && \
     touch /var/log/aegir/hostmaster.access.log
 
 ENV DEVSHOP_ENTRYPOINT_LOG_FILES="/var/log/aegir/*"
-ENV DEVSHOP_TESTS_ASSETS_PATH="${DEVSHOP_PATH}/.github/test-assets"
+
+# Keep this blank and the http-accessible path will be used. CI will override.
+ENV DEVSHOP_TESTS_ASSETS_PATH=""
 
 # Set devshop_install_phase runtime here, since the Dockerfile is ALWAYS buildtime.
 ENV ANSIBLE_BUILD_COMMAND="devshop-ansible-playbook \
@@ -235,7 +237,6 @@ RUN \
 
 # Cleanup unwanted systemd files. See bin/docker-systemd-prepare and https://github.com/geerlingguy/docker-ubuntu1804-ansible/pull/12
 RUN bash $DEVSHOP_PATH/bin/docker-systemd-prepare
-RUN chmod 766 $DEVSHOP_TESTS_ASSETS_PATH
 
 # Remove devmaster dir if desired so that devshop code is reinstalled.
 ARG DEVSHOP_REMOVE_DEVMASTER_ARG=0

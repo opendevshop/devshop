@@ -277,13 +277,15 @@
             }
             ?>
         <div class="list-group-item list-group-item-<?php print $class ?> text">
-          <div class="buttons pull-right">
-            <?php print $warning['buttons'] ?>
-          </div>
           <div class="text">
             <?php if ($icon): ?><i class="fa fa-<?php print $icon ?>"></i><?php endif; ?>
             <?php print $warning['text'] ?>
           </div>
+          <?php if (!empty($warning['buttons'])): ?>
+          <div class="buttons">
+            <?php print $warning['buttons'] ?>
+          </div>
+          <?php endif; ?>
         </div>
         <?php endforeach; ?>
     <?php endif; ?>

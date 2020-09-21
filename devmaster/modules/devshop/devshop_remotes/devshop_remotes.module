@@ -362,7 +362,7 @@ function devshop_remotes_node_load($nodes, $types) {
   if (count(array_intersect(array('project'), $types))) {
     foreach ($nodes as &$node) {
 
-      if (isset($node->project->settings) && !is_array($node->project->settings->aliases)) {
+      if (isset($node->project->settings) && empty($node->project->settings->aliases)) {
         $node->project->settings->aliases = array();
       }
 

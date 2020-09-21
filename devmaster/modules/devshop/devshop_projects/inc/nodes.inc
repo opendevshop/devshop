@@ -29,18 +29,15 @@ function devshop_projects_node_info() {
 function devshop_projects_node_load($nodes, $types) {
 
   // Only act on project and related nodes.
-  $types = array(
+  $allowed_types = array(
     'project',
     'site',
     'platform',
     'task',
   );
-  if (count(array_intersect($types, $types)) == 0) {
+  if (count(array_intersect($allowed_types, $types)) == 0) {
     return;
   }
-
-  global $user;
-  $project = new stdClass();
 
   $refs_types = db_select('node', 'n')
     ->fields('n', array('nid', 'type'))
@@ -181,7 +178,7 @@ function devshop_projects_node_insert($node) {
     return;
   }
 
-  if (!isset($node->no_verify)) {
+  if (empty($node->no_verify)) {
     hosting_add_task($node->nid, 'verify');
   }
 
@@ -277,7 +274,7 @@ function devshop_projects_node_update($node) {
 
   // Write project record.
   drupal_write_record('hosting_devshop_project', $info, 'nid');
-  if (!isset($node->no_verify) || $node->no_verify == FALSE) {
+  if (empty($node->no_verify)) {
     hosting_add_task($node->nid, 'verify');
   }
 
