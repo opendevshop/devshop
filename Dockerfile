@@ -1,5 +1,5 @@
 #
-# DevShop Base Dockerfile
+# DevShop Super Dockerfile
 #
 # This Dockerfile is designed to be built into any kind of container.
 #
@@ -110,8 +110,8 @@ ARG FROM_IMAGE_ARG="geerlingguy/docker-${OS_VERSION_ARG}-ansible:latest"
 
 FROM $FROM_IMAGE_ARG
 LABEL maintainer="Jon Pugh"
+
 ENV LINE="echo --------------------------------------------------------------------------------"
-RUN $LINE && echo "Building Dockerfile.base..." && $LINE
 
 # ENVs need to be set AFTER the FROM statement.
 ENV OS_VERSION ${OS_VERSION_ARG:-"ubuntu1804"}
@@ -125,7 +125,7 @@ ENV PATH="${DEVSHOP_PATH}/bin:$PATH"
 
 RUN \
     $LINE && echo && \
-    echo " Welcome to the DevShop Base Dockerfile:  Build Phase  " && \
+    echo " Welcome to the DevShop Dockerfile:  Build Phase  " && \
     echo && $LINE && \
     echo "# OS Info: "  && \
     (cat /etc/centos-release 2>/dev/null || cat /etc/os-release 2>/dev/null) && \
@@ -160,6 +160,8 @@ RUN \
   devshop-logo " Contents of ${DEVSHOP_PATH} after copy"; \
   git status; git log -1; $LINE
 
+RUN ansible --version
+
 RUN devshop-logo "Preparing Docker Container Environment..."
 
 #
@@ -180,8 +182,8 @@ ARG BUILD_ARG_EXAMPLE_ARG="buildArgDefaultValue"
 ENV BUILD_ARG_EXAMPLE ${BUILD_ARG_EXAMPLE_ARG:-"buildArgDefaultValue"}
 
 # @TODO: ARG statement below does not seem to change the value when using a FROM image that already has the environment variable.
-ARG ANSIBLE_PLAYBOOK_ARG="/usr/share/devshop/roles/playbook.base.yml"
-ENV ANSIBLE_PLAYBOOK ${ANSIBLE_PLAYBOOK_ARG:-"/usr/share/devshop/roles/playbook.base.yml"}
+ARG ANSIBLE_PLAYBOOK_ARG="/usr/share/devshop/roles/server.playbook.yml"
+ENV ANSIBLE_PLAYBOOK ${ANSIBLE_PLAYBOOK_ARG:-"/usr/share/devshop/roles/server.playbook.yml"}
 
 ARG ANSIBLE_PLAYBOOK_COMMAND_OPTIONS_ARG=""
 ENV ANSIBLE_PLAYBOOK_COMMAND_OPTIONS ${ANSIBLE_PLAYBOOK_COMMAND_OPTIONS_ARG:-""}
@@ -202,8 +204,8 @@ ENV ANSIBLE_VERBOSITY ${ANSIBLE_VERBOSITY_ARG:-0}
 ARG ANSIBLE_TAGS_ARG="all"
 ENV ANSIBLE_TAGS ${ANSIBLE_TAGS_ARG:-"all"}
 
-ARG ANSIBLE_SKIP_TAGS_ARG=""
-ENV ANSIBLE_SKIP_TAGS ${ANSIBLE_SKIP_TAGS_ARG:-""}
+ARG ANSIBLE_SKIP_TAGS_ARG="runtime"
+ENV ANSIBLE_SKIP_TAGS ${ANSIBLE_SKIP_TAGS_ARG:-"runtime"}
 
 ARG ANSIBLE_EXTRA_VARS_ARG="dockerfile_extra_vars_source: 'ARG default Dockerfile:201'"
 ENV ANSIBLE_EXTRA_VARS ${ANSIBLE_EXTRA_VARS_ARG:-"dockerfile_extra_vars_source: 'ENV default Dockerfile:202"}
@@ -212,9 +214,15 @@ ENV ANSIBLE_EXTRA_VARS ${ANSIBLE_EXTRA_VARS_ARG:-"dockerfile_extra_vars_source: 
 ARG DEVSHOP_USER_UID_ARG=1000
 ENV DEVSHOP_USER_UID ${DEVSHOP_USER_UID_ARG:-1000}
 
-RUN mkdir -p /var/log/devshop/
+RUN mkdir -p /var/log/aegir/ && \
+    touch /var/log/aegir/hosting-queue-runner.log && \
+    touch /var/log/aegir/hostmaster.error.log && \
+    touch /var/log/aegir/hostmaster.access.log
 
-ENV DEVSHOP_ENTRYPOINT_LOG_FILES="/var/log/devshop/*"
+ENV DEVSHOP_ENTRYPOINT_LOG_FILES="/var/log/aegir/*"
+
+# Keep this blank and the http-accessible path will be used. CI will override.
+ENV DEVSHOP_TESTS_ASSETS_PATH=""
 
 # Set devshop_install_phase runtime here, since the Dockerfile is ALWAYS buildtime.
 ENV ANSIBLE_BUILD_COMMAND="devshop-ansible-playbook \
@@ -227,8 +235,13 @@ RUN \
   echo "Container Environment Preparation Complete"; \
   devshop-line
 
-# Prepare systemd to run inside a container.
-RUN docker-systemd-prepare
+# Cleanup unwanted systemd files. See bin/docker-systemd-prepare and https://github.com/geerlingguy/docker-ubuntu1804-ansible/pull/12
+RUN bash $DEVSHOP_PATH/bin/docker-systemd-prepare
+
+# Remove devmaster dir if desired so that devshop code is reinstalled.
+ARG DEVSHOP_REMOVE_DEVMASTER_ARG=0
+ENV DEVSHOP_REMOVE_DEVMASTER ${DEVSHOP_REMOVE_DEVMASTER_ARG:-0}
+RUN if [ $DEVSHOP_REMOVE_DEVMASTER ]; then rm -rf /var/aegir/devmaster-1.x; fi
 
 # Pre-build Information
 RUN \

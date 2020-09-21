@@ -1,54 +1,97 @@
-# DevShop Development Dockerfile
 version: '2.2'
+
+# This compose file is just an example. Create your own to launch your own Aegir cluster
+
 services:
 
   devshop:
-    image: "devshop/server:${OS:-ubuntu1804}"
+    # If the image listed here does't exist yet locally (even if you use a docker hub image),
+    # `docker-compose up` will automatically BUILD it and tag it with this name.
+    #
+    # As soon as the image listed here DOES exists locally, `docker-compose up`
+    # only launch the container. It will only rebuild it if you use --build.
+    #
+    # This can cause confusion. If "image:  devshop/server:latest", try:
+    #    $ docker-compose up
+    #
+    #    1. Runs a docker build FROM devshop/server:latest (and pulls it in the process.)
+    #    2. If it completes, you will have a NEW devshop/server:latest that is DIFFERENT from the remote.
+    #    3. It will launch this container when done building.
+    #    4. The next time you run `docker-compose up` it will use the same image (devshop/server:latest),
+    #       only recreating the CONTAINER if any docker-compose.yml changed,
+    #       and only rebuilding the IMAGE if the `--build` option is used. (or `docker-compose  build` is used)
+    #
+    #    The problem arises if you are developing, and the build fails.
+    #    Even if your build fails, docker downloaded the FROM image in the background.
+    #
+    #    If this image name matches the "image" string below, the next `docker-compose up`
+    #    call will see that you have a local copy and will launch that INSTEAD of building it new.
+    #
+    #    By using the non-docker-hub image "devshop/server:local" in this docker-compose file, we force the
+    #    the developer to finish that first build before any container can be launched.
+    #
+    image: ${DEVSHOP_DOCKER_IMAGE:-devshop/server:local}
+    command: ${DOCKER_COMMAND:-}
+    build:
+      context: '.'
+      dockerfile: ${DOCKERFILE:-Dockerfile}
+      args:
+      # If a value for local development should be different than docker hub image,
+      # set a default here.
+      # Otherwise values are inherited from `docker-compose` execution environment.
+      - ANSIBLE_VERBOSITY_ARG
+      - ANSIBLE_PLAYBOOK_ARG
+      - ANSIBLE_SKIP_TAGS_ARG
+      - ANSIBLE_TAGS_ARG
+      - ANSIBLE_PLAYBOOK_COMMAND_OPTIONS_ARG
+      - ANSIBLE_CONFIG_ARG
+      - ANSIBLE_ROLES_PATH_ARG
+      - FROM_IMAGE_ARG
+      - OS_VERSION_ARG
+      - DEVSHOP_USER_UID_ARG
+
+      - DRUPAL_MAKEFILE
+      - DRUPAL_ROOT
+
     ports:
       - "80:80"
       - "2222:22"
     hostname: devshop.local.computer
     extra_hosts:
       - "drpl8.testenv.devshop.local.computer:127.0.0.1"
-    command: echo 'Hello World! DevShop Development Image here. To run as a single process, override 'command' in docker-compose.yml. '
     environment:
-      DEVSHOP_TEST: x
-      # By default, devshop container will run 'ansible-playbook --tags runtime' after running the "command"
-      # Keep DEVSHOP_DOCKER_COMMAND_RUN uncommented to use this command to provision the server instead.
-      # @TODO: Create single value ENV vars for AEGIR_USER_UID
-      DEVSHOP_DOCKER_COMMAND_RUN: ansible-playbook /etc/ansible/play.yml --tags runtime --extra-vars @/etc/ansible/vars.yml
-      ANSIBLE_VERBOSITY: "${ANSIBLE_VERBOSITY:-}"
+      - ANSIBLE_TAGS
+      - ANSIBLE_EXTRA_VARS
+      - ANSIBLE_VERBOSITY
+      - ANSIBLE_PLAYBOOK
+      - ANSIBLE_SKIP_TAGS
+      - ANSIBLE_PLAYBOOK_COMMAND_OPTIONS
+      - ANSIBLE_CONFIG
+      - ANSIBLE_ROLES_PATH
+      - FROM_IMAGE
+      - OS_VERSION
+      - DEVSHOP_USER_UID
+      # @TODO: Figure a way for the  "devshop server roles" to maintain their own commands.
+      - DOCKER_COMMAND_POST=devshop login
+
+      # Change to use a different database host.
+      - DATABASE_HOST=localhost
+      - XDEBUG_CONFIG="remote_host=172.17.0.1 idekey=PHPSTORM"
+      - PHP_IDE_CONFIG="serverName=devshop.local.computer"
+
+      # To allow the devmaster container to launch other docker containers, we need the host's path to aegir home directory.
+      - HOST_AEGIR_HOME=/home/jon/Projects/devshop/aegir-home
+
+      # Add additional files you would like to output in the container logs here, separated by a space.
+      # - DEVSHOP_ENTRYPOINT_LOG_FILES="/var/log/aegir/*"
+
+      # For development, test output will be saved to the sites "files" folder so you can click the results.
+      # If you want to save test error output to a different folder change this variable.
+      # For CI, set this to the folder that will be saved as artifacts.
+      - DEVSHOP_TESTS_ASSETS_PATH=
 
     privileged: true
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
       - /var/lib/mysql
       - /var/logs/aegir
-
-      # @TODO: In docker/ansible branch, these are here. In composer devmaster branch, these are in docker-compose.volumes.yml.
-      - ./aegir-home:/var/aegir:delegated
-      - ./src/DevShop/Templates/DevShopControlTemplate:/usr/share/devshop/src/DevShop/Templates/DevShopControlTemplate
-      - ./devmaster:/usr/share/devshop/src/DevShop/Templates/DevShopControlTemplate/web/profiles/devmaster
-      - ./:/usr/share/devshop:delegated
-      - ./roles/devshop.server/play.yml:/etc/ansible/play.yml
-
-      # This file is used in the default DEVSHOP_DOCKER_COMMAND_RUN.
-      - ./vars.development.yml:/etc/ansible/vars.yml
-      - ./roles:/etc/ansible/roles
-      - $HOME/.ssh:/var/aegir/.ssh
-      # To develop the docker-systemd-entrypoint without having to rebuild the container, set this volume.
-      - ./docker/bin/docker-systemd-entrypoint:/usr/local/bin/docker-systemd-entrypoint
-
-    # Resource allocation.
-    # 4GB, 2CPUs is a good minimum.
-
-    # mem_limit is a hard upper limit for the container.
-    # If using linux, make sure this is below your system's idle free memory or your desktop will slow down.
-    mem_limit: 10g
-
-    # mem_reservation is a minimum that your system will reserve for the container.
-    # DevShop needs about 4GB to provide a good user experience.
-    mem_reservation: 4g
-
-    # Restrict the containers to only use the first 2 CPUs
-    cpuset: 0,1

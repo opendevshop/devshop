@@ -14,7 +14,7 @@ services:
     environment:
     - GITHUB_TOKEN
     - CI=CI
+    - DEVSHOP_TESTS_ASSETS_PATH=/var/aegir/test-artifacts
 
     volumes:
-      - ./:/usr/share/devshop:delegated
-      - ./.github/.test-assets:/usr/share/devshop/.github/test-assets
+      - ./.github/test-artifacts:/var/aegir/test-artifacts

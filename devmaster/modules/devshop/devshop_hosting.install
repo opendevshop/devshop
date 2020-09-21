@@ -304,9 +304,8 @@ function devshop_hosting_update_7106() {
 }
 
 /**
- * Enable composer_autoloader module and set the path to autoload.php.
+ * Disable DevShop.Support Client!
  */
-function devshop_hosting_update_7200() {
-  module_enable(array('composer_autoloader'));
-  variable_set('composer_autoloader', '../vendor/autoload.php');
+function devshop_hosting_update_7107() {
+  module_disable(array('devshop_support_network_client'));
 }
