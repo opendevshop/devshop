@@ -1,5 +1,14 @@
 ---
 
+- name: Get Install Devmaster Environment (DEBUG)
+  become: true
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
+  command: "env"
+  changed_when: true
+  register: devmaster_install_environment
+  tags: [runtime]
+
 - name: Get Devmaster root
   command: "{{ devshop_cli_bin_path }}/devshop-site-info @hostmaster root"
   become: true
@@ -34,6 +43,11 @@
 - name: Devmaster URI
   debug:
     msg: "{{ devmaster_site_uri }}"
+  tags: [runtime]
+
+- name: Devmaster Install Environment (DEBUG)
+  debug:
+    msg: "{{ devmaster_install_environment }}"
   tags: [runtime]
 
 - name: Devmaster Install Command (DEBUG)
