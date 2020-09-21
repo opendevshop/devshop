@@ -25,12 +25,10 @@
         "devshop/git-split": "self.version",
         "devshop/github-api-cli": "self.version",
         "devshop/bin-tools": "@dev",
-        "devshop/yaml-tasks": "self.version",
         "devshop/power-process": "self.version"
     },
     "replace": {
-        "devshop/yaml-tasks": "self.version",
-        "drupal/drupal": "*"
+        "devshop/yaml-tasks": "self.version"
     },
     "require-dev": {
         "composer/composer": "^1.9"
