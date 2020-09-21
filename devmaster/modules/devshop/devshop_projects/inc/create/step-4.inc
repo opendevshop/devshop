@@ -203,7 +203,7 @@ HTML;
     if (strpos($errors_rendered, 'Check the Publish Path of the platform') !== FALSE) {
       if (empty($project->drupal_path)) {
         $message = t("Drupal was not found in the project at the root. !link and try again.", array(
-          '!link' => l(t('Change Document Root in Project Settings'), '/project/add/settings'),
+          '!link' => l(t('Change Document Root in Project Settings'), '/projects/add/settings'),
         ));
       }
       else {

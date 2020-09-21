@@ -10,8 +10,8 @@ PATH="$DIR:$PATH"
 export TIMEOUT=300
 wait-site @hostmaster
 
-log "Clearing drush caches ..."
+devshop-log "Clearing drush caches ..."
 drush cc drush
 
-log "Running drush @hostmaster hosting-queued ..."
+devshop-log "Running drush @hostmaster hosting-queued ..."
 drush @hostmaster hosting-queued

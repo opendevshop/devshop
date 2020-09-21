@@ -98,21 +98,18 @@ function devshop_project_create_step_environments_validate(&$form, &$form_state)
       // Check for illegal chars
       if ($env != 'NEW' && !empty($env_settings['name'])) {
         if (!preg_match('!^[a-z0-9_]+$!', $env_settings['name'])) {
-          $form_item = 'environments][' . $env . '][name';
+          $form_item = 'project][environments][' . $env . '][name';
           form_set_error($form_item, t('The environment name must contain only lowercase letters, numbers, and underscores.'));
         }
       }
 
-      // Check for unique names.
+      // Ensure NEW env name does not already exist in the environments array.
       if ($env == 'NEW' && array_key_exists($env_settings['name'], $values['project']['environments'])) {
-        $form_item = 'environments][' . $env . '][name';
-        form_set_error($form_item, t('The environment name must be unique.'));
+        $form_item = 'project][environments][' . $env . '][name';
+        form_set_error($form_item, t('The environment name must be unique. %name is already in use.', array(
+          '%name' => $env_settings['name'],
+        )));
       }
-      if ($env != $env_settings['name'] && array_key_exists($env_settings['name'], $values['project']['environments'])) {
-        $form_item = 'environments][' . $env . '][name';
-        form_set_error($form_item, t('The environment name must be unique.'));
-      }
-
     }
 
     // Reject if empty
@@ -185,12 +182,15 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
 
   // Save environments data
   $environments = $form_state['values']['project']['environments'];
+
+  // If NEW environment name was submitted, add it to the env array with name as key, then unset NEW environment.
   if (!empty($environments['NEW']['name'])) {
     $new_environment_name = $environments['NEW']['name'];
     $environments[$new_environment_name] = $environments['NEW'];
   }
   unset($environments['NEW']);
 
+  // Rebuild $environments array ensuring "name" field is used as array key.
   foreach ($environments as $name => $environment) {
     if ($name != $environment['name']) {
       $environments[$environment['name']] = $environment;
@@ -209,68 +209,32 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
     $environment->settings = (object) $environment->settings;
     $name = trim($environment->name);
 
+    // @TODO: VALIDATE CONTEXT DOES NOT EXIST!!
     if (!empty($name)) {
-      $id = db_insert('hosting_devshop_project_environment')
-        ->fields(array(
-          'project_nid' => $form_state['values']['nid'],
-          'name' => $environment->name,
-          'platform' => $environment->platform,
-          'settings' => serialize($environment->settings),
-        ))
-        ->execute();
-    }
+      if (!empty($environment->git_remote)) {
+        $git_remote = $environment->git_remote;
+      } else {
+        $git_remote = null;
+      }
 
-    // Create platform node if we don't have one.
-    if (empty($environment->platform)) {
-      //If platform hasn't been created yet, build platform node
-      $platform = new stdClass;
-      $platform->type = 'platform';
-      $platform->title = $project->name . '_' . $name;
-
-      // Platform publish_path
-  
-      // If drupal path is set, repo path and platform path are different. Append drupal_path to repo path to create publish path.
-      if ($project->drupal_path) {
-        $platform->git_root = $project->code_path . '/' . $environment->name;
-        $platform->publish_path = $project->code_path . '/' . $environment->name . '/' . $project->drupal_path;
+      if (!empty($environment->platform)) {
+        // RECREATE the env RECORD in the database if platform NID already exists.
+        $id = db_insert('hosting_devshop_project_environment')
+          ->fields(array(
+            'project_nid' => $form_state['values']['nid'],
+            'name' => $environment->name,
+            'platform' => $environment->platform,
+            'settings' => serialize($environment->settings),
+          ))
+          ->execute();
       }
       else {
-        $platform->git_root = $project->code_path . '/' . $environment->name;
-        $platform->publish_path = $project->code_path . '/' . $environment->name;
+        // CREATE the environment OBJECT, including a new platform and DB record.
+        drupal_set_message(t('Creating environment %name', array(
+          '%name' => $name,
+        )));
+        hosting_create_environment($project, $name, $environment->git_ref, NULL, $environment->settings, 'create', $git_remote, FALSE); ;
       }
-
-      // Git information
-      $platform->git_remote = $project->git_url;
-      $platform->git_reference = $environment->git_ref;
-
-      // Other attributes
-      $platform->web_server = $environment->settings->web_server;
-      $platform->db_server = $environment->settings->db_server;
-
-      // Save the node
-      global $user;
-      node_object_prepare($platform);
-      $platform->language = LANGUAGE_NONE; // Or e.g. 'en' if locale is enabled
-      $platform->uid = $user->uid;
-      $platform->status = 1;
-      $platform->promote = 0;
-      $platform->comment = 0;
-      $platform = node_submit($platform);
-      node_save($platform);
-
-      if (!$platform->nid) {
-        form_set_error('projects', t('An unknown problem has occured: the platform node was not created for the %env environment.', array('%env' => $environment->name)));
-      }
-      $environment->platform = $platform->nid;
-
-      // Update environment with our platform
-      db_update('hosting_devshop_project_environment')
-        ->fields(array(
-          'platform' => $environment->platform,
-        ))
-        ->condition('project_nid', $form_state['values']['nid'])
-        ->condition('name', $environment->name)
-        ->execute();
     }
   }
 

@@ -101,7 +101,7 @@ jobs:
           --vars "${ANSIBLE_VARS}" \
           --tags "${ANSIBLE_TAGS}" \
           --skip-tags "${ANSIBLE_SKIP_TAGS}" \
-          --volumes 0 \
+          --ci \
           && bin/github deployment:update --state=in_progress --description="Preparing Containers with robo up... Done." --log_url=${GITHUB_RUN_LOG_URL}#step:8:1 \
           || ( bin/github deployment:update --state=failure --description="Preparing Containers with robo up... Failed." --log_url=${GITHUB_RUN_LOG_URL}#step:8:1 && exit 1 )
 
@@ -121,19 +121,26 @@ jobs:
 
     - name: Test DevShop
       run: |
-        bin/robo test
+        bin/robo test --compose-file=docker-compose.yml:docker-compose.tests.yml
 
-    - name: Save Assets
+    - name: Save Docker Logs as Artifacts
       if: always()
       run: |
-        docker ps -a > ./.github/test-assets/build-docker-ps.log && \
-        $DEBUG_COMMAND > ./.github/test-assets/build-debug-command.log && \
-        docker-compose logs > ./.github/test-assets/build-docker-compose.log
-        docker-compose exec -T --user aegir devshop drush sa @platform_hostmaster > ./.github/test-assets/platform_hostmaster.drushrc.php.log
-        docker-compose exec -T --user aegir devshop composer info --working-dir /var/aegir/devmaster > ./.github/test-assets/devmaster-composer-info.log
+        docker ps -a >        artifact-docker-ps.log && \
+        $DEBUG_COMMAND >      artifact-debug-command-output.log && \
+        docker-compose logs > artifact-docker-compose.log
+        docker-compose exec -T --user aegir devshop composer info --working-dir /var/aegir/devmaster > artifact-devmaster-composer-info.log
 
-    - uses: actions/upload-artifact@v1
+    - name: Upload Test Artifacts
+      uses: actions/upload-artifact@v2
       if: always()
       with:
-        name: test-assets
-        path: ./.github/test-assets
+        name: TestFailures
+        path: ./.github/test-artifacts
+
+    - name: Upload Log Artifacts
+      uses: actions/upload-artifact@v2
+      if: always()
+      with:
+        name: DockerLogs
+        path: artifact-*

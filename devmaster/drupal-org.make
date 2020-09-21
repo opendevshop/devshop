@@ -59,7 +59,6 @@ projects[views][version] = "3.24"
 projects[views_bulk_operations][version] = "3.6"
 projects[ctools][version] = "1.15"
 projects[features][version] = "2.11"
-projects[distro_update][version] = "1"
 projects[module_filter][version] = "2.2"
 projects[libraries][version] = 2.5
 projects[token][version] = 1.7

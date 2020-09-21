@@ -79,11 +79,16 @@ function devshop_github_form_alter(&$form, &$form_state, $form_id) {
     $form['server']['devshop_github_ssh_key']['ssh_key_status'] ['#markup'] = '<i class="fa fa-check"></i>' . t("This DevShop's Public Key was found in the GitHub account associated with the GitHub Token.");
   }
   else {
-
-    $form['server']['devshop_github_ssh_key']['ssh_key_status'] ['#prefix'] = ' <div class="alert alert-warning">';
-    $form['server']['devshop_github_ssh_key']['ssh_key_status'] ['#suffix'] = '</div>';
-    $form['server']['devshop_github_ssh_key']['ssh_key_status'] ['#markup'] = '<p><i class="fa fa-warning"></i> ' . t("This DevShop's Public Key was not found in your GitHub account.") . '</p>';
-    $form['server']['devshop_github_ssh_key']['ssh_key_status'] ['#markup'] .= '<p>' . l(t('Add this public key to your GitHub account'), 'admin/devshop/github/add-key', array(
+    $form['server']['devshop_github_ssh_key']['ssh_key_status'] ['#markup'] = t("This DevShop's public SSH Key was not found in your GitHub account.");
+    $form['server']['devshop_github_ssh_key']['ssh_key_status_buttons'] ['#markup'] .= '<div class="btn-group" role="group">' . l(t('Add public key to your GitHub account'), 'admin/devshop/github/add-key', array(
+        'query' => array(
+          'destination' => $_GET['q'],
+        ),
+        'attributes' => array(
+          'class' => array('btn btn-info'),
+        ),
+      ));
+    $form['server']['devshop_github_ssh_key']['ssh_key_status_buttons'] ['#markup'] .= l(t('Configure Public Key'), 'admin/devshop', array(
         'query' => array(
           'destination' => $_GET['q'],
         ),

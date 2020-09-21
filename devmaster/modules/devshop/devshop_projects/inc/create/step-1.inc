@@ -50,6 +50,9 @@ function devshop_project_create_step_git($form, $form_state) {
       '#attributes'=> array(
         'placeholder' => t('myproject')
       ),
+      '#element_validate' => array(
+        'devshop_project_wizard_title_validate',
+      ),
       '#weight' => 1,
     );
   }
@@ -227,8 +230,20 @@ function devshop_projects_devshop_project_git_repo_options() {
 function devshop_project_wizard_title_validate($element, &$form_state, $form) {
   // No spaces or special characters allowed.
   // Set the value to our trimmed and lowercased project name.
-  $project_name = strtolower(preg_replace('/[^a-z0-9]/gi', '', $element['value']));
+  $project_name = strtolower(preg_replace('/[^a-z0-9]+/', '', $element['#value']));
   form_set_value($form['title'], $project_name, $form_state);
+
+  // Mention name was changed
+  if ($project_name != $element['#value']) {
+    drupal_set_message(t('Project name was converted to %name, because it cannot contain any spaces or non-alphanumeric characters.', array(
+      '%name' => $project_name,
+    )), 'warning');
+  }
+
+  // If still contains spaces, throw error.
+  if (strpos($project_name, ' ') !== FALSE) {
+    form_set_error('title', t('Project name cannot contain any spaces or non-alphanumeric characters.'));
+  }
 }
 
 /**
@@ -330,5 +345,5 @@ function devshop_project_create_step_git_submit(&$from, &$form_state) {
   }
 
   // Remove default "task" messages.
-  drupal_get_messages();
+  // drupal_get_messages();
 }

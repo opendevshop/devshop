@@ -9,7 +9,9 @@ defaults:
 projects:
   drupal:
     type: core
-    version: 7.72
+    download:
+      type: git
+      tag: 7.73
 
   # DEVELOPERS: If submitting a Pull Request, CHANGE THE URL or BRANCH here, if you need to test devshop and devmaster repos.
   devmaster:
@@ -20,7 +22,9 @@ projects:
       url: devmaster
 
   devel:
-    version: 1
+    download:
+      type: git
+      tag: 7.x-1.7
 
   # The modules listed below override the settings in devmaster/drupal-org.make
   # Each module is downloaded and checked out to the version specified here.
@@ -29,6 +33,11 @@ projects:
     download:
       type: git
       tag: 7.x-3.180-devshop
+
+  eldir:
+    download:
+      type: git
+      tag: 7.x-3.180
 
   hosting_git:
     download:

@@ -242,6 +242,9 @@ class RoboFile extends \Robo\Tasks {
       $this->taskExecStack()
         ->exec("mkdir -p {$this->devshop_root_path}/aegir-home/.drush/commands")
         ->run();
+      $this->taskExecStack()
+        ->exec("mkdir -p {$this->devshop_root_path}/aegir-home/test-artifacts")
+        ->run();
     }
 
     // Clone all git repositories.
@@ -441,7 +444,7 @@ class RoboFile extends \Robo\Tasks {
    * @option $build Run `robo prepare:containers` to rebuild the container first.
    * @option os-version An OS "slug" for any of the geerlingguy/docker-*-ansible images: https://hub.docker.com/u/geerlingguy/
    * @option environment pass an environment variable to docker-compose in the form --environment NAME=VALUE
-   * @option volumes Set to TRUE to use the docker-compose.volumes.yml file to map local folders into the container.
+   * @option ci Set to TRUE when run in CI, such as in build.yml. If not set, docker-compose.volumes.yml will be included to produce a development environment.
    * @option install-at-runtime Launch bare containers and then install devshop.
    */
   public function up($docker_command = 'devshop-ansible-playbook', $opts = [
@@ -470,7 +473,7 @@ class RoboFile extends \Robo\Tasks {
     'config' => '/usr/share/devshop/ansible.cfg',
     'local' => FALSE,
     'environment' => [],
-    'volumes' => TRUE,
+    'ci' => FALSE,
     'install-at-runtime' => FALSE,
     'build-command' => NULL,
     'compose-file' => NULL,
@@ -541,8 +544,10 @@ class RoboFile extends \Robo\Tasks {
     if ($opts['mode'] == 'docker-compose') {
 
       // Volumes
-      if ($opts['volumes']) {
-        $this->yell('Volume mounts requested. Using docker-compose.volumes.yml.');
+      if (!$opts['ci']) {
+        $this->yell('Volume mounts requested. Adding docker-compose.volumes.yml');
+        $this->say(' - ' . __DIR__ . '/aegir-home to /var/aegir');
+        $this->say(' - ' . __DIR__ . '/devmaster to /var/aegir/devmaster-1.x/profiles/devmaster');
 
         // Set COMPOSE_FILE to include volumes.
         $opts['compose-file'] = 'docker-compose.yml:docker-compose.volumes.yml';
@@ -916,26 +921,43 @@ class RoboFile extends \Robo\Tasks {
    * Run all devshop tests on the containers.
    */
   public function test($user = 'aegir', $opts = array(
-    'compose-file' => 'docker-compose.yml',
+    'compose-file' => 'docker-compose.yml:docker-compose.volumes.yml',
+    'reinstall' => FALSE
   )) {
     $is_tty = !empty($_SERVER['XDG_SESSION_TYPE']) && $_SERVER['XDG_SESSION_TYPE'] == 'tty';
     $no_tty = !$is_tty? '-T': '';
-    $command = "docker-compose exec $no_tty --user $user devshop /usr/share/devshop/tests/devshop-tests.sh";
+
+    // If running in CI, create the test-artifacts directory and ensure ownership first.
+    // @TODO: Move logic to a special CI container.
+    if (!empty($_SERVER['CI'])) {
+      $commands[] = "docker-compose exec $no_tty devshop mkdir -p /var/aegir/test-artifacts";
+      $commands[] = "docker-compose exec $no_tty devshop chown aegir:aegir /var/aegir/test-artifacts -R";
+      $commands[] = "docker-compose exec $no_tty devshop chmod 777 /var/aegir/test-artifacts -R";
+    }
+
+    if ($opts['reinstall']) {
+      $commands[] = "docker-compose exec $no_tty --user $user devshop drush @hostmaster provision-install --force-reinstall";
+    }
+
+    $commands[] = "docker-compose exec $no_tty --user $user devshop /usr/share/devshop/tests/devshop-tests.sh";
     $provision_io = new \DevShop\Component\PowerProcess\PowerProcessStyle($this->input, $this->output);
-    $process = new \DevShop\Component\PowerProcess\PowerProcess($command, $provision_io);
+    foreach ($commands as $command) {
+      $process = new \DevShop\Component\PowerProcess\PowerProcess($command, $provision_io);
 
-    $process->setTty(!empty($_SERVER['XDG_SESSION_TYPE']) && $_SERVER['XDG_SESSION_TYPE'] == 'tty');
+      $process->setTty(!empty($_SERVER['XDG_SESSION_TYPE']) && $_SERVER['XDG_SESSION_TYPE'] == 'tty');
 
-    $process->setEnv([
-      'COMPOSE_FILE' => $opts['compose-file'],
-    ]);
-    $process->setTimeout(NULL);
-    $process->disableOutput();
-
-
+      $process->setEnv([
+        'COMPOSE_FILE' => $opts['compose-file'],
+      ]);
+      $process->setTimeout(NULL);
+      $process->disableOutput();
     // @TODO: Figure out why PowerProcess::mustRun() fails so miserably: https://github.com/opendevshop/devshop/pull/541/checks?check_run_id=518074346#step:7:45
     // $process->mustRun();
-    $process->run();
+      $process->run();
+      if (!$process->isSuccessful()) {
+        return $process->getExitCode();
+      }
+    }
     return $process->getExitCode();
   }
 
