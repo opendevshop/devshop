@@ -68,7 +68,7 @@
 - name: Ensure /var/aegir is owned by aegir user.
   file:
     state: directory
-    recurse: yes
+    recurse: true
     path: "{{ aegir_user_home }}"
     group: "{{ aegir_user_name }}"
     owner: "{{ aegir_user_name }}"
