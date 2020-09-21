@@ -11,14 +11,14 @@ function devshop_github_add_key_to_account($form, &$form_state) {
 
     if (empty($token)) {
         drupal_set_message('GitHub API Token is not set.', 'error');
-        drupal_goto('admin/devshop');
+        drupal_goto('admin/devshop/github');
         return;
     }
 
     // If key was already found, skip.
     if (devshop_github_check_key()) {
         drupal_set_message('SSH Key was found already on your account.', 'error');
-        drupal_goto('admin/devshop');
+        drupal_goto('admin/devshop/github');
         return;
     }
 
@@ -48,9 +48,9 @@ function devshop_github_add_key_to_account($form, &$form_state) {
 
     if ($return['verified']) {
         drupal_set_message('SSH Key added to your account.');
-        drupal_goto('admin/devshop');
+        drupal_goto('admin/devshop/github');
     } else {
         drupal_set_message('Something went wrong. SSH Key was not added to your account.', 'error');
-        drupal_goto('admin/devshop');
+        drupal_goto('admin/devshop/github');
     }
 }

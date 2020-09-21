@@ -105,7 +105,7 @@ function devshop_pull_default_webhook($project_node) {
 
     // Ensure that environment site exists before trying to deploy it.
     if (isset($environment->site) && $node = node_load($environment->site)) {
-      hosting_add_task($environment->site, 'deploy', $args);
+      hosting_add_task($environment->site, 'devshop-deploy', $args);
     }
   }
 

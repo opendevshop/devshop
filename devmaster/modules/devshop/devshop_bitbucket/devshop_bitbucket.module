@@ -400,7 +400,7 @@ function devshop_bitbucket_webhook($project_node) {
             $args['git_ref'] = $environment->git_ref;
 
             if (isset($environment->site) && $node = node_load($environment->site)) {
-              hosting_add_task($environment->site, 'deploy', $args);
+              hosting_add_task($environment->site, 'devshop-deploy', $args);
             }
           }
         }

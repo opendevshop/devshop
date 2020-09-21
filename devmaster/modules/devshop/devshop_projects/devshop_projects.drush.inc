@@ -39,7 +39,7 @@ function drush_devshop_projects_pre_hosting_task()
   if ($task->ref->type == 'site' || $task->ref->type == 'platform' || $task->ref->type == 'project') {
     $drush_aliases = new Provision_Config_ProjectAliases($task->ref->project->name, $task->ref->project);
   }
-
+  
   // Only write drush aliases if project name was found.
   if (!empty($drush_aliases->data['name'])) {
     $drush_aliases->write();
@@ -47,7 +47,7 @@ function drush_devshop_projects_pre_hosting_task()
       '%name' => $drush_aliases->data['name'],
     ]), 'p_log');
   }
-
+  
 
   // Passing options for Download task. This should go in aegir_download.drush.inc but I can't get that hook working right now.
   if ($task->task_type == 'download') {
@@ -58,14 +58,14 @@ function drush_devshop_projects_pre_hosting_task()
     $task->options['message'] = $task->task_args['message'];
     $task->options['update'] = $task->task_args['update'];
   }
-
+  
   // Verify Platform
   // Here is where we hook in and clone the site
   // @TODO: This can be removed once hosting_git migration is complete.
 //  if ($task->ref->type == 'platform' && $task->task_type == 'verify' && !empty($task->ref->project->git_url)) {
 //    drush_devshop_platform_verify();
 //   }
-
+  
   // Pull
   if ($task->ref->type == 'project' && $task->task_type == 'devshop-pull') {
     $task->args['environments'] = $task->task_args['environments'];
@@ -76,7 +76,7 @@ function drush_devshop_projects_pre_hosting_task()
   }
 
   // Deploy
-  if ($task->ref->type == 'site' && $task->task_type == 'devshop-deploy' && !empty($task->args['git_reference'])) {
+  if ($task->ref->type == 'site' && $task->task_type == 'devshop-deploy') {
 
     // The git_ref is the only argument
     $task->args['git_ref'] = $task->task_args['git_ref'];
@@ -184,8 +184,13 @@ function devshop_projects_post_hosting_delete_task($task, $data) {
  * Implements hook_post_hosting_TASK_TYPE_task() for install.
  */
 function devshop_projects_post_hosting_install_task($task, $data) {
+  
+  // Queue up a verification of the site.
+  // @TODO: Find a way to pass github_deployment to this task too.
+  hosting_add_task($task->ref->nid, 'verify');
+  
 }
-
+  
   /**
  * Implements hook_post_hosting_TASK_TYPE_task() for devshop deploy tasks().
  */
@@ -202,18 +207,17 @@ function devshop_projects_post_hosting_devshop_deploy_task($task, $data) {
     ':site' => $task->ref->environment->site,
   );
 
-  // @TODO: remove? refactor?
-//  if (db_query('UPDATE {hosting_git} SET git_ref = :git WHERE nid = :site', $args)) {
-//    drush_log("[DEVSHOP] Git reference {$git_ref} saved to {$task->ref->environment->name} environment record.");
-//  }
-//  else {
-//    return drush_set_error('[DEVSHOP] Environment update failed! Unable to save git ref to hosting_devshop_project_environment table.');
-//  }
+  if (db_query('UPDATE {hosting_git} SET git_ref = :git WHERE nid = :site', $args)) {
+    drush_log("[DEVSHOP] Git reference {$git_ref} saved to {$task->ref->environment->name} environment record.");
+  }
+  else {
+    return drush_set_error('[DEVSHOP] Environment update failed! Unable to save git ref to hosting_devshop_project_environment table.');
+  }
 
   // Queue up a verification of the platform.
   // @TODO: Find a way to pass github_deployment to this task too.
   hosting_add_task($task->ref->environment->platform, 'verify');
-
+  
   // Queue up a verification of the site.
   // @TODO: Find a way to pass github_deployment to this task too.
   hosting_add_task($task->ref->nid, 'verify');

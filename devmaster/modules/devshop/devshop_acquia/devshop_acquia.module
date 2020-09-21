@@ -30,7 +30,7 @@ function drush_run_acquia_hook($task) {
   }
 
   // If this is a deploy task, and acquia hooks is not configured to run, return.
-  if ($task->task_type == 'deploy' && (!isset($task->task_args['acquia_hooks']) || $task->task_args['acquia_hooks'] != 1)) {
+  if ($task->task_type == 'devshop-deploy' && (!isset($task->task_args['acquia_hooks']) || $task->task_args['acquia_hooks'] != 1)) {
     return;
   }
 

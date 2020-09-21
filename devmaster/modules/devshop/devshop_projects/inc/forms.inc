@@ -587,12 +587,12 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
         break;
 
       // Deploy task form
-      case 'deploy':
+      case 'devshop-deploy':
 
         // Alter title of deploy task.
         $node = node_load($form['nid']['#value']);
-//        drupal_set_title(t('Deploy code to Environment "@env"', array('@env' => $node->environment->name)), PASS_THROUGH);
-//        $form['actions']['cancel']['#value'] = l(t('Cancel'), "node/{$node->project->nid}");
+        drupal_set_title(t('Deploy code to Environment "@env"', array('@env' => $node->environment->name)), PASS_THROUGH);
+        $form['actions']['cancel']['#value'] = l(t('Cancel'), "node/{$node->project->nid}");
         break;
 
       // Sync task form
@@ -1389,15 +1389,15 @@ function devshop_prepare_platform_node($project, $environment_name, $git_ref, $w
   $platform_node->type = 'platform';
   $platform_node->title = $project->name . '_' . $environment_name;
 
-  // Specify GIT Url for hosting_platform.module
+  // Specify GIT Url for hosting_git.module
   if (empty($git_remote)) {
-    $platform_node->git_remote = $project->git_url;
+    $platform_node->git['repo_url'] = $project->git_url;
   }
   else {
-    $platform_node->git_remote = $git_remote;
+    $platform_node->git['repo_url'] = $git_remote;
   }
 
-  $platform_node->git_reference = $git_ref;
+  $platform_node->git['git_ref'] = $git_ref;
 
 
   // Enable git pull queue for this platform if chosen.
@@ -1420,15 +1420,15 @@ function devshop_prepare_platform_node($project, $environment_name, $git_ref, $w
     $platform_node->web_server = $web_server;
   }
 
-  $platform_node->git_root = $project->code_path . '/' . $environment_name;
+  $platform_node->git['repo_path'] = $project->code_path . '/' . $environment_name;
 
   // Append drupal_path to repo_path if there is one. If not, repo_path is publish_path.
   if ($project->drupal_path) {
-    $platform_node->publish_path = $platform_node->git_root . '/' . $project->drupal_path;
-    $platform_node->git_docroot = $project->drupal_path;
+    $platform_node->publish_path = $platform_node->git['repo_path'] . '/' . $project->drupal_path;
+    $platform_node->git['repo_docroot'] = $project->drupal_path;
   }
   else {
-    $platform_node->publish_path = $platform_node->git_root;
+    $platform_node->publish_path = $platform_node->git['repo_path'];
   }
   return $platform_node;
 }
@@ -1658,7 +1658,7 @@ function devshop_environment_deploy_hooks_form($project, $environment = NULL, $t
   if (
     // Environment form
     ($is_environment_form && !$project->settings->deploy['allow_environment_deploy_config']) ||
-    ($task_type == 'deploy' && !$project->settings->deploy['allow_environment_deploy_hooks_override'])
+    ($task_type == 'devshop-deploy' && !$project->settings->deploy['allow_environment_deploy_hooks_override'])
   ) {
 
     foreach (element_children($return) as $i) {

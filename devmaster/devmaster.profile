@@ -250,9 +250,6 @@ function devmaster_bootstrap() {
 
 function devmaster_task_finalize() {
 
-  // Set composer_autoloader path to vendor.
-  variable_set('composer_autoloader', '../vendor/autoload.php');
-
   // Enable "boots" theme.
   drupal_set_message(st('Enabling "boots" theme'));
   $theme = 'boots';

@@ -159,6 +159,12 @@ function devshop_projects_node_insert($node) {
   if ($node->type == 'task') {
     $site = node_load($node->rid);
 
+    // @TODO: task_type should be task_status... but the system still works.  Was this never running? It's possible the other hooks that save last task info is all we need.
+    if (($site->type == 'site' || $site->type == 'platform') && isset($site->environment) && ($node->task_type == HOSTING_TASK_QUEUED || $node->task_type == HOSTING_TASK_PROCESSING)) {
+      $site->environment->last_task = $node->nid;
+      devshop_environment_save_last_task($site->environment);
+    }
+
     // When a task is created or updated that has a project, redirect to the project.
     if (isset($_GET['redirect']) && $_GET['redirect'] == 'task-page') {
       drupal_goto("node/{$node->nid}");

@@ -103,7 +103,7 @@ function devshop_project_create_step_settings_submit(&$form, &$form_state) {
     foreach ($environments as $environment) {
       $platform = node_load($environment->platform);
       $platform->publish_path = $form_state['values']['project']['code_path'] . DIRECTORY_SEPARATOR . $environment->name . DIRECTORY_SEPARATOR . $form_state['values']['project']['drupal_path'];
-      $platform->git_remote = $form_state['values']['project']['git_url'];
+      $platform->git['repo_url'] = $form_state['values']['project']['git_url'];
       node_save($platform);
     }
     $count = count($environments);

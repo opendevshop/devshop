@@ -38,10 +38,9 @@ function boots_preprocess_environment(&$vars) {
   // Load git refs and create links
   $vars['git_refs'] = array();
   foreach ($project->settings->git['refs'] as $ref => $type) {
-    $href = url('hosting_confirm/ENV_NID/site_deploy', array(
+    $href = url('hosting_confirm/ENV_NID/site_devshop-deploy', array(
         'query' => array(
-            'token' => drupal_get_token($user->uid),
-            'git_reference' => $ref,
+            'git_ref' => $ref,
         )
     ));
     $icon = $type == 'tag' ? 'tag' : 'code-fork';
@@ -919,10 +918,9 @@ function boots_preprocess_node_project(&$vars){
     $vars['deploy_label'] = t('Deploy a tag or branch');
 
     foreach ($node->project->settings->git['refs'] as $ref => $type){
-      $href = url('hosting_confirm/ENV_NID/site_deploy', array(
+      $href = url('hosting_confirm/ENV_NID/site_devshop-deploy', array(
         'query' =>array(
-          'token' => drupal_get_token($user->uid),
-          'git_reference' => $ref,
+          'git_ref' => $ref,
         )
       ));
       $icon = $type == 'tag'? 'tag': 'code-fork';

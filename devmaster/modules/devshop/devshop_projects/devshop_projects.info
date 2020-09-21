@@ -24,4 +24,6 @@ files[] = tasks/tasks.inc
 dependencies[] = hosting
 dependencies[] = hosting_alias
 dependencies[] = hosting_package
+dependencies[] = hosting_git
+dependencies[] = hosting_git_pull
 dependencies[] = ctools

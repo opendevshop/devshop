@@ -59,7 +59,7 @@ function hosting_task_devshop_deploy_form($node) {
   }
 
   // Merge in the deploy hooks form.
-  $deploy_hooks_form = devshop_environment_deploy_hooks_form($project, $environment, 'deploy');
+  $deploy_hooks_form = devshop_environment_deploy_hooks_form($project, $environment, 'devshop-deploy');
   $form = array_merge($form, $deploy_hooks_form);
 
   // Pass through a value so hostmaster knows this was triggered manually.

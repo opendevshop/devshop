@@ -36,6 +36,12 @@ function devshop_hosting_post_hosting_verify_task($task, $data) {
         drush_log(dt('Loaded public key into DevShop.'), 'p_log');
       }
     }
+
+    // Rebuild composer.json and run composer install
+    $working_dir = drupal_realpath(variable_get('composer_manager_file_dir', 'public://composer'));
+    provision_process('drush @hostmaster cc drush');
+    provision_process('drush @hostmaster composer-json-rebuild -y');
+    provision_process('composer update', $working_dir, t('Installing Devmaster dependencies'));
   }
 }
 
