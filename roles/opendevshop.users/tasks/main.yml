@@ -93,6 +93,12 @@
     state: directory
     mode: 0755
 
+- name: Create a link to aegir's logs folder
+  file:
+    src: "{{ aegir_logs_path }}"
+    dest: "{{ aegir_user_home }}/logs"
+    state: link
+
 - name: Create aegir's authorized keys file
   copy:
     dest: "{{ aegir_user_home }}/.ssh/authorized_keys"
