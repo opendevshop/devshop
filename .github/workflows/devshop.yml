@@ -92,19 +92,26 @@ jobs:
         working-directory: roles
         run: docker-compose exec -T --user aegir devshop.server /usr/share/devshop/tests/devshop-tests.sh
 
-      - name: Save Artifacts
+      - name: Save Docker Logs as Artifacts
         if: always()
-        working-directory: roles
         run: |
-          docker-compose exec -T devshop.server systemctl status --no-pager | tee ../${DEVSHOP_TEST_ARTIFACTS_PATH}/systemctl-status.log
-          docker-compose logs devshop.server | tee ../${DEVSHOP_TEST_ARTIFACTS_PATH}/docker-container.log
+          docker ps -a >        artifact-docker-ps.log && \
+          $DEBUG_COMMAND >      artifact-debug-command-output.log && \
+          docker-compose logs > artifact-docker-compose.log
 
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v1
+      - name: Upload Test Artifacts
+        uses: actions/upload-artifact@v2
         if: always()
         with:
-          name: test-artifacts
-          path: ${DEVSHOP_TEST_ARTIFACTS_PATH}
+          name: TestFailures
+          path: ./.github/test-artifacts
+
+      - name: Upload Log Artifacts
+        uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: DockerLogs
+          path: artifact-*
 
   devmaster:
     name: Devmaster 
