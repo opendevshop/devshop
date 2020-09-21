@@ -11,21 +11,21 @@ Feature: Create a project and check settings
     When I click "Projects"
     And I click "Start a new Project"
     Then I should see "Step 1"
-    Then I fill in "drpl8" for "Project Code Name"
-    And I fill in "http://github.com/opendevshop/drupal_docroot.git" for "Git Repository URL"
+    Then I fill in "composer" for "Project Code Name"
+    And I fill in "http://github.com/opendevshop/devshop-composer-template.git" for "Git Repository URL"
     When I press "Next"
 
     # Step 2
-    Then I should see "drpl8"
-    And I should see "http://github.com/opendevshop/drupal_docroot.git"
+    Then I should see "composer"
+    And I should see "http://github.com/opendevshop/devshop-composer-template.git"
     Then I should see "Please wait while we connect and analyze your repository."
     When I run drush "hosting-tasks --force --fork=0 --strict=0"
     # Then print last drush output
     And I reload the page
 
-    Then I fill in "docroot" for "Document Root"
+    Then I fill in "web" for "Document Root"
     When I press "Next"
-    And I should see "DOCUMENT ROOT docroot"
+    And I should see "DOCUMENT ROOT web"
 
     When I run drush "hosting-tasks --force --fork=0 --strict=0"
     And I reload the page
@@ -33,18 +33,18 @@ Feature: Create a project and check settings
 
     Then I should see "Create as many new environments as you would like."
     When I fill in "dev" for "project[environments][NEW][name]"
-    And I select "master" from "project[environments][NEW][git_ref]"
+    And I select "8.x" from "project[environments][NEW][git_ref]"
 
     And I press "Add environment"
     And I fill in "live" for "project[environments][NEW][name]"
-    And I select "master" from "project[environments][NEW][git_ref]"
+    And I select "8.x" from "project[environments][NEW][git_ref]"
     And I press "Add environment"
     Then I press "Next"
 
     # Step 4
     And I should see "dev"
     And I should see "live"
-    And I should see "master"
+    And I should see "8.x"
 
     When I run drush "hosting-tasks --force --fork=0 --strict=0"
     # Then print last drush output
@@ -52,9 +52,7 @@ Feature: Create a project and check settings
 
     Then I should see "dev"
     And I should see "live"
-    And I should see "master"
 
-    And I should see "master"
     And I reload the page
 #    When I click "Process Failed"
     Then I should see "8."
@@ -75,8 +73,7 @@ Feature: Create a project and check settings
     And I should see the link "dev"
     And I should see the link "live"
 
-#    Then I break
-    And I should see the link "http://drpl8.dev.devshop.local.computer"
+    And I should see the link "http://composer.dev.devshop.local.computer"
     And I should see the link "Aegir Site"
 
     When I run drush "hosting-tasks --force --fork=0 --strict=0"
@@ -86,7 +83,7 @@ Feature: Create a project and check settings
     And I reload the page
     Then I should see the link "dev"
     Then I should see the link "live"
-#    Given I go to "http://dev.drpl8.devshop.travis"
+#    Given I go to "http://dev.composer.devshop.travis"
 #    When I click "Visit Environment"
 
 # @TODO: Fix our site installation.
@@ -94,7 +91,6 @@ Feature: Create a project and check settings
 
     When I click "Create New Environment"
     And I fill in "testenv" for "Environment Name"
-    And I select "master" from "Branch or Tag"
     And I select the radio button "Drupal Profile"
     Then I select the radio button "Standard Install with commonly used features pre-configured."
 
@@ -105,7 +101,7 @@ Feature: Create a project and check settings
     And I fill in "What's the password?" for "Message"
 
     Then I press "Create New Environment"
-    Then I should see "Environment testenv created in project drpl8."
+    Then I should see "Environment testenv created in project composer."
 
     When I run drush "hosting-tasks --force --fork=0 --strict=0"
 
@@ -122,13 +118,13 @@ Feature: Create a project and check settings
     Then I select "testenv" from "Primary Environment"
     And I press "Save"
 
-    Then I should see "DevShop Project drpl8 has been updated."
+    Then I should see "DevShop Project composer has been updated."
     And I should see an ".environment-link .fa-bolt" element
 
     # When I click "Visit Site"
-    Given I am on "http://drpl8.testenv.devshop.local.computer"
+    Given I am on "http://composer.testenv.devshop.local.computer"
 # TODO: Figure out how to test this in travis!
 #    Then the response status code should be 401
 
-    Given I am on "http://testuser:testpassword@drpl8.testenv.devshop.local.computer"
-    Then I should see "Welcome to drpl8.testenv"
+    Given I am on "http://testuser:testpassword@composer.testenv.devshop.local.computer"
+    Then I should see "Welcome to composer.testenv"

@@ -1035,7 +1035,6 @@ pre.ansi_box {
 p.wait {
     text-align: center;
     padding: 32px 0px 52px;
-    background: bottom center no-repeat url(images/loading.gif);
 }
 
 p.error {
@@ -1338,4 +1337,9 @@ form .well .form-type-radios .form-type-radio
 }
 .form-control.chosen-container.chosen-container-single .chosen-single {
     height: 34px;
+}
+
+
+kbd.alert {
+  display: block;
 }

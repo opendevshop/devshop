@@ -79,6 +79,7 @@ class RoboFile extends \Robo\Tasks {
     'from' => 'FROM_IMAGE',
     'os' => 'OS_VERSION',
     'dockerfile' => 'DOCKERFILE',
+    'compose-file' => 'COMPOSE_FILE',
   ];
 
   /**
@@ -219,7 +220,6 @@ class RoboFile extends \Robo\Tasks {
     'no-dev' => FALSE,
     'devshop-version' => '1.x',
     'test-upgrade' => FALSE,
-    'make' => 'profile',
   ]) {
 
     if (empty($this->git_ref)) {
@@ -268,7 +268,7 @@ class RoboFile extends \Robo\Tasks {
     }
 
     // If we want to just populate modules into /devmaster folder...
-    if ($opts['make'] == 'profile') {
+   // MAKE inside the devmaster profile
       // Populate devmaster install profile with contrib code.
       $makefile_path = 'build-devmaster-dev.make.yml';
       $make_destination = 'devmaster/';
@@ -282,10 +282,8 @@ class RoboFile extends \Robo\Tasks {
           throw new \RuntimeException("Drush make failed with the exit code " . $result->getExitCode());
         }
       }
-    }
-    // Or if a whole Drupal build is needed.
-    elseif ($opts['make'] == 'drupal') {
 
+    // Also MAKE the entire drupal stack.
       // Run drush make to build the devmaster stack.
       $makefile_path = $opts['no-dev']? 'build-devmaster.make': "build-devmaster-dev.make.yml";
       $make_destination = $this->devshop_root_path . "/aegir-home/devmaster-" . $opts['devshop-version'];
@@ -305,7 +303,6 @@ class RoboFile extends \Robo\Tasks {
           throw new \RuntimeException("Drush make failed with the exit code " . $result->getExitCode());
         }
       }
-    }
 
     // Set git remote urls
     if ($opts['no-dev'] == FALSE) {
@@ -474,7 +471,7 @@ class RoboFile extends \Robo\Tasks {
    * @option $build Run `robo prepare:containers` to rebuild the container first.
    * @option os-version An OS "slug" for any of the geerlingguy/docker-*-ansible images: https://hub.docker.com/u/geerlingguy/
    * @option environment pass an environment variable to docker-compose in the form --environment NAME=VALUE
-   * @option volumes Set to TRUE to use the docker-compose.volumes.yml file to map local folders into the container.
+   * @option ci Set to TRUE when run in CI, such as in build.yml. If not set, docker-compose.volumes.yml will be included to produce a development environment.
    * @option install-at-runtime Launch bare containers and then install devshop.
    */
   public function up($docker_command = 'devshop-ansible-playbook', $opts = [
@@ -503,7 +500,7 @@ class RoboFile extends \Robo\Tasks {
     'config' => '/usr/share/devshop/ansible.cfg',
     'local' => FALSE,
     'environment' => [],
-    'volumes' => true,
+    'ci' => FALSE,
     'install-at-runtime' => FALSE,
     'build-command' => NULL,
   ]) {
@@ -573,13 +570,13 @@ class RoboFile extends \Robo\Tasks {
     if ($opts['mode'] == 'docker-compose') {
 
       // Volumes
-      if ($opts['volumes']) {
+      if (!$opts['ci']) {
         $this->yell('Volume mounts requested. Adding docker-compose.volumes.yml');
         $this->say(' - ' . __DIR__ . '/aegir-home to /var/aegir');
         $this->say(' - ' . __DIR__ . '/devmaster to /var/aegir/devmaster-1.x/profiles/devmaster');
 
         // Set COMPOSE_FILE to include volumes.
-        putenv('COMPOSE_FILE=docker-compose.yml:docker-compose.volumes.yml');
+        $opts['compose-file'] = 'docker-compose.yml:docker-compose.volumes.yml';
 
         if (!file_exists('aegir-home/devmaster-' . $this::DEVSHOP_LOCAL_VERSION) && !$opts['skip-source-prep']) {
           $this->io()->warning('The aegir-home folder not present. Running prepare source code command.');
@@ -945,7 +942,8 @@ class RoboFile extends \Robo\Tasks {
    * Run all devshop tests on the containers.
    */
   public function test($user = 'aegir', $opts = array(
-    'compose-file' => 'docker-compose.yml',
+    'compose-file' => 'docker-compose.yml:docker-compose.volumes.yml',
+    'reinstall' => FALSE
   )) {
     $is_tty = !empty($_SERVER['XDG_SESSION_TYPE']) && $_SERVER['XDG_SESSION_TYPE'] == 'tty';
     $no_tty = !$is_tty? '-T': '';
@@ -956,6 +954,10 @@ class RoboFile extends \Robo\Tasks {
       $commands[] = "docker-compose exec $no_tty devshop mkdir -p /var/aegir/test-artifacts";
       $commands[] = "docker-compose exec $no_tty devshop chown aegir:aegir /var/aegir/test-artifacts -R";
       $commands[] = "docker-compose exec $no_tty devshop chmod 777 /var/aegir/test-artifacts -R";
+    }
+
+    if ($opts['reinstall']) {
+      $commands[] = "docker-compose exec $no_tty --user $user devshop drush @hostmaster provision-install --force-reinstall";
     }
 
     $commands[] = "docker-compose exec $no_tty --user $user devshop /usr/share/devshop/tests/devshop-tests.sh";

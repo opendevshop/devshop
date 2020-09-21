@@ -119,6 +119,9 @@ class FeatureContext extends \Drupal\DrupalExtension\Context\BatchContext implem
             echo "\nWatchdog Errors:\n";
             $this->drushContext->assertDrushCommand('wd-show');
             $this->drushContext->printLastDrushOutput();
+
+            echo "\n\nLast Drush Output\n";
+            $this->drushContext->printLastDrushOutput();
         }
     }
   

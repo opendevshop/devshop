@@ -75,5 +75,4 @@ dependencies[] = aegir_config
 dependencies[] = devshop_permissions
 dependencies[] = devshop_stats
 dependencies[] = devshop_remotes
-dependencies[] = devshop_support_network_client
 

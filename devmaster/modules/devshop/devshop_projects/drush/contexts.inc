@@ -161,6 +161,12 @@ function devshop_projects_hosting_platform_context_options(&$task) {
     $task->context_options['environment'] = $task->ref->environment->name;
     $task->context_options['project'] = $task->ref->project->name;
     $task->context_options['git_ref'] = $task->ref->environment->git_ref;
+
+    // BRIDGE TO MODERNIZATION
+    // These are the new provision platform options. See
+    $task->context_options['git_remote'] = $task->ref->git['repo_url'];
+    $task->context_options['git_root'] = $task->ref->git['repo_path'];
+    $task->context_options['git_reference'] = $task->ref->git['git_ref'];
   }
 }
 
