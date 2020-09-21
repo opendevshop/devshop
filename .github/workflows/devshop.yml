@@ -65,8 +65,12 @@ jobs:
       - name: "Docker Run: devshop/server:${{ matrix.os }}"
         working-directory: roles
         env:
-          COMMAND: "echo 'Container Up! Awaiting commands...'"
-        run: docker-compose up --detach devshop.server
+          COMMAND: "echo 'DevShop Server Online, launched by GitHub Actions.'"
+          DEVSHOP_DOCKER_COMMAND_RUN: "echo 'Skipping DEVSHOP_DOCKER_COMMAND_RUN (ansible-playbook), so that GitHub Actions can run in a separate step.'"
+        run: |
+          docker-compose up --detach devshop.server
+          sleep 3
+          docker-compose logs
 
       - name: "DevShop Server Container: Environment (${{ matrix.os }})"
         working-directory: roles
@@ -79,8 +83,10 @@ jobs:
 
       - name: "Devshop Server Container: Runtime Playbook (${{ matrix.os }})"
         working-directory: roles
-        # DEVSHOP_DOCKER_COMMAND_RUN is set to ansible-playbook --tags runtime by default.
-        run: docker-compose exec -T devshop.server bash -c '${DEVSHOP_DOCKER_COMMAND_RUN}'
+
+        # Since the container is launched with a new DEVSHOP_DOCKER_COMMAND_RUN, run the default.
+        run: |
+          docker-compose exec -T devshop.server bash -c '${DEFAULT_DEVSHOP_DOCKER_COMMAND_RUN}'
 
       - name: "Test DevShop: ${{ matrix.os }}"
         working-directory: roles
