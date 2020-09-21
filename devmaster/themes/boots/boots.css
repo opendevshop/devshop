@@ -1035,7 +1035,6 @@ pre.ansi_box {
 p.wait {
     text-align: center;
     padding: 32px 0px 52px;
-    background: bottom center no-repeat url(images/loading.gif);
 }
 
 p.error {
