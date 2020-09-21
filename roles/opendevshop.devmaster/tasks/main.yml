@@ -162,12 +162,23 @@
   become_method: "{{ ansible_become_method_aegir }}"
   tags: [runtime]
 
-- name: "Remove existing Devmaster Source Code from {{ devshop_control_path }} before installing, if requested."
+- name: "Remove existing Devmaster Source Code from {{ devshop_devmaster_path }} before installing, if requested."
   when: devshop_danger_remove_devmaster
   file:
-    path: "{{ devshop_control_path }}"
+    path: "{{ devshop_devmaster_path }}"
     state: absent
   tags: [never, remove-devmaster, rebuild-devmaster]
+
+- name: "Prepare DevShop Web Interface Source Code: {{ devmaster_make_command }}"
+  become: true
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
+  command: "{{ devmaster_make_command }}"
+  changed_when: true
+  args:
+    creates: "{{ devshop_devmaster_path }}/index.php"
+    chdir: "{{ devshop_cli_path }}"
+  tags: [rebuild-devmaster]
 
 - name: Clear the drush cache.
   command: "{{ drush_bin_path }} cc drush"
