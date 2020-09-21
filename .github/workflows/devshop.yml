@@ -13,7 +13,7 @@ env:
   GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}
   GITHUB_PR_SHA: ${{ github.event.pull_request.head.sha  }}
   GITHUB_RUN_LOG_URL: https://github.com/opendevshop/devshop/actions/runs/${{ github.run_id }}
-  DEVSHOP_TEST_ARTIFACTS_PATH: ".github/test-assets"
+  DEVSHOP_TEST_ARTIFACTS_PATH: ".github/test-artifacts"
 
 jobs:
   docker:
@@ -97,8 +97,8 @@ jobs:
         uses: actions/upload-artifact@v1
         if: always()
         with:
-          name: test-assets
-          path: ./.github/test-assets
+          name: test-artifacts
+          path: ${DEVSHOP_TEST_ARTIFACTS_PATH}
 
   devmaster:
     name: Devmaster 
