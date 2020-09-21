@@ -8,6 +8,7 @@ version: '3'
 services:
 
   # DevShop Base Image
+  # FROM ubuntu or centos
   # The OS and SystemD changes to allow it to run in containers.
   base:
     image: "devshop/base:${OS:-ubuntu1804}"
@@ -19,15 +20,18 @@ services:
   # devshop/base + ansible + python
   ansible:
     image: "devshop/ansible:${OS:-ubuntu1804}"
+    depends_on:
+      - base
     build:
       context: "."
       dockerfile: "ansible/Dockerfile.${OS:-ubuntu1804}"
-
 
   # DevShop Core Image
   # devshop/ansible + php + composer + devshop/cli
   core:
     image: "devshop/core:${OS:-ubuntu1804}"
+    depends_on:
+      - ansible
     build:
       context: ".."
       dockerfile: "docker/core/Dockerfile.${OS:-ubuntu1804}"
@@ -36,6 +40,8 @@ services:
   # devshop/core + tools to use any Ansible role at runtime.
   role:
     image: "devshop/role:${OS:-ubuntu1804}"
+    depends_on:
+      - core
     build:
       context: "."
       dockerfile: "role/Dockerfile.${OS:-ubuntu1804}"

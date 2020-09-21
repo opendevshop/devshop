@@ -14,7 +14,7 @@ services:
       dockerfile: "roles/devshop.server/Dockerfile.${OS:-ubuntu1804}"
       args:
         OS: "${OS:-ubuntu1804}"
-    command: "${COMMAND:-}"
+    command: "${COMMAND:-'echo DevShop Server Online'}"
     extra_hosts:
       - "drpl8.testenv.devshop.local.computer:127.0.0.1"
     # @TODO: Change back to devshop.local.computer
@@ -28,8 +28,8 @@ services:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
       - /var/lib/mysql
       - /var/logs/aegir
-    environment: 
-      # TODO: Make ansible options easier to alter.
+    environment:
       # @TODO: Change back to devshop.local.computer
-      DEVSHOP_DOCKER_COMMAND_RUN: ansible-playbook /etc/ansible/play.yml -vv --tags runtime --extra-vars server_hostname=localhost
-      CI: CI
+      # DEVSHOP_DOCKER_COMMAND_RUN: ansible-playbook /etc/ansible/play.yml -vv --tags runtime --extra-vars server_hostname=localhost
+      # This is listed here so that it can be set by the calling system (github actions).
+      DEVSHOP_DOCKER_COMMAND_RUN: ${DEVSHOP_DOCKER_COMMAND_RUN:-devshop-ansible-playbook}
