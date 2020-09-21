@@ -154,8 +154,17 @@ function devshop_github_form_project_node_form_alter(&$form, &$form_state, $form
 
 
   // If Pull Requests were found in the environment, enable PR environments by default.
-  if (!empty(variable_get('devshop_github_token', ''))) {
-    $prs = devshop_github_client()->pullRequests()->all($node->project->github_owner, $node->project->github_repo);
+  if (devshop_github_token()) {
+    try {
+      $prs = devshop_github_client()->pullRequests()->all($node->project->github_owner, $node->project->github_repo);
+    }
+    catch (\Exception $e) {
+      drupal_set_message(t("Something went wrong when looking up PRs: for the GitHub repo !link: %message", array(
+        '!link' => l("{$node->project->github_owner}/{$node->project->github_repo}", $node->project->git_repo_url),
+        '%message' => $e->getMessage(),
+      )), 'error');
+      $prs = [];
+    }
   }
   else {
     $prs = [];
