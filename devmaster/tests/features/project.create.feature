@@ -52,9 +52,7 @@ Feature: Create a project and check settings
 
     Then I should see "dev"
     And I should see "live"
-    And I should see "master"
 
-    And I should see "master"
     And I reload the page
 #    When I click "Process Failed"
     Then I should see "8."
@@ -93,7 +91,6 @@ Feature: Create a project and check settings
 
     When I click "Create New Environment"
     And I fill in "testenv" for "Environment Name"
-    And I select "master" from "Branch or Tag"
     And I select the radio button "Drupal Profile"
     Then I select the radio button "Standard Install with commonly used features pre-configured."
 
