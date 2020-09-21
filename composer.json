@@ -24,7 +24,7 @@
         "devshop/docker-bin-tools": "@dev",
         "devshop/git-split": "self.version",
         "devshop/github-api-cli": "self.version",
-        "devshop/bin-tools": "@dev",
+        "devshop/bin-tools": "self.version",
         "devshop/power-process": "self.version"
     },
     "replace": {

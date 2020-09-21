@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c4afb031fcb6942d3f504a27a6c0e5a9",
+    "content-hash": "1a793c52219e7a7c9a5f8ec3a239b383",
     "packages": [
         {
             "name": "consolidation/annotated-command",
@@ -563,11 +563,11 @@
         },
         {
             "name": "devshop/bin-tools",
-            "version": "dev-integration",
+            "version": "1.x-dev",
             "dist": {
                 "type": "path",
                 "url": "scripts",
-                "reference": "b7080079793a13a53daf60b850cc6f120a7d278d"
+                "reference": "b4055ce346ab134e733b84e65f8743e33d3508f8"
             },
             "bin": [
                 "branch-or-tag",
@@ -585,6 +585,11 @@
                 "wait-site"
             ],
             "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.x-dev"
+                }
+            },
             "license": [
                 "MIT"
             ],
