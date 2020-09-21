@@ -205,8 +205,7 @@ class RoboFile extends \Robo\Tasks {
 
   private $repos = [
     'provision' => 'http://git.drupal.org/project/provision.git',
-    'aegir-home/.drush/commands/registry_rebuild' => 'http://git.drupal.org/project/registry_rebuild.git',
-    'documentation' => 'http://github.com/opendevshop/documentation.git',
+    'aegir-home/.drush/commands/registry_rebuild' => 'http://git.drupal.org/project/registry_rebuild.git#',
   ];
 
   /**
