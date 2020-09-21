@@ -74,6 +74,9 @@ jobs:
           docker-compose exec -T devshop.server env
           docker-compose exec -T devshop.server systemctl status --no-pager
 
+      - name: "DevShop Server Container: Wait for ready"
+        run: sleep 4
+
       - name: "Devshop Server Container: Runtime Playbook (${{ matrix.os }})"
         working-directory: roles
         # DEVSHOP_DOCKER_COMMAND_RUN is set to ansible-playbook --tags runtime by default.
