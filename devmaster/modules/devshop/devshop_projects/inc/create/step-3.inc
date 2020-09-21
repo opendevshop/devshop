@@ -182,12 +182,15 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
 
   // Save environments data
   $environments = $form_state['values']['project']['environments'];
+
+  // If NEW environment name was submitted, add it to the env array with name as key, then unset NEW environment.
   if (!empty($environments['NEW']['name'])) {
     $new_environment_name = $environments['NEW']['name'];
     $environments[$new_environment_name] = $environments['NEW'];
   }
   unset($environments['NEW']);
 
+  // Rebuild $environments array ensuring "name" field is used as array key.
   foreach ($environments as $name => $environment) {
     if ($name != $environment['name']) {
       $environments[$environment['name']] = $environment;
@@ -211,12 +214,28 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
 
       if (!empty($environment->git_remote)) {
         $git_remote = $environment->git_remote;
-      }
-      else {
-        $git_remote = NULL;
+      } else {
+        $git_remote = null;
       }
 
-      $environment = hosting_create_environment($project, $name, $environment->git_ref, NULL, $environment->settings, 'create', $git_remote, FALSE); ;
+      if (!empty($environment->platform)) {
+        // RECREATE the env RECORD in the database if platform NID already exists.
+        $id = db_insert('hosting_devshop_project_environment')
+          ->fields(array(
+            'project_nid' => $form_state['values']['nid'],
+            'name' => $environment->name,
+            'platform' => $environment->platform,
+            'settings' => serialize($environment->settings),
+          ))
+          ->execute();
+      }
+      else {
+        // CREATE the environment OBJECT, including a new platform and DB record.
+        drupal_set_message(t('Creating environment %name', array(
+          '%name' => $name,
+        )));
+        hosting_create_environment($project, $name, $environment->git_ref, NULL, $environment->settings, 'create', $git_remote, FALSE); ;
+      }
     }
   }
 
