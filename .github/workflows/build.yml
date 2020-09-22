@@ -33,6 +33,10 @@ jobs:
         run_tags: ['all']
         run_skip_tags: ['none']
 
+        # On build, pass --syntax-check command line option so install runs at runtime.
+        build_playbook_command_options: ['--syntax-check']
+        run_playbook_command_options: ['']
+
         os:
           - 'ubuntu1804'
           # - 'centos6'
@@ -44,6 +48,7 @@ jobs:
       ANSIBLE_TAGS: "${{ matrix.build_tags }}"
       ANSIBLE_SKIP_TAGS: "${{ matrix.build_skip_tags }}"
       ANSIBLE_VARS: "${{ matrix.vars }}"
+      ANSIBLE_PLAYBOOK_COMMAND_OPTIONS: "${{ matrix.build_playbook_command_options }}"
       DEVSHOP_SERVER_HOSTNAME: "${{ matrix.os }}.actions.github.com"
       OS: "${{ matrix.os }}"
 
@@ -101,6 +106,7 @@ jobs:
           --vars "${ANSIBLE_VARS}" \
           --tags "${ANSIBLE_TAGS}" \
           --skip-tags "${ANSIBLE_SKIP_TAGS}" \
+          --playbook-command-options "${ANSIBLE_PLAYBOOK_COMMAND_OPTIONS}" \
           --ci \
           && bin/github deployment:update --state=in_progress --description="Preparing Containers with robo up... Done." --log_url=${GITHUB_RUN_LOG_URL}#step:8:1 \
           || ( bin/github deployment:update --state=failure --description="Preparing Containers with robo up... Failed." --log_url=${GITHUB_RUN_LOG_URL}#step:8:1 && exit 1 )
@@ -108,11 +114,14 @@ jobs:
     - name: Wait for yum
       if: matrix.os == 'centos7'
       run: sleep 4
+devshop/server                          ubuntu1804          d3e090ed1a84        16 hours ago        2.74GB
 
     - name: Install DevShop
       env:
         ANSIBLE_TAGS: "${{ matrix.run_tags }}"
         ANSIBLE_SKIP_TAGS: "${{ matrix.run_skip_tags }}"
+        ANSIBLE_PLAYBOOK_COMMAND_OPTIONS: "${{ matrix.run_playbook_command_options }}"
+
       run: |
         bin/github deployment:update --state=in_progress --description="Installing DevShop with devshop-ansible-playbook..." --log_url=${GITHUB_RUN_LOG_URL}#step:10:1
         bin/robo exec devshop-ansible-playbook \
