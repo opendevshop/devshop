@@ -618,21 +618,25 @@ class RoboFile extends \Robo\Tasks {
 
       // Runtime Environment for the $cmd list.
       $env_run = $this->generateEnvironmentArgs($opts);
+      $extra_vars = array();
 
       // Set extra ansible vars when not in CI.
       if (empty($_SERVER['CI'])) {
+        // @TODO: Uncomment when composer branch is ready.
         // Set the "hostmaster platform" path to the full DevShopControlTemplate root so we can use it directly.
-        $env_run['ANSIBLE_EXTRA_VARS'] = json_encode(array(
-          'devshop_control_path' => '/usr/share/devshop/src/DevShop/Templates/DevShopControlTemplate',
-        ));
+        // $extra_vars['devshop_control_path'] = '/usr/share/devshop/src/DevShop/Templates/DevShopControlTemplate';
 
         if ($opts['force-reinstall']) {
-          $env_run['ANSIBLE_EXTRA_VARS'] = json_encode(array(
-            'devshop_control_path' => '/usr/share/devshop/src/DevShop/Templates/DevShopControlTemplate',
-            'devshop_control_install_options' => '--force-reinstall',
-          ));
+          $extra_vars['devshop_control_install_options'] = '--force-reinstall';
+        }
+
+        if ($opts['user-uid']) {
+          $extra_vars['aegir_user_uid'] = $opts['user-uid'];
+          $extra_vars['aegir_user_gid'] = $opts['user-uid'];
         }
       }
+
+      $env_run['ANSIBLE_EXTRA_VARS'] = json_encode($extra_vars);
 
       // Run a secondary command after the docker command.
       if ($test_command) {
