@@ -8,7 +8,7 @@ version: '3'
 services:
 
   devshop.server:
-    image: "devshop/server:${OS:-ubunRobofitu1804}"
+    image: "devshop/server:${OS:-ubuntu1804}"
     build:
       context: ".."
       dockerfile: "roles/devshop.server/Dockerfile.${OS:-ubuntu1804}"
