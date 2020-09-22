@@ -76,7 +76,6 @@ class RoboFile extends \Robo\Tasks {
     'build-command' => 'DOCKER_BUILD_COMMAND',
 
     // Used in docker compose image.
-    'docker-image' => 'DEVSHOP_DOCKER_IMAGE',
     'from' => 'FROM_IMAGE',
     'os' => 'OS_VERSION',
     'dockerfile' => 'DOCKERFILE',
@@ -396,7 +395,7 @@ class RoboFile extends \Robo\Tasks {
     // Append the absolute path in the container.
     $opts['playbook'] = '/usr/share/devshop/' . $opts['playbook'] ;
 
-    $this->yell('Building DevShop Container from: ' . $opts['from'], 40, 'blue');
+    $this->yell('Building DevShop Containers...', 40, 'blue');
 
     // Block anything from running on build.
     // @TODO: Figure out why centos can't enable service in build phase.
@@ -433,7 +432,7 @@ class RoboFile extends \Robo\Tasks {
 
     // Run docker-compose build in docker and in roles folder.
     foreach (['docker', 'roles'] as $compose_files_path) {
-      $this->yell("Building: $compose_files_path", 40, 'blue');
+      $this->yell("Building in directory: $compose_files_path", 40, 'blue');
       $process->setWorkingDirectory($compose_files_path);
       $process->run();
     }
