@@ -1,4 +1,4 @@
-name: DevShop Build & Test
+name: DevShop
 
 on:
   push:
@@ -117,27 +117,3 @@ jobs:
         with:
           name: DockerLogs
           path: artifact-*
-
-  devmaster:
-    name: Devmaster 
-    # description: Install devmaster and run tests on a pre-built image.
-    # @TODO: Set up this job once the devshop/server container is done.
-    if: false
-    runs-on: ubuntu-latest
-    container:
-      image: devshop/ansible:centos7
-      volumes:
-        - ./:/usr/share/devshop
-      options: >-
-        --hostname={{ env.HOSTNAME }}
-
-    steps:
-
-      - name: Check Out Sourcecode
-        uses: actions/checkout@v2
-
-      - name: Install devmaster
-        run: devhop devmaster:install
-
-      - name: Test devmaster
-        run: devhop devmaster:test                
