@@ -97,6 +97,7 @@ jobs:
         run: docker-compose exec -T --user aegir devshop.server /usr/share/devshop/tests/devshop-tests.sh
 
       - name: Save Docker Logs as Artifacts
+        working-directory: roles
         if: always()
         run: |
           docker ps -a >        artifact-docker-ps.log && \
