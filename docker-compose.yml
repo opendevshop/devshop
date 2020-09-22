@@ -31,7 +31,7 @@ services:
     #    the developer to finish that first build before any container can be launched.
     #
     image: ${DEVSHOP_DOCKER_IMAGE:-devshop/server:ubuntu1804}
-    command: ${DOCKER_COMMAND:-}
+    command: ${DOCKER_COMMAND:-env}
     build:
       context: '.'
       dockerfile: ${DOCKERFILE:-Dockerfile}
