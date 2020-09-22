@@ -6,6 +6,8 @@
 version: '3'
 services:
   devshop:
+    # Change the entrypoint to the volume-mounted copy.
+    entrypoint: /usr/share/devshop/docker/bin/docker-systemd-entrypoint
     volumes:
       # Development volumes
 
