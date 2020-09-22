@@ -52,10 +52,10 @@ jobs:
 
     # @TODO: Implement a github-api-cli generated CURL command to notify GitHub that a deployment has started.
 
-    - name: Prepare CI (ubuntu)
-      if: matrix.os == 'ubuntu1804'
-      run: |
-        echo "::set-env name=ANSIBLE_TAGS::mysql"
+#    - name: Prepare CI (ubuntu)
+#      if: matrix.os == 'ubuntu1804'
+#      run: |
+#        echo "::set-env name=ANSIBLE_TAGS::mysql"
 
     - uses: actions/checkout@v2
 
