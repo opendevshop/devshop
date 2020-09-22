@@ -418,7 +418,7 @@ class RoboFile extends \Robo\Tasks {
     }
 
     $provision_io = new \DevShop\Component\PowerProcess\PowerProcessStyle($this->input(), $this->output());
-    $process = new \DevShop\Component\PowerProcess\PowerProcess('docker-compose build --pull --no-cache', $provision_io);
+    $process = new \DevShop\Component\PowerProcess\PowerProcess('docker-compose build --no-cache', $provision_io);
     $process->setEnv($env_build);
     $process->disableOutput();
     $process->setTimeout(null);
@@ -628,9 +628,8 @@ class RoboFile extends \Robo\Tasks {
 
 
       if (!empty($cmd)) {
-        foreach ($cmd as $command) {
           $provision_io = new \DevShop\Component\PowerProcess\PowerProcessStyle($this->input, $this->output);
-          $process = new \DevShop\Component\PowerProcess\PowerProcess($command, $provision_io);
+          $process = new \DevShop\Component\PowerProcess\PowerProcess('env', $provision_io);
           $process->setEnv($env_run);
           $isTty = !empty($_SERVER['XDG_SESSION_TYPE']) && $_SERVER['XDG_SESSION_TYPE'] == 'tty';
           $process->setTty($isTty);
@@ -639,11 +638,14 @@ class RoboFile extends \Robo\Tasks {
 
           // @TODO: Figure out why PowerProcess::mustRun() fails so miserably: https://github.com/opendevshop/devshop/pull/541/checks?check_run_id=518074346#step:7:45
           // $process->mustRun();
-          $process->run();
-          if ($process->getExitCode() != 0) {
-            throw new \Exception('Process failed: ' . $process->getExitCodeText());
+          foreach ($cmd as $command) {
+            $process->setCommandLine($command);
+            $process->run();
+
+            if ($process->getExitCode() != 0) {
+              throw new \Exception('Process failed: ' . $process->getExitCodeText());
+            }
           }
-        }
         return;
       }
     }
