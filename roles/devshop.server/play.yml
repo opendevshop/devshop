@@ -1,0 +1,99 @@
+###
+# DevShop Server
+#
+# All-in-one DevShop. Includes all services required to run on one instance.
+#
+---
+- hosts: devshop.server
+  become: true
+
+  vars:
+    # Hostname must be set when container is launched, which "hostname" option.
+    server_hostname: "devshop.local.computer"
+    server_hostname_ignore_errors: true
+
+    # The geerlingguy.mysql and opendevshop.devmaster roles both use this
+    mysql_root_password: root
+
+    # @TODO: Install multiple versions per-container: https://github.com/oerdnj/deb.sury.org/wiki/Managing-Multiple-Versions
+    php_version: "7.2"
+
+    php_default_version_debian: "{{ php_version }}"
+
+    # This is set to TRUE to ensure the playbooks don't try to run the devmaster upgade every time they run (aka on robo up).
+    devmaster_skip_upgrade: true
+
+    # Use Python3.
+    # @TODO: This is now set only for Debian systems, in the `pre_tasks` section below..
+    # ansible_python_interpreter: python3
+
+    # Supervisor will start when the container and systemd start.
+    supervisor_started: false
+
+    # @TODO: Make a cleaner separation between playbooks and makefiles for docker hub, playbooks for CI testing, and local development.s
+    # Use local dev makefile because it copies the files directly from this repo.
+    # build-devmaster.make is designed for standalone use, and always downloads 1.x until release.
+    devshop_makefile: "{{ devshop_cli_path }}/build-devmaster-dev.make.yml"
+
+    # Set devshop_cli_skip_update to avoid resetting the /usr/share/devshop version on playbook run to `devshop_version`
+    # @TODO: figure out a system to separate test vars from prod vars.  Molecule?
+    devshop_cli_skip_update: true
+
+  pre_tasks:
+    - name: Set all Debian systems to use python3 as the interpretor, and python3-mysqldb for mysql_python_package_debian.
+      when:
+        - ansible_os_family == 'Debian'
+      set_fact:
+        mysql_python_package_debian: python3-mysqldb
+        ansible_python_interpreter: python3
+
+    - name: Set build time variables
+      set_fact:
+        apache_state: stopped
+        mysql_enabled_on_startup: false
+      when:
+        - ('runtime' not in ansible_run_tags)
+
+    # Copied from geerlingguy.mysql variables.yml so it will run at runtime.
+    - name: Include OS-specific variables.
+      include_vars: "{{ item }}"
+      with_first_found:
+        - files:
+            - "{{ devshop_cli_path }}/roles/geerlingguy.mysql/vars/{{ ansible_os_family }}-{{ ansible_distribution_major_version }}.yml"
+            - "{{ devshop_cli_path }}/roles/geerlingguy.mysql/vars/{{ ansible_os_family }}.yml"
+      tags: [runtime]
+
+    - name: Define mysql_daemon.
+      set_fact:
+        mysql_daemon: "{{ __mysql_daemon }}"
+      when: mysql_daemon is not defined
+      tags: [runtime]
+
+    # @TODO: This works, but using Service module fails!
+    - name: Start MySQL
+      command: "service {{ mysql_daemon }} start"
+      ignore_errors: true
+      tags: [runtime]
+
+  roles:
+    - role: opendevshop.users
+      tags: [runtime]
+
+    - role: geerlingguy.mysql
+
+    - role: geerlingguy.repo-remi
+      when: ansible_os_family == 'RedHat'
+
+    - role: opendevshop.apache
+
+    - role: geerlingguy.apache
+
+    - role: geerlingguy.php
+
+    - role: geerlingguy.php-versions
+
+    - role: geerlingguy.php-mysql
+
+    - role: geerlingguy.composer
+
+    - role: opendevshop.devmaster

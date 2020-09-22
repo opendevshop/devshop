@@ -25,54 +25,53 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class YamlTasksComposerCommand extends BaseCommand
 {
 
-  /**
-   * @var Symfony\Component\Console\Command\Command;
-   */
+    /**
+     * @var Symfony\Component\Console\Command\Command;
+     */
     protected $command;
 
-  /**
-   * @var SymfonyStyle
-   */
+    /**
+     * @var SymfonyStyle
+     */
     protected $io;
 
-  /**
-   * @var \Composer\Composer
-   */
+    /**
+     * @var \Composer\Composer
+     */
     protected $composer;
 
-  /**
-   * @throws LogicException When the command name is empty
-   */
+    /**
+     * @throws LogicException When the command name is empty
+     */
     public function __construct()
     {
         parent::__construct();
     }
 
-  /**
-   * {@inheritdoc}
-   */
+    /**
+     * {@inheritdoc}
+     */
     public function isProxyCommand()
     {
         return true;
     }
 
-  /**
-   * {@inheritdoc}
-   */
+    /**
+     * {@inheritdoc}
+     */
     protected function configure()
     {
         $this->command = new YamlTasksConsoleCommand();
         $this
-         ->setName($this->command->getName())
-         ->setDefinition($this->command->getDefinition())
-         ->setDescription($this->command->getDescription())
-         ->setHelp($this->command->getHelp())
-        ;
+            ->setName($this->command->getName())
+            ->setDefinition($this->command->getDefinition())
+            ->setDescription($this->command->getDescription())
+            ->setHelp($this->command->getHelp());
     }
 
-  /**
-   * {@inheritdoc}
-   */
+    /**
+     * {@inheritdoc}
+     */
     public function initialize(InputInterface $input, OutputInterface $output)
     {
         $this->composer = $this->getComposer();
@@ -80,9 +79,9 @@ class YamlTasksComposerCommand extends BaseCommand
         $this->command->initialize($input, $output);
     }
 
-  /**
-   * {@inheritdoc}
-   */
+    /**
+     * {@inheritdoc}
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->command->execute($input, $output);

@@ -1,0 +1,191 @@
+#!/usr/bin/env bash
+set -e
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+PATH="$DIR:$PATH"
+
+#
+# docker-systemd-prepare
+#
+# This script prepares the operating system to run a full systemd setup inside a docker container.
+#
+# It was appropriated from Jeff Geerling's Dockerfiles:
+#
+#  Ubuntu
+
+#  - https://github.com/geerlingguy/docker-ubuntu2004-ansible/blob/master/Dockerfile
+#  - https://github.com/geerlingguy/docker-ubuntu1804-ansible/blob/master/Dockerfile
+#  - https://github.com/geerlingguy/docker-ubuntu1604-ansible/blob/master/Dockerfile
+#
+#  CentOS
+#  - https://github.com/geerlingguy/docker-centos7-ansible/blob/master/Dockerfile
+#  - https://github.com/geerlingguy/docker-centos8-ansible/blob/master/Dockerfile
+#
+#  Each OS needs slightly different preparation. This script contains logic to work on any of the listed OS.
+#
+
+set -e
+
+command_exists() {
+	command -v "$@" > /dev/null 2>&1
+}
+
+get_distribution() {
+	lsb_dist=""
+	# Every system that we officially support has /etc/os-release
+	if [ -r /etc/os-release ]; then
+		lsb_dist="$(. /etc/os-release && echo "$ID")"
+	fi
+	# Returning an empty string here should be alright since the
+	# case statements don't act unless you provide an actual value
+	echo "$lsb_dist"
+}
+
+prepare_ubuntu1804() {
+  apt-get update \
+    && apt-get install -y --no-install-recommends \
+       apt-utils \
+       locales \
+       rsyslog \
+       systemd \
+       systemd-cron \
+       sudo \
+       iproute2 \
+       curl \
+       ca-certificates \
+    && rm -Rf /var/lib/apt/lists/* \
+    && rm -Rf /usr/share/doc && rm -Rf /usr/share/man \
+    && apt-get clean
+
+  sed -i 's/^\($ModLoad imklog\)/#\1/' /etc/rsyslog.conf
+  locale-gen en_US.UTF-8
+
+  # Install the initctl faker script from @geerlingguy
+  initctl_faker_url="https://raw.githubusercontent.com/geerlingguy/docker-ubuntu1804-ansible/d75f3d7/initctl_faker"
+  initctl_faker_path="/sbin/initctl"
+
+  curl -ksSL $initctl_faker_url -o $initctl_faker_path
+  chmod +x $initctl_faker_path
+
+  # Remove unnecessary getty and udev targets that result in high CPU usage when using
+  # multiple containers with Molecule (https://github.com/ansible/molecule/issues/1104)
+  rm -f /lib/systemd/system/systemd*udev* \
+    && rm -f /lib/systemd/system/getty.target
+
+  # Allow mysql to be installed?
+  # Error: https://github.com/opendevshop/devshop/pull/586/checks?check_run_id=675721197#step:4:484
+  # Proposed solution: https://stackoverflow.com/questions/24988947/install-mysql-in-docker-and-expose-mysql-service-to-outside
+  echo exit 0 > /usr/sbin/policy-rc.d
+}
+
+prepare_centos7() {
+  # Install systemd -- See https://hub.docker.com/_/centos/
+  yum -y update; yum clean all; \
+    (cd /lib/systemd/system/sysinit.target.wants/; for i in *; do [ $i == systemd-tmpfiles-setup.service ] || rm -f $i; done); \
+    rm -f /lib/systemd/system/multi-user.target.wants/*;\
+    rm -f /etc/systemd/system/*.wants/*;\
+    rm -f /lib/systemd/system/local-fs.target.wants/*; \
+    rm -f /lib/systemd/system/sockets.target.wants/*udev*; \
+    rm -f /lib/systemd/system/sockets.target.wants/*initctl*; \
+    rm -f /lib/systemd/system/basic.target.wants/*;\
+    rm -f /lib/systemd/system/anaconda.target.wants/*;
+
+# Install requirements.
+  yum makecache fast \
+    && yum -y install deltarpm epel-release initscripts \
+    && yum -y update \
+    && yum -y install \
+      sudo \
+      which \
+      python-pip \
+    && yum clean all
+
+  # Disable requiretty.
+  sed -i -e 's/^\(Defaults\s*requiretty\)/#--- \1/'  /etc/sudoers
+
+}
+
+prepareAll() {
+  mkdir -p /etc/ansible
+}
+
+# perform some very rudimentary platform detection
+lsb_dist=$( get_distribution )
+lsb_dist="$(echo "$lsb_dist" | tr '[:upper:]' '[:lower:]')"
+
+case "$lsb_dist" in
+
+  ubuntu)
+    if command_exists lsb_release; then
+      dist_version="$(lsb_release --release | cut -f2)"
+      case "$dist_version" in
+        "14.04")
+          dist_version_name="trusty"
+        ;;
+        "16.04")
+          dist_version_name="xenial"
+        ;;
+        "18.04")
+          dist_version_name="bionic"
+        ;;
+        "20.04")
+          dist_version_name="focal"
+        ;;
+      esac
+    fi
+    if [ -z "$dist_version" ] && [ -r /etc/lsb-release ]; then
+      dist_version="$(. /etc/lsb-release && echo "$DISTRIB_RELEASE")"
+      dist_version_name="$(. /etc/lsb-release && echo "$DISTRIB_CODENAME")"
+    fi
+  ;;
+
+  debian|raspbian)
+    dist_version="$(sed 's/\/.*//' /etc/debian_version | sed 's/\..*//')"
+    case "$dist_version" in
+      10)
+        dist_version_name="buster"
+      ;;
+      9)
+        dist_version_name="stretch"
+      ;;
+      8)
+        dist_version_name="jessie"
+      ;;
+    esac
+  ;;
+
+  centos)
+    if [ -z "$dist_version" ] && [ -r /etc/os-release ]; then
+      dist_version="$(. /etc/os-release && echo "$VERSION_ID")"
+    fi
+  ;;
+
+  rhel|ol|sles)
+    ee_notice "$lsb_dist"
+    exit 1
+    ;;
+
+  *)
+    if command_exists lsb_release; then
+      dist_version="$(lsb_release --release | cut -f2)"
+    fi
+    if [ -z "$dist_version" ] && [ -r /etc/os-release ]; then
+      dist_version="$(. /etc/os-release && echo "$VERSION_ID")"
+    fi
+  ;;
+
+esac
+
+echo "OS Detected: $lsb_dist $dist_version ($dist_version_name)"
+
+# Break out preparation into separate functions.
+case "$lsb_dist $dist_version" in
+  "ubuntu 18.04")
+    prepare_ubuntu1804
+  ;;
+  "centos 7")
+    prepare_centos7
+  ;;
+esac
+
+# Run OS-agnostic preparation scripts.
+prepareAll

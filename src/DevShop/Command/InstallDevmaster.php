@@ -148,12 +148,6 @@ class InstallDevmaster extends Command
         'devmaster'
       )
 
-      // makefile
-      ->addOption(
-        'makefile', NULL, InputOption::VALUE_OPTIONAL,
-        'The makefile to use to build the platform.'
-      )
-
       // aegir_root
       ->addOption(
         'aegir_root', NULL, InputOption::VALUE_OPTIONAL,
@@ -200,11 +194,20 @@ class InstallDevmaster extends Command
         'The email to use for the administrator user.'
       )
 
-      // working_copy
+      // Git properties
       ->addOption(
-        'working-copy', NULL, InputOption::VALUE_NONE,
-        'Passed to drush make: use to clone the source code using git.'
+        'git_root', NULL, InputOption::VALUE_OPTIONAL,
+        'Path to git repository root.'
       )
+      ->addOption(
+        'git_remote', NULL, InputOption::VALUE_OPTIONAL,
+        'URL to clone.'
+      )
+      ->addOption(
+        'git_reference', NULL, InputOption::VALUE_OPTIONAL,
+        'Git reference to use.'
+      )
+
       // path_to_drush
       ->addOption(
         'drush-path', NULL, InputOption::VALUE_OPTIONAL,
@@ -221,6 +224,8 @@ class InstallDevmaster extends Command
    * @param OutputInterface $output An OutputInterface instance
    */
   protected function initialize(InputInterface $input, OutputInterface $output) {
+
+    parent::initialize($input, $output);
 
     $output->writeln('');
 
@@ -266,11 +271,6 @@ class InstallDevmaster extends Command
     // script_user
     if (!$input->getOption('script_user')) {
       $input->setOption('script_user', $this->findCurrentUser());
-    }
-
-    // makefile
-    if (!$input->getOption('makefile')) {
-      $input->setOption('makefile', realpath(dirname(__FILE__) . '/../../../build-devmaster.make'));
     }
 
     // aegir_root
@@ -525,7 +525,9 @@ class InstallDevmaster extends Command
       'server' => $server,
       'web_server' => $server,
       'root' => $this->input->getOption('root'),
-      'makefile' => $this->input->getOption('makefile'),
+      'git_root' => $this->input->getOption('git_root'),
+      'git_remote' => $this->input->getOption('git_remote'),
+      'git_reference' => $this->input->getOption('git_reference'),
     ));
 
     // Save Hostmaster Site context, and flag for installation, pre-verify.

@@ -1,5 +1,5 @@
 ###
-# DevShop Server
+# DevShop Server Container
 #
 # All-in-one DevShop. Includes all services required to run on one instance.
 #
@@ -23,11 +23,6 @@
 
     php_default_version_debian: "{{ php_version }}"
 
-    # Needs to be set to false when developing so your code doesn't get updated inside the container on build.
-    # Code gets copied using the Dockerfile
-    # @TODO: This may not be needed now that the "ancestor" check is in place.
-    devshop_cli_update: false
-
     # This is set to TRUE to ensure the playbooks don't try to run the devmaster upgade every time they run (aka on robo up).
     devmaster_skip_upgrade: true
 
@@ -36,12 +31,7 @@
     # ansible_python_interpreter: python3
 
     # Supervisor will start when the container and systemd start.
-    supervisor_started: false
-
-    # @TODO: Make a cleaner separation between playbooks and makefiles for docker hub, playbooks for CI testing, and local development.s
-    # Use local dev makefile because it copies the files directly from this repo.
-    # build-devmaster.make is designed for standalone use, and always downloads 1.x until release.
-    devshop_makefile: "{{ devshop_cli_path }}/build-devmaster-dev.make.yml"
+    supervisor_started: true
 
   pre_tasks:
     - name: Set variables ({{ ansible_os_family}} {{ansible_distribution_major_version}})

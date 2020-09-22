@@ -15,7 +15,7 @@ devshop_github_token: ''
 php_version: '7.1'
 
 devshop_cli_repo: http://github.com/opendevshop/devshop.git
-devshop_cli_update: true
+devshop_cli_skip_update: false
 devshop_cli_path: /usr/share/devshop
 devshop_cli_bin_path: "{{ devshop_cli_path }}/bin"
 devshop_cli_composer_install_command: "install"
@@ -32,6 +32,7 @@ aegir_server_webserver: apache
 mysql_root_password_update: false
 
 database_host: localhost
+database_host_port: 3306
 aegir_client_name: admin
 aegir_logs_path: /var/log/aegir
 
@@ -44,7 +45,7 @@ aegir_log_files_touch:
   - "{{ aegir_logs_path }}/hostmaster.error.log"
   - "{{ aegir_logs_path }}/hostmaster.access.log"
 
-drush_dl_method: wget
+drush_dl_method: git_drupalorg
 
 devshop_drush_packages:
   provision: 7.x-3.x-devshop
@@ -110,3 +111,6 @@ devshop_danger_remove_devmaster: false
 # In the Dockerfile, "devshop_install_phase: buildtime" ansible vars is set.
 # If building other kinds of server images, where data won't be installed yet, use this variable.
 devshop_install_phase: runtime
+
+devshop_pip_packages:
+  - mysqlclient
