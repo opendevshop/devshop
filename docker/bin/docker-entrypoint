@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 DEVSHOP_PATH="$( cd "$(dirname "$0")"/.. ; pwd -P )"
-export PATH="$DEVSHOP_PATH/bin:$PATH"
+export PATH="$DEVSHOP_PATH/bin:$DEVSHOP_PATH/scripts:$PATH"
 
 set -e
 
