@@ -114,7 +114,6 @@ jobs:
     - name: Wait for yum
       if: matrix.os == 'centos7'
       run: sleep 4
-devshop/server                          ubuntu1804          d3e090ed1a84        16 hours ago        2.74GB
 
     - name: Install DevShop
       env:
