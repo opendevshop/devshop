@@ -2,6 +2,7 @@
 
 DEVSHOP_PATH="$( cd "$(dirname "$0")"/.. ; pwd -P )"
 PATH="$DEVSHOP_PATH/bin:$PATH"
+echo "Setting PATH: $PATH"
 
 # If /path/to/devshop/ANSIBLE_PLAYBOOK exists, use that path. Otherwise pass it directly.
 if [ -f "${DEVSHOP_PATH}/${ANSIBLE_PLAYBOOK}" ]; then
