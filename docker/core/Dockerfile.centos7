@@ -20,5 +20,9 @@ RUN echo "Copied DevShop Source. \nVersion: `cd $DEVSHOP_PATH && git log -1`"
 # The command to run on container build
 ENV DEVSHOP_DOCKER_COMMAND_BUILD 'echo "\n\n DevShop Core Docker Image build complete!"'
 
+# Set PATH variable to include devshop scripts and bin.
+# bin does not get populated until composer install, so include the scripts dir too.
+ENV PATH="${DEVSHOP_PATH}/bin:${DEVSHOP_PATH}/scripts:${PATH}"
+
 # The command to run when the container starts.
 ENV DEVSHOP_DOCKER_COMMAND_RUN 'echo "\n\n DevShop Core Docker Container started!"'
