@@ -30,7 +30,7 @@ services:
     #    By using the non-docker-hub image "devshop/server:local" in this docker-compose file, we force the
     #    the developer to finish that first build before any container can be launched.
     #
-    image: ${DEVSHOP_DOCKER_IMAGE:-devshop/server:local}
+    image: ${DEVSHOP_DOCKER_IMAGE:-devshop/server:ubuntu1804}
     command: ${DOCKER_COMMAND:-}
     build:
       context: '.'
