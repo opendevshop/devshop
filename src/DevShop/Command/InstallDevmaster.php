@@ -203,6 +203,7 @@ class InstallDevmaster extends Command
         'git_remote', NULL, InputOption::VALUE_OPTIONAL,
         'URL to clone.'
       )
+      // Git properties
       ->addOption(
         'git_reference', NULL, InputOption::VALUE_OPTIONAL,
         'Git reference to use.'

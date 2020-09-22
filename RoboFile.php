@@ -70,12 +70,12 @@ class RoboFile extends \Robo\Tasks {
     'tags' => 'ANSIBLE_TAGS',
     'skip-tags' => 'ANSIBLE_SKIP_TAGS',
     'playbook' => 'ANSIBLE_PLAYBOOK',
+    'playbook-command-options' => 'ANSIBLE_PLAYBOOK_COMMAND_OPTIONS',
     'roles-path' => 'ANSIBLE_ROLES_PATH',
     'config' => 'ANSIBLE_CONFIG',
     'build-command' => 'DOCKER_BUILD_COMMAND',
 
     // Used in docker compose image.
-    'docker-image' => 'DEVSHOP_DOCKER_IMAGE',
     'from' => 'FROM_IMAGE',
     'os' => 'OS_VERSION',
     'dockerfile' => 'DOCKERFILE',
@@ -323,7 +323,6 @@ class RoboFile extends \Robo\Tasks {
    *
    * @option $tag The string to tag the resulting container with.
    * @option $from The image to use to build the docker image FROM. Ignored if "os" is set.
-   * @option $dockerfile The dockerfile to use.
    * @option $os An OS "slug" for any of the geerlingguy/docker-*-ansible images: https://hub.docker.com/u/geerlingguy/
    * @option $vars Ansible vars to pass to --extra-vars option.
    * @option $tags Ansible tags to pass to --tags option.
@@ -334,13 +333,12 @@ class RoboFile extends \Robo\Tasks {
   public function prepareContainers($user_uid = NULL, $hostname = 'devshop.local.computer', $opts = [
       'docker-image' => 'devshop/server:local',
       'from' => NULL,
-      'dockerfile' => 'roles/devshop.server/Dockerfile.ubuntu1804',
       'build-command' => NULL,
-      'os' => 'ubuntu1804',
+      'os' => NULL,
       'vars' => '',
       'tags' => '',
       'skip-tags' => '',
-      'playbook' => 'roles/devshop.server/role-playbook.yml',
+      'playbook' => 'roles/devshop.server/play.yml',
       'environment' => [],
       'roles-path' => '/usr/share/devshop/roles',
       'config' => '/usr/share/devshop/ansible.cfg',
@@ -349,15 +347,15 @@ class RoboFile extends \Robo\Tasks {
 
     // Define docker-image (name for the "image" in docker-compose)
     // Set FROM_IMAGE and DEVSHOP_DOCKER_IMAGE if --os option is used. (and --from was not used)
-    if (empty($opts['from']) && !empty($opts['os'])) {
+    if (empty($opts['from']) && $opts['os'] !== NULL) {
       $opts['from'] = "geerlingguy/docker-{$opts['os']}-ansible";
-      $opts['docker-image'] = 'devshop/server:local-' . $opts['os'];
+      $opts['docker-image'] = 'devshop/server:' . $opts['os'];
     }
 
     // Append the absolute path in the container.
     $opts['playbook'] = '/usr/share/devshop/' . $opts['playbook'] ;
 
-    $this->yell('Building DevShop Container from: ' . $opts['from'], 40, 'blue');
+    $this->yell('Building DevShop Containers...', 40, 'blue');
 
     // Block anything from running on build.
     // @TODO: Figure out why centos can't enable service in build phase.
@@ -384,14 +382,20 @@ class RoboFile extends \Robo\Tasks {
     }
 
     $provision_io = new \DevShop\Component\PowerProcess\PowerProcessStyle($this->input(), $this->output());
-    $process = new \DevShop\Component\PowerProcess\PowerProcess('docker-compose build --pull --no-cache', $provision_io);
+    $process = new \DevShop\Component\PowerProcess\PowerProcess('docker-compose build --no-cache', $provision_io);
     $process->setEnv($env_build);
     $process->disableOutput();
     $process->setTimeout(null);
     $process->setTty(!empty($_SERVER['XDG_SESSION_TYPE']) && $_SERVER['XDG_SESSION_TYPE'] == 'tty');
 
     // @TODO: Figure out why PowerProcess::mustRun() fails so miserably: https://github.com/opendevshop/devshop/pull/541/checks?check_run_id=518074346#step:7:45
-    $process->run();
+
+    // Run docker-compose build in docker and in roles folder.
+    foreach (['docker', 'roles'] as $compose_files_path) {
+      $this->yell("Building in directory: $compose_files_path", 40, 'blue');
+      $process->setWorkingDirectory($compose_files_path);
+      $process->run();
+    }
 
     if ($process->getExitCode() != 0) {
       throw new \Exception('Process failed: ' . $process->getExitCodeText());
@@ -452,13 +456,12 @@ class RoboFile extends \Robo\Tasks {
     'skip-source-prep' => FALSE,
     'skip-install' => FALSE,
     'os' => 'ubuntu1804',
-    'docker-image' => 'devshop/server:local',
     'from' => NULL,
     'vars' => '',
     'tags' => '',
     'skip-tags' => '',
-    'file' => 'roles/devshop.server/Dockerfile.ubuntu1804',
-    'playbook' => 'roles/devshop.server/role-playbook.yml',
+    'playbook' => 'roles/devshop.server/play.yml',
+    'playbook-command-options' => '',
     'roles-path' => '/usr/share/devshop/roles',
     'config' => '/usr/share/devshop/ansible.cfg',
     'local' => FALSE,
@@ -472,9 +475,9 @@ class RoboFile extends \Robo\Tasks {
 
     // Define docker-image (name for the "image" in docker-compose.
     // Set FROM_IMAGE and DEVSHOP_DOCKER_IMAGE if --os option is used. (and --from was not used)
-    if (empty($opts['from']) && !empty($opts['os'])) {
+    if (empty($opts['from']) && $opts['os'] !== NULL) {
       $opts['from'] = "geerlingguy/docker-{$opts['os']}-ansible";
-      $opts['docker-image'] = 'devshop/server:local-' . $opts['os'];
+      $opts['docker-image'] = 'devshop/server:' . $opts['os'];
     }
 
     // Check for tools
@@ -575,6 +578,25 @@ class RoboFile extends \Robo\Tasks {
 
       // Runtime Environment for the $cmd list.
       $env_run = $this->generateEnvironmentArgs($opts);
+      $extra_vars = array();
+
+      // Set extra ansible vars when not in CI.
+      if (empty($_SERVER['CI'])) {
+        // @TODO: Uncomment when composer branch is ready.
+        // Set the "hostmaster platform" path to the full DevShopControlTemplate root so we can use it directly.
+        // $extra_vars['devshop_control_path'] = '/usr/share/devshop/src/DevShop/Templates/DevShopControlTemplate';
+
+        if ($opts['force-reinstall']) {
+          $extra_vars['devshop_control_install_options'] = '--force-reinstall';
+        }
+
+        if ($opts['user-uid']) {
+          $extra_vars['aegir_user_uid'] = $opts['user-uid'];
+          $extra_vars['aegir_user_gid'] = $opts['user-uid'];
+        }
+      }
+
+      $env_run['ANSIBLE_EXTRA_VARS'] = json_encode($extra_vars);
 
       // Set extra ansible vars when not in CI.
       if (empty($_SERVER['CI'])) {

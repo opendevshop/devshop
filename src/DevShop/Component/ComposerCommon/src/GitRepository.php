@@ -38,6 +38,23 @@ class GitRepository extends Repository
   }
 
   /**
+   * Returns TRUE if the working directory is in 'detached HEAD' state.
+   * https://stackoverflow.com/questions/52221558/programmatically-check-if-head-is-detached
+   *
+   * @return  boolean
+   */
+  public function isDetached() {
+    /** @var $result CallResult */
+    $result = $this->getGit()->{'symbolic-ref'}($this->getRepositoryPath(), array(
+      '-q',
+      'HEAD'
+    ));
+
+    // If command failed, HEAD is not on a branch, aka detached.
+    return 0 !== $result->getReturnCode();
+  }
+
+  /**
    * Return the current SHA of the working copy clone of the repo.
    *
    * @return string

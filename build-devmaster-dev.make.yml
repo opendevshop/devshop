@@ -32,7 +32,7 @@ projects:
   hosting:
     download:
       type: git
-      tag: 7.x-3.180-devshop
+      tag: 7.x-3.181-devshop
 
   eldir:
     download:

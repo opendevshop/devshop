@@ -1,5 +1,4 @@
-name: DevShop Build & Test
-
+name: DevShop
 on:
   push:
     branches: 1.x
@@ -9,11 +8,15 @@ on:
     - cron: "0 6 * * *"
 
 env:
+  # Set ANSIBLE_VERBOSITY to 1,2 or 3 when needed for development.
+  ANSIBLE_VERBOSITY: 0
+#  COMPOSE_FILE: "docker-compose.yml:docker-compose.tests.yml"
+  DEBUG_COMMAND: "docker-compose exec -T devshop.server systemctl status --no-pager"
   GITHUB_TOKEN: ${{ secrets.INPUT_GITHUB_TOKEN }}
   GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}
   GITHUB_PR_SHA: ${{ github.event.pull_request.head.sha  }}
   GITHUB_RUN_LOG_URL: https://github.com/opendevshop/devshop/actions/runs/${{ github.run_id }}
-  DEVSHOP_TEST_ARTIFACTS_PATH: ".github/test-assets"
+  DEVSHOP_TEST_ASSETS_PATH: ".github/test-artifacts"
 
 jobs:
   docker:
@@ -78,7 +81,10 @@ jobs:
           docker-compose exec -T devshop.server env
           docker-compose exec -T devshop.server systemctl status --no-pager
 
-      - name: "Install DevShop: ${{ matrix.os }}"
+      - name: "DevShop Server Container: Wait for ready"
+        run: sleep 4
+
+      - name: "Devshop Server Container: Install Playbook (${{ matrix.os }})"
         working-directory: roles
 
         # Since the container is launched with a new DEVSHOP_DOCKER_COMMAND_RUN, run the default.
@@ -89,40 +95,24 @@ jobs:
         working-directory: roles
         run: docker-compose exec -T --user aegir devshop.server /usr/share/devshop/tests/devshop-tests.sh
 
-      - name: Save Artifacts
-        if: always()
+      - name: Save Docker Logs as Artifacts
         working-directory: roles
+        if: always()
         run: |
-          docker-compose exec -T devshop.server systemctl status --no-pager | tee ../${DEVSHOP_TEST_ARTIFACTS_PATH}/systemctl-status.log
-          docker-compose logs devshop.server | tee ../${DEVSHOP_TEST_ARTIFACTS_PATH}/docker-container.log
+          docker-compose exec -T devshop.server systemctl status --no-pager | tee ../${DEVSHOP_TEST_ARTIFACTS_PATH}/artifact-systemctl-log.log
+          docker-compose logs devshop.server | tee ../${DEVSHOP_TEST_ARTIFACTS_PATH}/artifact-docker-compose.log
+          $DEBUG_COMMAND | tee ../${DEVSHOP_TEST_ARTIFACTS_PATH}/artifact-debug-command-output.log
 
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v1
+      - name: Upload Test Artifacts
+        uses: actions/upload-artifact@v2
         if: always()
         with:
-          name: test-assets
-          path: ./.github/test-assets
+          name: TestFailures
+          path: ./.github/test-artifacts
 
-  devmaster:
-    name: Devmaster 
-    # description: Install devmaster and run tests on a pre-built image.
-    # @TODO: Set up this job once the devshop/server container is done.
-    if: false
-    runs-on: ubuntu-latest
-    container:
-      image: devshop/ansible:centos7
-      volumes:
-        - ./:/usr/share/devshop
-      options: >-
-        --hostname={{ env.HOSTNAME }}
-
-    steps:
-
-      - name: Check Out Sourcecode
-        uses: actions/checkout@v2
-
-      - name: Install devmaster
-        run: devhop devmaster:install
-
-      - name: Test devmaster
-        run: devhop devmaster:test                
+      - name: Upload Log Artifacts
+        uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: DockerLogs
+          path: artifact-*

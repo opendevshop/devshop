@@ -25,7 +25,7 @@
         "devshop/docker-bin-tools": "@dev",
         "devshop/git-split": "self.version",
         "devshop/github-api-cli": "self.version",
-        "devshop/bin-tools": "@dev",
+        "devshop/bin-tools": "self.version",
         "devshop/yaml-tasks": "self.version",
         "devshop/power-process": "self.version",
         "drupal/provision": "4.x-dev#15cf3111"
@@ -75,11 +75,11 @@
         },
         {
             "type": "path",
-            "url": "src/DevShop/Component/YamlTasks"
+            "url": "src/DevShop/Component/Deploy"
         },
         {
             "type": "path",
-            "url": "src/DevShop/Component/Deploy"
+            "url": "src/DevShop/Component/YamlTasks"
         }
     ],
     "bin": [

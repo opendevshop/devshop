@@ -13,6 +13,9 @@ DOCKER_COMMAND=${@}
 SYSTEM_STATUS_COMMAND=${SYSTEM_STATUS_COMMAND:-systemctl status --no-pager}
 WELCOME_MESSAGE="Enjoy the DevShop Containers!"
 
+PATH="$DEVSHOP_PATH/bin:$DEVSHOP_PATH/scripts:$PATH"
+export PATH
+
 echo "Hi! I'm docker-systemd-entrypoint."
 echo "In a few seconds, I'm going to launch the Docker Command you specified as a new process."
 echo "Then, I'm going to pass my process off to SystemD!"
@@ -25,6 +28,7 @@ echo "INIT_COMMAND: $INIT_COMMAND"
 echo "DOCKER_COMMAND: $DOCKER_COMMAND"
 echo "DEVSHOP_DOCKER_COMMAND_RUN: $DEVSHOP_DOCKER_COMMAND_RUN"
 echo "SYSTEM_STATUS_COMMAND: $SYSTEM_STATUS_COMMAND"
+echo "PATH: $PATH"
 echo "-----------------"
 
 if [ ! -z "$DOCKER_COMMAND" ]; then
