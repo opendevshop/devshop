@@ -24,8 +24,6 @@ PATH="$DIR:$PATH"
 
 # Prepare arguments and options.
 ALIAS=$1
-URI=$(devshop-site-info ${ALIAS} uri)
-CLIENT_NAME=${CLIENT_NAME:-admin}\
 
 if [ -z "${ALIAS}" ]; then
   echo "Usage: site-wait @site_alias"
@@ -43,17 +41,20 @@ wait-for devshop-site-active "$ALIAS" && \
   echo "Success." || \
   exit 1
 
+URI=$(devshop-site-info ${ALIAS} uri)
+CLIENT_NAME=${CLIENT_NAME:-admin}
+
 # In drush_provision_drupal_post_provision_install(), _provision_client_create_symlink() is called, creating the /var/aegir/clients/URI symlinks.
 # For now, this is the best way to determine if a provision site install completed.
 INSTALLED_FILE_PATH="${HOME}/clients/${CLIENT_NAME}/${URI}/settings.php"
 
 if [ -f $INSTALLED_FILE_PATH ]; then
-  # Log without a newline at the end
-  OPTIONS=-n log "Checking installation... "
+  # devshop-log without a newline at the end
+  OPTIONS=-n devshop-log "Checking installation... "
   echo "Success: https://$URI"
 else
-  # Log without a newline at the end
-  OPTIONS=-n log "Waiting for installation to complete... (Waiting for file: $INSTALLED_FILE_PATH)"
+  # devshop-log without a newline at the end
+  OPTIONS=-n devshop-log "Waiting for installation to complete... (Waiting for file: $INSTALLED_FILE_PATH)"
   export TIMEOUT=300
   wait-for ls $INSTALLED_FILE_PATH && \
     echo "Success: https://$URI" || \
