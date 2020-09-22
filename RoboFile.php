@@ -509,7 +509,7 @@ class RoboFile extends \Robo\Tasks {
     }
 
     // Determine current UID.
-    if (is_null($opts['user-uid'])) {
+    if (empty($opts['user-uid'])) {
       $opts['user-uid'] = trim(shell_exec('id -u'));
     }
 
@@ -590,9 +590,8 @@ class RoboFile extends \Robo\Tasks {
 
       // Set extra ansible vars when not in CI.
       if (empty($_SERVER['CI'])) {
-        // @TODO: Uncomment when composer branch is ready.
         // Set the "hostmaster platform" path to the full DevShopControlTemplate root so we can use it directly.
-        // $extra_vars['devshop_control_path'] = '/usr/share/devshop/src/DevShop/Templates/DevShopControlTemplate';
+        $extra_vars['devshop_control_path'] = '/usr/share/devshop/src/DevShop/Templates/DevShopControlTemplate';
 
         if ($opts['force-reinstall']) {
           $extra_vars['devshop_control_install_options'] = '--force-reinstall';
@@ -605,12 +604,9 @@ class RoboFile extends \Robo\Tasks {
       }
 
       $env_run['ANSIBLE_EXTRA_VARS'] = json_encode($extra_vars);
-
-      // Set extra ansible vars when not in CI.
-      if (empty($_SERVER['CI'])) {
-        $env_run['ANSIBLE_EXTRA_VARS'] = json_encode(array(
-          'devshop_control_path' => '/usr/share/devshop/src/DevShop/Templates/DevShopControlTemplate',
-        ));
+      if ($this->output->isVerbose()) {
+        $this->say('Ansible Extra Vars');
+        print_r($extra_vars);
       }
 
       // Run a secondary command after the docker command.
