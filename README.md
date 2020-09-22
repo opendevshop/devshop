@@ -1,6 +1,83 @@
-# DevShop
+![DevShop Logo](./assets/logo-new-light-bg.png)
 
-![DevShop Project Dashboard](https://github.com/opendevshop/documentation/raw/master/images/devshop.png "A screenshot of the DevShop Project Dashboard")
+[DevShop][1] is an **Open Source DevOps Framework** and a 
+set of reusable **components** designed to improve the web development and 
+server management process.
+
+The goal of DevShop is to provide a complete **web development pipeline** out of the
+box, while empowering users to choose their own server infrastructure and systems 
+architecture.
+ 
+DevShop uses [Ansible & Ansible Galaxy][2] for server configuration, [Symfony 
+Console][3] for command line tools, and [Drupal][3] for the web interface.
+
+### Philosophy
+
+The philosophy of DevShop is transparency, simplicity, and modularity:
+ 
+  - **Transparency:** *Control systems at the service level.* 
+    
+    DevShop manages services like 
+    Apache and MySQL using Ansible to give total control to users. Docker images
+    are built on top of that, using the same configuration. 
+    
+    This enables
+    parity between traditional servers and the Docker containers, and allows 
+    people to use DevShop along side tools they are familiar with like Ansible, Chef and Puppet.
+  - **Simplicity:** *Avoid unneeded dependencies on build systems.* 
+  
+    DevShop manages servers and
+    site code like a traditional web server, using Git, MySQL, and Apache to 
+    maintain the broadest possible compatibility. 
+    
+    Build-based systems such as 
+    Docker add time and complexity to the deployment process, prevent easy 
+    access to servers, and force web developers to learn more skills and tools. 
+    
+  - **Modularity**: *Allow full customization of servers, processes, and interfaces.* 
+  
+    DevShop leverages Ansible for server 
+    configuration and Drupal for the web interface, providing an easy way 
+    to customize of all aspects of the system.
+    
+    DevShop follows the *core principles of Drupal:* community, collaboration, and
+    customization. By following these guidelines, we hope to achieve a sustainable, 
+    community-driven platform that can fit most users needs out of the box, without 
+    restricting the rest from building their dream system.
+
+## DevShop Components
+
+The following components make up the OpenDevShop Framework:
+
+1. Composer Packages
+    1. [`devshop/git-split`](https://github.com/devshop-packages/git-split)
+        - Commands to split the git monorepo into multiple child repos. 
+        - Uses the same [splitsh-lite]() script that Symfony and Drupal uses.
+        - Reads list of repositories from `composer.json` config.
+        - In theory, could be used by Drupal core instead of the "drupalorg" scripts currently in use.
+    2. [`devshop/composer-common`](https://github.com/devshop-packages/composer-common). Useful tools for any Composer project.
+    3. [`devshop/power-process`](https://github.com/devshop-packages/power-process). Enhanced Symfony Process component.  
+        - Improved command-line user experience, metadata reporting (executed time, PID, logs).
+        - Pluggable output through monologger: pipe to screen, file, or remote monologger compatible REST API.
+        - Base tool for the rest. Any shell execution should be done through PowerProcess.
+        - Migrated from `provision-ops/power-process`.
+    4. [devshop/github-api-cli](https://github.com/devshop-packages/github-api-cli) 
+        - Simple CLI wrapper for the GitHub API.
+        - Base command posts to any resource, passes any option.
+        - Additional commands for specific purposes, such as to create and update "deployments".
+    4. [`devshop/yaml-tasks`](https://github.com/devshop-packages/yaml-tasks)
+        - Keep tests and standard commands in a Yaml file.
+        - Run all commands with a single command.
+        - Send command results to GitHub as Commit Status, to show pass/fail results in Pull Request pages.
+        - Migrated from `provision-ops/yaml-tests`. 
+1. Drupal Projects
+    1. [`drupal/devmaster`](https://www.drupal.org): Pushed to drupal.org repo. Ensure compatibility with 
+        Drupal.org packaging and composer packagist systems. 
+3. Ansible Roles
+    1. opendevshop.apache
+    2. opendevshop.devmaster
+    3. opendevshop.users
+    4. devshop.server - Meta role used to create the `devshop/server` container.
 
 # Resources
 
@@ -91,3 +168,8 @@ For full documentation on DevShop, visit [docs.opendevshop.com](http://docs.open
 Think this can be improved? You can [Fork our Documentation on GitHub](https://github.com/opendevshop/documentation)!
 
 Thanks!
+
+
+[1]: https://getdevshop.com
+[2]: https://galaxy.ansible.com
+[3]: https://github.com/jonpugh/director

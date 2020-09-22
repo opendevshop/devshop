@@ -1,3 +1,0 @@
-Defaults:aegir  !requiretty
-aegir ALL=NOPASSWD: /usr/sbin/apache2ctl
-aegir ALL=NOPASSWD: /usr/local/bin/services-start

@@ -1,0 +1,119 @@
+name: DevShop
+
+on:
+  push:
+    branches: 1.x
+  pull_request:
+    types: [opened, synchronize]
+  schedule:
+    - cron: "0 6 * * *"
+
+env:
+  # Set ANSIBLE_VERBOSITY to 1,2 or 3 when needed for development.
+  ANSIBLE_VERBOSITY: 0
+#  COMPOSE_FILE: "docker-compose.yml:docker-compose.tests.yml"
+  DEBUG_COMMAND: "docker-compose exec -T devshop.server systemctl status --no-pager"
+  GITHUB_TOKEN: ${{ secrets.INPUT_GITHUB_TOKEN }}
+  GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}
+  GITHUB_PR_SHA: ${{ github.event.pull_request.head.sha  }}
+  GITHUB_RUN_LOG_URL: https://github.com/opendevshop/devshop/actions/runs/${{ github.run_id }}
+  DEVSHOP_TEST_ASSETS_PATH: ".github/test-artifacts"
+
+jobs:
+  docker:
+    name: "Docker Containers"
+    # description: Build every docker container, then install DevShop to confirm they work.
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - 'ubuntu1804'
+          # Sorry, centos. You must wait until the next PR.
+          # - 'centos7'
+    env:
+      OS: "${{ matrix.os }}"
+      HOSTNAME: "devshop.${{ github.event.pull_request.number }}.${{ matrix.os }}.actions.github.com"
+
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Check Out Sourcecode
+        uses: actions/checkout@v2
+
+      # Build "base"
+      - name: "Docker Build: devshop/base:${{ matrix.os }}"
+        working-directory: docker
+        run: docker-compose build base
+
+      # Build "ansible"
+      - name: "Docker Build: devshop/ansible:${{ matrix.os }}"
+        working-directory: docker
+        run: docker-compose build ansible
+
+      # Build "core"
+      - name: "Docker Build: devshop/core:${{ matrix.os }}"
+        working-directory: docker
+        run: docker-compose build core
+
+      # Build "role"
+      - name: "Docker Build: devshop/role:${{ matrix.os }}"
+        working-directory: docker
+        run: docker-compose build role
+
+      # Build DevShop Role Images
+      - name: "Docker Build: devshop/server:${{ matrix.os }}"
+        working-directory: roles
+        run: docker-compose build devshop.server
+
+      # Launch Container
+      - name: "Docker Run: devshop/server:${{ matrix.os }}"
+        working-directory: roles
+        env:
+          COMMAND: "echo 'DevShop Server Online, launched by GitHub Actions.'"
+          DEVSHOP_DOCKER_COMMAND_RUN: "echo 'Skipping DEVSHOP_DOCKER_COMMAND_RUN (ansible-playbook), so that GitHub Actions can run in a separate step.'"
+        run: |
+          docker-compose up --detach devshop.server
+          sleep 3
+          docker-compose logs
+
+      - name: "Container Environment: ${{ matrix.os }}"
+        working-directory: roles
+        run: |
+          docker-compose exec -T devshop.server env
+          docker-compose exec -T devshop.server systemctl status --no-pager
+
+      - name: "DevShop Server Container: Wait for ready"
+        run: sleep 4
+
+      - name: "Devshop Server Container: Runtime Playbook (${{ matrix.os }})"
+        working-directory: roles
+
+        # Since the container is launched with a new DEVSHOP_DOCKER_COMMAND_RUN, run the default.
+        run: |
+          docker-compose exec -T devshop.server bash -c '${DEFAULT_DEVSHOP_DOCKER_COMMAND_RUN}'
+
+      - name: "Test DevShop: ${{ matrix.os }}"
+        working-directory: roles
+        run: docker-compose exec -T --user aegir devshop.server /usr/share/devshop/tests/devshop-tests.sh
+
+      - name: Save Docker Logs as Artifacts
+        working-directory: roles
+        if: always()
+        run: |
+          docker ps -a >        artifact-docker-ps.log && \
+          $DEBUG_COMMAND >      artifact-debug-command-output.log && \
+          docker-compose logs > artifact-docker-compose.log
+
+      - name: Upload Test Artifacts
+        uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: TestFailures
+          path: ./.github/test-artifacts
+
+      - name: Upload Log Artifacts
+        uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: DockerLogs
+          path: artifact-*
