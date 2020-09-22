@@ -67,14 +67,14 @@ jobs:
 
       # Launch Container
       - name: "Docker Run: devshop/server:${{ matrix.os }}"
+        working-directory: roles
         env:
           COMMAND: "echo 'DevShop Server Online, launched by GitHub Actions.'"
           DEVSHOP_DOCKER_COMMAND_RUN: "echo 'Skipping DEVSHOP_DOCKER_COMMAND_RUN (ansible-playbook), so that GitHub Actions can run in a separate step.'"
         run: |
-          bin/robo up \
-            --follow 0 \
-            --os "${OS}" \
-            --ci
+          docker-compose up --detach devshop.server
+          sleep 3
+          docker-compose logs
 
       - name: "Container Environment: ${{ matrix.os }}"
         working-directory: roles
@@ -86,14 +86,15 @@ jobs:
         run: sleep 4
 
       - name: "Devshop Server Container: Runtime Playbook (${{ matrix.os }})"
+        working-directory: roles
+
         # Since the container is launched with a new DEVSHOP_DOCKER_COMMAND_RUN, run the default.
         run: |
-          docker-compose exec -T devshop bash -c '${DEFAULT_DEVSHOP_DOCKER_COMMAND_RUN}'
+          docker-compose exec -T devshop.server bash -c '${DEFAULT_DEVSHOP_DOCKER_COMMAND_RUN}'
 
       - name: "Test DevShop: ${{ matrix.os }}"
-        run: |
-          bin/robo test \
-           --compose-file=docker-compose.yml:docker-compose.tests.yml
+        working-directory: roles
+        run: docker-compose exec -T --user aegir devshop.server /usr/share/devshop/tests/devshop-tests.sh
 
       - name: Save Docker Logs as Artifacts
         if: always()
