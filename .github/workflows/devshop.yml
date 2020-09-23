@@ -42,13 +42,14 @@ jobs:
 
       # @TODO: Move this duplication to a composite action: https://docs.github.com/en/actions/creating-actions/creating-a-composite-run-steps-action
       # Launch Container
-      - name: "Docker Run: devshop/server:${{ matrix.os }}"
+      - name: "DevShop Server Container: Launch"
         working-directory: roles
         env:
           COMMAND: "echo 'DevShop Server Online, launched by GitHub Actions.'"
           DEVSHOP_DOCKER_COMMAND_RUN: "echo 'Skipping DEVSHOP_DOCKER_COMMAND_RUN (ansible-playbook), so that GitHub Actions can run in a separate step.'"
         run: |
-          docker-compose up --detach devshop.server
+          docker-compose pull --quiet devshop.server
+          docker-compose up --no-build --detach devshop.server
           sleep 3
           docker-compose logs
 
@@ -61,7 +62,7 @@ jobs:
       - name: "DevShop Server Container: Wait for ready"
         run: sleep 4
 
-      - name: "Devshop Server Container: Runtime Playbook (${{ matrix.os }})"
+      - name: "Devshop Server Container: Install (${{ matrix.os }})"
         working-directory: roles
 
         # Since the container is launched with a new DEVSHOP_DOCKER_COMMAND_RUN, run the default.
