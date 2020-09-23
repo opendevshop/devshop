@@ -50,10 +50,9 @@ if [ ! -z "$DOCKER_COMMAND" ]; then
           echo "The DEVSHOP_DOCKER_COMMAND_RUN completed. (exit 0) Continuing on to DOCKER_COMMAND_POST..."  && \
             (
               echo "Running DOCKER_COMMAND_POST Command '$DOCKER_COMMAND_POST' ..." && $DOCKER_COMMAND_POST &&
-              echo "The DOCKER_COMMAND_POST completed. (exit 0). The INIT_COMMAND continues on."
-            ) || (
+              echo "The DOCKER_COMMAND_POST completed. (exit 0). The INIT_COMMAND continues on." ||
               if [ -n "$DOCKER_COMMAND_RUN_POST_EXIT" ]; then
-                echo "The DOCKER_COMMAND failed, and DOCKER_COMMAND_RUN_POST_EXIT was set. (exit $?) Triggering a shutdown to end INIT_COMMAND ..."
+                echo "The DOCKER_COMMAND_POST failed, and DOCKER_COMMAND_RUN_POST_EXIT was set. (exit $?) Triggering a shutdown to end INIT_COMMAND ..."
                 shutdown
               else
                 echo "The DOCKER_COMMAND_POST failed. (exit $?) Continuing on. If you wish to exit on failure, set DOCKER_COMMAND_RUN_POST_EXIT=1"
