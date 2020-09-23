@@ -17,10 +17,6 @@
         {
             "type": "composer",
             "url": "https://asset-packagist.org"
-        },
-        {
-            "type": "path",
-            "url": "../../../../devmaster"
         }
     ],
     "require": {
@@ -34,7 +30,7 @@
         "composer/installers": "^1.2",
         "composer/semver": "^1.4",
         "cweagans/composer-patches": "dev-master#a18d1ca",
-        "devshop/devmaster": "self.version",
+        "devshop/devmaster": "dev-component/composer/devmaster",
         "drupal-composer/preserve-paths": "dev-master#4c5f62fe97f48e38c5e80cf2f9be8666f683e454",
         "drupal/admin_menu": "@rc",
         "drupal/adminrole": "^1.1",
