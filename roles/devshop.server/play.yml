@@ -27,8 +27,8 @@
     # @TODO: This is now set only for Debian systems, in the `pre_tasks` section below..
     # ansible_python_interpreter: python3
 
-    # Supervisor will start when the container and systemd start.
-    supervisor_started: false
+    # Ensure supervisor is started by default. Test code will disable it.
+    supervisor_started: true
 
     # @TODO: Make a cleaner separation between playbooks and makefiles for docker hub, playbooks for CI testing, and local development.s
     # Use local dev makefile because it copies the files directly from this repo.

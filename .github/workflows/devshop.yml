@@ -64,6 +64,8 @@ jobs:
 
       - name: "Devshop Server Container: Install (${{ matrix.os }})"
         working-directory: roles
+        env:
+          DEVSHOP_DOCKER_COMMAND_RUN: "devshop-ansible-playbook --tags runtime --extra-vars=supervisor_started=false"
 
         # Since the container is launched with a new DEVSHOP_DOCKER_COMMAND_RUN, run the default.
         run: |

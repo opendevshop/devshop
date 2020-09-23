@@ -612,16 +612,18 @@ class RoboFile extends \Robo\Tasks {
         }
       }
 
+      // Run test command after the docker command.
+      if ($test_command) {
+        $env_run['DOCKER_COMMAND_POST'] = $test_command;
+        $env_run['DOCKER_COMMAND_RUN_POST_EXIT'] = 1;
+
+        $extra_vars['supervisor_started'] = false;
+      }
+
       $env_run['ANSIBLE_EXTRA_VARS'] = json_encode($extra_vars);
       if ($this->output->isVerbose()) {
         $this->say('Ansible Extra Vars');
         print_r($extra_vars);
-      }
-
-      // Run a secondary command after the docker command.
-      if ($test_command) {
-        $env_run['DOCKER_COMMAND_POST'] = $test_command;
-        $env_run['DOCKER_COMMAND_RUN_POST_EXIT'] = 1;
       }
 
       // Override the DEVSHOP_DOCKER_COMMAND_RUN if specified.
