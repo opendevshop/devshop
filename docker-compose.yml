@@ -96,17 +96,6 @@ services:
       - /var/lib/mysql
       - /var/logs/aegir
 
-      # @TODO: In docker/ansible branch, these are here. In composer devmaster branch, these are in docker-compose.volumes.yml.
-      - ./aegir-home:/var/aegir:delegated
-      - ./devmaster:/usr/share/devshop/src/DevShop/Templates/DevShopControlTemplate/web/profiles/devmaster
-      - ./:/usr/share/devshop:delegated
-      - ./roles/devshop.server/play.yml:/etc/ansible/play.yml
-      - ./vars.yml:/etc/ansible/vars.yml
-      - ./roles:/etc/ansible/roles
-      - $HOME/.ssh:/var/aegir/.ssh
-      # To develop the docker-systemd-entrypoint without having to rebuild the container, set this volume.
-      - ./docker/bin/docker-systemd-entrypoint:/usr/local/bin/docker-systemd-entrypoint
-
     # Resource allocation.
     # 4GB, 2CPUs is a good minimum.
 
