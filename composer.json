@@ -26,7 +26,7 @@
         "devshop/github-api-cli": "self.version",
         "devshop/bin-tools": "self.version",
         "devshop/power-process": "self.version",
-        "drupal/provision": "4.x-dev#f4fd0fc1"
+        "drupal/provision": "4.x-dev#15cf3111"
     },
     "replace": {
         "devshop/yaml-tasks": "self.version",
