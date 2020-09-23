@@ -178,7 +178,7 @@ class GitHubCommands extends \Robo\Tasks
             // Confirm arguments
             foreach ($parameters as $i => $arg)
             {
-                $default_value = !empty($apiMethodArgs[$i])? $apiMethodArgs[$i]: '';
+                $default_value = !empty($apiMethodArgs[$i])? $apiMethodArgs[$i]: [];
 
                 // If Method parameter is expecting an array, ask for multiple params.
                 $type = $arg->getType();
