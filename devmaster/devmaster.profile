@@ -244,6 +244,11 @@ function devmaster_bootstrap() {
   // Disable backup queue for sites by default.
   variable_set('hosting_backup_queue_default_enabled', 0);
 
+  // Disable backup queue for sites by default.
+  variable_set('hosting_backup_queue_default_enabled', 0);
+  variable_set('hosting_queue_backup_queue_enabled', 0);
+  variable_set('hosting_queue_tasks_enabled', 1);
+
   // Set hosting_logs default folder.
   variable_set('provision_logs_file_path', '/var/log/aegir');
 }
