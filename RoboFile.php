@@ -618,6 +618,9 @@ class RoboFile extends \Robo\Tasks {
 
         $extra_vars['supervisor_started'] = false;
       }
+      else {
+        $env_run['DOCKER_COMMAND_POST'] = 'devshop login';
+      }
 
       $env_run['ANSIBLE_EXTRA_VARS'] = json_encode($extra_vars);
       if ($this->output->isVerbose()) {
