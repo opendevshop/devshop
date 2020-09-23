@@ -267,15 +267,6 @@ class RoboFile extends \Robo\Tasks {
       ->exec("composer install --prefer-source --ansi")
       ->run();
 
-    // @TODO: DO IT AGAIN until we can figure out why the first composer installs:
-    //   - Installing drupal-composer/preserve-paths (0.1.5): Cloning 7f99622800 from cache
-    //  [ErrorException]
-    //  Trying to access array offset on value of type null
-    $this->taskExecStack()
-      ->dir('src/DevShop/Templates/DevShopControlTemplate')
-      ->exec("composer install --prefer-source --ansi")
-      ->run();
-
     // Set git remote urls
     if ($opts['no-dev'] == FALSE) {
       // @TODO: Set git url for others like provision
@@ -561,8 +552,10 @@ class RoboFile extends \Robo\Tasks {
         // Set COMPOSE_FILE to include volumes.
         $opts['compose-file'] = 'docker-compose.yml:docker-compose.volumes.yml';
 
-        $this->io()->note('Preparing source code on host since volumes were requested.');
-        $this->prepareSourcecode($opts);
+        if (!file_exists('aegir-home/devmaster-' . $this::DEVSHOP_LOCAL_VERSION) && !$opts['skip-source-prep']) {
+          $this->io()->warning('The aegir-home folder not present. Running prepare source code command.');
+          $this->prepareSourcecode($opts);
+        }
       }
 
 
@@ -611,7 +604,7 @@ class RoboFile extends \Robo\Tasks {
         }
       }
 
-      // Run test command after the docker command.
+      // Run a test command after the docker command.
       if ($test_command) {
         $env_run['DOCKER_COMMAND_POST'] = $test_command;
         $env_run['DOCKER_COMMAND_RUN_POST_EXIT'] = 1;
@@ -862,7 +855,7 @@ class RoboFile extends \Robo\Tasks {
   /**
    * Run a command in the devshop container.
    */
-  public function exec($cmd = "devshop-ansible-playbook") {
+  public function exec($cmd = '') {
     return $this->_exec("docker-compose exec -T \
       --env ANSIBLE_TAGS \
       --env ANSIBLE_SKIP_TAGS \
@@ -893,22 +886,17 @@ class RoboFile extends \Robo\Tasks {
       // Remove devmaster site folder
       $version = self::DEVSHOP_LOCAL_VERSION;
       $uri = self::DEVSHOP_LOCAL_URI;
-      $this->_exec("sudo rm -rf aegir-home/.drush");
-      $this->_exec("sudo rm -rf aegir-home/config");
-      $this->_exec("sudo rm -rf aegir-home/clients");
-      $this->_exec("sudo rm -rf aegir-home/projects");
       $this->_exec("sudo rm -rf src/DevShop/Templates/DevShopControlTemplate/web/sites/{$uri}");
-      $this->_exec("sudo rm -rf aegir-home/devmaster-1.0.0-beta10/sites/{$uri}");
     }
 
     // Don't run when -n is specified,
-    if ($opts['force'] || !$opts['no-interaction'] && $this->confirm("Destroy local source code? (aegir-home)")) {
+    if ($opts['no-interaction'] || $this->confirm("Destroy container home directory? (aegir-home)")) {
       if ($this->_exec("sudo rm -rf aegir-home")->wasSuccessful()) {
         $this->say("Entire aegir-home folder deleted.");
       }
     }
-    elseif ($opts['no-interaction']) {
-      $this->say("Local source code was retained. Use 'robo destroy --force' option to remove it, or run 'rm -rf aegir-home'.");
+    else {
+      $this->say("The aegir-home directory was retained. It will be  present when 'robo up' is run again.");
     }
   }
 
@@ -1000,7 +988,8 @@ class RoboFile extends \Robo\Tasks {
    * Get a one-time login link to Devamster.
    */
   public function login($user = 'aegir') {
-    $this->_exec("docker-compose exec --user $user -T devshop drush @hostmaster uli");
+      // @TODO: Figure out why PATH is gone.
+    $this->_exec("docker-compose exec --user $user -T devshop /usr/share/devshop/bin/drush @hostmaster uli");
   }
 
   /**

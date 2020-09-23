@@ -1,5 +1,4 @@
 name: DevShop
-
 on:
   push:
     branches: 1.x
@@ -163,7 +162,7 @@ jobs:
       - name: "DevShop Server Container: Wait for ready"
         run: sleep 4
 
-      - name: "Devshop Server Container: Runtime Playbook (${{ matrix.os }})"
+      - name: "Devshop Server Container: Install Playbook (${{ matrix.os }})"
         working-directory: roles
 
         # Since the container is launched with a new DEVSHOP_DOCKER_COMMAND_RUN, run the default.
@@ -178,9 +177,9 @@ jobs:
         working-directory: roles
         if: always()
         run: |
-          docker ps -a >        artifact-docker-ps.log && \
-          $DEBUG_COMMAND >      artifact-debug-command-output.log && \
-          docker-compose logs > artifact-docker-compose.log
+          docker-compose exec -T devshop.server systemctl status --no-pager | tee ../${DEVSHOP_TEST_ARTIFACTS_PATH}/artifact-systemctl-log.log
+          docker-compose logs devshop.server | tee ../${DEVSHOP_TEST_ARTIFACTS_PATH}/artifact-docker-compose.log
+          $DEBUG_COMMAND | tee ../${DEVSHOP_TEST_ARTIFACTS_PATH}/artifact-debug-command-output.log
 
       - name: Upload Test Artifacts
         uses: actions/upload-artifact@v2

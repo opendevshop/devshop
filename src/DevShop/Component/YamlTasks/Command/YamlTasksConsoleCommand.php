@@ -433,12 +433,13 @@ class YamlTasksConsoleCommand extends BaseCommand
                 if ($task['show-output'] == false) {
                     $process->disableOutput();
                 }
-                
+
                 // Allow "working-directory" property on a single task.
                 if (!empty($task['working-directory'])) {
                     $this->io->text("Working directory <fg=white>{$task['working-directory']}</>");
                     $process->setWorkingDirectory(dirname($input->getOption('tasks-file')) . "/" . $task['working-directory']);
-                } else {
+                }
+                else {
                     // Set the dir relative to the task file.
                     $process->setWorkingDirectory(dirname($input->getOption('tasks-file')));
                 }

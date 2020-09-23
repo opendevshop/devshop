@@ -85,7 +85,7 @@ function devshop_github_form_alter(&$form, &$form_state, $form_id) {
           'destination' => $_GET['q'],
         ),
         'attributes' => array(
-          'class' => array('btn btn-info'),
+          'class' => array('btn btn-default btn-sm'),
         ),
       ));
     $form['server']['devshop_github_ssh_key']['ssh_key_status_buttons'] ['#markup'] .= l(t('Configure Public Key'), 'admin/devshop', array(

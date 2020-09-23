@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "953033e6c43454bd1b2ad4aef5dbd0e9",
+    "content-hash": "1a793c52219e7a7c9a5f8ec3a239b383",
     "packages": [
         {
             "name": "consolidation/annotated-command",
@@ -563,11 +563,11 @@
         },
         {
             "name": "devshop/bin-tools",
-            "version": "dev-integration",
+            "version": "1.x-dev",
             "dist": {
                 "type": "path",
                 "url": "scripts",
-                "reference": "2daaece98142d25c9432b0be9ef74e0b79e30f93"
+                "reference": "b4055ce346ab134e733b84e65f8743e33d3508f8"
             },
             "bin": [
                 "branch-or-tag",
@@ -585,6 +585,11 @@
                 "wait-site"
             ],
             "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.x-dev"
+                }
+            },
             "license": [
                 "MIT"
             ],
@@ -599,10 +604,7 @@
                 }
             ],
             "description": "Useful shell scripts",
-            "homepage": "https://getdevshop.com",
-            "transport-options": {
-                "relative": true
-            }
+            "homepage": "https://getdevshop.com"
         },
         {
             "name": "devshop/composer-common",
@@ -610,7 +612,7 @@
             "dist": {
                 "type": "path",
                 "url": "src/DevShop/Component/ComposerCommon",
-                "reference": "add97e88d1891143d37b2275f97dce64e12eb602"
+                "reference": "87a089704d0efd73223dfbda00bd903876eb094b"
             },
             "require": {
                 "consolidation/robo": "^1.0",
@@ -643,10 +645,7 @@
                 }
             ],
             "description": "Tools useful for any composer-based project.",
-            "homepage": "https://getdevshop.com",
-            "transport-options": {
-                "relative": true
-            }
+            "homepage": "https://getdevshop.com"
         },
         {
             "name": "devshop/docker-bin-tools",
@@ -654,7 +653,7 @@
             "dist": {
                 "type": "path",
                 "url": "docker/bin",
-                "reference": "7e029f692818e4bbbb8a25e69dc8e13115b66c21"
+                "reference": "06dd97132a305e9cc589d8f6ca80b6bfc7d3bd7a"
             },
             "bin": [
                 "docker-systemd",
@@ -682,10 +681,7 @@
                 }
             ],
             "description": "All of the scripts used in Docker containers and images.",
-            "homepage": "https://getdevshop.com",
-            "transport-options": {
-                "relative": true
-            }
+            "homepage": "https://getdevshop.com"
         },
         {
             "name": "devshop/git-split",
@@ -693,7 +689,7 @@
             "dist": {
                 "type": "path",
                 "url": "src/DevShop/Component/GitSplit",
-                "reference": "dce3249b77d959ffa9a0b11bb24f3723a2b8ceee"
+                "reference": "43c140153da25bb227a2e3d43903be533439bffd"
             },
             "require": {
                 "composer-plugin-api": "^1.1",
@@ -731,10 +727,7 @@
                 }
             ],
             "description": "DevShop GitSplit Component",
-            "homepage": "https://getdevshop.com",
-            "transport-options": {
-                "relative": true
-            }
+            "homepage": "https://getdevshop.com"
         },
         {
             "name": "devshop/github-api-cli",
@@ -742,7 +735,7 @@
             "dist": {
                 "type": "path",
                 "url": "src/DevShop/Component/GitHubApiCli",
-                "reference": "2007f16cce9ab7e51a506cfadcae0e18c496951c"
+                "reference": "394e2043abb214e57c89c2f53fd908cb13fee2dd"
             },
             "require": {
                 "consolidation/robo": "^1.0",
@@ -778,10 +771,7 @@
                 }
             ],
             "description": "Simple console wrapper for GitHub API",
-            "homepage": "https://getdevshop.com",
-            "transport-options": {
-                "relative": true
-            }
+            "homepage": "https://getdevshop.com"
         },
         {
             "name": "devshop/power-process",
@@ -789,7 +779,7 @@
             "dist": {
                 "type": "path",
                 "url": "src/DevShop/Component/PowerProcess",
-                "reference": "5a6089e20c5baa08df1773092b256286b7a1505f"
+                "reference": "7a2fcfd9b70057036b2265ff8f1198ef69d790ee"
             },
             "require": {
                 "consolidation/robo": "^1",
@@ -828,10 +818,7 @@
                 }
             ],
             "description": "Enhanced Symfony Process component.",
-            "homepage": "https://getdevshop.com",
-            "transport-options": {
-                "relative": true
-            }
+            "homepage": "https://getdevshop.com"
         },
         {
             "name": "dflydev/dot-access-data",
@@ -924,113 +911,6 @@
             ],
             "description": "implementation of xdg base directory specification for php",
             "time": "2019-12-04T15:06:13+00:00"
-        },
-        {
-            "name": "drupal/provision",
-            "version": "dev-4.x",
-            "source": {
-                "type": "git",
-                "url": "https://git.drupalcode.org/project/provision.git",
-                "reference": "f4fd0fc1"
-            },
-            "require": {
-                "drupal/drupal": "~7.0",
-                "symfony/process": "^3.4"
-            },
-            "require-dev": {
-                "overtrue/phplint": "^1.2"
-            },
-            "type": "drupal-drush",
-            "extra": {
-                "branch-alias": {
-                    "dev-4.x": "4.x-dev"
-                },
-                "drupal": {
-                    "version": "7.x-4.x-dev",
-                    "datestamp": "1597954555",
-                    "security-coverage": {
-                        "status": "not-covered",
-                        "message": "Dev releases are not covered by Drupal security advisories."
-                    }
-                }
-            },
-            "autoload": {
-                "psr-0": {
-                    "Provision_": [
-                        "Provision"
-                    ]
-                }
-            },
-            "notification-url": "https://packages.drupal.org/7/downloads",
-            "license": [
-                "GPL-2.0-or-later"
-            ],
-            "authors": [
-                {
-                    "name": "Aegir maintainers",
-                    "homepage": "http://docs.aegirproject.org/en/3.x/community/core-team/"
-                },
-                {
-                    "name": "Steven Jones",
-                    "homepage": "https://www.drupal.org/user/99644"
-                },
-                {
-                    "name": "adrian",
-                    "homepage": "https://www.drupal.org/user/1337"
-                },
-                {
-                    "name": "anarcat",
-                    "homepage": "https://www.drupal.org/user/1274"
-                },
-                {
-                    "name": "bgm",
-                    "homepage": "https://www.drupal.org/user/89461"
-                },
-                {
-                    "name": "colan",
-                    "homepage": "https://www.drupal.org/user/58704"
-                },
-                {
-                    "name": "cweagans",
-                    "homepage": "https://www.drupal.org/user/404732"
-                },
-                {
-                    "name": "ergonlogic",
-                    "homepage": "https://www.drupal.org/user/368613"
-                },
-                {
-                    "name": "gboudrias",
-                    "homepage": "https://www.drupal.org/user/918342"
-                },
-                {
-                    "name": "helmo",
-                    "homepage": "https://www.drupal.org/user/449000"
-                },
-                {
-                    "name": "kienan",
-                    "homepage": "https://www.drupal.org/user/2241332"
-                },
-                {
-                    "name": "memtkmcc",
-                    "homepage": "https://www.drupal.org/user/92646"
-                },
-                {
-                    "name": "mig5",
-                    "homepage": "https://www.drupal.org/user/153206"
-                },
-                {
-                    "name": "omega8cc",
-                    "homepage": "https://www.drupal.org/user/539502"
-                }
-            ],
-            "description": "Drush commands powering the back-end of Aegir",
-            "homepage": "https://www.drupal.org/project/provision",
-            "support": {
-                "source": "https://git.drupalcode.org/project/provision",
-                "issues": "https://www.drupal.org/project/issues/provision",
-                "docs": "http://docs.aegirproject.org/"
-            },
-            "time": "2020-08-20T13:51:37+00:00"
         },
         {
             "name": "drush/drush",
@@ -3169,6 +3049,213 @@
             "time": "2020-06-04T11:16:35+00:00"
         },
         {
+            "name": "drupal/drupal",
+            "version": "7.73.0",
+            "source": {
+                "type": "git",
+                "url": "https://git.drupalcode.org/project/drupal.git",
+                "reference": "7.73"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://ftp.drupal.org/files/projects/drupal-7.73.zip",
+                "reference": "7.73",
+                "shasum": "253212fb23a2d23daa3292a1d64ac9e44cfe207c"
+            },
+            "type": "drupal-core",
+            "extra": {
+                "drupal": {
+                    "version": "7.73",
+                    "datestamp": "1600280131",
+                    "security-coverage": {
+                        "status": "covered",
+                        "message": "Covered by Drupal's security advisory policy"
+                    }
+                }
+            },
+            "notification-url": "https://packages.drupal.org/7/downloads",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "Dries",
+                    "homepage": "https://www.drupal.org/user/1"
+                },
+                {
+                    "name": "Drupal",
+                    "homepage": "https://www.drupal.org/user/3"
+                },
+                {
+                    "name": "Fabianx",
+                    "homepage": "https://www.drupal.org/user/693738"
+                },
+                {
+                    "name": "Gábor Hojtsy",
+                    "homepage": "https://www.drupal.org/user/4166"
+                },
+                {
+                    "name": "alexpott",
+                    "homepage": "https://www.drupal.org/user/157725"
+                },
+                {
+                    "name": "catch",
+                    "homepage": "https://www.drupal.org/user/35733"
+                },
+                {
+                    "name": "cilefen",
+                    "homepage": "https://www.drupal.org/user/1850070"
+                },
+                {
+                    "name": "drumm",
+                    "homepage": "https://www.drupal.org/user/3064"
+                },
+                {
+                    "name": "effulgentsia",
+                    "homepage": "https://www.drupal.org/user/78040"
+                },
+                {
+                    "name": "larowlan",
+                    "homepage": "https://www.drupal.org/user/395439"
+                },
+                {
+                    "name": "lauriii",
+                    "homepage": "https://www.drupal.org/user/1078742"
+                },
+                {
+                    "name": "mcdruid",
+                    "homepage": "https://www.drupal.org/user/255969"
+                },
+                {
+                    "name": "plach",
+                    "homepage": "https://www.drupal.org/user/183211"
+                },
+                {
+                    "name": "webchick",
+                    "homepage": "https://www.drupal.org/user/24967"
+                },
+                {
+                    "name": "xjm",
+                    "homepage": "https://www.drupal.org/user/65776"
+                },
+                {
+                    "name": "yoroy",
+                    "homepage": "https://www.drupal.org/user/41502"
+                }
+            ],
+            "homepage": "https://www.drupal.org/project/drupal",
+            "support": {
+                "source": "https://git.drupalcode.org/project/drupal"
+            }
+        },
+        {
+            "name": "drupal/provision",
+            "version": "dev-4.x",
+            "source": {
+                "type": "git",
+                "url": "https://git.drupalcode.org/project/provision.git",
+                "reference": "a171cd37c8a4bebee4a0f02b4a34ef73025edc3c"
+            },
+            "require": {
+                "drupal/drupal": "~7.0",
+                "symfony/process": "^3.4"
+            },
+            "require-dev": {
+                "overtrue/phplint": "^1.2"
+            },
+            "type": "drupal-drush",
+            "extra": {
+                "branch-alias": {
+                    "dev-4.x": "4.x-dev"
+                },
+                "drupal": {
+                    "version": "7.x-4.x-dev",
+                    "datestamp": "1596741966",
+                    "security-coverage": {
+                        "status": "not-covered",
+                        "message": "Dev releases are not covered by Drupal security advisories."
+                    }
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Provision_": [
+                        "Provision"
+                    ]
+                }
+            },
+            "notification-url": "https://packages.drupal.org/7/downloads",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "Aegir maintainers",
+                    "homepage": "http://docs.aegirproject.org/en/3.x/community/core-team/"
+                },
+                {
+                    "name": "Steven Jones",
+                    "homepage": "https://www.drupal.org/user/99644"
+                },
+                {
+                    "name": "adrian",
+                    "homepage": "https://www.drupal.org/user/1337"
+                },
+                {
+                    "name": "anarcat",
+                    "homepage": "https://www.drupal.org/user/1274"
+                },
+                {
+                    "name": "bgm",
+                    "homepage": "https://www.drupal.org/user/89461"
+                },
+                {
+                    "name": "colan",
+                    "homepage": "https://www.drupal.org/user/58704"
+                },
+                {
+                    "name": "cweagans",
+                    "homepage": "https://www.drupal.org/user/404732"
+                },
+                {
+                    "name": "ergonlogic",
+                    "homepage": "https://www.drupal.org/user/368613"
+                },
+                {
+                    "name": "gboudrias",
+                    "homepage": "https://www.drupal.org/user/918342"
+                },
+                {
+                    "name": "helmo",
+                    "homepage": "https://www.drupal.org/user/449000"
+                },
+                {
+                    "name": "kienan",
+                    "homepage": "https://www.drupal.org/user/2241332"
+                },
+                {
+                    "name": "memtkmcc",
+                    "homepage": "https://www.drupal.org/user/92646"
+                },
+                {
+                    "name": "mig5",
+                    "homepage": "https://www.drupal.org/user/153206"
+                },
+                {
+                    "name": "omega8cc",
+                    "homepage": "https://www.drupal.org/user/539502"
+                }
+            ],
+            "description": "Drush commands powering the back-end of Aegir",
+            "homepage": "https://www.drupal.org/project/provision",
+            "support": {
+                "source": "https://git.drupalcode.org/project/provision",
+                "issues": "https://www.drupal.org/project/issues/provision",
+                "docs": "http://docs.aegirproject.org/"
+            },
+            "time": "2020-08-06T19:42:03+00:00"
+        },
+        {
             "name": "guzzlehttp/guzzle",
             "version": "6.5.5",
             "source": {
@@ -4081,9 +4168,7 @@
         "devshop/git-split": 20,
         "devshop/github-api-cli": 20,
         "devshop/bin-tools": 20,
-        "devshop/yaml-tasks": 20,
-        "devshop/power-process": 20,
-        "drupal/provision": 20
+        "devshop/power-process": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,

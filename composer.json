@@ -21,19 +21,20 @@
         "knplabs/github-api": "^1.4",
         "drush/drush": "^8",
         "ext-json": "*",
+        "devshop/deploy": "1.x-dev",
         "devshop/docker-bin-tools": "@dev",
         "devshop/git-split": "self.version",
         "devshop/github-api-cli": "self.version",
         "devshop/bin-tools": "self.version",
+        "drupal/provision": "4.x-dev#15cf3111",
         "devshop/power-process": "self.version",
-        "drupal/provision": "4.x-dev#15cf3111"
+        "devshop/yaml-tasks": "self.version"
     },
     "replace": {
         "devshop/yaml-tasks": "self.version",
         "drupal/drupal": "*"
     },
     "require-dev": {
-        "composer/composer": "^1.9"
     },
     "suggest": {
         "mouf/nodejs-installer": "Use to install nodejs into the devshop bin dir using composer."
@@ -74,6 +75,10 @@
         },
         {
             "type": "path",
+            "url": "src/DevShop/Component/Deploy"
+        },
+        {
+            "type": "path",
             "url": "src/DevShop/Component/YamlTasks"
         }
     ],
@@ -89,6 +94,14 @@
         "sort-packages:": "true"
     },
     "extra": {
+        "deploy": {
+            "stages": {
+                "build": "composer install --no-suggest --no-progress --ansi",
+                "install": "install.sh",
+                "deploy": "bin/devshop status --help",
+                "test": "devshop devmaster:test"
+            }
+        },
         "git-split": {
             "repos": {
                 "docs": "https://github.com/opendevshop/documentation.git",
