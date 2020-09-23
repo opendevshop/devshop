@@ -47,6 +47,7 @@ jobs:
         env:
           COMMAND: "echo 'DevShop Server Online, launched by GitHub Actions.'"
           DEVSHOP_DOCKER_COMMAND_RUN: "echo 'Skipping DEVSHOP_DOCKER_COMMAND_RUN (ansible-playbook), so that GitHub Actions can run in a separate step.'"
+           COMPOSE_FILE: "docker-compose.yml:docker-compose.volumes.yml:"
         run: |
           docker-compose pull --quiet devshop.server
           docker-compose up --no-build --detach devshop.server
