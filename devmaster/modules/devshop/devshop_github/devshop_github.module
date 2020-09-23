@@ -790,7 +790,7 @@ function devshop_github_form_devshop_project_create_step_environments_alter(&$fo
 
         $environment_forms[$environment->name]['git_ref']['pr'] = array(
           '#theme' => 'link',
-          '#text' => "<img src='{$pr['user']['avatar_url']}' width='28'> " . '<i class="fa fa-github fa-2x "></i> '. "PR" . $pr['number'] . $pr['title'],
+          '#text' => "<img src='{$pr['user']['avatar_url']}' width='28'> PR" . $pr['number'] . htmlentities($pr['title']),
           '#path' => $pr['html_url'],
           '#options' => array(
             'html' => true,
