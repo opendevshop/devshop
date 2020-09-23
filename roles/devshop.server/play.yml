@@ -77,7 +77,6 @@
 
   roles:
     - role: opendevshop.users
-      tags: [runtime]
 
     - role: geerlingguy.mysql
 

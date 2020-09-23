@@ -566,22 +566,25 @@ class RoboFile extends \Robo\Tasks {
         $this->prepareSourcecode($opts);
       }
 
-      $cmd[] = "docker-compose up --detach --force-recreate";
 
       // Test commands must be run as application user.
       // The `--test` command is run in GitHub Actions.
       $test_command = '';
       if ($opts['test']) {
         // Do not run a playbook on docker-compose up, because it will launch as a separate process and we won't know when it ends.
-        $cmd[]= "docker-compose exec -T devshop service supervisord stop";
-        $test_command = "/usr/share/devshop/tests/devshop-tests.sh";
+        $cmd[] = "docker-compose run devshop {$docker_command}";
+        $env_run['DEVSHOP_DOCKER_COMMAND_RUN'] = $docker_command;
+
+        $test_command = "su aegir --command /usr/share/devshop/tests/devshop-tests.sh";
       }
       // @TODO: The `--test-upgrade` command is NOT YET run in GitHub Actions.
       // The PR with the update hook can be used to finalize upgrade tests: https://github.com/opendevshop/devshop/pull/426
       elseif ($opts['test-upgrade']) {
+        $cmd[] = "docker-compose run --rm devshop {$docker_command}";
         $test_command = "/usr/share/devshop/tests/devshop-tests-upgrade.sh";
       }
       else {
+        $cmd[] = "docker-compose up devshop {$docker_command} --detach --force-recreate";
         if ($opts['follow']) {
           $cmd[] = "docker-compose logs -f";
         }
@@ -618,6 +621,7 @@ class RoboFile extends \Robo\Tasks {
       // Run a secondary command after the docker command.
       if ($test_command) {
         $env_run['DOCKER_COMMAND_POST'] = $test_command;
+        $env_run['DOCKER_COMMAND_RUN_POST_EXIT'] = 1;
       }
 
       // Override the DEVSHOP_DOCKER_COMMAND_RUN if specified.

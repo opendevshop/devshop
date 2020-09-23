@@ -71,8 +71,8 @@ services:
       - FROM_IMAGE
       - OS_VERSION
       - DEVSHOP_USER_UID
-      # @TODO: Figure a way for the  "devshop server roles" to maintain their own commands.
-      - DOCKER_COMMAND_POST=devshop login
+      - DOCKER_COMMAND_POST=${DOCKER_COMMAND_POST:-devshop login}
+      - DOCKER_COMMAND_POST
 
       # Change to use a different database host.
       - DATABASE_HOST=localhost

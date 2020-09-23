@@ -9,7 +9,7 @@ devshop-logo "Docker Entrypoint"
 # Set ANSIBLE_TAGS from environment variable ANSIBLE_TAGS, or use ANSIBLE_TAGS_RUNTIME.
 ANSIBLE_TAGS=${ANSIBLE_TAGS:-runtime}
 DOCKER_COMMAND=${@:-date}
-DOCKER_COMMAND_POST=${DOCKER_COMMAND_POST:-"echo No DOCKER_COMMAND_POST variable set. Which should never happen, because it is in the Dockerfile. Probably means you are running this outside of a container."}
+DOCKER_COMMAND_POST=${DOCKER_COMMAND_POST:-"echo No DOCKER_COMMAND_POST variable set. Which should never happen, because it is in the Dockerfile and the docker-compose.yml file. Probably means you are running this outside of a container."}
 INIT_COMMAND=${INIT_COMMAND:-docker-systemd}
 
 DEBUG_ENVIRONMENT=${DEBUG_ENVIRONMENT:-ANSIBLE_}
