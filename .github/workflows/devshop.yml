@@ -43,7 +43,7 @@ jobs:
       - name: "Test DevShop"
         run: |
           composer install
-          robo up --test
+          bin/robo up --test
 
   docker:
     name: "Docker Containers"
