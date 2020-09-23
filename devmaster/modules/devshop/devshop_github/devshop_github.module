@@ -792,21 +792,25 @@ function devshop_github_form_devshop_project_create_step_environments_alter(&$fo
         $environment_forms[$environment->name]['git_ref']['#options'][$environment->git_ref] = $environment->git_ref;
 
         // If PR has different remote URL, set it.
-        if ($pr->head->repo->fork) {
+        if ($pr['head']['repo']['fork']) {
           // Try to match project URL scheme
           if (strpos($project->git_url, 'git://') === 0){
-            $remote_url = $pr->head->repo->git_url;
+            $remote_url = $pr['head']['repo']['git_url'];
           }
           elseif (strpos($project->git_url, 'git@') === 0){
-            $remote_url = $pr->head->repo->ssh_url;
+            $remote_url = $pr['head']['repo']['ssh_url'];
           }
           else {
-            $remote_url = $pr->head->repo->clone_url;
+            $remote_url = $pr['head']['repo']['clone_url'];
           }
-          $environment_forms[$environment->name]['git_remote'] = array(
-            '#value' => $remote_url,
-          );
         }
+        else {
+          $remote_url = $project->git_url;
+        }
+
+        $environment_forms[$environment->name]['settings']['git_remote'] = array(
+          '#value' => $remote_url,
+        );
 
         // Save a flag that this is a pr_environment, so that the site knows to load the PR data later.
         $environment_forms[$environment->name]['pr_environment'] = array(
@@ -815,7 +819,7 @@ function devshop_github_form_devshop_project_create_step_environments_alter(&$fo
       }
 
       // Merge environments fields together to put PRs on top.
-      $form['project']['environments'] = array_merge($environment_forms, $form['project']['environments']);
+      $form['project']['environments'] = array_merge($form['project']['environments'], $environment_forms);
     }
 
     $settings_link = l(t('Change Project Settings'), 'projects/add/settings', array(
