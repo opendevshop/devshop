@@ -273,12 +273,9 @@ HTML;
 function devshop_project_create_step_sites_validate(&$from, &$form_state) {
   if ($form_state['triggering_element']['#value'] == t('Retry')) {
     foreach ($form_state['project']->environments as $name => $environment) {
-      $task = current($environment->tasks['verify']);
-      if (isset($task->nid)) {
-        hosting_task_retry($task->nid);
-        drupal_goto(current_path());
-      }
+        hosting_add_task($environment->platform);
     }
+    drupal_goto('projects/add/sites');
   }
   elseif (empty($form_state['values']['install_profile'])) {
     form_set_error('install_profile', t('You must choose an install profile. Please wait for all environments to verify.'));
