@@ -43,12 +43,16 @@ class GitRepository extends Repository
    *
    * @return  boolean
    */
-  public function isDetached() {
+  public function isDetached()
+  {
     /** @var $result CallResult */
-    $result = $this->getGit()->{'symbolic-ref'}($this->getRepositoryPath(), array(
-      '-q',
-      'HEAD'
-    ));
+    $result = $this->getGit()->{'symbolic-ref'}(
+      $this->getRepositoryPath(),
+      [
+        '-q',
+        'HEAD'
+      ]
+    );
 
     // If command failed, HEAD is not on a branch, aka detached.
     return 0 !== $result->getReturnCode();
@@ -92,27 +96,6 @@ class GitRepository extends Repository
     $result = $this->callGit('merge-base', ['@', '@{upstream}']);
 
     return $result->getStdOut();
-  }
-
-  /**
-   * Returns TRUE if the working directory is in 'detached HEAD' state.
-   * https://stackoverflow.com/questions/52221558/programmatically-check-if-head-is-detached
-   *
-   * @return  boolean
-   */
-  public function isDetached()
-  {
-    /** @var $result CallResult */
-    $result = $this->getGit()->{'symbolic-ref'}(
-      $this->getRepositoryPath(),
-      [
-        '-q',
-        'HEAD'
-      ]
-    );
-
-    // If command failed, HEAD is not on a branch, aka detached.
-    return 0 !== $result->getReturnCode();
   }
 
   /**
