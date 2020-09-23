@@ -224,7 +224,7 @@ HTML;
     );
     $form['retry'] = array(
       '#type' => 'submit',
-      '#value' => t('Retry'),
+      '#value' => t('Rebuild All Environments'),
       '#prefix' => '<div class="text-center">',
       '#suffix' => '</div>',
     );
@@ -271,9 +271,9 @@ HTML;
  * STEP 4: Validate
  */
 function devshop_project_create_step_sites_validate(&$from, &$form_state) {
-  if ($form_state['triggering_element']['#value'] == t('Retry')) {
+  if ($form_state['triggering_element']['#value'] == t('Rebuild All Environments')) {
     foreach ($form_state['project']->environments as $name => $environment) {
-        hosting_add_task($environment->platform);
+        hosting_add_task($environment->platform, 'verify');
     }
     drupal_goto('projects/add/sites');
   }
