@@ -3,7 +3,7 @@
 #
 # This dockerfile is for local development only. It maps the development folders to volumes,
 #
-version: '3'
+version: '2.2'
 services:
   devshop:
     # Change the entrypoint to the volume-mounted copy.

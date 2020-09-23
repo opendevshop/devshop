@@ -10,6 +10,7 @@ set -e
 # The DOCKER_COMMAND is the actual Docker CMD used for this container image.
 # $@ is every argument and option passed to the entrypoint (which is the same way CMD/ENTRPOINT work)
 DOCKER_COMMAND=${@}
+DOCKER_COMMAND_POST=${DOCKER_COMMAND_POST:-"echo 'No DOCKER_COMMAND_POST variable set. Which should never happen, because it is in the Dockerfile. Probably means you are running this outside of a container.'"}
 SYSTEM_STATUS_COMMAND=${SYSTEM_STATUS_COMMAND:-systemctl status --no-pager}
 WELCOME_MESSAGE="Enjoy the DevShop Containers!"
 
@@ -27,6 +28,7 @@ echo "---------------------"
 echo "INIT_COMMAND: $INIT_COMMAND"
 echo "DOCKER_COMMAND: $DOCKER_COMMAND"
 echo "DEVSHOP_DOCKER_COMMAND_RUN: $DEVSHOP_DOCKER_COMMAND_RUN"
+echo "DOCKER_COMMAND_POST: $DOCKER_COMMAND_POST"
 echo "SYSTEM_STATUS_COMMAND: $SYSTEM_STATUS_COMMAND"
 echo "PATH: $PATH"
 echo "-----------------"
@@ -41,13 +43,23 @@ if [ ! -z "$DOCKER_COMMAND" ]; then
       echo "Running Docker Command '$DOCKER_COMMAND' ..." && $DOCKER_COMMAND &&
         # If not successful, kill the container.
         # If successful, run DEVSHOP_DOCKER_COMMAND_RUN and mention that system D continues.
-        echo "The DOCKER_COMMAND completed. (exit 0) Continuing on to DEVSHOP_DOCKER_COMMAND_RUN." && \
-        echo "System Status after running Docker command: " && $SYSTEM_STATUS_COMMAND && \
+        echo "The DOCKER_COMMAND completed. (exit 0) Continuing on to DEVSHOP_DOCKER_COMMAND_RUN...." && \
+        echo "System Status after running DOCKER_COMMAND: " && $SYSTEM_STATUS_COMMAND && \
         (
           echo "Running DEVSHOP_DOCKER_COMMAND_RUN Command '$DEVSHOP_DOCKER_COMMAND_RUN' ..." && $DEVSHOP_DOCKER_COMMAND_RUN &&
-          echo "The DEVSHOP_DOCKER_COMMAND_RUN completed. (exit 0) Continuing on."
+          echo "The DEVSHOP_DOCKER_COMMAND_RUN completed. (exit 0) Continuing on to DOCKER_COMMAND_POST..."  && \
+            (
+              echo "Running DOCKER_COMMAND_POST Command '$DOCKER_COMMAND_POST' ..." && $DOCKER_COMMAND_POST &&
+              echo "The DOCKER_COMMAND_POST completed. (exit 0). The INIT_COMMAND continues on." ||
+              if [ -n "$DOCKER_COMMAND_RUN_POST_EXIT" ]; then
+                echo "The DOCKER_COMMAND_POST failed, and DOCKER_COMMAND_RUN_POST_EXIT was set. (exit $?) Triggering a shutdown to end INIT_COMMAND ..."
+                shutdown
+              else
+                echo "The DOCKER_COMMAND_POST failed. (exit $?) Continuing on. If you wish to exit on failure, set DOCKER_COMMAND_RUN_POST_EXIT=1"
+              fi
+            )
         ) || (
-          echo "The DEVSHOP_DOCKER_COMMAND_RUN failed. (exit $?) Continuing on. If you wish to exit on failure, set docker command."
+          echo "The DEVSHOP_DOCKER_COMMAND_RUN failed. (exit $?) Continuing on. If you wish to exit on failure, run the command as the docker 'command' instead."
         )
 
     ) || ( \

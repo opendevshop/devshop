@@ -250,7 +250,7 @@ class RoboFile extends \Robo\Tasks {
     // Clone all git repositories.
     foreach ($this->repos as $path => $url) {
       // Allow repos to specify a branch after #.
-      list($url, $branch) = explode('#', $url);
+      [$url, $branch] = explode('#', $url);
 
       if (file_exists($this->devshop_root_path . '/' . $path)) {
         $this->say("$path already exists.");
@@ -371,7 +371,7 @@ class RoboFile extends \Robo\Tasks {
    * @option install-at-runtime Launch bare containers and then install devshop.
    */
   public function prepareContainers($user_uid = NULL, $hostname = 'devshop.local.computer', $opts = [
-      'docker-image' => 'devshop/server:local',
+      'docker-image' => 'devshop/server:latest',
       'from' => NULL,
       'build-command' => NULL,
       'os' => NULL,
@@ -495,7 +495,10 @@ class RoboFile extends \Robo\Tasks {
     'build' => FALSE,
     'skip-source-prep' => FALSE,
     'skip-install' => FALSE,
-    'os' => 'ubuntu1804',
+    // This is the image string used in docker-compose.
+    'docker-image' => 'devshop/server:latest',
+    // The OS "slug" to use instead of devshop/server:ubuntu1804. If specified, "docker-image" option will be ignored.
+    'os' => NULL,
     'from' => NULL,
     'vars' => '',
     'tags' => '',
@@ -515,9 +518,12 @@ class RoboFile extends \Robo\Tasks {
 
     // Define docker-image (name for the "image" in docker-compose.
     // Set FROM_IMAGE and DEVSHOP_DOCKER_IMAGE if --os option is used. (and --from was not used)
-    if (empty($opts['from']) && $opts['os'] !== NULL) {
+    if (empty($opts['from']) && !empty($opts['os'])) {
       $opts['from'] = "geerlingguy/docker-{$opts['os']}-ansible";
       $opts['docker-image'] = 'devshop/server:' . $opts['os'];
+    }
+    else {
+      $opts['from'] = $opts['docker-image'];
     }
 
     // Check for tools
@@ -592,22 +598,25 @@ class RoboFile extends \Robo\Tasks {
         }
       }
 
-      $cmd[] = "docker-compose up --detach --force-recreate";
 
       // Test commands must be run as application user.
       // The `--test` command is run in GitHub Actions.
       $test_command = '';
       if ($opts['test']) {
         // Do not run a playbook on docker-compose up, because it will launch as a separate process and we won't know when it ends.
-        $cmd[]= "docker-compose exec -T devshop service supervisord stop";
-        $test_command = "/usr/share/devshop/tests/devshop-tests.sh";
+        $cmd[] = "docker-compose run devshop {$docker_command}";
+        $env_run['DEVSHOP_DOCKER_COMMAND_RUN'] = $docker_command;
+
+        $test_command = "su aegir --command /usr/share/devshop/tests/devshop-tests.sh";
       }
       // @TODO: The `--test-upgrade` command is NOT YET run in GitHub Actions.
       // The PR with the update hook can be used to finalize upgrade tests: https://github.com/opendevshop/devshop/pull/426
       elseif ($opts['test-upgrade']) {
+        $cmd[] = "docker-compose run --rm devshop {$docker_command}";
         $test_command = "/usr/share/devshop/tests/devshop-tests-upgrade.sh";
       }
       else {
+        $cmd[] = "docker-compose up devshop {$docker_command} --detach --force-recreate";
         if ($opts['follow']) {
           $cmd[] = "docker-compose logs -f";
         }
@@ -641,6 +650,7 @@ class RoboFile extends \Robo\Tasks {
       // Run a secondary command after the docker command.
       if ($test_command) {
         $env_run['DOCKER_COMMAND_POST'] = $test_command;
+        $env_run['DOCKER_COMMAND_RUN_POST_EXIT'] = 1;
       }
 
       // Override the DEVSHOP_DOCKER_COMMAND_RUN if specified.
@@ -868,7 +878,7 @@ class RoboFile extends \Robo\Tasks {
   private function optionsToArray($options_list) {
     $vars = [];
     foreach ($options_list as $options_string) {
-      list($name, $value) = explode("=", $options_string);
+      [$name, $value] = explode("=", $options_string);
       $vars[$name] = $value;
     }
     return $vars;
