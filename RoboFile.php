@@ -612,7 +612,7 @@ class RoboFile extends \Robo\Tasks {
       // @TODO: The `--test-upgrade` command is NOT YET run in GitHub Actions.
       // The PR with the update hook can be used to finalize upgrade tests: https://github.com/opendevshop/devshop/pull/426
       elseif ($opts['test-upgrade']) {
-        $cmd[] = "docker-compose run devshop {$docker_command}";
+        $cmd[] = "docker-compose run --rm devshop {$docker_command}";
         $test_command = "/usr/share/devshop/tests/devshop-tests-upgrade.sh";
       }
       else {
