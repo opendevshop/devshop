@@ -54,6 +54,7 @@
   service:
     name: supervisor
     state: stopped
+  ignore_errors: true
   when: supervisor_enabled is defined
   tags: [always]
 
