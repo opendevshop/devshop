@@ -785,11 +785,23 @@ function devshop_github_form_devshop_project_create_step_environments_alter(&$fo
         $environment_forms[$environment->name]['name']['#default_value'] = $environment->name;
         $environment_forms[$environment->name]['name']['#attributes']['disabled'] = true;
 
-        $environment_forms[$environment->name]['git_ref']['#default_value'] = $environment->git_ref;
-        $environment_forms[$environment->name]['git_ref']['#attributes']['disabled'] = true;
+        $environment_forms[$environment->name]['git_ref']['#value'] = $environment->git_ref;
+        $environment_forms[$environment->name]['git_ref']['#type'] = 'value';
 
-        // Handle forked environments with branches not in main repo.
-        $environment_forms[$environment->name]['git_ref']['#options'][$environment->git_ref] = $environment->git_ref;
+        $environment_forms[$environment->name]['git_ref']['pr'] = array(
+          '#theme' => 'link',
+          '#text' => "<img src='{$pr['user']['avatar_url']}' width='28'> " . '<i class="fa fa-github fa-2x "></i> '. "PR" . $pr['number'] . $pr['title'],
+          '#path' => $pr['html_url'],
+          '#options' => array(
+            'html' => true,
+            'attributes' => array(
+              'target' => '_blank',
+              'class' => array(
+                'btn btn-default'
+              ),
+            ),
+          ),
+        );
 
         // If PR has different remote URL, set it.
         if ($pr['head']['repo']['fork']) {
