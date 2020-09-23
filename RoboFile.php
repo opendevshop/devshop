@@ -627,9 +627,9 @@ class RoboFile extends \Robo\Tasks {
       }
 
       // Override the DEVSHOP_DOCKER_COMMAND_RUN if specified.
-    if (!empty($docker_command)) {
+      if (!empty($docker_command)) {
         $env_run['DEVSHOP_DOCKER_COMMAND_RUN'] = $docker_command;
-    }
+      }
 
       // @TODO: Write to .env file so user does not have to keep using CLI args.
 
