@@ -1,5 +1,4 @@
 name: DevShop
-
 on:
   push:
     branches: 1.x
@@ -162,7 +161,7 @@ jobs:
       - name: "DevShop Server Container: Wait for ready"
         run: sleep 4
 
-      - name: "Devshop Server Container: Runtime Playbook (${{ matrix.os }})"
+      - name: "Devshop Server Container: Install Playbook (${{ matrix.os }})"
         working-directory: roles
 
         # Since the container is launched with a new DEVSHOP_DOCKER_COMMAND_RUN, run the default.
