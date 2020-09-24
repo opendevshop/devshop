@@ -588,6 +588,7 @@ class RoboFile extends \Robo\Tasks {
       // Runtime Environment for the $cmd list.
       $env_run = $this->generateEnvironmentArgs($opts);
       $extra_vars = array();
+      $extra_vars['devshop_control_git_reference'] = $this->git_ref;
 
       // Set extra ansible vars when not in CI.
       if (empty($_SERVER['CI'])) {
