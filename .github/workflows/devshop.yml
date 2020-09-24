@@ -53,29 +53,25 @@ jobs:
           docker-compose logs
 
       - name: "Container Environment: ${{ matrix.os }}"
-        working-directory: roles
         run: |
-          docker-compose exec -T devshop.server env
-          docker-compose exec -T devshop.server systemctl status --no-pager
+          docker-compose exec -T devshop env
+          docker-compose exec -T devshop systemctl status --no-pager
 
       - name: "DevShop Server Container: Wait for ready"
         run: sleep 4
 
       - name: "Devshop Server Container: Install (${{ matrix.os }})"
-        working-directory: roles
         env:
           DEVSHOP_DOCKER_COMMAND_RUN: "devshop-ansible-playbook --tags runtime --extra-vars=supervisor_started=false"
 
         # Since the container is launched with a new DEVSHOP_DOCKER_COMMAND_RUN, run the default.
         run: |
-          docker-compose exec -T devshop.server bash -c '${DEFAULT_DEVSHOP_DOCKER_COMMAND_RUN}'
+          docker-compose exec -T devshop bash -c '${DEFAULT_DEVSHOP_DOCKER_COMMAND_RUN}'
 
       - name: "Test DevShop: ${{ matrix.os }}"
-        working-directory: roles
-        run: docker-compose exec -T --user aegir devshop.server /usr/share/devshop/tests/devshop-tests.sh
+        run: docker-compose exec -T --user aegir devshop /usr/share/devshop/tests/devshop-tests.sh
 
       - name: Save Docker Logs as Artifacts
-        working-directory: roles
         if: always()
         run: |
           docker ps -a >        artifact-docker-ps.log && \
