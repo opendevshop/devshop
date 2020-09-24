@@ -1,20 +1,40 @@
 ![DevShop Logo](./assets/logo-new-light-bg.png)
 
 [DevShop][1] is an **Open Source DevOps Framework** and a 
-set of reusable **components** designed to improve the web development and 
+set of reusable **components** designed to improve the web development, testing, and 
 server management process.
 
-The goal of DevShop is to provide a complete **web development pipeline** out of the
+The goal of DevShop is to provide a complete **web development & testing pipeline** out of the
 box, while empowering users to choose their own server infrastructure and systems 
 architecture.
  
 DevShop uses [Ansible & Ansible Galaxy][2] for server configuration, [Symfony 
 Console][3] for command line tools, and [Drupal][3] for the web interface.
 
-### Philosophy
+### Core Values
 
-The philosophy of DevShop is transparency, simplicity, and modularity:
- 
+#### Empower and Actualize.
+  - Empower site builders to launch their own sites and services on any computer.
+  - Actualize user's missions by freeing them from the burden of building their own platform
+
+#### Simplify and Demystify.
+  - Simplify the management of complex systems by defining core building blocks and designing components that work independently of the platform.
+  - Demystify computing by maintaining configuration for the entire vertical stack, down to Linux and services, all the way up to container management platforms, hyper
+
+#### Collaborate & Engage.
+  - Collaborate with developers and systems administrators to build a product that fits their needs first.
+  - Engage the community to work together towards the common goal of  a complete OpenOps platform and healthy ecosystem of tools.
+
+#### Lower Costs & Barriers
+  - Lower the cost of running sites with a host-agnostic platform, commoditizing servers, and moving maintenance costs of DevOps tools off of organizations and on to the community, 
+  - Lower the barriers of entry into the DevOps world for all.
+
+
+### Design Principles
+
+The design principles of DevShop are transparency, simplicity, and modularity:
+
+
   - **Transparency:** *Control systems at the service level.* 
     
     DevShop manages services like 
