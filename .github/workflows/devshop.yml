@@ -39,39 +39,44 @@ jobs:
       - name: Check Out Sourcecode
         uses: actions/checkout@v2
 
-      # @TODO: Move this duplication to a composite action: https://docs.github.com/en/actions/creating-actions/creating-a-composite-run-steps-action
-      # Launch Container
-      - name: "DevShop Server Container: Launch"
+      # Build DevShop Server Image
+      - name: "Docker Build: devshop/server:${{ matrix.os }}"
+        working-directory: roles
+        run: docker-compose build devshop.server
+
+      # Launch DevShop Server Container
+      - name: "Docker Run: devshop/server:${{ matrix.os }}"
+        working-directory: roles
         env:
           COMMAND: "echo 'DevShop Server Online, launched by GitHub Actions.'"
           DEVSHOP_DOCKER_COMMAND_RUN: "echo 'Skipping DEVSHOP_DOCKER_COMMAND_RUN (ansible-playbook), so that GitHub Actions can run in a separate step.'"
-          COMPOSE_FILE: "docker-compose.yml:docker-compose.volumes.yml"
         run: |
-          docker-compose pull --quiet
-          docker-compose up --no-build --detach
+          docker-compose up --detach devshop.server
           sleep 3
           docker-compose logs
 
       - name: "Container Environment: ${{ matrix.os }}"
+        working-directory: roles
         run: |
-          docker-compose exec -T devshop env
-          docker-compose exec -T devshop systemctl status --no-pager
+          docker-compose exec -T devshop.server env
+          docker-compose exec -T devshop.server systemctl status --no-pager
 
       - name: "DevShop Server Container: Wait for ready"
         run: sleep 4
 
-      - name: "Devshop Server Container: Install (${{ matrix.os }})"
-        env:
-          DEVSHOP_DOCKER_COMMAND_RUN: "devshop-ansible-playbook --tags runtime --extra-vars=supervisor_started=false"
+      - name: "Devshop Server Container: Install Playbook (${{ matrix.os }})"
+        working-directory: roles
 
         # Since the container is launched with a new DEVSHOP_DOCKER_COMMAND_RUN, run the default.
         run: |
-          docker-compose exec -T devshop bash -c '${DEFAULT_DEVSHOP_DOCKER_COMMAND_RUN}'
+          docker-compose exec -T devshop.server bash -c '${DEFAULT_DEVSHOP_DOCKER_COMMAND_RUN}'
 
       - name: "Test DevShop: ${{ matrix.os }}"
-        run: docker-compose exec -T --user aegir devshop /usr/share/devshop/tests/devshop-tests.sh
+        working-directory: roles
+        run: docker-compose exec -T --user aegir devshop.server /usr/share/devshop/tests/devshop-tests.sh
 
       - name: Save Docker Logs as Artifacts
+        working-directory: roles
         if: always()
         run: |
           docker ps -a >        artifact-docker-ps.log && \
