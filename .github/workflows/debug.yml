@@ -17,6 +17,8 @@ jobs:
     steps:
       - name: environment vars
         run: env
+      - name: user info
+        run: id
       - name: github context
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
