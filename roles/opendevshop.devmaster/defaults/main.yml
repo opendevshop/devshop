@@ -12,7 +12,7 @@ devshop_github_token: ''
 # Set PHP Version:
 # DevShop uses geerlingguy.php-versions to handle PHP Version.
 # See README.md for variable details: https://github.com/geerlingguy/ansible-role-php-versions#role-variables
-php_version: '7.1'
+php_version: '7.2'
 
 devshop_cli_repo: http://github.com/opendevshop/devshop.git
 devshop_cli_skip_update: false
