@@ -14,15 +14,6 @@
     path: "{{ ansible_share_path }}"
     state: directory
 
-# @TODO: remove this. Ansible.cfg will point to
-- name: Install Ansible Roles
-  when: false
-  file:
-    src: "{{ devshop_cli_path }}/roles"
-    dest: "{{ ansible_share_path }}/roles"
-    state: link
-    force: true
-
 - name: Include version specific variables for Debian OS Family
   include_vars: "vars.{{ ansible_os_family }}.yml"
   when: ansible_os_family == "Debian"

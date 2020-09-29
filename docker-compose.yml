@@ -63,7 +63,7 @@ services:
       - ANSIBLE_TAGS
       - ANSIBLE_EXTRA_VARS
       - ANSIBLE_VERBOSITY
-      - ANSIBLE_PLAYBOOK
+      - ANSIBLE_PLAYBOOK=${ANSIBLE_PLAYBOOK:-/usr/share/devshop/roles/devshop.server/play.yml}
       - ANSIBLE_SKIP_TAGS
       - ANSIBLE_PLAYBOOK_COMMAND_OPTIONS
       - ANSIBLE_CONFIG
