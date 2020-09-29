@@ -55,7 +55,7 @@ jobs:
         # "docker-compose pull" is needed because the if the image does not exist locally, "docker-compose" will try to build.
         # "--no-build" is needed because docker-compose will build the image by default.
         run: |
-          docker-compose pull devshop.server
+          docker-compose pull --quiet devshop.server
           docker-compose up --no-build --detach devshop.server
           docker cp ../ roles_devshop.server_1:/usr/share/devshop/
           sleep 3
