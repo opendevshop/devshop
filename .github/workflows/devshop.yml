@@ -62,7 +62,7 @@ jobs:
           docker cp ../ roles_devshop.server_1:/usr/share/devshop/
           sleep 3
           docker-compose logs
-          docker-compose exec -T devshop.server /usr/share/devshop/devshop-logo 'GitHub Actions Container populated with code. Confirm Version?'
+          docker-compose exec -T devshop.server /usr/share/devshop/scripts/devshop-logo 'GitHub Actions Container populated with code. Confirm Version?'
 
       - name: "Container Environment: ${{ matrix.os }}"
         working-directory: roles
