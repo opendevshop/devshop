@@ -58,6 +58,7 @@ jobs:
           set -x
           docker-compose pull --quiet devshop.server
           docker-compose up --no-build --detach devshop.server
+          docker-compose exec devshop.server rm -rf /usr/share/devshop/
           docker cp ../ roles_devshop.server_1:/usr/share/devshop/
           sleep 3
           docker-compose logs
