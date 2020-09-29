@@ -52,7 +52,10 @@ jobs:
           set -x
           docker-compose pull --quiet devshop.server
           docker-compose up --no-build --detach devshop.server
-          docker-compose exec -T devshop.server rm -rf /usr/share/devshop/
+          docker-compose exec -T devshop.server rm -rf \
+            /usr/share/devshop \
+            /etc/ansible/roles \
+            /etc/ansible/play.yml
           docker cp ../ roles_devshop.server_1:/usr/share/devshop/
           sleep 3
           docker-compose logs
