@@ -1637,7 +1637,7 @@
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/hosting.git",
-                "reference": "f938c937530c860174bb8fbf9b08501bffe0158c"
+                "reference": "a183137db0f0397d6336aff1300f8aec9bb3b2d2"
             },
             "require": {
                 "drupal/drupal": "~7.0",
