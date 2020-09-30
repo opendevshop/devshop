@@ -35,4 +35,5 @@ services:
       - DEVSHOP_DOCKER_COMMAND_RUN=${DEVSHOP_DOCKER_COMMAND_RUN:-devshop-ansible-playbook}
       # This container should always run the devshop.server/play.role when run using this docker-compose.yml.
       - ANSIBLE_PLAYBOOK=/usr/share/devshop/roles/devshop.server/play.yml
+      - ANSIBLE_EXTRA_VARS
       - DOCKER_COMMAND_POST
