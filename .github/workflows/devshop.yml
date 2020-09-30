@@ -58,7 +58,7 @@ jobs:
             /etc/ansible/roles \
             /etc/ansible/play.yml
           docker cp ../ roles_devshop.server_1:/usr/share/devshop/
-          docker-compose exec -T devshop.server chown aegir:aegir /usr/share/devshop/src/DevShop/Templates/DevShopControlTemplate -R
+          docker-compose exec -T devshop.server chown aegir:aegir /usr/share/devshop -R
           sleep 3
           docker-compose logs
           docker-compose exec -T devshop.server /usr/share/devshop/scripts/devshop-logo "GitHub Actions Container populated with code. Running SHA ${GITHUB_PR_SHA}"
