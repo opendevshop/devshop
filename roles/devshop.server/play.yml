@@ -76,8 +76,9 @@
       tags: [runtime]
 
   roles:
+    # Run the opendevshop.users role first at runtime so UIDs are changed ASAP.
     - role: opendevshop.users
-      tags: [always]
+      tags: [runtime]
 
     - role: geerlingguy.mysql
 
