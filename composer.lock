@@ -918,7 +918,7 @@
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/provision.git",
-                "reference": "15cf311136385dc4dabee9935423e17981e16bb0"
+                "reference": "97cf676879be269adfc05bdd59793788788518d0"
             },
             "require": {
                 "drupal/drupal": "~7.0",
