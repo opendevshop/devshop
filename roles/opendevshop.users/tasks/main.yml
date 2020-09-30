@@ -48,20 +48,10 @@
     name: "{{ aegir_user_name }}"
     state: present
     gid: "{{ aegir_user_gid }}"
-  tags: [always]
-
-- name: Stop supervisord running as aegir.
-  service:
-    name: supervisor
-    state: stopped
-  ignore_errors: true
-  when: supervisor_enabled is defined
-  tags: [always]
 
 - name: Stop all processes running as aegir.
   command: killall -u "{{ aegir_user_name }}"
   ignore_errors: true
-  tags: [always]
 
 - name: Create Aegir user
   when: aegir_create_user
@@ -74,7 +64,6 @@
     home: "{{ aegir_user_home }}"
     generate_ssh_key: true
     uid: "{{ aegir_user_uid }}"
-  tags: [always]
 
 - name: Ensure /var/aegir is owned by aegir user.
   file:
