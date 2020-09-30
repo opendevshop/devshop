@@ -11,7 +11,7 @@ export TIMEOUT=300
 wait-site @hostmaster
 
 devshop-log "Clearing drush caches ..."
-drush cc drush
+drush @hostmaster cc drush
 
 devshop-log "Running drush @hostmaster hosting-queued ..."
 drush @hostmaster hosting-queued
