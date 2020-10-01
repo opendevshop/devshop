@@ -237,7 +237,7 @@ jobs:
           # - '5.6'
           - '7.2'
     env:
-      working-directory: ./src/DevShop/Templates/DevShopControlTemplate
+      working-directory: ./src/DevShop/Component/DevShopControlTemplate
     steps:
       - uses: actions/checkout@v1
 

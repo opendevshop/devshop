@@ -263,7 +263,7 @@ class RoboFile extends \Robo\Tasks {
 
     // Run composer install on devmaster stack so it's ready before the container launches and devmaster install command is faster.
     $this->taskExecStack()
-      ->dir('src/DevShop/Templates/DevShopControlTemplate')
+      ->dir('src/DevShop/Component/DevShopControlTemplate')
       ->exec("composer install --prefer-source --ansi")
       ->run();
 
@@ -593,7 +593,7 @@ class RoboFile extends \Robo\Tasks {
       // Set extra ansible vars when not in CI.
       if (empty($_SERVER['CI'])) {
         // Set the "hostmaster platform" path to the full DevShopControlTemplate root so we can use it directly.
-        $extra_vars['devshop_control_path'] = '/usr/share/devshop/src/DevShop/Templates/DevShopControlTemplate';
+        $extra_vars['devshop_control_path'] = '/usr/share/devshop/src/DevShop/Component/DevShopControlTemplate';
 
         if ($opts['force-reinstall']) {
           $extra_vars['devshop_control_install_options'] = '--force-reinstall';
@@ -887,7 +887,7 @@ class RoboFile extends \Robo\Tasks {
       // Remove devmaster site folder
       $version = self::DEVSHOP_LOCAL_VERSION;
       $uri = self::DEVSHOP_LOCAL_URI;
-      $this->_exec("sudo rm -rf src/DevShop/Templates/DevShopControlTemplate/web/sites/{$uri}");
+      $this->_exec("sudo rm -rf src/DevShop/Component/DevShopControlTemplate/web/sites/{$uri}");
     }
 
     // Don't run when -n is specified,
