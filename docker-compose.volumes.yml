@@ -17,7 +17,7 @@ services:
 
       # Devmaster Drupal Install Profile
       # This volume injects the folder `./devmaster` into the "hostmaster" platform in the container.
-      - ./devmaster:/usr/share/devshop/src/DevShop/Templates/DevShopControlTemplate/web/profiles/devmaster
+      - ./devmaster:/usr/share/devshop/src/DevShop/Components/DevShopControlTemplate/web/profiles/devmaster
       # - ./devmaster:/var/aegir/devmaster-1.x/profiles/devmaster
 
       - $HOME/.ssh:/var/aegir/.ssh

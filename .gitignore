@@ -10,7 +10,7 @@ hosting
 hostmaster
 provision
 devshop-control
-src/DevShop/Templates/DevShopControlTemplate/web
+src/DevShop/Components/DevShopControlTemplate/web
 
 # Local config
 .vagrant
