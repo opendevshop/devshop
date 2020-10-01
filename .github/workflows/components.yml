@@ -274,6 +274,6 @@ jobs:
       - name: Test Project Creation
         env:
           GITHUB_TOKEN: ${{ secrets.INPUT_GITHUB_TOKEN }}
-        working-directory: ./src/DevShop/Templates/
+        working-directory: ./src/DevShop/Components/
         run: |
           composer create-project devshop/control-template:@dev temp --repository='{"type":"path","url":"DevShopControlTemplate"}'
