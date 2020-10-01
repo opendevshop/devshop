@@ -1637,7 +1637,7 @@
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/hosting.git",
-                "reference": "a5025528a3a4531d6bb86d7b300c169532566f79"
+                "reference": "ea5d68c64384936816e8d6114653fdc73f1ba071"
             },
             "require": {
                 "drupal/drupal": "~7.0",
@@ -1732,7 +1732,7 @@
             "support": {
                 "source": "https://git.drupalcode.org/project/hosting"
             },
-            "time": "2020-09-29T23:01:11+00:00"
+            "time": "2020-09-30T15:24:53+00:00"
         },
         {
             "name": "drupal/hosting_certificate",
