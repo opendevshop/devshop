@@ -56,7 +56,10 @@ jobs:
           docker-compose exec -T devshop.server rm -rf \
             /usr/share/devshop \
             /etc/ansible/roles \
-            /etc/ansible/play.yml
+            /etc/ansible/play.yml \
+            /var/aegir/.drush \
+            /var/aegir/config \
+
           docker cp ../ roles_devshop.server_1:/usr/share/devshop/
           docker-compose exec -T devshop.server chown aegir:aegir /usr/share/devshop -R
           sleep 3
