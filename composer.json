@@ -27,7 +27,7 @@
         "devshop/bin-tools": "@dev",
         "devshop/yaml-tasks": "self.version",
         "devshop/power-process": "self.version",
-        "drupal/provision": "4.x-dev"
+        "drupal/provision": "4.0-alpha1"
     },
     "replace": {
         "devshop/yaml-tasks": "self.version",
