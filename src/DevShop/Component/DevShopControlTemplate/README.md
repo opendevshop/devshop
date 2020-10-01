@@ -84,7 +84,7 @@ See the [`drupal-composer/drupal-project` composer project for more information]
 
 ## Development
 
-This is a mini repo, split from the [DevShop Mega repo](https://github.com/opendevshop/devshop/tree/1.x/src/DevShop/Components/DevShopControlTemplate).
+This is a mini repo, split from the [DevShop Mega repo](https://github.com/opendevshop/devshop/tree/1.x/src/DevShop/Templates/DevShopControlTemplate).
 
 Please submit pull requests and issues there.
 
