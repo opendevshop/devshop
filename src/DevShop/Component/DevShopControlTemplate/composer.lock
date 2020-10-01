@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2bd68dd67f3d4ad4b2c8f4813e2a7287",
+    "content-hash": "9c8dda8ab1ec10b4f772649765ee0659",
     "packages": [
         {
             "name": "clue/stream-filter",
@@ -418,7 +418,7 @@
         },
         {
             "name": "devshop/devmaster",
-            "version": "dev-feature/ch81/composer-devshop",
+            "version": "1.7.0-alpha1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/opendevshop/devmaster.git",
@@ -5870,7 +5870,7 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "cweagans/composer-patches": 20,
-        "devshop/devmaster": 20,
+        "devshop/devmaster": 15,
         "drupal-composer/preserve-paths": 20,
         "drupal/admin_menu": 5,
         "drupal/aegir_ansible": 20,
