@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9c8dda8ab1ec10b4f772649765ee0659",
+    "content-hash": "01074e144107c6e23621bf2f969018d2",
     "packages": [
         {
             "name": "clue/stream-filter",
@@ -1633,17 +1633,11 @@
         },
         {
             "name": "drupal/hosting",
-            "version": "4.0.0-alpha1",
+            "version": "dev-4.x",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/hosting.git",
-                "reference": "7.x-4.0-alpha1"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/hosting-7.x-4.0-alpha1.zip",
-                "reference": "7.x-4.0-alpha1",
-                "shasum": "79e799eaf7be751b1278f952f0e9aa2a6eec08ef"
+                "reference": "c9facd1bc1b02b10b817b0adabfa7690bba21fca"
             },
             "require": {
                 "drupal/drupal": "~7.0",
@@ -1663,12 +1657,15 @@
             },
             "type": "drupal-module",
             "extra": {
+                "branch-alias": {
+                    "dev-4.x": "4.x-dev"
+                },
                 "drupal": {
-                    "version": "7.x-4.0-alpha1",
-                    "datestamp": "1601551048",
+                    "version": "7.x-4.x-dev",
+                    "datestamp": "1601549028",
                     "security-coverage": {
                         "status": "not-covered",
-                        "message": "Alpha releases are not covered by Drupal security advisories."
+                        "message": "Dev releases are not covered by Drupal security advisories."
                     }
                 }
             },
@@ -1734,7 +1731,8 @@
             "homepage": "https://www.drupal.org/project/hosting",
             "support": {
                 "source": "https://git.drupalcode.org/project/hosting"
-            }
+            },
+            "time": "2020-10-01T10:43:27+00:00"
         },
         {
             "name": "drupal/hosting_certificate",
@@ -5878,7 +5876,7 @@
         "drupal/aegir_config": 10,
         "drupal/cas_attributes": 5,
         "drupal/devshop_stats": 20,
-        "drupal/hosting": 15,
+        "drupal/hosting": 20,
         "drupal/hosting_filemanager": 20,
         "drupal/hosting_statsd": 10
     },
