@@ -60,7 +60,7 @@ devshop_control_git_docroot: web
 
 # This reference will be checked out on provision verify, so be sure to set this to the current version.
 devshop_control_git_reference: ""
-devshop_control_path: "{{ aegir_user_home }}/devshop-control-{{ devshop_version }}"
+devshop_control_path: "{{ aegir_user_home }}/devshop-control"
 devshop_control_drush_alias: "@hostmaster"
 devshop_control_install_options: ""
 
