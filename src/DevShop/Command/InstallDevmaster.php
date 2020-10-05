@@ -207,6 +207,10 @@ class InstallDevmaster extends Command
         'git_reference', NULL, InputOption::VALUE_OPTIONAL,
         'Git reference to use.'
       )
+      ->addOption(
+        'git_docroot', NULL, InputOption::VALUE_OPTIONAL,
+        'Path to document root exposed to web server.'
+      )
 
       // path_to_drush
       ->addOption(
@@ -528,6 +532,7 @@ class InstallDevmaster extends Command
       'git_root' => $this->input->getOption('git_root'),
       'git_remote' => $this->input->getOption('git_remote'),
       'git_reference' => $this->input->getOption('git_reference'),
+      'git_docroot' => $this->input->getOption('git_docroot'),
     ));
 
     // Save Hostmaster Site context, and flag for installation, pre-verify.
