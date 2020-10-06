@@ -304,7 +304,7 @@ function devshop_hosting_update_7106() {
 }
 
 /**
- * Disable DevShop.Support Client!
+ * Disable DevShop.Support Client.
  */
 function devshop_hosting_update_7107() {
   module_disable(array('devshop_support_network_client'));
