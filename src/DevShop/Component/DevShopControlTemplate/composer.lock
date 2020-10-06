@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1ec0f150365b1b65b73c3232cdf83a7b",
+    "content-hash": "66e61a1285e02ae383d0bb95157d28ba",
     "packages": [
         {
             "name": "clue/stream-filter",
@@ -418,17 +418,11 @@
         },
         {
             "name": "devshop/devmaster",
-            "version": "1.7.0-alpha1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/opendevshop/devmaster.git",
-                "reference": "15520c8c3e9b2bf6ff2a5bcd609c4b5f46876e97"
-            },
+            "version": "dev-feature/ch81/composer-devshop",
             "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/opendevshop/devmaster/zipball/15520c8c3e9b2bf6ff2a5bcd609c4b5f46876e97",
-                "reference": "15520c8c3e9b2bf6ff2a5bcd609c4b5f46876e97",
-                "shasum": ""
+                "type": "path",
+                "url": "../../../../devmaster",
+                "reference": "2be2af398b3857b00035a21d136e4ef118812aa7"
             },
             "require": {
                 "cpliakas/git-wrapper": "~1.0",
@@ -460,7 +454,6 @@
                     ]
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "GPL-2.0-or-later"
             ],
@@ -475,8 +468,7 @@
                     "homepage": "https://github.com/opendevshop/devshop/graphs/contributors"
                 }
             ],
-            "description": "The DevShop web interface.",
-            "time": "2020-09-24T19:54:16+00:00"
+            "description": "The DevShop web interface."
         },
         {
             "name": "drupal-composer/preserve-paths",
@@ -5866,7 +5858,7 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "cweagans/composer-patches": 20,
-        "devshop/devmaster": 15,
+        "devshop/devmaster": 20,
         "drupal-composer/preserve-paths": 20,
         "drupal/admin_menu": 5,
         "drupal/aegir_ansible": 20,
