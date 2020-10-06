@@ -93,6 +93,10 @@
        "drupal/hosting_task": "3.180"
    },
     "config": {
+        "bin-dir": "bin",
+        "platform": {
+            "php": "7.1.3"
+        },
         "sort-packages": true
     },
     "autoload": {
