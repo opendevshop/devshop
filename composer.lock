@@ -918,7 +918,7 @@
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/provision.git",
-                "reference": "11edcfee687c781fde478e1852336c0ab298ae5c"
+                "reference": "523355c6db20f78e6cba58ea5da95f40a6b051d4"
             },
             "require": {
                 "drupal/drupal": "~7.0",
@@ -934,7 +934,7 @@
                 },
                 "drupal": {
                     "version": "7.x-4.x-dev",
-                    "datestamp": "1601948525",
+                    "datestamp": "1602017580",
                     "security-coverage": {
                         "status": "not-covered",
                         "message": "Dev releases are not covered by Drupal security advisories."
@@ -1017,7 +1017,7 @@
                 "issues": "https://www.drupal.org/project/issues/provision",
                 "docs": "http://docs.aegirproject.org/"
             },
-            "time": "2020-10-06T13:48:40+00:00"
+            "time": "2020-10-06T22:10:20+00:00"
         },
         {
             "name": "drush/drush",
