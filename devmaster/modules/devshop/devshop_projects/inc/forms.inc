@@ -1402,12 +1402,12 @@ function devshop_prepare_platform_node($project, $environment_name, $git_ref, $w
 
   // Enable git pull queue for this platform if chosen.
   if ($project->settings->deploy['method'] == 'queue') {
-    $platform_node->git['pull_method'] = HOSTING_GIT_PULL_QUEUE;
+    // @TODO: Using integers because hosting_git_pull module isn't enabled anymore.
+    $platform_node->git['pull_method'] = 1;
   }
   // For devshop "webhook" and "manual" methods, disable git pull for now.
-  // @TODO: Remove devshop "code deploy" task in exchange for hosting_git_pull module.
   else {
-    $platform_node->git['pull_method'] = HOSTING_GIT_PULL_DISABLED;
+    $platform_node->git['pull_method'] = 0;
   }
 
 
