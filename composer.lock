@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "05c28a4ea30215acd5486c07a5fdbf3b",
+    "content-hash": "6c2b9b40c78f12cb568803c15ac36bcb",
     "packages": [
         {
             "name": "consolidation/annotated-command",
@@ -914,17 +914,11 @@
         },
         {
             "name": "drupal/provision",
-            "version": "4.0.0-alpha1",
+            "version": "dev-4.x",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/provision.git",
-                "reference": "7.x-4.0-alpha1"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/provision-7.x-4.0-alpha1.zip",
-                "reference": "7.x-4.0-alpha1",
-                "shasum": "a905c1998bc86d08f084ca14f4963b3e0fb4df3c"
+                "reference": "0244904a22df53be0cd454b027b66b02b871defc"
             },
             "require": {
                 "drupal/drupal": "~7.0",
@@ -935,12 +929,15 @@
             },
             "type": "drupal-drush",
             "extra": {
+                "branch-alias": {
+                    "dev-4.x": "4.x-dev"
+                },
                 "drupal": {
-                    "version": "7.x-4.0-alpha1",
-                    "datestamp": "1601551126",
+                    "version": "7.x-4.x-dev",
+                    "datestamp": "1601431985",
                     "security-coverage": {
                         "status": "not-covered",
-                        "message": "Alpha releases are not covered by Drupal security advisories."
+                        "message": "Dev releases are not covered by Drupal security advisories."
                     }
                 }
             },
@@ -1019,7 +1016,8 @@
                 "source": "https://git.drupalcode.org/project/provision",
                 "issues": "https://www.drupal.org/project/issues/provision",
                 "docs": "http://docs.aegirproject.org/"
-            }
+            },
+            "time": "2020-10-06T01:22:53+00:00"
         },
         {
             "name": "drush/drush",
@@ -3353,7 +3351,8 @@
         "devshop/github-api-cli": 20,
         "devshop/bin-tools": 20,
         "devshop/yaml-tasks": 20,
-        "devshop/power-process": 20
+        "devshop/power-process": 20,
+        "drupal/provision": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,
