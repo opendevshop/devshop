@@ -235,9 +235,9 @@ jobs:
       matrix:
         php-versions:
           # - '5.6'
-          - '7.1'
+          - '7.2'
     env:
-      working-directory: ./src/DevShop/Templates/DevShopControlTemplate
+      working-directory: ./src/DevShop/Component/DevShopControlTemplate
     steps:
       - uses: actions/checkout@v1
 
@@ -274,6 +274,6 @@ jobs:
       - name: Test Project Creation
         env:
           GITHUB_TOKEN: ${{ secrets.INPUT_GITHUB_TOKEN }}
-        working-directory: ./src/DevShop/Templates/
+        working-directory: ./src/DevShop/Component/
         run: |
           composer create-project devshop/control-template:@dev temp --repository='{"type":"path","url":"DevShopControlTemplate"}'

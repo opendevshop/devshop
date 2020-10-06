@@ -14,15 +14,6 @@
     path: "{{ ansible_share_path }}"
     state: directory
 
-# @TODO: remove this. Ansible.cfg will point to
-- name: Install Ansible Roles
-  when: false
-  file:
-    src: "{{ devshop_cli_path }}/roles"
-    dest: "{{ ansible_share_path }}/roles"
-    state: link
-    force: true
-
 - name: Include version specific variables for Debian OS Family
   include_vars: "vars.{{ ansible_os_family }}.yml"
   when: ansible_os_family == "Debian"
@@ -134,6 +125,20 @@
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
   changed_when: true
+
+- name: Create Global Drush Configuration Folder
+  tags: [always]
+  file:
+    path: "/etc/drush"
+    mode: 0755
+    state: directory
+
+- name: Create Global Drush Configuration File
+  tags: [always]
+  template:
+    src: drushrc.php.j2
+    dest: "/etc/drush/drushrc.php"
+    mode: 0655
 
 - name: Check drush status
   command: "{{ drush_bin_path }} status"

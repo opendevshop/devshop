@@ -1,4 +1,4 @@
-version: '3'
+version: '2.2'
 
 # This compose file is just an example. Create your own to launch your own Aegir cluster
 
@@ -30,7 +30,7 @@ services:
     #    By using the non-docker-hub image "devshop/server:local" in this docker-compose file, we force the
     #    the developer to finish that first build before any container can be launched.
     #
-    image: ${DEVSHOP_DOCKER_IMAGE:-devshop/server:ubuntu1804}
+    image: ${DEVSHOP_DOCKER_IMAGE:-devshop/server:latest}
     command: ${DOCKER_COMMAND:-env}
     build:
       context: '.'
@@ -63,7 +63,7 @@ services:
       - ANSIBLE_TAGS
       - ANSIBLE_EXTRA_VARS
       - ANSIBLE_VERBOSITY
-      - ANSIBLE_PLAYBOOK
+      - ANSIBLE_PLAYBOOK=${ANSIBLE_PLAYBOOK:-/usr/share/devshop/roles/devshop.server/play.yml}
       - ANSIBLE_SKIP_TAGS
       - ANSIBLE_PLAYBOOK_COMMAND_OPTIONS
       - ANSIBLE_CONFIG
@@ -71,8 +71,8 @@ services:
       - FROM_IMAGE
       - OS_VERSION
       - DEVSHOP_USER_UID
-      # @TODO: Figure a way for the  "devshop server roles" to maintain their own commands.
-      - DOCKER_COMMAND_POST=devshop login
+      - DOCKER_COMMAND_POST=${DOCKER_COMMAND_POST:-devshop login}
+      - DOCKER_COMMAND_POST
 
       # Change to use a different database host.
       - DATABASE_HOST=localhost

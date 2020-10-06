@@ -32,4 +32,8 @@ services:
       # @TODO: Change back to devshop.local.computer
       # DEVSHOP_DOCKER_COMMAND_RUN: ansible-playbook /etc/ansible/play.yml -vv --tags runtime --extra-vars server_hostname=localhost
       # This is listed here so that it can be set by the calling system (github actions).
-      DEVSHOP_DOCKER_COMMAND_RUN: ${DEVSHOP_DOCKER_COMMAND_RUN:-devshop-ansible-playbook}
+      - DEVSHOP_DOCKER_COMMAND_RUN=${DEVSHOP_DOCKER_COMMAND_RUN:-devshop-ansible-playbook}
+      # This container should always run the devshop.server/play.role when run using this docker-compose.yml.
+      - ANSIBLE_PLAYBOOK=/usr/share/devshop/roles/devshop.server/play.yml
+      - ANSIBLE_EXTRA_VARS
+      - DOCKER_COMMAND_POST

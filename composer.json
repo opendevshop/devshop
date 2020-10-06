@@ -25,16 +25,20 @@
         "devshop/docker-bin-tools": "@dev",
         "devshop/git-split": "self.version",
         "devshop/github-api-cli": "self.version",
+        "devshop/bin-tools": "@dev",
+        "devshop/yaml-tasks": "self.version",
+        "devshop/power-process": "self.version",
         "devshop/bin-tools": "self.version",
         "devshop/yaml-tasks": "self.version",
         "devshop/power-process": "self.version",
-        "drupal/provision": "4.x-dev#15cf3111"
+        "drupal/provision": "4.0-alpha1"
     },
     "replace": {
         "devshop/yaml-tasks": "self.version",
         "drupal/drupal": "*"
     },
     "require-dev": {
+        "composer/composer": "^1.9"
     },
     "suggest": {
         "mouf/nodejs-installer": "Use to install nodejs into the devshop bin dir using composer."
@@ -117,7 +121,7 @@
                 "src/DevShop/Component/GitSplit": "https://github.com/devshop-packages/git-split.git",
                 "src/DevShop/Component/PowerProcess": "https://github.com/devshop-packages/power-process.git",
                 "src/DevShop/Component/YamlTasks": "https://github.com/devshop-packages/yaml-tasks.git",
-                "src/DevShop/Templates/DevShopControlTemplate": "https://github.com/devshop-packages/devshop-control-template.git",
+                "src/DevShop/Component/DevShopControlTemplate": "https://github.com/devshop-packages/devshop-control-template.git",
                 "install": "https://github.com/opendevshop/devshop-install.git"
             }
         }
@@ -126,7 +130,6 @@
     "prefer-stable": true,
     "scripts": {
         "post-install-cmd": [
-            "ln -sf ../../../drushrc.provision-include.php vendor/drush/drush/drushrc.php"
         ],
         "pre-update-cmd": [
         ],
