@@ -7,6 +7,10 @@ aegir_user_home: /var/aegir
 aegir_user_authorized_keys: ReplaceAtRuntime
 aegir_logs_path: /var/log/aegir
 
+# Populated in prepare-user.yml
+aegir_user_uid_current: "{{ aegir_user_uid }}"
+aegir_user_gid_current: "{{ aegir_user_gid }}"
+
 # Used for the secondary install scripts for fix-perms and fix-ownership so far
 aegir_hosting_version: "7.x-3.170"
 
