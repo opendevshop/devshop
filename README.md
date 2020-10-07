@@ -37,7 +37,7 @@ These tools are designed to be useful regardless of the hosting or DevOps system
 
 ### Composer Packages
 
-#### [DevShop Control](./src/DevShop/Components/DevShopControlTemplate)
+#### [DevShop Control](./src/DevShop/Component/DevShopControlTemplate)
 
 > Drupal CI/CD Dashboard and Ansible Server Manager in a Box
 
@@ -45,7 +45,7 @@ These tools are designed to be useful regardless of the hosting or DevOps system
 - Add unlimited Drupal projects and environments per server.
 - Create and configure servers all through the web interface.  
 
-#### [Deploy](./src/DevShop/Components/Deploy)
+#### [Deploy](./src/DevShop/Component/Deploy)
 
 > One command, many stages for flexible CI per environment.
 
@@ -53,7 +53,7 @@ These tools are designed to be useful regardless of the hosting or DevOps system
 - Options and pre-sets allow users to skip or include stages depending on the environment. For example, `--skip-reinstall` can be used on a demo site to prevent destroying the content.
 - Configure each "stage" in `composer.json`, to easily customize commands for each site. For example, to import config or not.
 
-#### [YamlTasks](./src/DevShop/Components/YamlTasks)
+#### [YamlTasks](./src/DevShop/Component/YamlTasks)
 
 > Simple test runner with GitHub API integration.
 
@@ -61,7 +61,7 @@ These tools are designed to be useful regardless of the hosting or DevOps system
 - Run all commands with a single command.
 - Send command results to GitHub as Commit Statuses, to ensure Quality Control and present feedback to developers via pass/fail results on Pull Request pages.
 
-#### [PowerProcess](./src/DevShop/Components/PowerProcess)
+#### [PowerProcess](./src/DevShop/Component/PowerProcess)
 
 > Run commands with standard beautiful output.
 
@@ -69,14 +69,14 @@ These tools are designed to be useful regardless of the hosting or DevOps system
 - Improved command-line user experience, metadata reporting (executed time, PID, logs).
 - Pluggable output through monologger: pipe to screen, file, or remote monologger compatible REST API.
 
-#### [GitHub API CLI](./src/DevShop/Components/GitHubApiCli)
+#### [GitHub API CLI](./src/DevShop/Component/GitHubApiCli)
 
 > Simple abstract CLI for interacting with the GitHub API.
 
 - Simple CLI wrapper for the GitHub API, where every API resource is a command and options are automatically passed. 
 - "Deploy" command provides simple way to interact with GitHub's Deployments API using composer commands and bin scripts.
 
-#### [GitComposerTools](./src/DevShop/Components/ComposerCommon)
+#### [GitComposerTools](./src/DevShop/Component/ComposerCommon)
 
 > Traits and classes for accessing Git, GitHub and Composer Data.
 
@@ -84,7 +84,7 @@ These tools are designed to be useful regardless of the hosting or DevOps system
 - `GitHubRepositoryAwareTrait`: Repository functionality plus a helper methods like `getRepoOwner()`.
 - `ComposerRepositoryAwareTrait`: Repository functionality plus accessors for getting data from `composer.json`.
 
-#### [GitSplit](./src/DevShop/Components/YamlTasks)
+#### [GitSplit](./src/DevShop/Component/YamlTasks)
 
 > Split a monorepo with a single command.
 
