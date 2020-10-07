@@ -29,8 +29,11 @@ ON_FAIL=${ON_FAIL:-"systemctl status --no-pager"}
 
 devshop-logo "Running Ansible Playbook..."
 echo "ANSIBLE_PLAYBOOK: $ANSIBLE_PLAYBOOK"
-echo "OPTIONS: $ANSIBLE_PLAYBOOK_COMMAND_OPTIONS"
-echo "devshop-ansible-playbook arguments: $*"
+echo "ANSIBLE_TAGS: $ANSIBLE_TAGS"
+echo "ANSIBLE_SKIP_TAGS: $ANSIBLE_SKIP_TAGS"
+echo "ANSIBLE_EXTRA_VARS: $ANSIBLE_EXTRA_VARS"
+echo "ANSIBLE_PLAYBOOK_COMMAND_OPTIONS: $ANSIBLE_PLAYBOOK_COMMAND_OPTIONS"
+echo "Additional Arguments: $*"
 devshop-line
 
 ANSIBLE_PLAYBOOK_FULL_COMMAND="ansible-playbook $ANSIBLE_PLAYBOOK \

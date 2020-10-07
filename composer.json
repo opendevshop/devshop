@@ -24,11 +24,14 @@
         "devshop/docker-bin-tools": "@dev",
         "devshop/git-split": "self.version",
         "devshop/github-api-cli": "self.version",
-        "devshop/bin-tools": "self.version",
-        "devshop/power-process": "self.version"
+        "devshop/bin-tools": "@dev",
+        "devshop/yaml-tasks": "self.version",
+        "devshop/power-process": "self.version",
+        "drupal/provision": "4.x-dev"
     },
     "replace": {
-        "devshop/yaml-tasks": "self.version"
+        "devshop/yaml-tasks": "self.version",
+        "drupal/drupal": "*"
     },
     "require-dev": {
         "composer/composer": "^1.9"
@@ -102,6 +105,7 @@
                 "src/DevShop/Component/GitSplit": "https://github.com/devshop-packages/git-split.git",
                 "src/DevShop/Component/PowerProcess": "https://github.com/devshop-packages/power-process.git",
                 "src/DevShop/Component/YamlTasks": "https://github.com/devshop-packages/yaml-tasks.git",
+                "src/DevShop/Component/DevShopControlTemplate": "https://github.com/devshop-packages/devshop-control-template.git",
                 "install": "https://github.com/opendevshop/devshop-install.git"
             }
         }

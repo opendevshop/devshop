@@ -1,0 +1,16 @@
+<?php
+/**
+ * @file drushrc.php
+ *
+ * The purpose of this file is to force global 'drush' commands to include the
+ * copy of 'drupal/provision' from the devshop vendor directory.
+ *
+ * This allows us to remove the "drush" based install of provision, bringing
+ * drupal/provision into vendor as a library.
+ *
+ * Confirm it is being loaded by calling `drush -v` and looking for
+ * Include /usr/share/devshop/vendor/drupal/provision
+ *
+ * @see composer.json.
+ */
+$options['include']['provision'] = "{{ devshop_cli_path }}/vendor/drupal/provision";

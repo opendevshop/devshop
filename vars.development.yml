@@ -1,6 +1,11 @@
 # Use this file to alter variables in the devshop container.
 server_hostname: devshop.local.computer
-devshop_control_path: /usr/share/devshop/src/DevShop/Templates/DevShopControlTemplate
+devshop_control_path: /usr/share/devshop/src/DevShop/Component/DevShopControlTemplate
+
+# Uncomment to reinstall hostmaster instance on every robo up.
+# I'm leaving this commented because otherwise it would reinstall every time.
+# If you want to reinstall on robo up, use `bin/robo up --force-reinstall`
+# devshop_control_install_options: --force-reinstall
 
 # Set these to your local UID so docker paths map correctly.
 # IF you set $AEGIR_USER_UID that will be used instead.

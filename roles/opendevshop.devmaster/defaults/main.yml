@@ -12,7 +12,7 @@ devshop_github_token: ''
 # Set PHP Version:
 # DevShop uses geerlingguy.php-versions to handle PHP Version.
 # See README.md for variable details: https://github.com/geerlingguy/ansible-role-php-versions#role-variables
-php_version: '7.1'
+php_version: '7.2'
 
 devshop_cli_repo: http://github.com/opendevshop/devshop.git
 devshop_cli_skip_update: false
@@ -21,12 +21,6 @@ devshop_cli_bin_path: "{{ devshop_cli_path }}/bin"
 devshop_cli_composer_install_command: "install"
 
 drush_bin_path: "{{ devshop_cli_bin_path }}/drush"
-
-devshop_devmaster_path: "{{ aegir_user_home }}/devmaster-{{ devshop_version }}"
-
-devshop_makefile: "{{ devshop_cli_path }}/build-devmaster.make"
-devshop_install_profile: devmaster
-devshop_working_copy: --working-copy
 
 aegir_server_webserver: apache
 mysql_root_password_update: false
@@ -48,7 +42,6 @@ aegir_log_files_touch:
 drush_dl_method: git_drupalorg
 
 devshop_drush_packages:
-  provision: 7.x-3.x-devshop
   registry_rebuild: 7.x-2.2
 
 php_date_timezone: "America/New_York"
@@ -61,27 +54,40 @@ php_date_timezone: "America/New_York"
 devshop_version: 1.x
 devshop_cli_version: "{{ devshop_version }}"
 
-# Drush make is used to build the code platform before the install command, so we can have containers with the code ready.
-devmaster_make_command: "{{ drush_bin_path }} make {{ devshop_makefile }} {{ devshop_devmaster_path }} {{ devshop_working_copy }}"
+# Set devshop_control_git_remote to deploy a devmaster instance from an existing git repo.
+# The devshop_control_git_reference will be checked out on provision verify. Leave blank to use default branch.
+devshop_control_git_remote: "https://github.com/devshop-packages/devshop-control-template"
+devshop_control_git_reference: ""
+devshop_control_git_docroot: "web"
+devshop_control_path: "{{ aegir_user_home }}/devshop-control"
+devshop_control_drush_alias: "@hostmaster"
+devshop_control_install_options: ""
 
-devmaster_install_command: "{{ drush_bin_path }} hostmaster-install -y --strict=0 {{ server_hostname }} \
-                                --database_host={{ database_host }} \
+devshop_install_profile: devmaster
+
+devmaster_install_command: "{{ devshop_cli_bin_path }}/devshop devmaster:install -n \
+                                --site={{ server_hostname }} \
+                                --aegir_db_host={{ database_host }} \
                                 --aegir_db_pass={{ mysql_root_password }} \
-                                --aegir_db_port=3306 \
                                 --aegir_db_user={{ mysql_root_username }} \
-                                --aegir_db_grant_all_hosts=1 \
+                                --aegir_db_port={{ database_host_port }} \
                                 --aegir_host={{ server_hostname }} \
                                 --client_name={{ aegir_client_name }} \
                                 --client_email={{ devshop_devmaster_email }} \
                                 --http_service_type={{ aegir_server_webserver }} \
-                                --makefile={{ devshop_makefile }} \
                                 --profile={{ devshop_install_profile }} \
-                                --root=/var/aegir/devmaster-{{ devshop_version }} \
-                                {{ devshop_working_copy }} \
+                                --root={{ devshop_control_path }}/{{ devshop_control_git_docroot }} \
+                                --devshop_version={{ devshop_version }} \
+                                --drush-path={{ devshop_cli_bin_path }}/drush \
+                                --git_root={{ devshop_control_path }} \
+                                --git_remote={{ devshop_control_git_remote }} \
+                                --git_reference={{ devshop_control_git_reference }}
+                                --git_docroot={{ devshop_control_git_docroot }}
+                                {{ devshop_control_install_options }}
 "
 
 devmaster_upgrade_command: |
-  {{ devshop_cli_bin_path }}/devshop devmaster:upgrade {{ devshop_version }} --makefile={{ devshop_makefile }} -n --run-from-playbooks
+  {{ devshop_cli_bin_path }}/devshop devmaster:upgrade {{ devshop_version }} -n --run-from-playbooks
 
 devmaster_test_command: "{{ devshop_cli_path }}/tests/devshop-tests.sh"
 
@@ -104,7 +110,7 @@ devshop_support_license_key: ""
 # The path to the script to use for the Hosting Task Queue Runner. See opendevshop/devshop/bin/hosting-queue-runner
 hosting_queue_runner_bin_path: "{{ devshop_cli_bin_path }}/hosting-queue-runner"
 
-# Triggers the removal of devshop_devmaster_path: `rm -rf {{ devshop_devmaster_path }}`
+# Triggers the removal of devshop_control_path: `rm -rf {{ devshop_control_path }}`
 devshop_danger_remove_devmaster: false
 
 # By default, devshop assumes it is being installed at "runtime" (like on a running server).

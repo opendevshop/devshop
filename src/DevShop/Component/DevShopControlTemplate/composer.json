@@ -1,0 +1,153 @@
+{
+    "name": "devshop/control-template",
+    "description": "Project template for DevShop Devmaster. Use to create a custom devmaster front-end.",
+    "type": "project",
+    "license": "GPL-2.0-or-later",
+    "authors": [
+        {
+            "name": "",
+            "role": ""
+        }
+    ],
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://packages.drupal.org/7"
+        },
+        {
+            "type": "composer",
+            "url": "https://asset-packagist.org"
+        },
+        {
+            "type": "path",
+            "url": "../../../../devmaster"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.3",
+        "ext-curl": "*",
+        "ext-gd": "*",
+        "ext-json": "*",
+        "ext-openssl": "*",
+        "ext-pdo": "*",
+        "ext-xml": "*",
+        "composer/installers": "^1.2",
+        "composer/semver": "^1.4",
+        "cweagans/composer-patches": "dev-master#a18d1ca",
+        "devshop/devmaster": "dev-feature/ch81/composer-devshop",
+        "drupal-composer/preserve-paths": "dev-master#4c5f62fe97f48e38c5e80cf2f9be8666f683e454",
+        "drupal/admin_menu": "@rc",
+        "drupal/adminrole": "^1.1",
+        "drupal/aegir_ansible": "@dev",
+        "drupal/aegir_cloud": "@dev",
+        "drupal/aegir_config": "@beta",
+        "drupal/aegir_ssh": "^1.0",
+        "drupal/betterlogin": "^1.5",
+        "drupal/bootstrap": "^3.26",
+        "drupal/cas": "^1.7",
+        "drupal/cas_attributes": "@rc",
+        "drupal/chosen": "^2.1",
+        "drupal/composer_autoloader": "^1.0",
+        "drupal/ctools": "^1.15",
+        "drupal/devel": "^1.7",
+        "drupal/devshop_stats": "@dev",
+        "drupal/drupal": "^7.62",
+        "drupal/entity": "^1.9",
+        "drupal/features": "^2.11",
+        "drupal/hosting": "4.x-dev",
+        "drupal/hosting_filemanager": "dev-1.x",
+        "drupal/hosting_git": "^3.181",
+        "drupal/hosting_https": "^3.182",
+        "drupal/hosting_logs": "^3.181",
+        "drupal/hosting_site_backup_manager": "^3.180",
+        "drupal/hosting_statsd": "@beta",
+        "drupal/hosting_tasks_extra": "^3.180",
+        "drupal/jquery_update": "^2.7",
+        "drupal/libraries": "^2.0",
+        "drupal/module_filter": "^2.2",
+        "drupal/navbar": "^1.7",
+        "drupal/openidadmin": "^1.0",
+        "drupal/overlay_paths": "^1.3",
+        "drupal/r4032login": "^1.8",
+        "drupal/sshkey": "^2.0",
+        "drupal/statsd": "^1.1",
+        "drupal/timeago": "^2.3",
+        "drupal/token": "^1.7",
+        "drupal/views": "^3.24",
+        "drupal/views_bulk_operations": "^3.5",
+        "guzzle/guzzle": "^3.9",
+        "npm-asset/backbone": "^1.4",
+        "npm-asset/chosen-js": "^1.8",
+        "npm-asset/modernizr": "^3.11",
+        "npm-asset/underscore": "^1.10",
+        "oomphinc/composer-installers-extender": "^1.1",
+        "symfony/filesystem": "~2.7|^3",
+        "toin0u/digitalocean-v2": "~2.0",
+        "webflo/drupal-finder": "^1.0.0"
+    },
+    "conflict": {
+        "drupal/core": "8.*"
+    },
+   "replace": {
+       "drupal/hosting_server": "3.180",
+       "drupal/hosting_site": "3.180",
+       "drupal/hosting_client": "3.180",
+       "drupal/hosting_db_server": "3.180",
+       "drupal/hosting_web_server": "3.180",
+       "drupal/hosting_task": "3.180"
+   },
+    "config": {
+        "bin-dir": "bin",
+        "platform": {
+            "php": "7.1.3"
+        },
+        "sort-packages": true
+    },
+    "autoload": {
+        "classmap": [
+            "scripts/composer/ScriptHandler.php"
+        ]
+    },
+    "scripts": {
+        "pre-install-cmd": [
+            "DrupalProject\\composer\\ScriptHandler::checkComposerVersion"
+        ],
+        "pre-update-cmd": [
+            "DrupalProject\\composer\\ScriptHandler::checkComposerVersion"
+        ],
+        "post-install-cmd": [
+            "DrupalProject\\composer\\ScriptHandler::createRequiredFiles"
+        ],
+        "post-update-cmd": [
+            "DrupalProject\\composer\\ScriptHandler::createRequiredFiles"
+        ],
+        "post-create-project-cmd": [
+            "DrupalProject\\composer\\ScriptHandler::removeInternalFiles"
+        ],
+        "uninstall": [
+          "echo 'Removing all Drupal and vendor code...'",
+          "rm -rf vendor web/includes web/misc web/modules web/scripts web/themes",
+          "rm -f web/*; rm -f web/.* || true"
+        ],
+        "reinstall": [
+          "@uninstall",
+          "@composer install --prefer-source --ansi"
+        ]
+    },
+    "extra": {
+      "installer-types": ["library", "npm-asset"],
+      "installer-paths": {
+            "web/": ["type:drupal-core"],
+            "web/profiles/{$name}/": ["type:drupal-profile"],
+            "web/sites/all/libraries/chosen/": ["npm-asset/chosen-js"],
+            "web/sites/all/drush/{$name}/": ["type:drupal-drush"],
+            "web/sites/all/libraries/{$name}/": ["type:drupal-library","type:bower-asset","type:npm-asset"],
+            "web/sites/all/modules/contrib/{$name}/": ["type:drupal-module"],
+            "web/sites/all/themes/contrib/{$name}/": ["type:drupal-theme"]
+      },
+        "preserve-paths": [
+            "web/sites",
+            "web/profiles"
+        ]
+    }
+}

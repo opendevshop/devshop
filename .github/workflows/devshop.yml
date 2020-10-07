@@ -46,17 +46,25 @@ jobs:
           COMMAND: "echo 'DevShop Server Online, launched by GitHub Actions.'"
           DEVSHOP_DOCKER_COMMAND_RUN: "echo 'Skipping DEVSHOP_DOCKER_COMMAND_RUN (ansible-playbook), so that GitHub Actions can run in a separate step.'"
           DOCKER_COMMAND_POST: "echo 'GitHub Actions Container was launched.'"
+          ANSIBLE_EXTRA_VARS: "devshop_control_path=/usr/share/devshop/src/DevShop/Component/DevShopControlTemplate"
         # "docker-compose pull" is needed because the if the image does not exist locally, "docker-compose" will try to build.
         # "--no-build" is needed because docker-compose will build the image by default.
         run: |
           set -x
           docker-compose pull --quiet devshop.server
           docker-compose up --no-build --detach devshop.server
-          docker-compose exec -T devshop.server rm -rf /usr/share/devshop/
+          docker-compose exec -T devshop.server rm -rf \
+            /usr/share/devshop \
+            /etc/ansible/roles \
+            /etc/ansible/play.yml \
+            /var/aegir/.drush \
+            /var/aegir/config \
+
           docker cp ../ roles_devshop.server_1:/usr/share/devshop/
+          docker-compose exec -T devshop.server chown aegir:aegir /usr/share/devshop -R
           sleep 3
           docker-compose logs
-          docker-compose exec -T devshop.server /usr/share/devshop/scripts/devshop-logo 'GitHub Actions Container populated with code. Confirm Version?'
+          docker-compose exec -T devshop.server /usr/share/devshop/scripts/devshop-logo "GitHub Actions Container populated with code. Running SHA ${GITHUB_PR_SHA}"
 
       - name: "Review Container Environment"
         working-directory: roles

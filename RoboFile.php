@@ -206,14 +206,13 @@ class RoboFile extends \Robo\Tasks {
   }
 
   private $repos = [
-    'provision' => 'http://git.drupal.org/project/provision.git',
     'aegir-home/.drush/commands/registry_rebuild' => 'http://git.drupal.org/project/registry_rebuild.git#',
   ];
 
   /**
    * Clone all needed source code and build devmaster from the makefile.
    *
-   * @option no-dev Use build-devmaster.make instead of the development makefile.
+   * @option no-dev Ensure git remote URLs are SSH format so developers can push.
    * @option devshop-version The directory to put the
    */
   public function prepareSourcecode($opts = [
@@ -260,52 +259,13 @@ class RoboFile extends \Robo\Tasks {
           ->cloneRepo($url, $this->devshop_root_path . '/' . $path, $branch)
           ->run();
       }
-
-      // Checkout provision to the 7.x-3.x-devshop branch.
-      if ($path == 'provision') {
-        $this->taskGitStack()
-          ->dir($this->devshop_root_path . '/' . $path)
-          ->checkout('7.x-3.x-devshop')
-          ->run();
-      }
     }
 
-    // If we want to just populate modules into /devmaster folder...
-   // MAKE inside the devmaster profile
-      // Populate devmaster install profile with contrib code.
-      $makefile_path = 'build-devmaster-dev.make.yml';
-      $make_destination = 'devmaster/';
-      if (file_exists('devmaster/modules/contrib')) {
-        $this->say("Path 'devmaster/modules/contrib' already exists.");
-      }
-      else {
-        $this->yell("Populating devmaster profile with contrib code from $makefile_path ...");
-        $result = $this->_exec("bin/drush make {$makefile_path} {$make_destination} --working-copy --no-gitinfofile --no-core --contrib-destination=.");
-        if (!$result->wasSuccessful()) {
-          throw new \RuntimeException("Drush make failed with the exit code " . $result->getExitCode());
-        }
-      }
-
-    // Also MAKE the entire drupal stack.
-      // Run drush make to build the devmaster stack.
-      $makefile_path = $opts['no-dev']? 'build-devmaster.make': "build-devmaster-dev.make.yml";
-      $make_destination = $this->devshop_root_path . "/aegir-home/devmaster-" . $opts['devshop-version'];
-
-      // Append the desired devshop root path.
-      $makefile_path = $this->devshop_root_path . '/' . $makefile_path;
-
-      if (file_exists($make_destination)) {
-        $this->say("Path {$make_destination} already exists.");
-      }
-      else {
-
-        $this->yell("Building devmaster from makefile $makefile_path to $make_destination");
-
-        $result = $this->_exec("bin/drush make {$makefile_path} {$make_destination} --working-copy --no-gitinfofile");
-        if (!$result->wasSuccessful()) {
-          throw new \RuntimeException("Drush make failed with the exit code " . $result->getExitCode());
-        }
-      }
+    // Run composer install on devmaster stack so it's ready before the container launches and devmaster install command is faster.
+    $this->taskExecStack()
+      ->dir('src/DevShop/Component/DevShopControlTemplate')
+      ->exec("composer install --prefer-source --ansi")
+      ->run();
 
     // Set git remote urls
     if ($opts['no-dev'] == FALSE) {
@@ -545,7 +505,7 @@ class RoboFile extends \Robo\Tasks {
     }
 
     // Determine current UID.
-    if (is_null($opts['user-uid'])) {
+    if (empty($opts['user-uid'])) {
       $opts['user-uid'] = trim(shell_exec('id -u'));
     }
 
@@ -592,7 +552,7 @@ class RoboFile extends \Robo\Tasks {
         // Set COMPOSE_FILE to include volumes.
         $opts['compose-file'] = 'docker-compose.yml:docker-compose.volumes.yml';
 
-        if (!file_exists('aegir-home/devmaster-' . $this::DEVSHOP_LOCAL_VERSION) && !$opts['skip-source-prep']) {
+        if (!file_exists('aegir-home') && !$opts['skip-source-prep']) {
           $this->io()->warning('The aegir-home folder not present. Running prepare source code command.');
           $this->prepareSourcecode($opts);
         }
@@ -628,12 +588,12 @@ class RoboFile extends \Robo\Tasks {
       // Runtime Environment for the $cmd list.
       $env_run = $this->generateEnvironmentArgs($opts);
       $extra_vars = array();
+      $extra_vars['devshop_control_git_reference'] = $this->git_ref;
 
       // Set extra ansible vars when not in CI.
       if (empty($_SERVER['CI'])) {
-        // @TODO: Uncomment when composer branch is ready.
         // Set the "hostmaster platform" path to the full DevShopControlTemplate root so we can use it directly.
-        // $extra_vars['devshop_control_path'] = '/usr/share/devshop/src/DevShop/Templates/DevShopControlTemplate';
+        $extra_vars['devshop_control_path'] = '/usr/share/devshop/src/DevShop/Component/DevShopControlTemplate';
 
         if ($opts['force-reinstall']) {
           $extra_vars['devshop_control_install_options'] = '--force-reinstall';
@@ -645,18 +605,27 @@ class RoboFile extends \Robo\Tasks {
         }
       }
 
-      $env_run['ANSIBLE_EXTRA_VARS'] = json_encode($extra_vars);
-
-      // Run a secondary command after the docker command.
+      // Run a test command after the docker command.
       if ($test_command) {
         $env_run['DOCKER_COMMAND_POST'] = $test_command;
         $env_run['DOCKER_COMMAND_RUN_POST_EXIT'] = 1;
+
+        $extra_vars['supervisor_started'] = false;
+      }
+      else {
+        $env_run['DOCKER_COMMAND_POST'] = 'devshop login';
+      }
+
+      $env_run['ANSIBLE_EXTRA_VARS'] = json_encode($extra_vars);
+      if ($this->output->isVerbose()) {
+        $this->say('Ansible Extra Vars');
+        print_r($extra_vars);
       }
 
       // Override the DEVSHOP_DOCKER_COMMAND_RUN if specified.
-    if (!empty($docker_command)) {
+      if (!empty($docker_command)) {
         $env_run['DEVSHOP_DOCKER_COMMAND_RUN'] = $docker_command;
-    }
+      }
 
       // @TODO: Write to .env file so user does not have to keep using CLI args.
 
@@ -887,7 +856,7 @@ class RoboFile extends \Robo\Tasks {
   /**
    * Run a command in the devshop container.
    */
-  public function exec($cmd = "devshop-ansible-playbook") {
+  public function exec($cmd = '') {
     return $this->_exec("docker-compose exec -T \
       --env ANSIBLE_TAGS \
       --env ANSIBLE_SKIP_TAGS \
@@ -918,22 +887,17 @@ class RoboFile extends \Robo\Tasks {
       // Remove devmaster site folder
       $version = self::DEVSHOP_LOCAL_VERSION;
       $uri = self::DEVSHOP_LOCAL_URI;
-      $this->_exec("sudo rm -rf aegir-home/.drush");
-      $this->_exec("sudo rm -rf aegir-home/config");
-      $this->_exec("sudo rm -rf aegir-home/clients");
-      $this->_exec("sudo rm -rf aegir-home/projects");
-      $this->_exec("sudo rm -rf aegir-home/devmaster-{$version}/sites/{$uri}");
-      $this->_exec("sudo rm -rf aegir-home/devmaster-1.0.0-beta10/sites/{$uri}");
+      $this->_exec("sudo rm -rf src/DevShop/Component/DevShopControlTemplate/web/sites/{$uri}");
     }
 
     // Don't run when -n is specified,
-    if ($opts['force'] || !$opts['no-interaction'] && $this->confirm("Destroy local source code? (aegir-home)")) {
+    if ($opts['no-interaction'] || $this->confirm("Destroy container home directory? (aegir-home)")) {
       if ($this->_exec("sudo rm -rf aegir-home")->wasSuccessful()) {
         $this->say("Entire aegir-home folder deleted.");
       }
     }
-    elseif ($opts['no-interaction']) {
-      $this->say("Local source code was retained. Use 'robo destroy --force' option to remove it, or run 'rm -rf aegir-home'.");
+    else {
+      $this->say("The aegir-home directory was retained. It will be  present when 'robo up' is run again.");
     }
   }
 
@@ -1025,7 +989,8 @@ class RoboFile extends \Robo\Tasks {
    * Get a one-time login link to Devamster.
    */
   public function login($user = 'aegir') {
-    $this->_exec("docker-compose exec --user $user -T devshop drush @hostmaster uli");
+      // @TODO: Figure out why PATH is gone.
+    $this->_exec("docker-compose exec --user $user -T devshop /usr/share/devshop/bin/drush @hostmaster uli");
   }
 
   /**
