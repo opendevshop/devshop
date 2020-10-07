@@ -17,10 +17,6 @@
         {
             "type": "composer",
             "url": "https://asset-packagist.org"
-        },
-        {
-            "type": "path",
-            "url": "../../../../devmaster"
         }
     ],
     "require": {
