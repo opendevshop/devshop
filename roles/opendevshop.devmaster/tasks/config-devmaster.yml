@@ -1,5 +1,14 @@
 ---
-- name: Devmaster | Clear all caches
+- name: Devmaster | Clear drush caches
+  command: "{{ drush_bin_path }} cc drush"
+  become: true
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
+  register: drush_cache_clear
+  changed_when: "drush_cache_clear.stdout != empty_string"
+  tags: [runtime]
+
+- name: Devmaster | Clear DevShop Control caches
   command: "{{ drush_bin_path }} {{ devshop_control_drush_alias }} cc all"
   become: true
   become_user: "{{ aegir_user_name }}"
