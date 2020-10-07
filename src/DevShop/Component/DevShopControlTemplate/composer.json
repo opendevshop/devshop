@@ -145,5 +145,6 @@
             "web/sites",
             "web/profiles"
         ]
-    }
+    },
+    "prefer-stable": true
 }
