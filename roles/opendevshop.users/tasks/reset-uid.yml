@@ -1,0 +1,26 @@
+---
+
+- name: "User ID Change: Stop supervisord"
+  service:
+    name: supervisord
+    state: stopped
+
+- name: "User ID Change: Find all user processes"
+  shell: "ps -ef | grep -v grep | grep -w {{ aegir_user_name }} | awk '{print $2}'"
+  register: running_processes
+
+- name: "User ID Change: Kill all user processes"
+  shell: "kill {{ item }}"
+  with_items: "{{ running_processes.stdout_lines }}"
+
+- name: "User ID Change: Wait for all processes to end"
+  wait_for:
+    path: "/proc/{{ item }}/status"
+    state: absent
+  with_items: "{{ running_processes.stdout_lines }}"
+  ignore_errors: yes
+  register: killed_processes
+
+- name: "User ID Change: Force stop stuck processes"
+  shell: "kill -9 {{ item }}"
+  with_items: "{{ killed_processes.results | select('failed') | map(attribute='item') | list }}"
