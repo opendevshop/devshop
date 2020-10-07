@@ -2,7 +2,7 @@
 
 [DevShop][1] is an **Open Source DevOps Framework** and a 
 set of reusable **components** designed to improve the web development, testing, and 
-server management process.
+server management process, especially for [Drupal](https://drupal.org) websites.
 
 The goal of DevShop is to provide a complete **web development & testing pipeline** out of the
 box, while empowering users to choose their own server infrastructure and systems 
@@ -11,7 +11,7 @@ architecture.
 DevShop uses [Ansible & Ansible Galaxy][2] for server configuration, [Symfony 
 Console][3] for command line tools, and [Drupal][3] for the web interface.
 
-### Core Values
+## Core Values
 
 #### Empower and Actualize.
   - Empower site builders to launch their own sites and services on any computer.
@@ -29,76 +29,84 @@ Console][3] for command line tools, and [Drupal][3] for the web interface.
   - Lower the cost of running sites with a host-agnostic platform, commoditizing servers, and moving maintenance costs of DevOps tools off of organizations and on to the community, 
   - Lower the barriers of entry into the DevOps world for all.
 
-
-### Design Principles
-
-The design principles of DevShop are transparency, simplicity, and modularity:
-
-
-  - **Transparency:** *Control systems at the service level.* 
-    
-    DevShop manages services like 
-    Apache and MySQL using Ansible to give total control to users. Docker images
-    are built on top of that, using the same configuration. 
-    
-    This enables
-    parity between traditional servers and the Docker containers, and allows 
-    people to use DevShop along side tools they are familiar with like Ansible, Chef and Puppet.
-  - **Simplicity:** *Avoid unneeded dependencies on build systems.* 
-  
-    DevShop manages servers and
-    site code like a traditional web server, using Git, MySQL, and Apache to 
-    maintain the broadest possible compatibility. 
-    
-    Build-based systems such as 
-    Docker add time and complexity to the deployment process, prevent easy 
-    access to servers, and force web developers to learn more skills and tools. 
-    
-  - **Modularity**: *Allow full customization of servers, processes, and interfaces.* 
-  
-    DevShop leverages Ansible for server 
-    configuration and Drupal for the web interface, providing an easy way 
-    to customize of all aspects of the system.
-    
-    DevShop follows the *core principles of Drupal:* community, collaboration, and
-    customization. By following these guidelines, we hope to achieve a sustainable, 
-    community-driven platform that can fit most users needs out of the box, without 
-    restricting the rest from building their dream system.
-
 ## DevShop Components
 
-The following components make up the OpenDevShop Framework:
+The DevShop Components are small, independently functional tools that are all designed to work together.
 
-1. Composer Packages
-    1. [`devshop/git-split`](https://github.com/devshop-packages/git-split)
-        - Commands to split the git monorepo into multiple child repos. 
-        - Uses the same [splitsh-lite]() script that Symfony and Drupal uses.
-        - Reads list of repositories from `composer.json` config.
-        - In theory, could be used by Drupal core instead of the "drupalorg" scripts currently in use.
-    2. [`devshop/composer-common`](https://github.com/devshop-packages/composer-common). Useful tools for any Composer project.
-    3. [`devshop/power-process`](https://github.com/devshop-packages/power-process). Enhanced Symfony Process component.  
-        - Improved command-line user experience, metadata reporting (executed time, PID, logs).
-        - Pluggable output through monologger: pipe to screen, file, or remote monologger compatible REST API.
-        - Base tool for the rest. Any shell execution should be done through PowerProcess.
-        - Migrated from `provision-ops/power-process`.
-    4. [devshop/github-api-cli](https://github.com/devshop-packages/github-api-cli) 
-        - Simple CLI wrapper for the GitHub API.
-        - Base command posts to any resource, passes any option.
-        - Additional commands for specific purposes, such as to create and update "deployments".
-    4. [`devshop/yaml-tasks`](https://github.com/devshop-packages/yaml-tasks)
-        - Keep tests and standard commands in a Yaml file.
-        - Run all commands with a single command.
-        - Send command results to GitHub as Commit Status, to show pass/fail results in Pull Request pages.
-        - Migrated from `provision-ops/yaml-tests`. 
-1. Drupal Projects
-    1. [`drupal/devmaster`](https://www.drupal.org): Pushed to drupal.org repo. Ensure compatibility with 
-        Drupal.org packaging and composer packagist systems. 
-3. Ansible Roles
-    1. opendevshop.apache
-    2. opendevshop.devmaster
-    3. opendevshop.users
-    4. devshop.server - Meta role used to create the `devshop/server` container.
+These tools are designed to be useful regardless of the hosting or DevOps systems they are being run on. 
 
+### Composer Packages
+
+#### [DevShop Control](./src/DevShop/Components/DevShopControlTemplate)
+
+> Drupal CI/CD Dashboard and Ansible Server Manager in a Box
+
+- Web-based front-end for a DevShop server. Drupal 7 based. 
+- Add unlimited Drupal projects and environments per server.
+- Create and configure servers all through the web interface.  
+
+#### [Deploy](./src/DevShop/Components/Deploy)
+
+> One command, many stages for flexible CI per environment.
+
+- Single `deploy` command to be used in CI systems designed to encompass the entire cycle: git updates, code build, reinstall, deploy hooks and test.
+- Options and pre-sets allow users to skip or include stages depending on the environment. For example, `--skip-reinstall` can be used on a demo site to prevent destroying the content.
+- Configure each "stage" in `composer.json`, to easily customize commands for each site. For example, to import config or not.
+
+#### [YamlTasks](./src/DevShop/Components/YamlTasks)
+
+> Simple test runner with GitHub API integration.
+
+- Keep tests and standard commands in a Yaml file.
+- Run all commands with a single command.
+- Send command results to GitHub as Commit Statuses, to ensure Quality Control and present feedback to developers via pass/fail results on Pull Request pages.
+
+#### [PowerProcess](./src/DevShop/Components/PowerProcess)
+
+> Run commands with standard beautiful output.
+
+- Enhanced Symfony Process component for improved user experience and log portability.
+- Improved command-line user experience, metadata reporting (executed time, PID, logs).
+- Pluggable output through monologger: pipe to screen, file, or remote monologger compatible REST API.
+
+#### [GitHub API CLI](./src/DevShop/Components/GitHubApiCli)
+
+> Simple abstract CLI for interacting with the GitHub API.
+
+- Simple CLI wrapper for the GitHub API, where every API resource is a command and options are automatically passed. 
+- "Deploy" command provides simple way to interact with GitHub's Deployments API using composer commands and bin scripts.
+
+#### [GitComposerTools](./src/DevShop/Components/ComposerCommon)
+
+> Traits and classes for accessing Git, GitHub and Composer Data.
+
+- `GitRepositoryAwareTrait`: Add to any class to read info from the current Git Repository.
+- `GitHubRepositoryAwareTrait`: Repository functionality plus a helper methods like `getRepoOwner()`.
+- `ComposerRepositoryAwareTrait`: Repository functionality plus accessors for getting data from `composer.json`.
+
+#### [GitSplit](./src/DevShop/Components/YamlTasks)
+
+> Split a monorepo with a single command.
+
+- Commands to split the git monorepo into multiple child repos. 
+- Uses the same [splitsh-lite]() script that Symfony and Drupal uses.
+- Reads list of repositories from `composer.json` config.
+    
+### Ansible Roles
+
+See https://galaxy.ansible.com/opendevshop for all roles.
+
+1. opendevshop.apache
+2. opendevshop.devmaster
+3. opendevshop.users
+4. devshop.server - All in one devshop server.
+
+### Docker Containers
+
+- [devshop/server](https://hub.docker.com/r/devshop/server) All in one container, uses systemd to run all services.
+
+As we progress forward with the Ansible and Docker system, more common web services will be created and released as Ansible Roles and Docker containers.
+ 
 # Resources
 
 * [Documentation](http://docs.opendevshop.com) Please Contribute! [github.com/opendevshop/documentation](https://github.com/opendevshop/documentation) 
