@@ -77,6 +77,7 @@
 
   roles:
     # Run the opendevshop.users role first at runtime so UIDs are changed ASAP.
+    # The playbook will ALSO be run before opendevshop.devmaster below because it is stored as a dependency.
     - role: opendevshop.users
       tags: [runtime]
 
