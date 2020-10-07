@@ -26,7 +26,7 @@ feature:
     # feature item loop
     - name : "DevShop Control"
       icon : "ti-pulse"
-      content : "Drupal CI/CD and Ansible Server Manager in a Box"
+      content : "Drupal CI/CD Dashboard and Ansible Server Manager in a Box"
       
     # feature item loop
     - name : "YamlTasks"
@@ -36,7 +36,7 @@ feature:
     # feature item loop
     - name : "PowerProcess"
       icon : "ti-money"
-      content : "Run commands with standard beautiful output"
+      content : "Run commands with standard beautiful output."
 
     # feature item loop
     - name : "GitSplit"
@@ -58,32 +58,46 @@ service:
   enable : true
   service_item:
     # service item loop
-    - title : "It is the most advanced digital marketing and it company."
+    - title : "Complete Drupal CI/CD and QA/QC Platform"
       images:
       - "images/service-1.png"
       - "images/service-2.png"
       - "images/service-3.png"
-      content : "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Consequat tristique eget amet, tempus eu at consecttur. Leo facilisi nunc viverra tellus. Ac laoreet sit vel consquat. consectetur adipiscing elit. Consequat tristique eget amet, tempus eu at consecttur. Leo facilisi nunc viverra tellus. Ac laoreet sit vel consquat."
+      content : "
+      DevShop provides an all-in-one solution for Continuous Integration and Delivery for Drupal.
+<p>
+      Unlimited projects and environments per server keeps costs and complexity low.
+<p>
+      Configure Devshop to run Pull Request Environments with GitHub API integration for Quality Assurance and Quality Control.
+
+"
       button:
         enable : true
-        label : "Check it out"
+        label : "Learn more about Test Driven Development"
         link : "#"
-        
+
     # service item loop
-    - title : "It is a privately owned Information and cyber security company"
+    - title : "Server Management System powered by Drupal and Ansible"
       images:
       - "images/service-1.png"
-      content : "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Consequat tristique eget amet, tempus eu at consecttur. Leo facilisi nunc viverra tellus. Ac laoreet sit vel consquat. consectetur adipiscing elit. Consequat tristique eget amet, tempus eu at consecttur. Leo facilisi nunc viverra tellus. Ac laoreet sit vel consquat."
+      content : "
+      DevShop is a Server Management System capable of running any Ansible role against any server.
+      <p>
+      With a web interface powered by Drupal, DevShop makes it easy to edit and deploy Server configuration changes.
+      <p>
+      Customize your Ansible inventory as easily as you edit the content on your website.
+
+      "
       button:
         enable : true
         label : "Check it out"
         link : "#"
         
     # service item loop
-    - title : "It’s a team of experienced and skilled people with distributions"
+    - title : "Run anywhere with a 100% Open Source Stack."
       images:
       - "images/service-2.png"
-      content : "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Consequat tristique eget amet, tempus eu at consecttur. Leo facilisi nunc viverra tellus. Ac laoreet sit vel consquat. consectetur adipiscing elit. Consequat tristique eget amet, tempus eu at consecttur. Leo facilisi nunc viverra tellus. Ac laoreet sit vel consquat."
+      content : "DevShop is 100% open source, allowing it to be run in any datacenter using Linux."
       button:
         enable : true
         label : "Check it out"
