@@ -1,0 +1,119 @@
+####################### Banner #########################
+banner:
+  title : "OpenDevShop <br/><small>The Open Source DevOps Framework</small>"
+  image : "images/banner-art.svg"
+  content : "
+             DevShop is an **Open Source DevOps Framework** and a
+             set of reusable **components** designed to improve the web development, testing, and
+             server management process, especially for [Drupal](https://drupal.org) websites.
+<p>
+             The goal of DevShop is to provide a complete **web development & testing pipeline** out of the
+             box, while empowering users to choose their own server infrastructure and systems
+             architecture.
+<p>
+             DevShop uses Ansible & Ansible Galaxy for server configuration, Symfony
+             Console for command line tools, and Drupal for the web interface."
+  button:
+    enable : false
+    label : "Get DevShop"
+    link : "#"
+
+##################### Feature ##########################
+feature:
+  enable : true
+  title : "DevShop Components"
+  feature_item:
+    # feature item loop
+    - name : "DevShop Control"
+      icon : "ti-pulse"
+      content : "Drupal CI/CD in a Box."
+      
+    # feature item loop
+    - name : "YamlTasks"
+      icon : "ti-check"
+      content : "Simple test runner with GitHub API integration."
+
+    # feature item loop
+    - name : "PowerProcess"
+      icon : "ti-money"
+      content : "Run commands with standard beautiful output"
+
+    # feature item loop
+    - name : "GitSplit"
+      icon : "ti-split-v-alt"
+      content : "Split a monorepo with a single command."
+      
+    # feature item loop
+    - name : "GitHub API CLI"
+      icon : "ti-github"
+      content : "Simple abstract CLI for interacting with the GitHub API."
+      
+    # feature item loop
+    - name : "Composer Git Tools"
+      icon : "ti-tools"
+      content : "PHP classes to make applications git and composer aware."
+
+######################### Service #####################
+service:
+  enable : true
+  service_item:
+    # service item loop
+    - title : "It is the most advanced digital marketing and it company."
+      images:
+      - "images/service-1.png"
+      - "images/service-2.png"
+      - "images/service-3.png"
+      content : "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Consequat tristique eget amet, tempus eu at consecttur. Leo facilisi nunc viverra tellus. Ac laoreet sit vel consquat. consectetur adipiscing elit. Consequat tristique eget amet, tempus eu at consecttur. Leo facilisi nunc viverra tellus. Ac laoreet sit vel consquat."
+      button:
+        enable : true
+        label : "Check it out"
+        link : "#"
+        
+    # service item loop
+    - title : "It is a privately owned Information and cyber security company"
+      images:
+      - "images/service-1.png"
+      content : "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Consequat tristique eget amet, tempus eu at consecttur. Leo facilisi nunc viverra tellus. Ac laoreet sit vel consquat. consectetur adipiscing elit. Consequat tristique eget amet, tempus eu at consecttur. Leo facilisi nunc viverra tellus. Ac laoreet sit vel consquat."
+      button:
+        enable : true
+        label : "Check it out"
+        link : "#"
+        
+    # service item loop
+    - title : "It’s a team of experienced and skilled people with distributions"
+      images:
+      - "images/service-2.png"
+      content : "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Consequat tristique eget amet, tempus eu at consecttur. Leo facilisi nunc viverra tellus. Ac laoreet sit vel consquat. consectetur adipiscing elit. Consequat tristique eget amet, tempus eu at consecttur. Leo facilisi nunc viverra tellus. Ac laoreet sit vel consquat."
+      button:
+        enable : true
+        label : "Check it out"
+        link : "#"
+        
+    # service item loop
+    - title : "A company standing different from others"
+      images:
+      - "images/service-3.png"
+      content : "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Consequat tristique eget amet, tempus eu at consecttur. Leo facilisi nunc viverra tellus. Ac laoreet sit vel consquat. consectetur adipiscing elit. Consequat tristique eget amet, tempus eu at consecttur. Leo facilisi nunc viverra tellus. Ac laoreet sit vel consquat."
+      button:
+        enable : true
+        label : "Check it out"
+        link : "#"
+        
+################### Screenshot ########################
+screenshot:
+  enable : true
+  title : "Experience the best <br> workflow with us"
+  image : "images/screenshot.svg"
+
+  
+
+##################### Call to action #####################
+call_to_action:
+  enable : true
+  title : "Ready to get started?"
+  image : "images/cta.svg"
+  content : "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Consequat tristique eget amet, tempus eu at consecttur."
+  button:
+    enable : true
+    label : "Contact Us"
+    link : "contact"
