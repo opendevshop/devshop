@@ -1,6 +1,6 @@
 ####################### Banner #########################
 banner:
-  title : "OpenDevShop <br/><small>The Open Source DevOps Framework</small>"
+  title : "The Open Source DevOps Framework"
   image : "images/banner-art.svg"
   content : "
              DevShop is an **Open Source DevOps Framework** and a
@@ -26,7 +26,7 @@ feature:
     # feature item loop
     - name : "DevShop Control"
       icon : "ti-pulse"
-      content : "Drupal CI/CD in a Box."
+      content : "Drupal CI/CD and Ansible Server Manager in a Box"
       
     # feature item loop
     - name : "YamlTasks"
@@ -50,7 +50,7 @@ feature:
       
     # feature item loop
     - name : "Composer Git Tools"
-      icon : "ti-tools"
+      icon : "ti-briefcase"
       content : "PHP classes to make applications git and composer aware."
 
 ######################### Service #####################
