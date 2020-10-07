@@ -1,5 +1,5 @@
 ---
-- name: Devmaster | Clear all caches
+- name: DevShop Control | Clear all caches
   command: "{{ drush_bin_path }} {{ devshop_control_drush_alias }} cc all"
   become: true
   become_user: "{{ aegir_user_name }}"
@@ -8,7 +8,7 @@
   changed_when: "drush_cache_clear.stdout != empty_string"
   tags: [runtime]
 
-- name: Devmaster | Save GitHub Token
+- name: DevShop Control | Save GitHub Token
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
@@ -18,7 +18,7 @@
   ignore_errors: true
   tags: [runtime]
 
-- name: Devmaster | Run all outstanding tasks
+- name: DevShop Control | Run all outstanding tasks
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
