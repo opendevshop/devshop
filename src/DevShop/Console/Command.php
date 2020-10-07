@@ -18,7 +18,6 @@
 namespace DevShop\Console;
 
 use DevShop\Component\Common\GitHubRepositoryAwareTrait;
-use TQ\Git\Repository\Repository;
 
 use DevShop\DevShop;
 use Symfony\Component\Console\Input\InputInterface;
@@ -32,6 +31,7 @@ use Symfony\Component\Process\Exception\ProcessFailedException;
 use Github\Exception\RuntimeException;
 
 use Symfony\Component\Console\Command\Command as BaseCommand;
+use TQ\Git\Repository\Repository;
 
 /**
  * Base class for DevShop commands
@@ -144,9 +144,14 @@ abstract class Command extends BaseCommand
   /**
    * Helper for running processes.
    *
-   * @param \Symfony\Component\Process\Process $process
+   * @param \Symfony\Component\Process\Process|string $process
    */
-  public function runProcess(Process $process) {
+  public function runProcess($process) {
+
+    if (is_string($process)) {
+      $process = new Process($process);
+      $process->setTimeout(null);
+    }
 
     try {
       $process->mustRun(function ($type, $buffer) {

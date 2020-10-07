@@ -1,0 +1,204 @@
+name: DevShop
+on:
+  push:
+    branches: 1.x
+  pull_request:
+    types: [opened, synchronize]
+  schedule:
+    - cron: "0 0 * * *"
+    - cron: "0 12 * * *"
+
+env:
+  # Set ANSIBLE_VERBOSITY to 1,2 or 3 when needed for development.
+  ANSIBLE_VERBOSITY: 0
+#  COMPOSE_FILE: "docker-compose.yml:docker-compose.tests.yml"
+  DEBUG_COMMAND: "docker-compose exec -T devshop.server systemctl status --no-pager"
+  GITHUB_TOKEN: ${{ secrets.INPUT_GITHUB_TOKEN }}
+  GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}
+  GITHUB_PR_SHA: ${{ github.event.pull_request.head.sha  }}
+  GITHUB_RUN_LOG_URL: https://github.com/opendevshop/devshop/actions/runs/${{ github.run_id }}
+  DEVSHOP_TEST_ASSETS_PATH: ".github/test-artifacts"
+
+jobs:
+  test:
+    name: "Test DevShop"
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - 'ubuntu1804'
+          # Sorry, centos. You must wait until the next PR.
+          # - 'centos7'
+    env:
+      OS: "${{ matrix.os }}"
+      HOSTNAME: "devshop.${{ github.event.pull_request.number }}.${{ matrix.os }}.actions.github.com"
+
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Check Out Sourcecode
+        uses: actions/checkout@v2
+
+      # Launch DevShop Server Container
+      - name: "Launch Latest Container for 'devshop/server:${{ matrix.os }}'"
+        working-directory: roles
+        env:
+          COMMAND: "echo 'DevShop Server Online, launched by GitHub Actions.'"
+          DEVSHOP_DOCKER_COMMAND_RUN: "echo 'Skipping DEVSHOP_DOCKER_COMMAND_RUN (ansible-playbook), so that GitHub Actions can run in a separate step.'"
+          DOCKER_COMMAND_POST: "echo 'GitHub Actions Container was launched.'"
+          ANSIBLE_EXTRA_VARS: "devshop_control_path=/usr/share/devshop/src/DevShop/Component/DevShopControlTemplate"
+        # "docker-compose pull" is needed because the if the image does not exist locally, "docker-compose" will try to build.
+        # "--no-build" is needed because docker-compose will build the image by default.
+        run: |
+          set -x
+          docker-compose pull --quiet devshop.server
+          docker-compose up --no-build --detach devshop.server
+          docker-compose exec -T devshop.server rm -rf \
+            /usr/share/devshop \
+            /etc/ansible/roles \
+            /etc/ansible/play.yml \
+            /var/aegir/.drush \
+            /var/aegir/config \
+
+          docker cp ../ roles_devshop.server_1:/usr/share/devshop/
+          docker-compose exec -T devshop.server chown aegir:aegir /usr/share/devshop -R
+          sleep 3
+          docker-compose logs
+          docker-compose exec -T devshop.server /usr/share/devshop/scripts/devshop-logo "GitHub Actions Container populated with code. Running SHA ${GITHUB_PR_SHA}"
+
+      - name: "Review Container Environment"
+        working-directory: roles
+        run: |
+          docker-compose exec -T devshop.server env
+          docker-compose exec -T devshop.server systemctl status --no-pager
+          sleep 4
+
+      # @TODO: If ansible roles code has been changed, change ANSIBLE_SKIP_TAGS=none.
+      - name: "Install DevShop (devshop.server/play.yml --tags=runtime)"
+        working-directory: roles
+
+        # Since the container is launched with a new DEVSHOP_DOCKER_COMMAND_RUN, run the default.
+        run: |
+          docker-compose exec -T devshop.server bash -c '${DEFAULT_DEVSHOP_DOCKER_COMMAND_RUN}'
+
+      - name: "Test DevShop"
+        working-directory: roles
+        run: docker-compose exec -T --user aegir devshop.server /usr/share/devshop/tests/devshop-tests.sh
+
+      - name: Save Docker Logs as Artifacts
+        working-directory: roles
+        if: always()
+        run: |
+          docker ps -a >        artifact-docker-ps.log && \
+          $DEBUG_COMMAND >      artifact-debug-command-output.log && \
+          docker-compose logs > artifact-docker-compose.log
+
+      - name: Upload Test Artifacts
+        uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: TestFailures
+          path: ./.github/test-artifacts
+
+      - name: Upload Log Artifacts
+        uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: DockerLogs
+          path: artifact-*
+
+  docker:
+    name: "Build DevShop"
+    # description: Build every docker container, then install DevShop to confirm they work.
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - 'ubuntu1804'
+          # Sorry, centos. You must wait until the next PR.
+          # - 'centos7'
+    env:
+      OS: "${{ matrix.os }}"
+      HOSTNAME: "devshop.${{ github.event.pull_request.number }}.${{ matrix.os }}.actions.github.com"
+
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Check Out Sourcecode
+        uses: actions/checkout@v2
+
+      # Build "base"
+      - name: "Build devshop/base:${{ matrix.os }} Container"
+        working-directory: docker
+        run: docker-compose build base
+
+      # Build "ansible"
+      - name: "Build devshop/ansible:${{ matrix.os }} Container"
+        working-directory: docker
+        run: docker-compose build ansible
+
+      # Build "core"
+      - name: "Build devshop/core:${{ matrix.os }} Container"
+        working-directory: docker
+        run: docker-compose build core
+
+      # Build "role"
+      - name: "Build devshop/role:${{ matrix.os }} Container"
+        working-directory: docker
+        run: docker-compose build role
+
+      # Build DevShop Role Images
+      - name: "Build devshop/server:${{ matrix.os }} Container"
+        working-directory: roles
+        run: docker-compose build devshop.server
+
+      # Launch Container
+      - name: "Launch devshop/server:${{ matrix.os }} Container"
+        working-directory: roles
+        env:
+          COMMAND: "echo 'DevShop Server Online, launched by GitHub Actions.'"
+          DEVSHOP_DOCKER_COMMAND_RUN: "echo 'Skipping DEVSHOP_DOCKER_COMMAND_RUN (ansible-playbook), so that GitHub Actions can run in a separate step.'"
+        run: |
+          docker-compose up --detach devshop.server
+          sleep 3
+          docker-compose logs
+
+      - name: "Review Container Environment"
+        working-directory: roles
+        run: |
+          docker-compose exec -T devshop.server env
+          docker-compose exec -T devshop.server systemctl status --no-pager
+          sleep 4
+
+      - name: "Install DevShop (devshop.server/play.yml --tags=runtime)"
+        working-directory: roles
+
+        # Since the container is launched with a new DEVSHOP_DOCKER_COMMAND_RUN, run the default.
+        run: |
+          docker-compose exec -T devshop.server bash -c '${DEFAULT_DEVSHOP_DOCKER_COMMAND_RUN}'
+
+      - name: "Test DevShop"
+        working-directory: roles
+        run: docker-compose exec -T --user aegir devshop.server /usr/share/devshop/tests/devshop-tests.sh
+
+      - name: Save Docker Logs as Artifacts
+        working-directory: roles
+        if: always()
+        run: |
+          docker ps -a >        artifact-docker-ps.log && \
+          $DEBUG_COMMAND >      artifact-debug-command-output.log && \
+          docker-compose logs > artifact-docker-compose.log
+
+      - name: Upload Test Artifacts
+        uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: TestFailures
+          path: ./.github/test-artifacts
+
+      - name: Upload Log Artifacts
+        uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: DockerLogs
+          path: artifact-*

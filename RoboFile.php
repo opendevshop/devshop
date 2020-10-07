@@ -70,15 +70,16 @@ class RoboFile extends \Robo\Tasks {
     'tags' => 'ANSIBLE_TAGS',
     'skip-tags' => 'ANSIBLE_SKIP_TAGS',
     'playbook' => 'ANSIBLE_PLAYBOOK',
+    'playbook-command-options' => 'ANSIBLE_PLAYBOOK_COMMAND_OPTIONS',
     'roles-path' => 'ANSIBLE_ROLES_PATH',
     'config' => 'ANSIBLE_CONFIG',
     'build-command' => 'DOCKER_BUILD_COMMAND',
 
     // Used in docker compose image.
-    'docker-image' => 'DEVSHOP_DOCKER_IMAGE',
     'from' => 'FROM_IMAGE',
     'os' => 'OS_VERSION',
     'dockerfile' => 'DOCKERFILE',
+    'compose-file' => 'COMPOSE_FILE',
   ];
 
   /**
@@ -107,7 +108,6 @@ class RoboFile extends \Robo\Tasks {
    */
   private function generateEnvironment(array $opts, array $env = []) {
     $env += $this->optionsToArray($opts['environment']);
-    $env['ANSIBLE_VERBOSITY'] = $this->ansibleVerbosityMap[$this->output()->getVerbosity()];
 
     foreach ($this->serverOptionsMap as $opt_name => $var_name) {
       // Use $_SERVER var if it exists...
@@ -116,6 +116,9 @@ class RoboFile extends \Robo\Tasks {
         // If not, set to empty string.
         (!empty($opts[$opt_name])? $opts[$opt_name]: '');
     }
+
+    $env['ANSIBLE_VERBOSITY'] = $this->ansibleVerbosityMap[$this->output()->getVerbosity()];
+
     return $env;
   }
 
@@ -203,23 +206,19 @@ class RoboFile extends \Robo\Tasks {
   }
 
   private $repos = [
-    'provision' => 'http://git.drupal.org/project/provision.git',
-    'aegir-home/.drush/commands/registry_rebuild' => 'http://git.drupal.org/project/registry_rebuild.git',
-    'documentation' => 'http://github.com/opendevshop/documentation.git',
+    'aegir-home/.drush/commands/registry_rebuild' => 'http://git.drupal.org/project/registry_rebuild.git#',
   ];
 
   /**
    * Clone all needed source code and build devmaster from the makefile.
    *
-   * @option no-dev Use build-devmaster.make instead of the development makefile.
+   * @option no-dev Ensure git remote URLs are SSH format so developers can push.
    * @option devshop-version The directory to put the
-   * @option make Defaults to "profile" to populate the makefile into the ./devmaster folder. Use --make=drupal to build the entire ./aegir-home/devmaster-1.x folder.
    */
   public function prepareSourcecode($opts = [
     'no-dev' => FALSE,
     'devshop-version' => '1.x',
     'test-upgrade' => FALSE,
-    'make' => 'profile',
   ]) {
 
     if (empty($this->git_ref)) {
@@ -242,70 +241,35 @@ class RoboFile extends \Robo\Tasks {
       $this->taskExecStack()
         ->exec("mkdir -p {$this->devshop_root_path}/aegir-home/.drush/commands")
         ->run();
+      $this->taskExecStack()
+        ->exec("mkdir -p {$this->devshop_root_path}/aegir-home/test-artifacts")
+        ->run();
     }
 
     // Clone all git repositories.
     foreach ($this->repos as $path => $url) {
+      // Allow repos to specify a branch after #.
+      [$url, $branch] = explode('#', $url);
+
       if (file_exists($this->devshop_root_path . '/' . $path)) {
         $this->say("$path already exists.");
       }
       else {
         $this->taskGitStack()
-          ->cloneRepo($url, $this->devshop_root_path . '/' . $path)
-          ->run();
-      }
-
-      // Checkout provision to the 7.x-3.x-devshop branch.
-      if ($path == 'provision') {
-        $this->taskGitStack()
-          ->dir($this->devshop_root_path . '/' . $path)
-          ->checkout('7.x-3.x-devshop')
+          ->cloneRepo($url, $this->devshop_root_path . '/' . $path, $branch)
           ->run();
       }
     }
 
-    // If we want to just populate modules into /devmaster folder...
-    if ($opts['make'] == 'profile') {
-      // Populate devmaster install profile with contrib code.
-      $makefile_path = 'build-devmaster-dev.make.yml';
-      $make_destination = 'devmaster/';
-      if (file_exists('devmaster/modules/contrib')) {
-        $this->say("Path 'devmaster/modules/contrib' already exists.");
-      }
-      else {
-        $this->yell("Populating devmaster profile with contrib code from $makefile_path ...");
-        $result = $this->_exec("bin/drush make {$makefile_path} {$make_destination} --working-copy --no-gitinfofile --no-core --contrib-destination=.");
-        if (!$result->wasSuccessful()) {
-          throw new \RuntimeException("Drush make failed with the exit code " . $result->getExitCode());
-        }
-      }
-    }
-    // Or if a whole Drupal build is needed.
-    elseif ($opts['make'] == 'drupal') {
-
-      // Run drush make to build the devmaster stack.
-      $makefile_path = $opts['no-dev']? 'build-devmaster.make': "build-devmaster-dev.make.yml";
-      $make_destination = $this->devshop_root_path . "/aegir-home/devmaster-" . $opts['devshop-version'];
-
-      // Append the desired devshop root path.
-      $makefile_path = $this->devshop_root_path . '/' . $makefile_path;
-
-      if (file_exists($make_destination)) {
-        $this->say("Path {$make_destination} already exists.");
-      }
-      else {
-
-        $this->yell("Building devmaster from makefile $makefile_path to $make_destination");
-
-        $result = $this->_exec("bin/drush make {$makefile_path} {$make_destination} --working-copy --no-gitinfofile");
-        if (!$result->wasSuccessful()) {
-          throw new \RuntimeException("Drush make failed with the exit code " . $result->getExitCode());
-        }
-      }
-    }
+    // Run composer install on devmaster stack so it's ready before the container launches and devmaster install command is faster.
+    $this->taskExecStack()
+      ->dir('src/DevShop/Component/DevShopControlTemplate')
+      ->exec("composer install --prefer-source --ansi")
+      ->run();
 
     // Set git remote urls
     if ($opts['no-dev'] == FALSE) {
+      // @TODO: Set git url for others like provision
       $devshop_ssh_git_url = "git@github.com:opendevshop/devshop.git";
 
       if ($this->taskExec("git remote set-url origin $devshop_ssh_git_url")->run()->wasSuccessful()) {
@@ -359,7 +323,6 @@ class RoboFile extends \Robo\Tasks {
    *
    * @option $tag The string to tag the resulting container with.
    * @option $from The image to use to build the docker image FROM. Ignored if "os" is set.
-   * @option $dockerfile The dockerfile to use.
    * @option $os An OS "slug" for any of the geerlingguy/docker-*-ansible images: https://hub.docker.com/u/geerlingguy/
    * @option $vars Ansible vars to pass to --extra-vars option.
    * @option $tags Ansible tags to pass to --tags option.
@@ -368,15 +331,14 @@ class RoboFile extends \Robo\Tasks {
    * @option install-at-runtime Launch bare containers and then install devshop.
    */
   public function prepareContainers($user_uid = NULL, $hostname = 'devshop.local.computer', $opts = [
-      'docker-image' => 'devshop/server:local',
+      'docker-image' => 'devshop/server:latest',
       'from' => NULL,
-      'dockerfile' => 'Dockerfile',
       'build-command' => NULL,
-      'os' => 'ubuntu1804',
+      'os' => NULL,
       'vars' => '',
       'tags' => '',
       'skip-tags' => '',
-      'playbook' => 'roles/server.playbook.yml',
+      'playbook' => 'roles/devshop.server/play.yml',
       'environment' => [],
       'roles-path' => '/usr/share/devshop/roles',
       'config' => '/usr/share/devshop/ansible.cfg',
@@ -385,15 +347,15 @@ class RoboFile extends \Robo\Tasks {
 
     // Define docker-image (name for the "image" in docker-compose)
     // Set FROM_IMAGE and DEVSHOP_DOCKER_IMAGE if --os option is used. (and --from was not used)
-    if (empty($opts['from']) && !empty($opts['os'])) {
+    if (empty($opts['from']) && $opts['os'] !== NULL) {
       $opts['from'] = "geerlingguy/docker-{$opts['os']}-ansible";
-      $opts['docker-image'] = 'devshop/server:local-' . $opts['os'];
+      $opts['docker-image'] = 'devshop/server:' . $opts['os'];
     }
 
     // Append the absolute path in the container.
     $opts['playbook'] = '/usr/share/devshop/' . $opts['playbook'] ;
 
-    $this->yell('Building DevShop Container from: ' . $opts['from'], 40, 'blue');
+    $this->yell('Building DevShop Containers...', 40, 'blue');
 
     // Block anything from running on build.
     // @TODO: Figure out why centos can't enable service in build phase.
@@ -420,14 +382,20 @@ class RoboFile extends \Robo\Tasks {
     }
 
     $provision_io = new \DevShop\Component\PowerProcess\PowerProcessStyle($this->input(), $this->output());
-    $process = new \DevShop\Component\PowerProcess\PowerProcess('docker-compose build --pull --no-cache', $provision_io);
+    $process = new \DevShop\Component\PowerProcess\PowerProcess('docker-compose build --no-cache', $provision_io);
     $process->setEnv($env_build);
     $process->disableOutput();
     $process->setTimeout(null);
     $process->setTty(!empty($_SERVER['XDG_SESSION_TYPE']) && $_SERVER['XDG_SESSION_TYPE'] == 'tty');
 
     // @TODO: Figure out why PowerProcess::mustRun() fails so miserably: https://github.com/opendevshop/devshop/pull/541/checks?check_run_id=518074346#step:7:45
-    $process->run();
+
+    // Run docker-compose build in docker and in roles folder.
+    foreach (['docker', 'roles'] as $compose_files_path) {
+      $this->yell("Building in directory: $compose_files_path", 40, 'blue');
+      $process->setWorkingDirectory($compose_files_path);
+      $process->run();
+    }
 
     if ($process->getExitCode() != 0) {
       throw new \Exception('Process failed: ' . $process->getExitCodeText());
@@ -467,14 +435,13 @@ class RoboFile extends \Robo\Tasks {
    * @option $user-uid Override the detected current user's UID when building
    *   containers.
    * @option $xdebug Set this option to launch with an xdebug container.
-   * @option no-dev Use build-devmaster.make instead of the development makefile.
    * @option $build Run `robo prepare:containers` to rebuild the container first.
    * @option os-version An OS "slug" for any of the geerlingguy/docker-*-ansible images: https://hub.docker.com/u/geerlingguy/
    * @option environment pass an environment variable to docker-compose in the form --environment NAME=VALUE
-   * @option volumes Set to TRUE to use the docker-compose.volumes.yml file to map local folders into the container.
+   * @option ci Set to TRUE when run in CI, such as in build.yml. If not set, docker-compose.volumes.yml will be included to produce a development environment.
    * @option install-at-runtime Launch bare containers and then install devshop.
    */
-  public function up($docker_command = 'devshop-ansible-playbook', $opts = [
+  public function up($docker_command = '', $opts = [
     'follow' => 1,
     'test' => FALSE,
     'test-upgrade' => FALSE,
@@ -488,28 +455,35 @@ class RoboFile extends \Robo\Tasks {
     'build' => FALSE,
     'skip-source-prep' => FALSE,
     'skip-install' => FALSE,
-    'os' => 'ubuntu1804',
-    'docker-image' => 'devshop/server:local',
+    // This is the image string used in docker-compose.
+    'docker-image' => 'devshop/server:latest',
+    // The OS "slug" to use instead of devshop/server:ubuntu1804. If specified, "docker-image" option will be ignored.
+    'os' => NULL,
     'from' => NULL,
     'vars' => '',
     'tags' => '',
     'skip-tags' => '',
-    'file' => 'Dockerfile',
-    'playbook' => 'roles/server.playbook.yml',
+    'playbook' => 'roles/devshop.server/play.yml',
+    'playbook-command-options' => '',
     'roles-path' => '/usr/share/devshop/roles',
     'config' => '/usr/share/devshop/ansible.cfg',
     'local' => FALSE,
     'environment' => [],
-    'volumes' => true,
+    'ci' => FALSE,
     'install-at-runtime' => FALSE,
     'build-command' => NULL,
+    'compose-file' => NULL,
+    'force-reinstall' => FALSE,
   ]) {
 
     // Define docker-image (name for the "image" in docker-compose.
     // Set FROM_IMAGE and DEVSHOP_DOCKER_IMAGE if --os option is used. (and --from was not used)
     if (empty($opts['from']) && !empty($opts['os'])) {
       $opts['from'] = "geerlingguy/docker-{$opts['os']}-ansible";
-      $opts['docker-image'] = 'devshop/server:local-' . $opts['os'];
+      $opts['docker-image'] = 'devshop/server:' . $opts['os'];
+    }
+    else {
+      $opts['from'] = $opts['docker-image'];
     }
 
     // Check for tools
@@ -531,7 +505,7 @@ class RoboFile extends \Robo\Tasks {
     }
 
     // Determine current UID.
-    if (is_null($opts['user-uid'])) {
+    if (empty($opts['user-uid'])) {
       $opts['user-uid'] = trim(shell_exec('id -u'));
     }
 
@@ -570,36 +544,39 @@ class RoboFile extends \Robo\Tasks {
     if ($opts['mode'] == 'docker-compose') {
 
       // Volumes
-      if ($opts['volumes']) {
+      if (!$opts['ci']) {
         $this->yell('Volume mounts requested. Adding docker-compose.volumes.yml');
         $this->say(' - ' . __DIR__ . '/aegir-home to /var/aegir');
         $this->say(' - ' . __DIR__ . '/devmaster to /var/aegir/devmaster-1.x/profiles/devmaster');
 
         // Set COMPOSE_FILE to include volumes.
-        putenv('COMPOSE_FILE=docker-compose.yml:docker-compose.volumes.yml');
+        $opts['compose-file'] = 'docker-compose.yml:docker-compose.volumes.yml';
 
-        if (!file_exists('aegir-home/devmaster-' . $this::DEVSHOP_LOCAL_VERSION) && !$opts['skip-source-prep']) {
+        if (!file_exists('aegir-home') && !$opts['skip-source-prep']) {
           $this->io()->warning('The aegir-home folder not present. Running prepare source code command.');
           $this->prepareSourcecode($opts);
         }
       }
 
-      $cmd[] = "docker-compose up --detach --force-recreate";
 
       // Test commands must be run as application user.
       // The `--test` command is run in GitHub Actions.
       $test_command = '';
       if ($opts['test']) {
         // Do not run a playbook on docker-compose up, because it will launch as a separate process and we won't know when it ends.
-        $cmd[]= "docker-compose exec -T devshop service supervisord stop";
-        $test_command = "/usr/share/devshop/tests/devshop-tests.sh";
+        $cmd[] = "docker-compose run devshop {$docker_command}";
+        $env_run['DEVSHOP_DOCKER_COMMAND_RUN'] = $docker_command;
+
+        $test_command = "su aegir --command /usr/share/devshop/tests/devshop-tests.sh";
       }
       // @TODO: The `--test-upgrade` command is NOT YET run in GitHub Actions.
       // The PR with the update hook can be used to finalize upgrade tests: https://github.com/opendevshop/devshop/pull/426
       elseif ($opts['test-upgrade']) {
+        $cmd[] = "docker-compose run --rm devshop {$docker_command}";
         $test_command = "/usr/share/devshop/tests/devshop-tests-upgrade.sh";
       }
       else {
+        $cmd[] = "docker-compose up --detach --force-recreate devshop {$docker_command}";
         if ($opts['follow']) {
           $cmd[] = "docker-compose logs -f";
         }
@@ -610,14 +587,45 @@ class RoboFile extends \Robo\Tasks {
 
       // Runtime Environment for the $cmd list.
       $env_run = $this->generateEnvironmentArgs($opts);
+      $extra_vars = array();
+      $extra_vars['devshop_control_git_reference'] = $this->git_ref;
 
-      // Run a secondary command after the docker command.
-      if ($test_command) {
-        $env_run['DOCKER_COMMAND_POST'] = $test_command;
+      // Set extra ansible vars when not in CI.
+      if (empty($_SERVER['CI'])) {
+        // Set the "hostmaster platform" path to the full DevShopControlTemplate root so we can use it directly.
+        $extra_vars['devshop_control_path'] = '/usr/share/devshop/src/DevShop/Component/DevShopControlTemplate';
+
+        if ($opts['force-reinstall']) {
+          $extra_vars['devshop_control_install_options'] = '--force-reinstall';
+        }
+
+        if ($opts['user-uid']) {
+          $extra_vars['aegir_user_uid'] = $opts['user-uid'];
+          $extra_vars['aegir_user_gid'] = $opts['user-uid'];
+        }
       }
 
-      // Override the docker commmand.
-      $env_run['DOCKER_COMMAND'] = $docker_command;
+      // Run a test command after the docker command.
+      if ($test_command) {
+        $env_run['DOCKER_COMMAND_POST'] = $test_command;
+        $env_run['DOCKER_COMMAND_RUN_POST_EXIT'] = 1;
+
+        $extra_vars['supervisor_started'] = false;
+      }
+      else {
+        $env_run['DOCKER_COMMAND_POST'] = 'devshop login';
+      }
+
+      $env_run['ANSIBLE_EXTRA_VARS'] = json_encode($extra_vars);
+      if ($this->output->isVerbose()) {
+        $this->say('Ansible Extra Vars');
+        print_r($extra_vars);
+      }
+
+      // Override the DEVSHOP_DOCKER_COMMAND_RUN if specified.
+      if (!empty($docker_command)) {
+        $env_run['DEVSHOP_DOCKER_COMMAND_RUN'] = $docker_command;
+      }
 
       // @TODO: Write to .env file so user does not have to keep using CLI args.
 
@@ -839,7 +847,7 @@ class RoboFile extends \Robo\Tasks {
   private function optionsToArray($options_list) {
     $vars = [];
     foreach ($options_list as $options_string) {
-      list($name, $value) = explode("=", $options_string);
+      [$name, $value] = explode("=", $options_string);
       $vars[$name] = $value;
     }
     return $vars;
@@ -848,7 +856,7 @@ class RoboFile extends \Robo\Tasks {
   /**
    * Run a command in the devshop container.
    */
-  public function exec($cmd = "devshop-ansible-playbook") {
+  public function exec($cmd = '') {
     return $this->_exec("docker-compose exec -T \
       --env ANSIBLE_TAGS \
       --env ANSIBLE_SKIP_TAGS \
@@ -879,22 +887,17 @@ class RoboFile extends \Robo\Tasks {
       // Remove devmaster site folder
       $version = self::DEVSHOP_LOCAL_VERSION;
       $uri = self::DEVSHOP_LOCAL_URI;
-      $this->_exec("sudo rm -rf aegir-home/.drush");
-      $this->_exec("sudo rm -rf aegir-home/config");
-      $this->_exec("sudo rm -rf aegir-home/clients");
-      $this->_exec("sudo rm -rf aegir-home/projects");
-      $this->_exec("sudo rm -rf aegir-home/devmaster-{$version}/sites/{$uri}");
-      $this->_exec("sudo rm -rf aegir-home/devmaster-1.0.0-beta10/sites/{$uri}");
+      $this->_exec("sudo rm -rf src/DevShop/Component/DevShopControlTemplate/web/sites/{$uri}");
     }
 
     // Don't run when -n is specified,
-    if ($opts['force'] || !$opts['no-interaction'] && $this->confirm("Destroy local source code? (aegir-home)")) {
+    if ($opts['no-interaction'] || $this->confirm("Destroy container home directory? (aegir-home)")) {
       if ($this->_exec("sudo rm -rf aegir-home")->wasSuccessful()) {
         $this->say("Entire aegir-home folder deleted.");
       }
     }
-    elseif ($opts['no-interaction']) {
-      $this->say("Local source code was retained. Use 'robo destroy --force' option to remove it, or run 'rm -rf aegir-home'.");
+    else {
+      $this->say("The aegir-home directory was retained. It will be  present when 'robo up' is run again.");
     }
   }
 
@@ -942,26 +945,43 @@ class RoboFile extends \Robo\Tasks {
    * Run all devshop tests on the containers.
    */
   public function test($user = 'aegir', $opts = array(
-    'compose-file' => 'docker-compose.yml',
+    'compose-file' => 'docker-compose.yml:docker-compose.volumes.yml',
+    'reinstall' => FALSE
   )) {
     $is_tty = !empty($_SERVER['XDG_SESSION_TYPE']) && $_SERVER['XDG_SESSION_TYPE'] == 'tty';
     $no_tty = !$is_tty? '-T': '';
-    $command = "docker-compose exec $no_tty --user $user devshop /usr/share/devshop/tests/devshop-tests.sh";
+
+    // If running in CI, create the test-artifacts directory and ensure ownership first.
+    // @TODO: Move logic to a special CI container.
+    if (!empty($_SERVER['CI'])) {
+      $commands[] = "docker-compose exec $no_tty devshop mkdir -p /var/aegir/test-artifacts";
+      $commands[] = "docker-compose exec $no_tty devshop chown aegir:aegir /var/aegir/test-artifacts -R";
+      $commands[] = "docker-compose exec $no_tty devshop chmod 777 /var/aegir/test-artifacts -R";
+    }
+
+    if ($opts['reinstall']) {
+      $commands[] = "docker-compose exec $no_tty --user $user devshop drush @hostmaster provision-install --force-reinstall";
+    }
+
+    $commands[] = "docker-compose exec $no_tty --user $user devshop /usr/share/devshop/tests/devshop-tests.sh";
     $provision_io = new \DevShop\Component\PowerProcess\PowerProcessStyle($this->input, $this->output);
-    $process = new \DevShop\Component\PowerProcess\PowerProcess($command, $provision_io);
+    foreach ($commands as $command) {
+      $process = new \DevShop\Component\PowerProcess\PowerProcess($command, $provision_io);
 
-    $process->setTty(!empty($_SERVER['XDG_SESSION_TYPE']) && $_SERVER['XDG_SESSION_TYPE'] == 'tty');
+      $process->setTty(!empty($_SERVER['XDG_SESSION_TYPE']) && $_SERVER['XDG_SESSION_TYPE'] == 'tty');
 
-    $process->setEnv([
-      'COMPOSE_FILE' => $opts['compose-file'],
-    ]);
-    $process->setTimeout(NULL);
-    $process->disableOutput();
-
-
+      $process->setEnv([
+        'COMPOSE_FILE' => $opts['compose-file'],
+      ]);
+      $process->setTimeout(NULL);
+      $process->disableOutput();
     // @TODO: Figure out why PowerProcess::mustRun() fails so miserably: https://github.com/opendevshop/devshop/pull/541/checks?check_run_id=518074346#step:7:45
     // $process->mustRun();
-    $process->run();
+      $process->run();
+      if (!$process->isSuccessful()) {
+        return $process->getExitCode();
+      }
+    }
     return $process->getExitCode();
   }
 
@@ -969,7 +989,8 @@ class RoboFile extends \Robo\Tasks {
    * Get a one-time login link to Devamster.
    */
   public function login($user = 'aegir') {
-    $this->_exec("docker-compose exec --user $user -T devshop drush @hostmaster uli");
+      // @TODO: Figure out why PATH is gone.
+    $this->_exec("docker-compose exec --user $user -T devshop /usr/share/devshop/bin/drush @hostmaster uli");
   }
 
   /**

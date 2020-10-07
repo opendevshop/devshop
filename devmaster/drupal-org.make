@@ -12,7 +12,7 @@ projects[devshop_stats][version] = 1.x
 ; For release, use tagged version
 projects[hosting][version] = "3.x"
 projects[hosting][download][type] = git
-projects[hosting][download][branch] = 7.x-3.180-devshop
+projects[hosting][download][branch] = 7.x-3.181-devshop
 
 ; Aegir Core not included in hosting.module
 projects[eldir][type] = theme
@@ -59,7 +59,6 @@ projects[views][version] = "3.24"
 projects[views_bulk_operations][version] = "3.6"
 projects[ctools][version] = "1.15"
 projects[features][version] = "2.11"
-projects[distro_update][version] = "1"
 projects[module_filter][version] = "2.2"
 projects[libraries][version] = 2.5
 projects[token][version] = 1.7

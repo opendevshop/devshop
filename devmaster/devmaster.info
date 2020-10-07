@@ -24,9 +24,6 @@ dependencies[] = hosting_server
 dependencies[] = hosting_clone
 dependencies[] = hosting_cron
 dependencies[] = hosting_migrate
-dependencies[] = hosting_git_checkout
-dependencies[] = hosting_git_tag
-dependencies[] = hosting_git_commit
 
 ; DevShop Aegir
 dependencies[] = hosting_alias
@@ -49,7 +46,7 @@ dependencies[] = hosting_apache_https
 dependencies[] = navbar
 dependencies[] = betterlogin
 dependencies[] = chosen
-dependencies[] = composer_manager
+dependencies[] = composer_autoloader
 dependencies[] = views
 dependencies[] = views_bulk_operations
 dependencies[] = actions_permissions
@@ -75,5 +72,4 @@ dependencies[] = aegir_config
 dependencies[] = devshop_permissions
 dependencies[] = devshop_stats
 dependencies[] = devshop_remotes
-dependencies[] = devshop_support_network_client
 

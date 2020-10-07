@@ -42,7 +42,10 @@ class GitHubApiCli
     // Setup GitHub API client
     $this->apiClient = new GitHubApiClient();
     // @TODO: Allow password auth?
-    $this->apiClient->authenticate($this->getToken(), null, GitHubApiClient::AUTH_HTTP_TOKEN);
+    // Only attempt authentication if there is a token.
+    if (!empty($this->getToken())) {
+      $this->apiClient->authenticate($this->getToken(), null, GitHubApiClient::AUTH_HTTP_TOKEN);
+    }
 
     // Skip SSL verification if ENV var is found.
     if (getenv('DEVSHOP_GITHUB_API_IGNORE_SSL')) {

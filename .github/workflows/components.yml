@@ -226,3 +226,54 @@ jobs:
         working-directory: ${{env.working-directory}}
         run: |
           ./Tests/repo-info.php
+
+  DevShopControlTemplate:
+    name: DevShopControlTemplate
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-versions:
+          # - '5.6'
+          - '7.2'
+    env:
+      working-directory: ./src/DevShop/Component/DevShopControlTemplate
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Install PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-versions }}
+      #            extensions: intl #optional
+      #            ini-values: "post_max_size=256M" #optional
+
+      - name: Check PHP Version
+        run: php -v
+
+      - name: Get Composer Cache Directory
+        id: composer-cache
+        run: |
+          echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+      - uses: actions/cache@v1
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      - name: Validate composer.json and composer.lock
+        run: composer validate
+        working-directory: ${{env.working-directory}}
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-suggest
+        working-directory: ${{env.working-directory}}
+
+      - name: Test Project Creation
+        env:
+          GITHUB_TOKEN: ${{ secrets.INPUT_GITHUB_TOKEN }}
+        working-directory: ./src/DevShop/Component/
+        run: |
+          composer create-project devshop/control-template:@dev temp --repository='{"type":"path","url":"DevShopControlTemplate"}'

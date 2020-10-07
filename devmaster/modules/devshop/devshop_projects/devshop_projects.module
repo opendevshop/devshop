@@ -165,29 +165,8 @@ function devshop_environment_menu_first_items($environment, $tasks) {
           'html' => TRUE,
         ));
     }
-    if (node_access('view', $site)) {
-      $aegir_items[] = l('<i class="fa fa-globe"></i> '.t('Aegir Site'),
-        "node/{$environment->site}",
-        array(
-          'html' => TRUE,
-        ));
-    }
-  }
 
-  // If platform exists
-  if ($environment->platform) {
-    $platform = node_load($environment->platform);
-    if (node_access('view', $platform)) {
-      $aegir_items[] = l('<i class="fa fa-code"></i> '.t('Aegir Platform'),
-        "node/{$environment->platform}",
-        array(
-          'query' => array(
-            'rename' => 1,
-            'token' => drupal_get_token($user->uid),
-          ),
-          'html' => TRUE,
-        ));
-    }
+    $items[] = 'deploy';
   }
 
   // Load test task, if it exists
@@ -580,13 +559,15 @@ function devshop_projects_menu_alter(&$items) {
 
   $items['node/%node/edit']['access callback'] = 'devshop_hosting_project_tab_access';
 
-
+  $items['node/%node/platform-edit']['title callback'] = 'devshop_hosting_project_tab_title';
+  $items['node/%node/platform-edit']['title arguments'] = array('Edit Platform', 1);
 
   $items['node/%node/view']['weight'] = -10;
   $items['node/%node/edit']['weight'] = -9;
+  $items['node/%node/platform-edit']['weight'] = -8;
 
   // Hosting now hides all but migrate and clone tasks.
-  $path = sprintf("hosting_confirm/%hosting_%s_wildcard/site_devshop-deploy", 'deploy', 'deploy', 'devshop-deploy');
+  $path = sprintf("hosting_confirm/%hosting_%s_wildcard/site_deploy", 'deploy', 'deploy', 'deploy');
   $items[$path]['access callback'] = 'devshop_hosting_task_menu_access_csrf';
 
   // Redirect hosting/task/% to the node
@@ -607,13 +588,13 @@ function drupal_goto_nid($nid) {
 
 /**
  * Access callback helper for hosting task menu items.
- * A copy of hosting_task_menu_access() except we allow devshop-deploy tasks.
+ * A copy of hosting_task_menu_access() except we allow deploy tasks.
  * @see hosting_task_menu_access()
  */
 function devshop_hosting_task_menu_access_csrf($node, $task) {
   global $user;
 
-  $interactive_tasks = array('migrate', 'clone', 'devshop-deploy');
+  $interactive_tasks = array('migrate', 'clone', 'deploy');
 
   // To prevent CSRF attacks, a unique token based upon user is used. Deny
   // access if the token is missing or invalid. We only do this on
@@ -641,12 +622,11 @@ function devshop_hosting_project_tab_title($default, $node) {
   if ($default == 'Edit' && $node->type == 'site' && isset($node->project)) {
     return t('Environment Settings');
   }
-  if ($node->type == 'task') {
-    if ($default == 'View') {
-      $tasks = hosting_available_tasks('site');
-      $label = drupal_ucfirst($tasks[$node->task_type]['title']);
-      return t('Task: !type', array('!type' => $label));
-    }
+  if ($default == 'Edit Platform' && $node->type == 'site') {
+    return t('Git Settings');
+  }
+  if ($default == 'View' && $node->type == 'task') {
+    return t('Task Logs');
   }
 
   // Otherwise, just return the page text
