@@ -1,6 +1,6 @@
 ######################## default configuration ####################
 baseURL = "http://opendevshop.com/"
-title = "OpenDevShop"
+title = "OpenDevShop | The Open Source DevOps Framework"
 theme = "opendevshop"
 languageName = "En"
 languageCode = "en-us"
@@ -39,29 +39,19 @@ link = "plugins/slick/slick.min.js"
 
 # main menu
 [[menu.main]]
-name = "Get Started"
-URL = "getstarted"
-weight = 2
-
-[[menu.main]]
-name = "About"
-URL = "about"
+name = "GitHub"
+URL = "https://github.com/opendevshop/devshop"
 weight = 1
 
 [[menu.main]]
-name = "Contact"
-URL = "contact"
-weight = 3
+name = "Documentation"
+URL = "https://docs.opendevshop.com"
+weight = 2
 
 [[menu.main]]
-name = "FAQ"
-URL = "faq"
-weight = 4
-
-# company 
-[[menu.company]]
-name = "About Us"
-URL = "#"
+name = "Community"
+URL = "#community"
+weight = 3
 
 [[menu.company]]
 name = "Quick Start"
