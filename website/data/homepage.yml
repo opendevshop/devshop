@@ -58,56 +58,67 @@ service:
   enable : true
   service_item:
     # service item loop
-    - title : "Complete Drupal CI/CD and QA/QC Platform"
+    - title : "A complete Drupal CI/CD & QA/QC solution."
       images:
       - "images/service-1.png"
       - "images/service-2.png"
       - "images/service-3.png"
       content : "
-      DevShop provides an all-in-one solution for Continuous Integration and Delivery for Drupal.
-<p>
-      Unlimited projects and environments per server keeps costs and complexity low.
-<p>
-      Configure Devshop to run Pull Request Environments with GitHub API integration for Quality Assurance and Quality Control.
+
+      - **DevShop** provides an all-in-one solution for Continuous Integration and Delivery for Drupal.
+
+      - Launch **unlimited environments** on a single server to keep costs low during development and testing.
+
+      - Built-in **continuous integration** launches new environments automatically when developers need them. *No scripts or third-party integrations to maintain.*
 
 "
       button:
         enable : true
-        label : "Learn more about Test Driven Development"
-        link : "#"
+        label : "Watch 'Test Driven Development in Real Life'"
+        link : "https://drupal.tv/external-video/2019-03-11/test-driven-development-real-life"
 
     # service item loop
-    - title : "Server Management System powered by Drupal and Ansible"
+    - title : "A Server Management System, powered by Ansible, built on Drupal."
       images:
       - "images/service-1.png"
       content : "
-      DevShop is a Server Management System capable of running any Ansible role against any server.
-      <p>
-      With a web interface powered by Drupal, DevShop makes it easy to edit and deploy Server configuration changes.
-      <p>
-      Customize your Ansible inventory as easily as you edit the content on your website.
+      - DevShop is a **Server Management System** that lets you track your server inventory and configure them from a central web interface.
+
+      - Set up your servers with the included [Ansible Roles](https://github.com/opendevshop/devshop/tree/1.x/roles) or add your own, using Drupal as the [Ansible Inventory](https://docs.ansible.com/ansible/latest/user_guide/intro_inventory.html) for your own cloud.
+
+      - Edit a server's configuration as easily as you edit your website's content, in a simple web interface using basic Yaml syntax.
+
+      - Launch, configure and destroy new servers using the DevShop web interface and your favorite cloud provider.
 
       "
       button:
         enable : true
-        label : "Check it out"
-        link : "#"
+        label : "Watch 'Cloud Management with Drupal & Ansible'"
+        link : "https://drupal.tv/external-video/2019-07-26/cloud-management-drupal-and-ansible"
         
     # service item loop
-    - title : "Run anywhere with a 100% Open Source Stack."
+    - title : "Run anywhere with a 100% Open Source stack."
       images:
       - "images/service-2.png"
-      content : "DevShop is 100% open source, allowing it to be run in any datacenter using Linux."
+      content : |
+        - DevShop is **100% open source**, allowing it to be run in any data center using Linux.
+
+        - **Choose your own server provider and network architecture** to maximize functionality, minimize costs, and comply with the contraints of your organization.
+
+        - DevShop provides **open source server configuration** at the operating system and services level, making it compatible with any configuration management, security, or support system such as RHEL. Expand to containers and orchestrators at your own pace.
+
       button:
         enable : true
         label : "Check it out"
         link : "#"
         
     # service item loop
-    - title : "A company standing different from others"
+    - title : "Platform-agnostic tools for better web development."
       images:
       - "images/service-3.png"
-      content : "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Consequat tristique eget amet, tempus eu at consecttur. Leo facilisi nunc viverra tellus. Ac laoreet sit vel consquat. consectetur adipiscing elit. Consequat tristique eget amet, tempus eu at consecttur. Leo facilisi nunc viverra tellus. Ac laoreet sit vel consquat."
+      content: |
+        - Wherever possible, DevShop breaks out functionality into independent components. Testing tools work on any hosting platform.
+
       button:
         enable : true
         label : "Check it out"
@@ -116,7 +127,7 @@ service:
 ################### Screenshot ########################
 screenshot:
   enable : true
-  title : "Experience the best <br> workflow with us"
+  title : "#OpenOps"
   image : "images/screenshot.svg"
 
   
@@ -124,10 +135,14 @@ screenshot:
 ##################### Call to action #####################
 call_to_action:
   enable : true
-  title : "Ready to get started?"
+  title : "Chat with Us"
   image : "images/cta.svg"
-  content : "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Consequat tristique eget amet, tempus eu at consecttur."
+  content : |
+    Have a question for the DevShop Community?
+
+    - [drupal.slack.com#devshop](https://drupal.slack.com/archives/CAU4ZA508)
+    - [gitter.im/opendevshop/devshop](https://gitter.im/opendevshop/devshop)
   button:
     enable : true
-    label : "Contact Us"
-    link : "contact"
+    label : "Join #devshop on drupal.slack.com"
+    link : "#chathttps://drupal.slack.com/archives/CAU4ZA508"
