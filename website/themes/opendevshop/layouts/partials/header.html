@@ -21,13 +21,13 @@
             </a>
             <div class="dropdown-menu">
               {{ range .Children }}
-              <a class="dropdown-item" href="{{ .URL | absURL }}">{{ .Name }}</a>
+              <a class="dropdown-item" href="{{ .URL | relURL }}">{{ .Name }}</a>
               {{ end }}
             </div>
           </li>
           {{ else }}
           <li class="nav-item">
-            <a class="nav-link" href="{{ .URL | absURL }}">{{ .Name }}</a>
+            <a class="nav-link" href="{{ .URL | relURL }}">{{ .Name }}</a>
           </li>
           {{ end }}
           {{ end }}
