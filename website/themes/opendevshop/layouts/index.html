@@ -33,13 +33,23 @@
       </div>
       {{ range .feature_item }}
       <div class="col-md-4 col-sm-6 mb-4">
-        <div class="feature-card text-center">
-          <i class="{{.icon}} mb-3"></i>
-          <h4 class="mb-2">{{ .name | title }}</h4>
-          <p>{{ .content | markdownify }}</p>
-        </div>
+        <a href="{{ .URL }}" target="_blank" title="{{ .name | title }}">
+          <div class="feature-card text-center">
+            {{ if .icon }}
+            <i class="{{.icon}} mb-3"></i>
+            {{ end }}
+            {{ if .img }}
+            <img src="{{.img}}" class="ti-icon mb-3"></img>
+            {{ end }}
+            <h4 class="mb-2">{{ .name | title }}</h4>
+            <p>{{ .content | markdownify }}</p>
+            </div>
+        </a>
       </div>
       {{ end }}
+      <div class="col-12 text-center">
+        <a class="btn btn-default" href="{{ .footer_href }}" target="_blank">{{ .footer | markdownify }}</a>
+      </div>
     </div>
   </div>
 </section>

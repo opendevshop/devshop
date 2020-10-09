@@ -25,6 +25,8 @@ link = "plugins/bootstrap/bootstrap.min.css"
 link = "plugins/themify-icons/themify-icons.css"
 [[params.plugins.css]]
 link = "plugins/slick/slick.css"
+[[params.plugins.css]]
+link = "opendevshop.css"
 
 # JS Plugins
 [[params.plugins.js]]
