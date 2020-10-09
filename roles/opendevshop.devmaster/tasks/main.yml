@@ -14,13 +14,6 @@
     path: "{{ ansible_share_path }}"
     state: directory
 
-- name: Install Ansible Roles
-  file:
-    src: "{{ devshop_cli_path }}/roles"
-    dest: "{{ ansible_share_path }}/roles"
-    state: link
-    force: true
-
 - name: Include version specific variables for Debian OS Family
   include_vars: "vars.{{ ansible_os_family }}.yml"
   when: ansible_os_family == "Debian"
@@ -46,6 +39,11 @@
     state: present
   when: ansible_os_family == "RedHat"
 
+- name: Install pip packages
+  pip:
+    name: '{{ devshop_pip_packages }}'
+    state: present
+
 - name: Detect currently installed version of DevShop.
   command: "{{ devshop_cli_path }}/bin/branch-or-tag"
   register: __devshop_version_installed
@@ -66,7 +64,7 @@
 
 - name: "Stopping Upgrade: Specified devshop_version is not a descendant of {{ __devshop_version_installed.stdout }}"
   set_fact:
-    devshop_cli_update: false
+    devshop_cli_skip_update: true
     devmaster_skip_upgrade: true
   when:
     # Only run when devshop is already installed and the ancestor check failed.
@@ -88,19 +86,20 @@
   when:
     - __devshop_version_installed.failed
 
-- name: "{{ __devshop_cli_upgrade_or_install }} DevShop CLI version {{ devshop_cli_version }} in {{ devshop_cli_path }}"
+- name: "Install DevShop Source"
   git:
     repo: "{{ devshop_cli_repo }}"
     version: "{{ devshop_cli_version }}"
-    update: "{{ devshop_cli_update }}"
+    update: "{{ not devshop_cli_skip_update }}"
     dest: "{{ devshop_cli_path }}"
     force: true
-  when: devshop_cli_update
+  when: not devshop_cli_skip_update
 
-- name: Install DevShop CLI Dependencies with Composer
+- name: Composer Install Devshop CLI
   command: "{{ php_executable }} {{ composer_path }} {{ devshop_cli_composer_install_command }}"
   # Changed: true is so we don't fail ansible lint.
   changed_when: true
+  tags: [always]
   args:
     chdir: "{{ devshop_cli_path }}"
 
@@ -108,6 +107,17 @@
   copy:
     dest: /etc/profile.d/devshop-cli-path.sh
     content: 'PATH=$PATH:{{ devshop_cli_path }}/bin'
+  tags: [always]
+  args:
+    mode: 0644
+
+- name: Add DevShop bin via symlink so path does not matter.
+  file:
+    src: "{{ devshop_cli_path }}/bin/devshop"
+    dest: "{{ local_bin_path }}/devshop"
+    state: link
+    force: true
+  tags: [always]
 
 - name: Debug environment
   command: "env"
@@ -115,6 +125,20 @@
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
   changed_when: true
+
+- name: Create Global Drush Configuration Folder
+  tags: [always]
+  file:
+    path: "/etc/drush"
+    mode: 0755
+    state: directory
+
+- name: Create Global Drush Configuration File
+  tags: [always]
+  template:
+    src: drushrc.php.j2
+    dest: "/etc/drush/drushrc.php"
+    mode: 0655
 
 - name: Check drush status
   command: "{{ drush_bin_path }} status"
@@ -133,7 +157,7 @@
 
 - name: Create /var/aegir/.drush
   file:
-    path: "{{ aegir_user_home }}/.drush"
+    path: "{{ aegir_user_home }}/.drush/commands"
     owner: "{{ aegir_user_name }}"
     group: "{{ aegir_user_name }}"
     mode: 0744
@@ -142,9 +166,10 @@
 
 - name: Install required drush packages.
   command: |
-    {{ drush_bin_path }} dl {{ item.key }}-{{ item.value }} --destination={{ aegir_user_home }}/.drush/commands --package-handler={{ drush_dl_method }} -y
+    {{ drush_bin_path }} dl {{ item.key }}-{{ item.value }} --destination={{ aegir_user_home }}/.drush/commands --package-handler={{ drush_dl_method }}
   with_dict: "{{ devshop_drush_packages }}"
   changed_when: true
+  ignore_errors: true
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
@@ -158,23 +183,12 @@
   become_method: "{{ ansible_become_method_aegir }}"
   tags: [runtime]
 
-- name: "Remove existing Devmaster Source Code from {{ devshop_devmaster_path }} before installing, if requested."
+- name: "Remove existing Devmaster Source Code from {{ devshop_control_path }} before installing, if requested."
   when: devshop_danger_remove_devmaster
   file:
-    path: "{{ devshop_devmaster_path }}"
+    path: "{{ devshop_control_path }}"
     state: absent
   tags: [never, remove-devmaster, rebuild-devmaster]
-
-- name: "Prepare DevShop Web Interface Source Code: {{ devmaster_make_command }}"
-  become: true
-  become_user: "{{ aegir_user_name }}"
-  become_method: "{{ ansible_become_method_aegir }}"
-  command: "{{ devmaster_make_command }}"
-  changed_when: true
-  args:
-    creates: "{{ devshop_devmaster_path }}/index.php"
-    chdir: "{{ devshop_cli_path }}"
-  tags: [rebuild-devmaster]
 
 - name: Clear the drush cache.
   command: "{{ drush_bin_path }} cc drush"

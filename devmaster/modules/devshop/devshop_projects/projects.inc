@@ -35,7 +35,7 @@ function devshop_projects_entity_load($entities, $type) {
 
         $query = db_query("
 SELECT
-  project_nid, name, n.title as project_name FROM {hosting_devshop_project_environment} e 
+  project_nid, name, n.title as project_name FROM {hosting_devshop_project_environment} e
   LEFT JOIN {node} n ON e.project_nid = n.nid
   WHERE site  = :site
     OR platform = :platform
@@ -144,9 +144,9 @@ function devshop_project_load($node) {
           cs.name as site_context,
           p.publish_path as root,
           p.publish_path as publish_path,
-          g.git_ref as git_ref,
-          g.repo_url as git_url,
-          g.repo_path as repo_path,
+          p.git_reference as git_ref,
+          p.git_remote as git_url,
+          p.git_root as repo_path,
           http.title as remote_host,
           sn.title as uri,
           http.title as web_server,
@@ -167,16 +167,23 @@ function devshop_project_load($node) {
         LEFT JOIN {node} sn ON s.vid = sn.vid
         LEFT JOIN {hosting_platform} p ON s.platform = p.nid OR e.platform = p.nid
         LEFT JOIN {hosting_context} cp ON p.nid = cp.nid
-        LEFT JOIN {hosting_git} g ON p.nid = g.nid
         LEFT JOIN {node} http ON p.web_server = http.nid
         LEFT JOIN {node} db ON s.db_server = db.nid
         LEFT JOIN {node} pn ON e.project_nid = pn.nid
         LEFT JOIN {hosting_site_alias} a ON a.vid = s.vid
-        WHERE project_nid = :nid AND
-        e.name != ''
+        WHERE project_nid = :nid 
+          AND e.name != ''
+          AND (
+            s.status IN (:site_status)
+            OR s.verified = 0 
+            OR s.nid IS NULL
+          ) 
         ORDER BY
           name;   ", array(
-    ':nid' => $node->nid
+    ':nid' => $node->nid,
+
+    // Query includes sites that are either enabled, queued, unverified, or have no site NID.
+    ':site_status' => [HOSTING_SITE_QUEUED, HOSTING_SITE_ENABLED]
   ));
   foreach ($environment_data as $environment) {
 

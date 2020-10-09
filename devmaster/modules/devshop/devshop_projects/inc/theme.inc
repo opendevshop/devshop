@@ -176,7 +176,7 @@ function devshop_projects_preprocess_node(&$vars) {
       }
       elseif ($vars['node']->task_type == 'install' && $vars['node']->environment->settings->locked) {
         $vars['retry'] = array(
-          '#prefix' => t('Site is protected.'),
+          '#children' => t('Site is protected.'),
           '#type' => 'container',
           '#attributes' => array(
             'class' => array('well well-sm')
@@ -220,7 +220,7 @@ function devshop_projects_preprocess_node(&$vars) {
     $messages = devshop_task_get_messages($vars['node']);
     $vars['messages'] = implode("\n", $messages);
     switch ($vars['task_type']) {
-      case 'devshop-deploy':
+      case 'deploy':
         $vars['type'] = 'Deploy';
         break;
       case 'verify':

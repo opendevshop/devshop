@@ -23,9 +23,9 @@
   "require": {
     "cpliakas/git-wrapper": "~1.0",
     "knplabs/github-api": "^2.11",
-    "sensiolabs/ansi-to-html": "^1.1",
-    "symfony/process": "^2.7",
     "php-http/guzzle6-adapter": "^1.1",
+    "sensiolabs/ansi-to-html": "^1.1",
+    "symfony/process": "^3.4",
     "symfony/yaml": "^3.4"
   },
   "minimum-stability": "dev",
@@ -34,6 +34,24 @@
     "sort-packages": true,
     "platform": {
       "php": "5.6.0"
+    }
+  },
+  "extra": {
+    "installer-paths": {
+      "web/libraries/{$name}": [
+        "type:drupal-library",
+        "type:bower-asset",
+        "type:npm-asset"
+      ],
+      "web/modules/contrib/{$name}": [
+        "type:drupal-module"
+      ],
+      "web/profiles/contrib/{$name}": [
+        "type:drupal-profile"
+      ],
+      "web/themes/contrib/{$name}": [
+        "type:drupal-theme"
+      ]
     }
   },
   "conflict": {
