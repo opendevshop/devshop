@@ -22,7 +22,7 @@ env:
   # In CI, set devshop_control_git_reference, not git_root.
   # If the git_root doesn't exist, the Ansible role clones it from git_remote, using the git_reference.
   # This way, the actual package repo is cloned (right after the git split was pushed). This is more stable.
-  ANSIBLE_EXTRA_VARS: "devshop_control_git_reference={{ github.head_ref }}"
+  ANSIBLE_EXTRA_VARS: "devshop_control_git_reference=${{ github.head_ref }}"
 
 jobs:
   test:
@@ -124,7 +124,6 @@ jobs:
     env:
       OS: "${{ matrix.os }}"
       HOSTNAME: "devshop.${{ github.event.pull_request.number }}.${{ matrix.os }}.actions.github.com"
-      ANSIBLE_EXTRA_VARS: "devshop_control_git_reference=${{ github.head_ref }}"
 
     runs-on: ubuntu-latest
     steps:
