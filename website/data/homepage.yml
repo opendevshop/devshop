@@ -36,7 +36,7 @@ feature:
       content : "Pre-built Docker containers configurable with Ansible."
 
     - name : "DevShop Install Script"
-      URL: https://get.devshop.tech
+      URL: https://github.com/opendevshop/devshop/blob/1.x/install/install.sh
       icon: "ti-file"
       content : "Standalone shell script to install DevShop."
 
