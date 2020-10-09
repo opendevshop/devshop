@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+set -e
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+PATH="$DIR:$PATH"
+
+# Detect systemD or other things
+# Check the Dockerfiles for each desired image.
+
+# Ubuntu
+# https://github.com/geerlingguy/docker-ubuntu1804-ansible/blob/master/Dockerfile
+if [ -f "/lib/systemd/systemd" ]; then
+  COMMAND="/lib/systemd/systemd ${SYSTEMD_OPTIONS:-}"
+
+# CentOS7
+# https://github.com/geerlingguy/docker-centos7-ansible/blob/master/Dockerfile
+elif [ -f "/usr/lib/systemd/systemd" ]; then
+  COMMAND="/usr/lib/systemd/systemd"
+
+# CentOS6
+# https://github.com/geerlingguy/docker-centos6-ansible/blob/master/Dockerfile
+elif [ -f "/sbin/init" ]; then
+  COMMAND="/sbin/init"
+
+else
+  echo "Unable to find systemD or init system. Check docker-systemd script."
+  exit 1
+fi
+
+devshop-line
+echo "Initiating with $COMMAND ..."
+devshop-line
+exec $COMMAND

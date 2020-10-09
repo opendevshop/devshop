@@ -3,9 +3,10 @@
 #
 # This dockerfile is CI only. It maps the test assets folder only and adds a CI environment var.
 #
-version: '2.2'
+version: '3'
 services:
   devshop:
+    hostname: ${DEVSHOP_SERVER_HOSTNAME:-devshop.local.computer}
     build:
       args:
       - CI=CI
@@ -13,6 +14,8 @@ services:
     environment:
     - GITHUB_TOKEN
     - CI=CI
+    - DEVSHOP_TESTS_ASSETS_PATH=/var/aegir/test-artifacts
 
     volumes:
-      - ./.github/.test-assets:/usr/share/devshop/.github/test-assets
+      - ./:/usr/share/devshop:delegated
+      - ./.github/test-artifacts:/var/aegir/test-artifacts

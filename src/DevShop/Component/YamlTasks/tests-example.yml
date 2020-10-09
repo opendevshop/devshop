@@ -1,0 +1,4 @@
+yaml-tests/phpunit: phpunit --version
+yaml-tests/phpcs: phpcs --standard=PSR2 -n src --colors
+yaml-tests/composer-install:
+  command: "composer install --ansi"

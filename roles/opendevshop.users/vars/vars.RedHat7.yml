@@ -1,7 +1,17 @@
 ---
 
+# This has to be in the aegir-user playbook because it needs to run before geerlingguy.php to be seen by geerlingguy.php
+
+# Ensure extra tools are installed so that server installs match container installs.
+# See https://github.com/geerlingguy/docker-centos7-ansible/blob/master/Dockerfile
 devshop_prerequisite_packages:
+  - deltarpm
+  - epel-release
+  - initscripts
   - openssh-clients
+  - python-pip
+  - sudo
+  - which
 
 # Pass in a comma-separated list of repos to use (e.g. "remi,epel"). Used only
 # for RHEL/CentOS.
