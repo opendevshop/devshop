@@ -14,6 +14,9 @@ services:
       dockerfile: "roles/devshop.server/Dockerfile.${OS:-ubuntu1804}"
       args:
         OS: "${OS:-ubuntu1804}"
+        # By setting DEVSHOP_BUILD_FROM_ARG to build FROM devshop/server instead of devshop/role, we reduce time to build. See ./github/workflows/devshop.yml
+        DEVSHOP_BUILD_FROM_ARG: "${DEVSHOP_BUILD_FROM_ARG:-devshop/role:ubuntu1804}"
+
     command: "${COMMAND:-'echo DevShop Server Online'}"
     extra_hosts:
       - "drpl8.testenv.devshop.local.computer:127.0.0.1"
