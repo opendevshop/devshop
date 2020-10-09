@@ -19,6 +19,11 @@ env:
   GITHUB_RUN_LOG_URL: https://github.com/opendevshop/devshop/actions/runs/${{ github.run_id }}
   DEVSHOP_TEST_ASSETS_PATH: ".github/test-artifacts"
 
+  # In CI, set devshop_control_git_reference, not git_root.
+  # If the git_root doesn't exist, the Ansible role clones it from git_remote, using the git_reference.
+  # This way, the actual package repo is cloned (right after the git split was pushed). This is more stable.
+  ANSIBLE_EXTRA_VARS: "devshop_control_git_reference={{ github.head_ref }}"
+
 jobs:
   test:
     name: "Test DevShop"
@@ -46,7 +51,6 @@ jobs:
           COMMAND: "echo 'DevShop Server Online, launched by GitHub Actions.'"
           DEVSHOP_DOCKER_COMMAND_RUN: "echo 'Skipping DEVSHOP_DOCKER_COMMAND_RUN (ansible-playbook), so that GitHub Actions can run in a separate step.'"
           DOCKER_COMMAND_POST: "echo 'GitHub Actions Container was launched.'"
-          ANSIBLE_EXTRA_VARS: "devshop_control_path=/usr/share/devshop/src/DevShop/Component/DevShopControlTemplate"
         # "docker-compose pull" is needed because the if the image does not exist locally, "docker-compose" will try to build.
         # "--no-build" is needed because docker-compose will build the image by default.
         run: |
@@ -120,6 +124,7 @@ jobs:
     env:
       OS: "${{ matrix.os }}"
       HOSTNAME: "devshop.${{ github.event.pull_request.number }}.${{ matrix.os }}.actions.github.com"
+      ANSIBLE_EXTRA_VARS: "devshop_control_git_reference={{ github.head_ref }}"
 
     runs-on: ubuntu-latest
     steps:
