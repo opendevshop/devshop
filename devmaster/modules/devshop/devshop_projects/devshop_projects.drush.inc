@@ -96,24 +96,6 @@ function drush_devshop_projects_pre_hosting_task()
     $task->options['test-type'] = $task->task_args['test_type'];
   }
 
-  // If task is install task, and platform is not verified yet, invoke a backend platform verify.
-  if ($task->ref->type == 'site' && $task->task_type == 'install') {
-
-    drush_log(dt('Verifying Platform...'), 'warning');
-
-    $task_platform = $task;
-    $task_platform->ref = node_load($task->ref->platform);
-    $hook = 'hosting_platform_context_options';
-    foreach (module_implements($hook) as $module) {
-      $function = $module . '_' . $hook;
-      call_user_func_array($function, array(&$task_platform));
-    }
-
-    $mode = drush_get_option('debug', FALSE) ? 'GET' : 'POST';
-    drush_invoke_process('@none', 'provision-save', array('@' . $task_platform->ref->hosting_name), $task_platform->context_options, array('method' => $mode, 'integrate' => TRUE));
-    provision_backend_invoke($task_platform->ref->hosting_name, 'provision-verify');
-  }
-
   // On every task triggered by devshop, set this option.
   $task->options['is-devshop'] = TRUE;
 }
