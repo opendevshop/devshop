@@ -51,7 +51,6 @@ jobs:
           COMMAND: "echo 'DevShop Server Online, launched by GitHub Actions.'"
           DEVSHOP_DOCKER_COMMAND_RUN: "echo 'Skipping DEVSHOP_DOCKER_COMMAND_RUN (ansible-playbook), so that GitHub Actions can run in a separate step.'"
           DOCKER_COMMAND_POST: "echo 'GitHub Actions Container was launched.'"
-          DEVSHOP_BUILD_FROM_ARG: "devshop/server:ubuntu1804"
         # "docker-compose pull" is needed because the if the image does not exist locally, "docker-compose" will try to build.
         # "--no-build" is needed because docker-compose will build the image by default.
         run: |
@@ -70,24 +69,6 @@ jobs:
           sleep 3
           docker-compose logs
           docker-compose exec -T devshop.server /usr/share/devshop/scripts/devshop-logo "GitHub Actions Container populated with code. Running SHA ${GITHUB_PR_SHA}"
-
-      # Build DevShop Role Images
-      - name: "Build devshop/server:${{ matrix.os }} Container"
-        working-directory: roles
-        run: docker-compose build devshop.server
-        env:
-          DEVSHOP_BUILD_FROM_ARG: "devshop/server:ubuntu1804"
-
-      # Launch Container
-      - name: "Launch devshop/server:${{ matrix.os }} Container"
-        working-directory: roles
-        env:
-          COMMAND: "echo 'DevShop Server Online, launched by GitHub Actions.'"
-          DEVSHOP_DOCKER_COMMAND_RUN: "echo 'Skipping DEVSHOP_DOCKER_COMMAND_RUN (ansible-playbook), so that GitHub Actions can run in a separate step.'"
-        run: |
-          docker-compose up --detach devshop.server
-          sleep 3
-          docker-compose logs
 
       - name: "Review Container Environment"
         working-directory: roles

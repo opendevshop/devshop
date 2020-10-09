@@ -3,12 +3,8 @@
 #
 # All-in-one devshop server.
 #
-ARG DEVSHOP_BUILD_FROM_ARG=devshop/role:ubuntu1804
-FROM $DEVSHOP_BUILD_FROM_ARG
-ARG DEVSHOP_BUILD_FROM_ARG
+FROM devshop/role:ubuntu1804
 LABEL maintainer="Jon Pugh"
-
-RUN echo "Building devshop/server FROM $DEVSHOP_BUILD_FROM_ARG ..."
 
 # The last thing the user sees in the logs.
 ENV DOCKER_COMMAND_POST devshop login
