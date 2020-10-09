@@ -124,7 +124,7 @@ jobs:
     env:
       OS: "${{ matrix.os }}"
       HOSTNAME: "devshop.${{ github.event.pull_request.number }}.${{ matrix.os }}.actions.github.com"
-      ANSIBLE_EXTRA_VARS: "devshop_control_git_reference={{ github.head_ref }}"
+      ANSIBLE_EXTRA_VARS: "devshop_control_git_reference=${{ github.head_ref }}"
 
     runs-on: ubuntu-latest
     steps:
