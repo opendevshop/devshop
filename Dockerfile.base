@@ -215,7 +215,6 @@ ENV DEVSHOP_USER_UID ${DEVSHOP_USER_UID_ARG:-1000}
 RUN mkdir -p /var/log/devshop/
 
 ENV DEVSHOP_ENTRYPOINT_LOG_FILES="/var/log/devshop/*"
-ENV DEVSHOP_TESTS_ASSETS_PATH="${DEVSHOP_PATH}/.github/test-assets"
 
 # Set devshop_install_phase runtime here, since the Dockerfile is ALWAYS buildtime.
 ENV ANSIBLE_BUILD_COMMAND="devshop-ansible-playbook \
@@ -228,9 +227,8 @@ RUN \
   echo "Container Environment Preparation Complete"; \
   devshop-line
 
-# Cleanup unwanted systemd files. See bin/docker-systemd-clean and https://github.com/geerlingguy/docker-ubuntu1804-ansible/pull/12
-RUN docker-systemd-clean
-RUN chmod 766 $DEVSHOP_TESTS_ASSETS_PATH
+# Prepare systemd to run inside a container.
+RUN docker-systemd-prepare
 
 # Pre-build Information
 RUN \

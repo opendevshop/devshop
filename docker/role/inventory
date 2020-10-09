@@ -1,0 +1,7 @@
+#
+# DevShop Role Container Inventory Template
+#
+
+# The "group name" must match the "hosts" entry in the playbook (play.yml).
+[local]
+localhost

@@ -4,11 +4,29 @@
   include_tasks: "config-projects.yml"
   tags: [install-devmaster, create-projects]
 
+- name: Devmaster | Clear drush caches
+  command: "{{ drush_bin_path }} cc drush"
+  become: true
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
+  register: drush_cache_clear
+  changed_when: "drush_cache_clear.stdout != empty_string"
+  tags: [runtime]
+
+- name: Devmaster | Clear DevShop Control caches
+  command: "{{ drush_bin_path }} {{ devshop_control_drush_alias }} cc all"
+  become: true
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
+  register: drush_cache_clear
+  changed_when: "drush_cache_clear.stdout != empty_string"
+  tags: [runtime]
+
 - name: Devmaster | Save GitHub Token
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
-  command: "{{ drush_bin_path }} @hostmaster vset devshop_github_token {{ devshop_github_token }}"
+  command: "{{ drush_bin_path }} {{ devshop_control_drush_alias }} vset devshop_github_token {{ devshop_github_token }}"
   when: devshop_github_token != empty_string
   # @TODO: The "when" condition is not getting picked up, so let's ignore errors here for now. See #422.
   ignore_errors: true
@@ -18,7 +36,7 @@
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
-  command: "{{ drush_bin_path }} @hostmaster hosting-tasks --force"
+  command: "{{ drush_bin_path }} {{ devshop_control_drush_alias }} hosting-tasks --force"
   register: devshop_ansible_command_output
   changed_when: "devshop_ansible_command_output.stdout != empty_string"
   tags: [runtime]
@@ -27,7 +45,7 @@
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
-  command: "{{ drush_bin_path }} @hostmaster vset devshop_support_license_key {{ devshop_support_license_key }}"
+  command: "{{ drush_bin_path }} {{ devshop_control_drush_alias }} vset devshop_support_license_key {{ devshop_support_license_key }}"
   when: devshop_support_license_key != empty_string
   tags: [runtime]
 
@@ -35,7 +53,7 @@
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
-  command: "{{ drush_bin_path }} @hostmaster hosting-devshop_support"
+  command: "{{ drush_bin_path }} {{ devshop_control_drush_alias }} hosting-devshop_support"
   when: devshop_support_license_key != empty_string
   tags: [runtime]
 
@@ -43,13 +61,13 @@
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
-  command: "{{ drush_bin_path }} @hostmaster hosting-setup -y"
+  command: "{{ drush_bin_path }} {{ devshop_control_drush_alias }} hosting-setup -y"
   register: devshop_ansible_command_output
   changed_when: "devshop_ansible_command_output.stdout != empty_string"
   tags: [runtime]
 
 - name: Save SSH key as variable
-  shell: "{{ drush_bin_path }} @hostmaster vset devshop_public_key \"$(cat ~/.ssh/id_rsa.pub)\" --yes"
+  shell: "{{ drush_bin_path }} {{ devshop_control_drush_alias }} vset devshop_public_key \"$(cat ~/.ssh/id_rsa.pub)\" --yes"
   become: true
   become_user: aegir
   become_method: "{{ ansible_become_method_aegir }}"

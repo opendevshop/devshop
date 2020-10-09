@@ -1,4 +1,7 @@
 skip_list:
+  - '106'
+  - '208'
+  - '301'
   - '302'
   - '303'
   - '306'
@@ -12,3 +15,4 @@ exclude_paths:
    - ./geerlingguy.php-versions
    - ./geerlingguy.supervisor
    - ./molecule
+   - ./docker-compose.yml

@@ -1,0 +1,43 @@
+{
+  "name": "devshop/bin-tools",
+  "type": "library",
+  "description": "Useful shell scripts",
+  "keywords": [],
+  "homepage": "https://getdevshop.com",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Jon Pugh",
+      "email": "jon@thinkdrop.net"
+    },
+    {
+      "name": "DevShop Community",
+      "homepage": "https://github.com/opendevshop/devshop/graphs/contributors"
+    }
+  ],
+  "require": {
+  },
+  "require-dev": {
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-master": "1.x-dev"
+    }
+  },
+  "bin": [
+    "branch-or-tag",
+    "devshop-ansible-playbook",
+    "devshop-chuid",
+    "devshop-line",
+    "devshop-log",
+    "devshop-logo",
+    "devshop-site-active",
+    "devshop-site-info",
+    "hosting-queue-runner",
+    "tail-file",
+    "wait-for",
+    "wait-mysql",
+    "wait-site"
+  ],
+  "minimum-stability": "dev"
+}

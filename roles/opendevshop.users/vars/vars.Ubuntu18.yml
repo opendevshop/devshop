@@ -6,12 +6,14 @@
 # See https://github.com/geerlingguy/docker-ubuntu1804-ansible/blob/master/Dockerfile
 devshop_prerequisite_packages:
   - apt-utils
+  - iproute2
   - locales
-  - software-properties-common
+  - openssh-client
+  - python3-setuptools
+  - python3-pip
   - rsyslog
+  - software-properties-common
+  - sudo
   - systemd
   - systemd-cron
-  - sudo
-  - iproute2
   - wget
-  - openssh-client

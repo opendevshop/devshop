@@ -1,0 +1,40 @@
+{
+  "name": "devshop/git-split",
+  "type": "composer-plugin",
+  "description": "DevShop GitSplit Component",
+  "keywords": [],
+  "homepage": "https://getdevshop.com",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Jon Pugh",
+      "email": "jon@thinkdrop.net"
+    },
+    {
+      "name": "DevShop Community",
+      "homepage": "https://github.com/opendevshop/devshop/graphs/contributors"
+    }
+  ],
+  "require": {
+    "php": "^7.1",
+    "composer-plugin-api": "^1.1"
+  },
+  "require-dev": {
+    "symfony/console": "^4.4|^5.0"
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-master": "1.x-dev"
+    },
+    "class": "DevShop\\Component\\GitSplit\\Composer\\Plugin"
+  },
+  "autoload": {
+    "psr-4": {
+      "DevShop\\Component\\GitSplit\\": ""
+    }
+  },
+  "bin": [
+    "bin/git-split"
+  ],
+  "minimum-stability": "dev"
+}
