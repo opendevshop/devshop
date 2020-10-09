@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+# wait-site
+#
+# @author Jon Pugh
+#
+# Uses the wait-for command to pause execution until a Drupal site is active.
+#
+#
+
+# Document usage
+usage() {
+  cat <<<EOF
+Usage:
+  wait-site @alias
+
+  Continously check status of @alias and return once connected.
+EOF
+}
+
+# Set Environment
+set -e
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+PATH="$DIR:$PATH"
+
+# Prepare arguments and options.
+ALIAS=$1
+
+if [ -z "${ALIAS}" ]; then
+  echo "Usage: site-wait @site_alias"
+  exit 1
+fi
+
+OPTIONS=-n devshop-log "Checking database... "
+
+# Returns true once mysql can connect.
+# Thanks to http://askubuntu.com/questions/697798/shell-script-how-to-run-script-after-mysql-is-ready
+# Set SILENT=1 to tell `wait-for` script not to print the command.
+# DO NOT CHANGE unless you want to expose MYSQL_ROOT_PASSWORD in your logs.
+export SILENT=1
+wait-for devshop-site-active "$ALIAS" && \
+  echo "Success." || \
+  exit 1
+
+URI=$(devshop-site-info ${ALIAS} uri)
+CLIENT_NAME=${CLIENT_NAME:-admin}
+
+# In drush_provision_drupal_post_provision_install(), _provision_client_create_symlink() is called, creating the /var/aegir/clients/URI symlinks.
+# For now, this is the best way to determine if a provision site install completed.
+INSTALLED_FILE_PATH="${HOME}/clients/${CLIENT_NAME}/${URI}/settings.php"
+
+if [ -f $INSTALLED_FILE_PATH ]; then
+  # devshop-log without a newline at the end
+  OPTIONS=-n devshop-log "Checking installation... "
+  echo "Success: https://$URI"
+else
+  # devshop-log without a newline at the end
+  OPTIONS=-n devshop-log "Waiting for installation to complete... (Waiting for file: $INSTALLED_FILE_PATH)"
+  export TIMEOUT=300
+  wait-for ls $INSTALLED_FILE_PATH && \
+    echo "Success: https://$URI" || \
+    exit 1
+fi
+

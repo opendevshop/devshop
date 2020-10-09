@@ -98,7 +98,9 @@ class YamlTasksConsoleCommand extends BaseCommand
      */
     protected $config = [];
 
-    /** @var \Github\Client */
+    /**
+     * @var \Github\Client
+     */
     protected $githubClient;
 
     private $addTokenUrl = "https://github.com/settings/tokens/new?description=yaml-tasks&scopes=repo:status,public_repo";
@@ -293,9 +295,13 @@ class YamlTasksConsoleCommand extends BaseCommand
 
             // Lookup Pull Request, if there is one.
             $string = $this->repoOwner . ':' .  $this->gitRepo->getCurrentBranch();
-            $prs = $this->githubClient->pullRequests()->all($this->repoOwner, $this->repoName, array(
+            $prs = $this->githubClient->pullRequests()->all(
+                $this->repoOwner,
+                $this->repoName,
+                array(
                 'head' => $string,
-            ));
+                )
+            );
 
             if (empty($prs)) {
                 $this->warningLite("No pull requests were found using the current local branch <comment>{$this->gitRepo->getCurrentBranch()}</comment>. Make sure a Pull Request has been created in addition to the branch being pushed. Errors will be sent as comments on the Commit, instead of on the Pull Request. This means error logs will appear on any Pull Request that contains the commit being tasked.");
@@ -350,18 +356,23 @@ class YamlTasksConsoleCommand extends BaseCommand
                 foreach ($this->yamlTasks as $task_name => $task) {
                     // Set a commit status for this REF
                     $params = new \stdClass();
-                    $params->state = 'pending';
+
+                    // Reserve "Pending" for the earliest possible commit status update (a curl request at the beginning.)
+                    // Use "queued" once it is in the task system.
+                    $params->state = 'queued';
                     $params->target_url = $this->getTargetUrl($task_name);
                     $params->description = implode(
                         ' — ',
                         array(
+                            !empty($task['description'])? $task['description']: $task_name,
                             $input->getOption('hostname'),
-                            !empty($task['description'])? $task['description']: $task_name
                         )
                     );
                     $params->context = $task_name;
 
-                    $params->description = substr($params->description, 0, self::GITHUB_STATUS_DESCRIPTION_MAX_SIZE - 3) . '...';
+                    if (strlen($params->description) > self::GITHUB_STATUS_DESCRIPTION_MAX_SIZE) {
+                        $params->description = substr($params->description, 0, self::GITHUB_STATUS_DESCRIPTION_MAX_SIZE - 1) . '…';
+                    }
 
                     // Post status to github
                     try {
@@ -422,35 +433,61 @@ class YamlTasksConsoleCommand extends BaseCommand
                 if ($task['show-output'] == false) {
                     $process->disableOutput();
                 }
+                
+                // Allow "working-directory" property on a single task.
+                if (!empty($task['working-directory'])) {
+                    $this->io->text("Working directory <fg=white>{$task['working-directory']}</>");
+                    $process->setWorkingDirectory(dirname($input->getOption('tasks-file')) . "/" . $task['working-directory']);
+                } else {
+                    // Set the dir relative to the task file.
+                    $process->setWorkingDirectory(dirname($input->getOption('tasks-file')));
+                }
+
+                // Set a commit status for this REF
+                $params = new \stdClass();
+                $params->state = 'in_progress';
+                $params->target_url = $this->getTargetUrl($task_name);
+                $params->context = $task_name;
 
                 $exit = $process->run();
 
                 // Set a commit status for this REF
                 $params = new \stdClass();
-                $params->state = 'pending';
                 $params->target_url = $this->getTargetUrl($task_name);
-                $params->description = implode(
-                    ' — ',
-                    array(
-                        !empty($task['description'])? $task['description']: $task_name,
-                        $input->getOption('hostname')
-                    )
-                );
                 $params->context = $task_name;
 
                 if ($exit == 0) {
                     $results_row[] = '<info>✔</info> Passed';
                     $params->state = 'success';
+                    $params->description = implode(
+                        ' — ',
+                        array(
+                            "Successful in {$process->duration} on {$input->getOption('hostname')}",
+                        )
+                    );
                 } else {
                     // If the task has the ignore failure flag, ignore it.
                     if (!empty($task['ignore-failure'])) {
                         $results_row[] = '<fg=red>✘</> Failed (Ignoring)';
                         $params->state = 'success';
-                        $params->description .= ' | TASK FAILED but is set to ignore.';
+                        $params->description = implode(
+                            ' — ',
+                            array(
+                                "Failed after {$process->duration} on {$input->getOption('hostname')} (ignored).",
+                                !empty($task['description'])? $task['description']: $task_name,
+                            )
+                        );
                     } else {
                         $results_row[] = '<fg=red>✘</> Failed';
                         $tasks_failed = true;
                         $params->state = 'failure';
+                        $params->description = implode(
+                            ' — ',
+                            array(
+                                "Failed after {$process->duration} on {$input->getOption('hostname')}",
+                                !empty($task['description'])? $task['description']: $task_name,
+                            )
+                        );
                     }
 
                     if (!$input->getOption('dry-run')) {
@@ -515,12 +552,17 @@ BODY;
 
                                     $comment_response = $client->repos()->comments()->create($this->repoOwner, $this->repoName, $this->repoSha, $comment);
 
-                                // If the branch is not yet a PR, we will just post a commit comment.
+                                    // If the branch is not yet a PR, we will just post a commit comment.
                                 } else {
                                     $comment_response = $client->repos()->comments()->create($this->repoOwner, $this->repoName, $this->repoSha, $comment);
                                 }
 
                                 $this->successLite("Comment Created: {$comment_response['html_url']}");
+
+                                // GitHub Actions, we want to test posting a comment but we don't want to see the comment.
+                                if (getenv('GITHUB_ACTIONS')) {
+                                    $client->repos()->comments()->remove($this->repoOwner, $this->repoName, $comment_response['id']);
+                                }
 
                                 // @TODO: Set Target URL from yaml-task options.
                                 // $params->target_url = $this->getTargetUrl($comment_response['html_url']);
@@ -538,7 +580,7 @@ BODY;
                 }
 
                 if (!$input->getOption('dry-run')) {
-                    $params->description = substr($params->description, 0, self::GITHUB_STATUS_DESCRIPTION_MAX_SIZE - 3) . '...';
+                    $params->description = substr($params->description, 0, self::GITHUB_STATUS_DESCRIPTION_MAX_SIZE);
                     $response = $client->getHttpClient()->post("/repos/$this->repoOwner/$this->repoName/statuses/$this->repoSha", json_encode($params));
                     $this->commitStatusMessage($response, $task_name, $task, $params->state);
                 }
@@ -581,15 +623,15 @@ BODY;
                     'command' => $commands
                 );
 
-            // task.command is a string
+                // task.command is a string
             } elseif (is_array($task) && isset($task['command']) && is_string($task['command'])) {
                 $commands[] = $task['command'];
 
-            // task is an array of commands
+                // task is an array of commands
             } elseif (!isset($task['command']) && is_array($task)) {
                 $commands += $task;
 
-            // task.command is an array
+                // task.command is an array
             } elseif (is_array($task) && is_array($task['command'])) {
                 $commands += $task['command'];
             }
@@ -735,7 +777,11 @@ BODY;
     protected function getTargetUrl($anchor = null)
     {
         // Return the alternate URL if it is present. If not, the command line option. (which defaults to the ENV var.)
-        $url = $this->input->getOption('status-url') . '#' . $anchor;
+        if (!empty($this->input->getOption('status-url'))) {
+            $url = $this->input->getOption('status-url') . '#' . $anchor;
+        } else {
+            return null;
+        }
 
         // Switch link to use HTTPS, it is required by GitHub API.
         return empty($url)? null: str_replace('http://', 'https://', $url);

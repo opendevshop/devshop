@@ -39,4 +39,4 @@ Runs on devshop "verify" task.
 
 `deploy`
 
-Runs on "devshop-deploy" task. This is what happens everytime you push code to your git repository or change branches or tags.
+Runs on "deploy" task. This is what happens everytime you push code to your git repository or change branches or tags.

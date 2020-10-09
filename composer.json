@@ -2,7 +2,7 @@
     "name": "devshop/devshop",
     "type": "library",
     "description": "The DevShop DevOps Framework",
-    "keywords": ["framework", "devops", "platform", "hosting"],
+    "keywords": ["framework", "devops", "platform", "hosting", "drupal", "web"],
     "homepage": "https://getdevshop.com",
     "license": "MIT",
     "authors": [
@@ -19,29 +19,51 @@
     "require": {
         "php": "^7.1",
         "knplabs/github-api": "^1.4",
-        "mouf/nodejs-installer": "^1.0",
-        "devshop/yaml-tasks": "*",
-        "devshop/git-split": "*",
-        "devshop/github-api-cli": "*",
-        "cpliakas/git-wrapper": "^1.0",
         "drush/drush": "^8",
-        "ext-json": "*"
+        "ext-json": "*",
+        "devshop/docker-bin-tools": "@dev",
+        "devshop/git-split": "self.version",
+        "devshop/github-api-cli": "self.version",
+        "devshop/bin-tools": "@dev",
+        "devshop/yaml-tasks": "self.version",
+        "devshop/power-process": "self.version",
+        "drupal/provision": "^4.0@alpha"
+    },
+    "replace": {
+        "devshop/yaml-tasks": "self.version",
+        "drupal/drupal": "*"
     },
     "require-dev": {
         "composer/composer": "^1.9"
     },
+    "suggest": {
+        "mouf/nodejs-installer": "Use to install nodejs into the devshop bin dir using composer."
+    },
     "autoload": {
-        "psr-0": { "DevShop": "src/" },
-        "autoload": {
-            "psr-4": {
-                "DevShop\\Component\\": "src/DevShop/Component/"
-            }
+        "psr-4": {
+            "DevShop\\": "src/DevShop/"
         }
     },
     "repositories": [
         {
+            "type": "composer",
+            "url": "https://packages.drupal.org/7"
+        },
+        {
+            "type": "path",
+            "url": "docker/bin"
+        },
+        {
+            "type": "path",
+            "url": "scripts"
+        },
+        {
             "type": "path",
             "url": "src/DevShop/Component/ComposerCommon"
+        },
+        {
+            "type": "path",
+            "url": "src/DevShop/Component/GitSplit"
         },
         {
             "type": "path",
@@ -49,7 +71,7 @@
         },
         {
             "type": "path",
-            "url": "src/DevShop/Component/GitSplit"
+            "url": "src/DevShop/Component/PowerProcess"
         },
         {
             "type": "path",
@@ -70,16 +92,21 @@
     "extra": {
         "git-split": {
             "repos": {
+                "docs": "https://github.com/opendevshop/documentation.git",
                 "tests/test-repo": "https://github.com/devshop-packages/test-repo.git",
                 "devmaster": "https://github.com/opendevshop/devmaster.git",
+                "docker/bin": "https://github.com/devshop-packages/docker-bin-tools.git",
                 "roles/opendevshop.apache": "https://github.com/opendevshop/ansible-role-apache.git",
                 "roles/opendevshop.devmaster": "https://github.com/opendevshop/ansible-role-devmaster.git",
                 "roles/opendevshop.users": "https://github.com/opendevshop/ansible-role-user.git",
+                "scripts": "https://github.com/devshop-packages/bin-tools.git",
                 "src/DevShop/Component/ComposerCommon": "https://github.com/devshop-packages/composer-common.git",
                 "src/DevShop/Component/GitHubApiCli": "https://github.com/devshop-packages/github-api-cli.git",
                 "src/DevShop/Component/GitSplit": "https://github.com/devshop-packages/git-split.git",
                 "src/DevShop/Component/PowerProcess": "https://github.com/devshop-packages/power-process.git",
-                "src/DevShop/Component/YamlTasks": "https://github.com/devshop-packages/yaml-tasks.git"
+                "src/DevShop/Component/YamlTasks": "https://github.com/devshop-packages/yaml-tasks.git",
+                "src/DevShop/Component/DevShopControlTemplate": "https://github.com/devshop-packages/devshop-control-template.git",
+                "install": "https://github.com/opendevshop/devshop-install.git"
             }
         }
     },
@@ -90,7 +117,7 @@
         ],
         "pre-update-cmd": [
         ],
-        "update-roles": [
+        "roles:update": [
             "DevShop\\Composer::updateRoles"
         ]
     }

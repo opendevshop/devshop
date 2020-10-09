@@ -23,6 +23,9 @@
     "symfony/console": "^4.4|^5.0"
   },
   "extra": {
+    "branch-alias": {
+      "dev-master": "1.x-dev"
+    },
     "class": "DevShop\\Component\\GitSplit\\Composer\\Plugin"
   },
   "autoload": {

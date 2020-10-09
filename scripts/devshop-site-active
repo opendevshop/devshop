@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+DEVSHOP_PATH="$( cd "$(dirname "$0")"/.. ; pwd -P )"
+PATH="$DEVSHOP_PATH/bin:$DEVSHOP_PATH/scripts:$PATH"
+
+ALIAS=$1
+
+usage() {
+  echo -n "${scriptName}
+
+  devshop-site-active @site_alias
+
+  $COLUMNS    Number of columns to print. Defaults to the width of the terminal.
+  $CHARACTER  The character to print. Defaults to the bar thing.
+"
+}
+echo "Checking $ALIAS..."
+
+# Check that drush status bootstrap contains "Successful".
+# Thanks: https://linuxize.com/post/how-to-check-if-string-contains-substring-in-bash/
+SUCCESS_STRING="Successful"
+STATUS=$(drush $ALIAS status bootstrap)
+if [[ "$STATUS" == *"$SUCCESS_STRING"* ]]; then
+  echo "Drupal site $ALIAS is active!"
+else
+  echo "Unable to bootstrap the Drupal site $ALIAS."
+  exit 1
+fi

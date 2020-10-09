@@ -410,14 +410,14 @@ function devshop_permissions_user_default_permissions() {
     'module' => 'devshop_projects',
   );
 
-  // Exported permission: 'create devshop-deploy task'.
-  $permissions['create devshop-deploy task'] = array(
-    'name' => 'create devshop-deploy task',
+  // Exported permission: 'create deploy task'.
+  $permissions['create deploy task'] = array(
+    'name' => 'create deploy task',
     'roles' => array(
       'administrator' => 'administrator',
       'authenticated user' => 'authenticated user',
     ),
-    'module' => 'devshop_projects',
+    'module' => 'hosting_site',
   );
 
   // Exported permission: 'create disable task'.

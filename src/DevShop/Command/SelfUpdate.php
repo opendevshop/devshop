@@ -5,14 +5,12 @@ namespace DevShop\Command;
 use DevShop\Console\Command;
 
 use Phar;
-use GitWrapper\GitWrapper;
-use GitWrapper\GitException;
+
 use Herrera\Json\Exception\JsonException;
 use Herrera\Phar\Update\Manager;
 use Herrera\Phar\Update\Manifest;
 use Herrera\Json\Exception\FileException;
 
-use Github\Exception\RuntimeException;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -24,11 +22,10 @@ use Symfony\Component\Console\Question\ConfirmationQuestion;
 
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
-use Github\Client;
+use Symfony\Component\Console\Exception\RuntimeException;
 
-use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
-use Symfony\Component\Finder\Finder;
+use TQ\Vcs\Cli\CallException;
+use TQ\Vcs\Cli\CallResult;
 
 class SelfUpdate extends Command
 {
@@ -91,7 +88,6 @@ EOT
 
       // 1. Check if this script is a git repo.
       $this->checkCliVersion();
-      $git = $this->gitWorkingCopy;
       $version = $this->getApplication()->getVersion();
       $target_version = $this->input->getArgument('devshop-version');
       $path = realpath(__DIR__ . '/../../../');
@@ -120,10 +116,18 @@ EOT
         }
       }
 
-      // Bail if there are working copy changes, ignoring untracked files.
-      // This is similar to \GitWrapper\GitWorkingCopy::hasChanges()
-      if (!$input->getOption('ignore-working-copy-changes') && $git->getWrapper()->workingCopy($git->getDirectory())->hasChanges()) {
-        throw new \Exception("There are changes to your working copy at $path. Commit or revert the changes, or use the --ignore-working-copy-changes option to skip this check. Git Status: " . PHP_EOL . $git->getStatus());
+      // Bail if there are working copy changes ignoring untracked files, or if repo is ahead.
+      $is_ahead = strpos($this->callGit('status', array('--short', '--branch'))->getStdOut(), 'ahead') !== FALSE;
+      $is_dirty = $this->getRepository()->isDirty();
+      if  (!$input->getOption('ignore-working-copy-changes') && $is_ahead) {
+        $this->IO->block('Your local clone of the DevShop source code has un-pushed commits.', 'WARNING', 'fg=white;bg=yellow', ' ', true);
+        $output->write($this->callGit('status')->getStdOut());
+        throw new RuntimeException("Cancelling self-update to avoid losing your commits. Run 'git push' to save your commits or use the --ignore-working-copy-changes option to skip this check.");
+      }
+      elseif (!$input->getOption('ignore-working-copy-changes') && $is_dirty) {
+        $this->IO->block('DevShop source code git repository is "dirty".', 'WARNING', 'fg=white;bg=yellow', ' ', true);
+        $output->write($this->callGit('status')->getStdOut());
+        throw new RuntimeException("There are changes to your working copy at $path. Commit or revert the changes, or use the --ignore-working-copy-changes option to skip this check.");
       }
 
       // Checkout the desired version.
@@ -131,11 +135,26 @@ EOT
         $output->writeln('<comment>Target version is the same as PR Branch. Skipping git checkout.</comment>');
       }
       else {
-        $git->fetchAll(array('tags' => true));
-        $git->checkout($target_version);
-        // If we are on a branch, pull.
-        if ($git->isTracking()) {
-          $git->pull();
+        $this->callGit('fetch', array(
+           '--all',
+           '--tags',
+        ), 'Unable to fetch tags.');
+
+        $this->callGit('checkout', array(
+          $target_version,
+        ), sprintf('Checkout of target version "%s" failed.', $target_version));
+
+        // If we are on a branch, reset to origin.
+        // This is the better than using git pull because it can handle force pushed branches.
+        try {
+          $this->getRepository()->getCurrentBranch();
+          $this->callGit('reset', array(
+            '--hard',
+            sprintf('origin/%s', $target_version),
+          ), sprintf('Unable to reset working copy to target version "%s".', $target_version));
+        }
+        catch (CallException $e) {
+          $output->writeln("DevShop CLI version <info>{$target_version}</info> has been checked out.");
         }
       }
 

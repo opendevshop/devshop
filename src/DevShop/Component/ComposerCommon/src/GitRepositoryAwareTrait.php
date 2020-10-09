@@ -3,33 +3,34 @@
 namespace DevShop\Component\Common;
 
 use TQ\Git\Repository\Repository;
+use TQ\Vcs\Cli\CallResult;
 
 trait GitRepositoryAwareTrait
 {
     /**
-     * @var Repository
+     * @var GitRepository
      */
     protected $repository = NULL;
 
     /**
-     * @param Repository $repository
+     * @param GitRepository $repository If left empty, the directory this package is installed in will be used.
      *
      * @return $this
      */
-    public function setRepository(Repository $repository = NULL)
+    public function setRepository(GitRepository $repository = NULL)
     {
         if ($repository) {
             $this->repository = $repository;
         }
         else {
-            $this->repository = Repository::open(getcwd());
+            $this->repository = GitRepository::open(__DIR__);
         }
 
         return $this;
     }
 
     /**
-     * @return Repository
+     * @return GitRepository
      */
     public function getRepository()
     {

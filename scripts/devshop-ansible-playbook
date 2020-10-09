@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+
+DEVSHOP_PATH="$( cd "$(dirname "$0")"/.. ; pwd -P )"
+PATH="$DEVSHOP_PATH/bin:$DEVSHOP_PATH/scripts:$PATH"
+
+# If /path/to/devshop/ANSIBLE_PLAYBOOK exists, use that path. Otherwise pass it directly.
+if [ -f "${DEVSHOP_PATH}/${ANSIBLE_PLAYBOOK}" ]; then
+  ANSIBLE_PLAYBOOK="${DEVSHOP_PATH}/${ANSIBLE_PLAYBOOK}"
+fi
+
+ANSIBLE_PLAYBOOK=${ANSIBLE_PLAYBOOK:-"/etc/ansible/play.yml"}
+ANSIBLE_TAGS=${ANSIBLE_TAGS:-""}
+ANSIBLE_SKIP_TAGS=${ANSIBLE_SKIP_TAGS:-""}
+ANSIBLE_EXTRA_VARS=${ANSIBLE_EXTRA_VARS:-""}
+ANSIBLE_PLAYBOOK_COMMAND_OPTIONS=${ANSIBLE_PLAYBOOK_COMMAND_OPTIONS:-}
+
+# Build options string if ENV vars exist.
+if [[ -n "${ANSIBLE_TAGS}" ]]; then
+  ANSIBLE_PLAYBOOK_COMMAND_OPTIONS="--tags $ANSIBLE_TAGS $ANSIBLE_PLAYBOOK_COMMAND_OPTIONS"
+fi
+if [[ -n "${ANSIBLE_SKIP_TAGS}" ]]; then
+  ANSIBLE_PLAYBOOK_COMMAND_OPTIONS="--skip-tags $ANSIBLE_SKIP_TAGS $ANSIBLE_PLAYBOOK_COMMAND_OPTIONS"
+fi
+if [[ -n "${ANSIBLE_EXTRA_VARS}" ]]; then
+  ANSIBLE_PLAYBOOK_COMMAND_OPTIONS="--extra-vars $ANSIBLE_EXTRA_VARS $ANSIBLE_PLAYBOOK_COMMAND_OPTIONS"
+fi
+
+ON_FAIL=${ON_FAIL:-"systemctl status --no-pager"}
+
+devshop-logo "Running Ansible Playbook..."
+echo "ANSIBLE_PLAYBOOK: $ANSIBLE_PLAYBOOK"
+echo "ANSIBLE_TAGS: $ANSIBLE_TAGS"
+echo "ANSIBLE_SKIP_TAGS: $ANSIBLE_SKIP_TAGS"
+echo "ANSIBLE_EXTRA_VARS: $ANSIBLE_EXTRA_VARS"
+echo "ANSIBLE_PLAYBOOK_COMMAND_OPTIONS: $ANSIBLE_PLAYBOOK_COMMAND_OPTIONS"
+echo "Additional Arguments: $*"
+devshop-line
+
+ANSIBLE_PLAYBOOK_FULL_COMMAND="ansible-playbook $ANSIBLE_PLAYBOOK \
+    $ANSIBLE_PLAYBOOK_COMMAND_OPTIONS \
+    $*"
+
+echo $ANSIBLE_PLAYBOOK_FULL_COMMAND
+devshop-line
+
+set -ex
+exec $ANSIBLE_PLAYBOOK_FULL_COMMAND || \
+    devshop-log "Call to ansible-playbook failed. (exit $?) Running $ON_FAIL ..." && \
+    $ON_FAIL; exit $?
