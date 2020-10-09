@@ -62,7 +62,7 @@
 {{ with site.Data.homepage.service }}
 {{ range $i,$p := .service_item }}
 {{if modBool $i 2}}
-<section class="section">
+<section class="section section-service">
   <div class="container">
     <div class="row align-items-center">
       <div class="col-md-6 order-2 order-md-1">
@@ -85,7 +85,7 @@
   </div>
 </section>
 {{ else }}
-<section class="section bg-light">
+<section class="section bg-light section-service">
   <div class="container">
     <div class="row align-items-center">
       <div class="col-md-6 mb-4 mb-md-0">

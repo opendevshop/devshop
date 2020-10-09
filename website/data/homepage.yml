@@ -80,15 +80,11 @@ service:
       - "images/service-1.png"
       - "images/service-2.png"
       - "images/service-3.png"
-      content : "
+      content : |
+        - **DevShop** provides an all-in-one solution for Continuous Integration and Delivery for Drupal.
+        - Launch **unlimited environments** on a single server to keep costs low during development and testing.
+        - Built-in **continuous integration** launches new environments automatically when developers need them. *No scripts or third-party integrations to maintain.*
 
-      - **DevShop** provides an all-in-one solution for Continuous Integration and Delivery for Drupal.
-
-      - Launch **unlimited environments** on a single server to keep costs low during development and testing.
-
-      - Built-in **continuous integration** launches new environments automatically when developers need them. *No scripts or third-party integrations to maintain.*
-
-"
       button:
         enable : true
         label : "Watch 'Test Driven Development in Real Life'"
@@ -98,16 +94,12 @@ service:
     - title : "A Server Management System, powered by Ansible, built on Drupal."
       images:
       - "images/service-1.png"
-      content : "
-      - DevShop is a **Server Management System** that lets you track your server inventory and configure them from a central web interface.
+      content : |
+        - DevShop is a **Server Management System** that lets you track your server inventory and configure them from a central web interface.
+        - Set up your servers with the included [Ansible Roles](https://github.com/opendevshop/devshop/tree/1.x/roles) or add your own, using Drupal as the [Ansible Inventory](https://docs.ansible.com/ansible/latest/user_guide/intro_inventory.html) for your own cloud.
+        - Edit a server's configuration as easily as you edit your website's content, in a simple web interface using basic Yaml syntax.
+        - Launch, configure and destroy new servers using the DevShop web interface and your favorite cloud provider.
 
-      - Set up your servers with the included [Ansible Roles](https://github.com/opendevshop/devshop/tree/1.x/roles) or add your own, using Drupal as the [Ansible Inventory](https://docs.ansible.com/ansible/latest/user_guide/intro_inventory.html) for your own cloud.
-
-      - Edit a server's configuration as easily as you edit your website's content, in a simple web interface using basic Yaml syntax.
-
-      - Launch, configure and destroy new servers using the DevShop web interface and your favorite cloud provider.
-
-      "
       button:
         enable : true
         label : "Watch 'Cloud Management with Drupal & Ansible'"
@@ -119,9 +111,7 @@ service:
       - "images/service-2.png"
       content : |
         - DevShop is **100% open source**, allowing it to be run in any data center using Linux.
-
         - **Choose your own server provider and network architecture** to maximize functionality, minimize costs, and comply with the contraints of your organization.
-
         - DevShop provides **open source server configuration** at the operating system and services level, making it compatible with any configuration management, security, or support system such as RHEL. Expand to containers and orchestrators at your own pace.
 
       button:
