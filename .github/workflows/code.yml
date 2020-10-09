@@ -1,6 +1,7 @@
 name: Code Quality
 on:
   push:
+    branches: 1.x
   pull_request:
     types: [opened, synchronize]
 jobs:

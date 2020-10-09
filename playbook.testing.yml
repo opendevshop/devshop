@@ -24,5 +24,3 @@
 
     # Since we are running tests as a process, we don't want tasks to run in the background.
     supervisor_started: false
-
-    devshop_makefile: "{{ devshop_cli_path }}/build-devmaster-dev.make.yml"

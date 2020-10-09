@@ -10,9 +10,9 @@ Feature: Anonymous Homepage
     And I should not see the link "Sign in with DevShop.Cloud"
 
     When I am logged in as a user with the "authenticated user" role
-    Then I should see "Your DevShop server is currently unsupported."
 
 # @TODO: When finalizing the devshop cloud client module, re-implement these tests.
+#    Then I should see "Your DevShop server is currently unsupported."
 #    When I run drush "vset devshop_support_license_key automated_testing_license_key"
 #    # Then print last drush output
 #    When I run drush "vset devshop_support_license_key_status active"

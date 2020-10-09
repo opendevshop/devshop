@@ -1,0 +1,27 @@
+#
+# DevShop Role: Server
+#
+# All-in-one devshop server.
+#
+FROM devshop/role:centos7
+LABEL maintainer="Jon Pugh"
+
+# Copy this role's play.yml into the image (over the default)
+ENV DEVSHOP_ANSIBLE_PLAYBOOK ./devshop.server/play.yml
+COPY $DEVSHOP_ANSIBLE_PLAYBOOK $DEVSHOP_ANSIBLE_PLAYBOOK_DESTINATION
+
+ENV DEVSHOP_ANSIBLE_INVENTORY ./devshop.server/inventory
+COPY $DEVSHOP_ANSIBLE_INVENTORY $DEVSHOP_ANSIBLE_INVENTORY_DESTINATION
+
+# Copy this roles dependencies into the image. Each role can decide what to copy in.
+COPY ./ ${DEVSHOP_ANSIBLE_PATH}/roles
+RUN \
+  echo "Ansible Directory: `ls -la ${DEVSHOP_ANSIBLE_PATH}`" &&\
+  echo "Roles Directory: `ls -la ${DEVSHOP_ANSIBLE_PATH}/roles`" &&\
+  echo "Ansible Inventory: `cat ${DEVSHOP_ANSIBLE_PATH}/hosts`" &&\
+  echo "Ansible Inventory: `ansible-inventory --yaml --list`" &&\
+  echo "Ansible Playbook: `cat ${DEVSHOP_ANSIBLE_PATH}/play.yml`"
+
+# Run ansible-playbook again with build-time options.
+RUN echo "Running $DEVSHOP_DOCKER_COMMAND_BUILD ...\n" && \
+  $DEVSHOP_DOCKER_COMMAND_BUILD

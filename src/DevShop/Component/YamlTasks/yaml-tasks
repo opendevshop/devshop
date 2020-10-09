@@ -1,0 +1,50 @@
+#!/usr/bin/env php
+<?php
+
+/*
+ * This file is part of the DevShop package.
+ *
+ * (c) Jon Pugh <jon@thinkdrop.net
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+/**
+ * Runs the yaml-tasks command.
+ *
+ * @author Jon Pugh <jon@thinkdrop.net
+ */
+
+use Symfony\Component\Console\Application;
+use Composer\Composer;
+use DevShop\Component\YamlTasks\Command\YamlTasksConsoleCommand;
+use DevShop\Component\YamlTasks\Command\YamlTasksComposerCommand;
+
+function includeIfExists(string $file): bool
+{
+    return file_exists($file) && include $file;
+}
+
+if (
+    !includeIfExists(__DIR__ . '/../../autoload.php') &&
+    !includeIfExists(__DIR__ . '/vendor/autoload.php') &&
+    !includeIfExists(__DIR__ . '/../../../../vendor/autoload.php')
+) {
+    fwrite(STDERR, 'Install dependencies using Composer.'.PHP_EOL);
+    exit(1);
+}
+
+if (!class_exists(Application::class)) {
+    fwrite(STDERR, 'You need the "symfony/console" component in order to run yaml-tasks.'.PHP_EOL);
+    exit(1);
+}
+
+// This stand-alone bin file does not use Composer, so it must use the Console command class.
+$command = new YamlTasksConsoleCommand();
+
+(new Application())->add($command)
+    ->getApplication()
+    ->setDefaultCommand($command->getName(), true)
+    ->run()
+;

@@ -1,0 +1,39 @@
+# DevShop Roles
+# Build Tool
+#
+# This docker-compose file is only for building containers.
+#
+---
+version: '3'
+services:
+
+  devshop.server:
+    image: "devshop/server:${OS:-ubuntu1804}"
+    build:
+      context: ".."
+      dockerfile: "roles/devshop.server/Dockerfile.${OS:-ubuntu1804}"
+      args:
+        OS: "${OS:-ubuntu1804}"
+    command: "${COMMAND:-'echo DevShop Server Online'}"
+    extra_hosts:
+      - "drpl8.testenv.devshop.local.computer:127.0.0.1"
+    # @TODO: Change back to devshop.local.computer
+    # Windows WSL2 Docker was not allowing me to load by devshop.local.computer. This is a workaround.
+    hostname: localhost
+    ports:
+      - "80:80"
+      - "2222:22"
+    privileged: true
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+      - /var/lib/mysql
+      - /var/logs/aegir
+    environment:
+      # @TODO: Change back to devshop.local.computer
+      # DEVSHOP_DOCKER_COMMAND_RUN: ansible-playbook /etc/ansible/play.yml -vv --tags runtime --extra-vars server_hostname=localhost
+      # This is listed here so that it can be set by the calling system (github actions).
+      - DEVSHOP_DOCKER_COMMAND_RUN=${DEVSHOP_DOCKER_COMMAND_RUN:-devshop-ansible-playbook}
+      # This container should always run the devshop.server/play.role when run using this docker-compose.yml.
+      - ANSIBLE_PLAYBOOK=/usr/share/devshop/roles/devshop.server/play.yml
+      - ANSIBLE_EXTRA_VARS
+      - DOCKER_COMMAND_POST
