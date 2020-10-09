@@ -94,10 +94,15 @@
       </span>
     </p>
 
+    <!-- Terminal Tasks modal -->
+    <button type="button" class="pull-right btn btn-group-sm btn-default btn-sm" data-toggle="modal" data-target="#exampleModal">
+      <i class="fa fa-terminal"></i>
+      <?php print t('Run in Terminal'); ?>
+    </button>
+
     <?php if (isset($site_url)): ?>
       <?php print $site_url ?>
     <?php endif; ?>
-
 
 
     <?php if (isset($task_well)): ?>
@@ -133,6 +138,40 @@
     </div>
   <?php endif; ?>
 
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Run Task</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                  <?php if ($node->task_status == HOSTING_TASK_QUEUED): ?>
+                    <?php print t('To run this task, run the following command on the DevShop server:'); ?>
+                    <kbd class="alert">
+                        drush @hm hosting-task <?php print $node->nid; ?>
+                    </kbd>
+                  <?php elseif ($node->task_status != HOSTING_TASK_QUEUED): ?>
+                    <?php foreach ($node->task_args as $i => $v){
+                      $name = escapeshellarg($i);
+                      $value = escapeshellarg($v);
+                      $args[] = "$name=$value";
+                    } ?>
+                    <?php print t('This task has already started. To run this task again, run the following command on the DevShop server.'); ?>
+                    <kbd class="alert">
+                        drush @hm hosting-task @<?php print $node->ref->hosting_name; ?> <?php print $node->task_type;  ?> <?php print implode(' ', $args); ?>
+                    </kbd>
+                  <?php endif; ?>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <h3><?php print $type; ?></h3>
 

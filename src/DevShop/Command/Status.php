@@ -33,8 +33,9 @@ class Status extends Command
     // Announce ourselves.
     $output->writeln($this->getApplication()->getLogo());
     $this->announce('Status');
-
+    $this->checkCliVersion();
     $output->writeln(array(
+      "",
       "Your contributions make DevShop possible. Please consider becoming a patron of open source!",
       "    https://opencollective.com/devshop",
       "    https://www.patreon.com/devshop ",

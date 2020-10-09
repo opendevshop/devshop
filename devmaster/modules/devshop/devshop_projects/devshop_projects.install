@@ -30,7 +30,7 @@ function devshop_projects_update_dependencies() {
  */
 function devshop_projects_install() {
 
-  // Push devshop_projects's system weight to 1.
+  // Push devshop_projects system weight to 1.
   db_update('system')
     ->fields(array(
       'weight' => 1
@@ -131,8 +131,11 @@ function devshop_projects_schema() {
         'description' => 'The NID of the last task that should be displayed on an environment.',
       ),
     ),
-    'indexes' => array(
-      'project_environment' => array('project_nid', 'name'),
+    'unique keys' => array(
+      'project_nid_name' => array(
+        'project_nid',
+        'name',
+      ),
     ),
   );
   return $schema;
@@ -475,4 +478,13 @@ function devshop_projects_update_7009 () {
   if (!db_query($query)) {
     drupal_set_message(t('Something went wrong when running a query to update hosting_context table to ensure all projects are prefixed with "project_":') . $query);
   }
+}
+
+/**
+ *  Add the "project_environment" unique index to the hosting_devshop_project_environment table.
+ */
+function devshop_projects_update_7010() {
+  db_query("ALTER TABLE {hosting_devshop_project_environment} DROP INDEX project_environment");
+  db_query("CREATE UNIQUE INDEX project_nid_name ON {hosting_devshop_project_environment}(project_nid, name)")
+    ->execute();
 }

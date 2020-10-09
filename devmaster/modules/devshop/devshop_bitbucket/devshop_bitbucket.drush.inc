@@ -17,7 +17,7 @@
 //    $project = $platform->project;
 //  }
 //  // Subsequent tasks are "deploy" and "verify"
-//  elseif (($task->task_type == 'verify' && $task->ref->type == 'site') || $task->task_type == 'devshop-deploy' || $task->task_type == 'test') {
+//  elseif (($task->task_type == 'verify' && $task->ref->type == 'site') || $task->task_type == 'deploy' || $task->task_type == 'test') {
 //    $environment = $task->ref->environment;
 //    $project = $task->ref->project;
 //  }
