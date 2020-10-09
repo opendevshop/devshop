@@ -18,7 +18,7 @@
     path: "/proc/{{ item }}/status"
     state: absent
   with_items: "{{ running_processes.stdout_lines }}"
-  ignore_errors: yes
+  ignore_errors: true
   register: killed_processes
 
 - name: "User ID Change: Force stop stuck processes"
