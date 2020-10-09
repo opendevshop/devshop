@@ -125,7 +125,7 @@ class DevmasterTest extends Command {
     });
 
     // Show git info
-    $process = new Process('git show');
+    $process = new Process('git log -1');
     $process->setWorkingDirectory($input->getOption('behat-path'));
     $process->run();
     echo $process->getOutput() . $process->getErrorOutput() ;
