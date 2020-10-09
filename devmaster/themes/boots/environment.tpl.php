@@ -198,8 +198,8 @@
 
       <?php
       // If we detect a currently running deploy...
-      if (isset($environment->tasks['devshop-deploy'])):
-        $task = current($environment->tasks['devshop-deploy']);
+      if (isset($environment->tasks['deploy'])):
+        $task = current($environment->tasks['deploy']);
 
         if (($environment->git_ref != $task->task_args['git_ref'] || $environment->git_ref != $environment->git_ref_stored) && ($task->task_status == HOSTING_TASK_QUEUED || $task->task_status == HOSTING_TASK_PROCESSING)): ?>
         <span title="<?php print t('Deploying from @source to @target...', array('@source' => $environment->git_ref, '@target' => $task->task_args['git_ref'])); ?>">
@@ -277,13 +277,15 @@
             }
             ?>
         <div class="list-group-item list-group-item-<?php print $class ?> text">
-          <div class="buttons pull-right">
-            <?php print $warning['buttons'] ?>
-          </div>
           <div class="text">
             <?php if ($icon): ?><i class="fa fa-<?php print $icon ?>"></i><?php endif; ?>
             <?php print $warning['text'] ?>
           </div>
+          <?php if (!empty($warning['buttons'])): ?>
+          <div class="buttons">
+            <?php print $warning['buttons'] ?>
+          </div>
+          <?php endif; ?>
         </div>
         <?php endforeach; ?>
     <?php endif; ?>
@@ -401,7 +403,7 @@
         <?php
         // Only show this area if they have at least one of these permissions.
         if (
-                user_access('create devshop-deploy task') ||
+                user_access('create deploy task') ||
                 user_access('create sync task') ||
                 user_access('create migrate task')
         ): ?>
@@ -411,7 +413,7 @@
                 <label><?php print t('Deploy'); ?></label>
                 <div class="btn-group btn-toolbar" role="toolbar">
 
-                    <?php if (user_access('create devshop-deploy task')): ?>
+                    <?php if (user_access('create deploy task')): ?>
                         <!-- Deploy: Code -->
                         <div class="btn-group btn-deploy-code" role="group">
                             <button type="button" class="btn btn-default dropdown-toggle btn-git-ref" data-toggle="dropdown"><i class="fa fa-code"></i>

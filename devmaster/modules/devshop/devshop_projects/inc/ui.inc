@@ -8,12 +8,18 @@
  * and cool things you can do with them.
  *
  */
-function devshop_projects_projects_page() {
+function devshop_projects_projects_page($show_inactive = FALSE) {
   drupal_set_title(t('Projects'));
   $tasks = hosting_available_tasks('site');
+  $query = db_select('hosting_devshop_project', 'p')
+    ->fields('p', array('nid'))
+  ;
+  $query->leftJoin('node', 'n', "p.nid = n.nid");
 
-  $results = db_query("SELECT n.nid FROM {hosting_devshop_project} p LEFT JOIN {node} n ON n.nid = p.nid WHERE n.status = :status ORDER BY n.changed DESC", array(':status' => 1));
+  $results = $query->execute();
+
   $rows = array();
+  $inactive_count = 0;
 
   foreach ($results as $result) {
     $project_node = node_load($result->nid);
@@ -24,11 +30,17 @@ function devshop_projects_projects_page() {
       continue;
     }
 
+    // If project is unpublished, and the "show inactive" filter is not on, hide it from the list.
+    if ($project_node->status == NODE_NOT_PUBLISHED && !$show_inactive) {
+      $inactive_count++;
+      continue;
+    }
+
     // Load an environment for extra info like version.
     $first_environment = current($project->environments);
     if ($first_environment) {
       $platform_node = node_load($first_environment->platform);
-      $version = $platform_node->release->version;
+      $version = $platform_node->release->version?: t('unknown');
     }
     else {
       $version = '';
@@ -37,8 +49,8 @@ function devshop_projects_projects_page() {
 
       // Link to Project page
       $url = url("node/$project->nid");
-      $title = t('View dashboard for !project project.', array(
-        ''
+      $title = t('View dashboard for @project project', array(
+        '@project' => $project_node->title
       ));
       $first_col = <<<HTML
 
@@ -143,15 +155,24 @@ HTML;
 
   // No Projects
   if (empty($rows)) {
-    $link = url('projects/add');
-    $welcome = t('Welcome to DevShop!');
-    $text = t('Create your first project to get started.');
-    $button = t('Start a Project');
+    $link = url('admin/devshop');
+    $welcome = t('Welcome to <em>your</em> DevShop!');
+    $subtitle = t("You are almost ready to start working.");
+    $text = t("Check your DevShop settings or get started with a new Project.");
+    $button = t('DevShop Settings');
+
+    $link_create = url('projects/add');
+    $button_create = t('Create your first Project');
+
     $output = <<<HTML
 <div class="jumbotron">
   <h1>$welcome</h1>
-  <p>$text</p>
-  <p><a class="btn btn-success btn-lg" href="$link" role="button"><i class="fa fa-chevron-right"></i> $button </a></p>
+  <h3>$subtitle</h3>
+  <p class="text-muted">$text</p>
+  <p>
+   <a class="btn btn-primary btn-lg" href="$link" role="button"><i class="fa fa-gear"></i> $button </a>
+   <a class="btn btn-success btn-lg" href="$link_create" role="button"><i class="fa fa-plus"></i> $button_create </a>
+  </p>
 </div>
 
 HTML;
@@ -161,6 +182,48 @@ HTML;
   }
   return $output;
 }
+
+/**
+ * Count the number of projects.
+ * @return mixed
+ */
+function devshop_projects_count($status = 1) {
+  $query = db_select('node', 'n')
+    ->fields('n', array('nid'))
+    ->condition('n.type', 'project')
+    ->condition('n.status', $status)
+    ->countQuery()
+  ;
+  return $query->execute()->fetchField();
+}
+
+/**
+ *
+ */
+function devshop_projects_inactive_tab_title() {
+  static $count;
+  if (!isset($count)) {
+    $count = devshop_projects_count(NODE_NOT_PUBLISHED);
+  }
+
+  return "Inactive Projects: $count";
+}
+
+/**
+ * Access check for "inactive projects" tab.
+ */
+function devshop_projects_inactive_tab_access() {
+  if (arg(0) == 'projects' && arg(1) == 'add') {
+    return FALSE;
+  }
+  static $count;
+  if (!isset($count)) {
+    $count = devshop_projects_count(NODE_NOT_PUBLISHED);
+  }
+  return $count;
+}
+
+
 
 /**
  * Implementation of hook_view().

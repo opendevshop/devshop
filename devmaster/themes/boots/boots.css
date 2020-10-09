@@ -473,6 +473,16 @@ input.form-control.webhook-url {
   margin-top: 15px;
 }
 
+.alert-inline {
+    padding: .2em;
+}
+
+.command-label {
+    width: 5em;
+    display: inline-block;
+    text-align: right;
+}
+
 .deploy-db-indicator {
   position: absolute;
   top: 8px;
@@ -966,6 +976,18 @@ div.hosting-task-retry form, div.hosting-task-retry form input {
     padding-bottom: 4em;
 }
 
+#hosting-task-confirm-form .container {
+    margin-left: 0;
+}
+
+#hosting-task-confirm-form  .git-ref-label {
+    height: 34px !important;
+    padding: 10px 12px;
+    display: block;
+    height: 1.5em;
+    font-size: 14px;
+}
+
 #hosting-task-confirm-form .form-checkboxes .form-item span {
     width: 6em;
     display: inline-block;
@@ -1040,7 +1062,6 @@ pre.ansi_box .line-number {
 p.wait {
     text-align: center;
     padding: 32px 0px 52px;
-    background: bottom center no-repeat url(images/loading.gif);
 }
 
 p.error {
@@ -1343,4 +1364,9 @@ form .well .form-type-radios .form-type-radio
 }
 .form-control.chosen-container.chosen-container-single .chosen-single {
     height: 34px;
+}
+
+
+kbd.alert {
+  display: block;
 }

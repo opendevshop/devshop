@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+DEVSHOP_PATH="$( cd "$(dirname "$0")"/.. ; pwd -P )"
+PATH="$DEVSHOP_PATH/bin:$DEVSHOP_PATH/scripts:$PATH"
+CHARACTER="${1:--}"
+COLUMNS="$2"
+
+usage() {
+  echo -n "${scriptName} [CHARACTER] [COLUMNS]
+  Prints a line across the screen.
+
+  devshop-line $CHARACTER $COLUMNS
+
+  $COLUMNS    Number of columns to print. Defaults to the width of the terminal.
+  $CHARACTER  The character to print. Defaults to the bar thing.
+"
+}
+
+printf '%*s\n' "${COLUMNS:-$(tput cols -T xterm)}" '' | tr ' ' $CHARACTER

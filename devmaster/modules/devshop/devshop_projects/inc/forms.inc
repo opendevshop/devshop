@@ -42,6 +42,10 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
     '#tree' => FALSE,
     '#weight' => -11,
   );
+
+  $form['project']['codebase']['status'] = $form['options']['status'];
+  unset($form['options']);
+
   $form['project']['codebase']['git_url'] = array(
     '#type' => 'textfield',
     '#title' => t('Default Git Repository URL'),
@@ -451,7 +455,17 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
     unset($form['menu']);
     unset($form['revision_information']);
     unset($form['author']);
-    unset($form['options']);
+
+    // Move Published checkbox to General Settings group.
+    $form['options']['status']['#group'] = 'codebase';
+    $form['options']['status']['#title'] = t('Active');
+    $form['options']['status']['#description'] = t('Uncheck this box to hide the project from the main dashboard. Users who have permission to "view unpublished nodes" will still be able to view inactive projects.');
+
+    // On "project/add/settings" page, don't show the checkbox.
+    if (current_path() == 'projects/add/settings') {
+      $form['options']['status']['#access'] = 0;
+    }
+
     unset($form['actions']['delete']);
     unset($form['actions']['preview']);
     if (isset($form['retry']['#value'])) {
@@ -573,12 +587,12 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
         break;
 
       // Deploy task form
-      case 'devshop-deploy':
+      case 'deploy':
 
         // Alter title of deploy task.
         $node = node_load($form['nid']['#value']);
-        drupal_set_title(t('Deploy code to Environment "@env"', array('@env' => $node->environment->name)), PASS_THROUGH);
-        $form['actions']['cancel']['#value'] = l(t('Cancel'), "node/{$node->project->nid}");
+//        drupal_set_title(t('Deploy code to Environment "@env"', array('@env' => $node->environment->name)), PASS_THROUGH);
+//        $form['actions']['cancel']['#value'] = l(t('Cancel'), "node/{$node->project->nid}");
         break;
 
       // Sync task form
@@ -969,6 +983,11 @@ function devshop_projects_create_environment_form(&$form, &$form_state, $form_id
   }
   $project = $project_node->project;
 
+  if ($project_node->status != NODE_PUBLISHED) {
+    drupal_set_message(t('This project is not active. You may still create environments but non-admin users will not see the project or sites. Visit !settings to reactivate the project.', array(
+      '!settings' => l(t('Project Settings'), "node/{$project->nid}/edit"),
+    )), 'warning');
+  }
   // Wrap the form in a container so we can use grid
   $form['#prefix'] = '<div class="container add-environment-container">';
   $form['#suffix'] = '</div>';
@@ -1370,25 +1389,25 @@ function devshop_prepare_platform_node($project, $environment_name, $git_ref, $w
   $platform_node->type = 'platform';
   $platform_node->title = $project->name . '_' . $environment_name;
 
-  // Specify GIT Url for hosting_git.module
+  // Specify GIT Url for hosting_platform.module
   if (empty($git_remote)) {
-    $platform_node->git['repo_url'] = $project->git_url;
+    $platform_node->git_remote = $project->git_url;
   }
   else {
-    $platform_node->git['repo_url'] = $git_remote;
+    $platform_node->git_remote = $git_remote;
   }
 
-  $platform_node->git['git_ref'] = $git_ref;
+  $platform_node->git_reference = $git_ref;
 
 
   // Enable git pull queue for this platform if chosen.
   if ($project->settings->deploy['method'] == 'queue') {
-    $platform_node->git['pull_method'] = HOSTING_GIT_PULL_QUEUE;
+    // @TODO: Using integers because hosting_git_pull module isn't enabled anymore.
+    $platform_node->git['pull_method'] = 1;
   }
   // For devshop "webhook" and "manual" methods, disable git pull for now.
-  // @TODO: Remove devshop "code deploy" task in exchange for hosting_git_pull module.
   else {
-    $platform_node->git['pull_method'] = HOSTING_GIT_PULL_DISABLED;
+    $platform_node->git['pull_method'] = 0;
   }
 
 
@@ -1401,15 +1420,15 @@ function devshop_prepare_platform_node($project, $environment_name, $git_ref, $w
     $platform_node->web_server = $web_server;
   }
 
-  $platform_node->git['repo_path'] = $project->code_path . '/' . $environment_name;
+  $platform_node->git_root = $project->code_path . '/' . $environment_name;
 
   // Append drupal_path to repo_path if there is one. If not, repo_path is publish_path.
   if ($project->drupal_path) {
-    $platform_node->publish_path = $platform_node->git['repo_path'] . '/' . $project->drupal_path;
-    $platform_node->git['repo_docroot'] = $project->drupal_path;
+    $platform_node->publish_path = $platform_node->git_root . '/' . $project->drupal_path;
+    $platform_node->git_docroot = $project->drupal_path;
   }
   else {
-    $platform_node->publish_path = $platform_node->git['repo_path'];
+    $platform_node->publish_path = $platform_node->git_root;
   }
   return $platform_node;
 }
@@ -1639,7 +1658,7 @@ function devshop_environment_deploy_hooks_form($project, $environment = NULL, $t
   if (
     // Environment form
     ($is_environment_form && !$project->settings->deploy['allow_environment_deploy_config']) ||
-    ($task_type == 'devshop-deploy' && !$project->settings->deploy['allow_environment_deploy_hooks_override'])
+    ($task_type == 'deploy' && !$project->settings->deploy['allow_environment_deploy_hooks_override'])
   ) {
 
     foreach (element_children($return) as $i) {

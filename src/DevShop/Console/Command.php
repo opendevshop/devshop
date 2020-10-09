@@ -17,11 +17,9 @@
 
 namespace DevShop\Console;
 
-use Asm\Ansible\Ansible;
-use Asm\Ansible\Exception\CommandException;
+use DevShop\Component\Common\GitHubRepositoryAwareTrait;
+
 use DevShop\DevShop;
-use GitWrapper\GitWorkingCopy;
-use GitWrapper\GitWrapper;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
@@ -33,6 +31,7 @@ use Symfony\Component\Process\Exception\ProcessFailedException;
 use Github\Exception\RuntimeException;
 
 use Symfony\Component\Console\Command\Command as BaseCommand;
+use TQ\Git\Repository\Repository;
 
 /**
  * Base class for DevShop commands
@@ -41,6 +40,9 @@ use Symfony\Component\Console\Command\Command as BaseCommand;
  */
 abstract class Command extends BaseCommand
 {
+
+  use GitHubRepositoryAwareTrait;
+
   /**
    * @var DevShop
    */
@@ -62,35 +64,15 @@ abstract class Command extends BaseCommand
   public $IO;
 
   /**
-   * @var GitWrapper
-   */
-  public $gitWrapper;
-
-  /**
-   * @var GitWorkingCopy
-   */
-  public $gitWorkingCopy;
-
-  /**
    * @var Process
    * Process
    */
   protected $process = NULL;
 
   /**
-   * @var Ansible;
-   */
-  protected $ansible = NULL;
-
-  /**
    * @var Filesystem
    */
   protected $FS;
-
-  /**
-   * @var bool Sub classes should define this to load $this->ansible;
-   */
-  protected $ansibleRequired = FALSE;
 
   /**
    * @var If target version is branch or tag.
@@ -109,22 +91,8 @@ abstract class Command extends BaseCommand
     $this->FS = new Filesystem();
     $this->input = $input;
     $this->output = $output;
-    $this->gitWrapper = new GitWrapper();
+    $this->setGitHubRepo();
     $this->user = trim(shell_exec('whoami'));
-
-    try {
-      $this->ansible = new Ansible(
-        getcwd(),
-        trim(`which ansible-playbook`),
-        trim(`which ansible-galaxy`)
-      );
-      $this->ansible->setTimeout(0);
-    } catch (CommandException $exception) {
-      if ($this->ansibleRequired) {
-        $commandName = $this->getName();
-        throw new \Exception("The command '$commandName' requires ansible to be installed. Please make sure 'ansible-galaxy' and 'ansible-playbook' are in the PATH and try again. The error was: " . $exception->getMessage());
-      }
-    }
   }
 
   /**
@@ -176,9 +144,14 @@ abstract class Command extends BaseCommand
   /**
    * Helper for running processes.
    *
-   * @param \Symfony\Component\Process\Process $process
+   * @param \Symfony\Component\Process\Process|string $process
    */
-  public function runProcess(Process $process) {
+  public function runProcess($process) {
+
+    if (is_string($process)) {
+      $process = new Process($process);
+      $process->setTimeout(null);
+    }
 
     try {
       $process->mustRun(function ($type, $buffer) {
@@ -357,8 +330,10 @@ abstract class Command extends BaseCommand
     $path = realpath(__DIR__ . '/../../../');
     $version = $this->getApplication()->getVersion();
     $versionSha = $this->getApplication()->versionRefSha;
-    $this->gitWorkingCopy = $this->gitWrapper->workingCopy($path);
-    $this->gitWorkingCopy->status();
+
+    $devshopCliRepo = Repository::open($path);
+    $devshopCliRepo->getStatus();
+
     $this->output->writeln("Git repo found at <info>$path</info> at version <comment>$version</comment>#<comment>$versionSha</comment>.");
 
   }

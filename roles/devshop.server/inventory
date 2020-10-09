@@ -1,0 +1,3 @@
+# The group name here must match the "hosts" string in role-playbook.yml.
+[devshop.server]
+localhost ansible_connection=local
