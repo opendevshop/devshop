@@ -100,9 +100,11 @@
       <?php print t('Run in Terminal'); ?>
     </button>
 
+    <div class="list-group">
     <?php foreach ($environment->domains as $domain): ?>
-      <a href="<?php print 'http://' . $domain; ?>" target="_blank" class="btn btn-default"><?php print 'http://' . $domain; ?></a>
+      <a class="list-group-item small" href="<?php print 'http://' . $domain; ?>" target="_blank"><?php print 'http://' . $domain; ?></a>
     <?php endforeach; ?>
+    </div>
 
 
     <?php if (isset($task_well)): ?>
