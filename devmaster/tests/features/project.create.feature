@@ -104,7 +104,6 @@ Feature: Create a project and check settings
 
     When I run drush "hosting-tasks --force --fork=0 --strict=0"
 
-    When I click "testenv" in the "main" region
     Then I should see "Environment Dashboard"
     And I should see "Environment Settings"
 
