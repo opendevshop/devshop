@@ -76,7 +76,7 @@
         <span class="label label-default label-<?php print $task_label_class ?> task-status"><?php print $task_label ?></span>
       </div>
 
-      <a href="<?php print $node_url ?>" title="<?php print $title ?>"><?php print $title ?></a>
+       <a href="<?php print $node_url ?>" title="<?php print $title ?>"><?php print $type_name ?></a>
     </h4>
 
     <p>
