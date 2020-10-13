@@ -100,9 +100,9 @@
       <?php print t('Run in Terminal'); ?>
     </button>
 
-    <?php if (isset($site_url)): ?>
-      <?php print $site_url ?>
-    <?php endif; ?>
+    <?php foreach ($environment->domains as $domain): ?>
+      <a href="<?php print 'http://' . $domain; ?>" target="_blank" class="btn btn-default"><?php print 'http://' . $domain; ?></a>
+    <?php endforeach; ?>
 
 
     <?php if (isset($task_well)): ?>
