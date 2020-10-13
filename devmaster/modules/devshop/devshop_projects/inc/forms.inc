@@ -1350,6 +1350,7 @@ function devshop_projects_create_environment_form_validate_name($element, &$form
 
     // Attach a new platform node.
     $platform_node = devshop_prepare_platform_node($project, $element['#value'], $form_state['values']['git_ref'], $form_state['values']['web_server'], $form_state['values']['git']['repo_url']);
+    $platform_node->no_verify = TRUE;
 
     // Set value in form_state.
     form_set_value($form['platform_node'], $platform_node, $form_state);
