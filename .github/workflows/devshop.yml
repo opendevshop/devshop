@@ -51,7 +51,8 @@ jobs:
         working-directory: roles
         env:
           COMMAND: "echo 'DevShop Server Online, launched by GitHub Actions.'"
-          DEVSHOP_DOCKER_COMMAND_RUN: "echo 'Skipping DEVSHOP_DOCKER_COMMAND_RUN (ansible-playbook), so that GitHub Actions can run in a separate step.'"
+          DEVSHOP_DOCKER_COMMAND_RUN: "ls -la /usr/share/devshop"
+          # DEVSHOP_DOCKER_COMMAND_RUN: "echo 'Skipping DEVSHOP_DOCKER_COMMAND_RUN (ansible-playbook), so that GitHub Actions can run in a separate step.'"
           DOCKER_COMMAND_POST: "echo 'GitHub Actions Container was launched.'"
         # "docker-compose pull" is needed because the if the image does not exist locally, "docker-compose" will try to build.
         # "--no-build" is needed because docker-compose will build the image by default.
