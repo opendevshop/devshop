@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
-DEVSHOP_PATH="$( cd "$(dirname "$0")"/../../bin ; pwd -P )"
-PATH="$DEVSHOP_PATH:$PATH"
+DEVSHOP_PATH="$( cd "$(dirname "$0")"/../.. ; pwd -P )"
+PATH="$DEVSHOP_PATH/bin:$PATH"
 
 devshop-logo "Preparing DevShop Control for CI Tests"
 
