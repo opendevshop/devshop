@@ -50,8 +50,8 @@
 
   <?php print $user_picture ?>
 
-  <div id="task-info" class="task-info list-group">
-    <div class="list-group-item">
+  <div class="list-group">
+    <div id="task-info" class="task-info list-group-item">
       <div class="btn-group pull-right" role="group" aria-label="Actions">
         <?php  if (isset($follow_checkbox)): ?>
               <?php print $follow_checkbox; ?>
@@ -167,8 +167,6 @@
             </div>
         </div>
     </div>
-
-    <h3><?php print $type; ?></h3>
 
     <div id='task-logs'>
         <?php print $messages; ?>
