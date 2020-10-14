@@ -50,8 +50,8 @@
 
   <?php print $user_picture ?>
 
-  <div id="task-info" class="task-info well well-sm">
-
+  <div id="task-info" class="task-info list-group">
+    <div class="list-group-item">
       <div class="btn-group pull-right" role="group" aria-label="Actions">
         <?php  if (isset($follow_checkbox)): ?>
               <?php print $follow_checkbox; ?>
@@ -68,6 +68,12 @@
         <?php if (isset($content['update-status'])): ?>
           <?php print render($content['update-status']); ?>
         <?php endif; ?>
+
+          <!-- Terminal Tasks modal -->
+          <button type="button" class="btn btn-default" data-toggle="modal" data-target="#exampleModal">
+              <i class="fa fa-terminal"></i>
+            <?php print t('Run in Terminal'); ?>
+          </button>
       </div>
 
     <h4>
@@ -93,52 +99,39 @@
           <small><time class="timeago" datetime="<?php print $node->task_timestamp ?>"></time></small>
       </span>
     </p>
-
-    <!-- Terminal Tasks modal -->
-    <button type="button" class="pull-right btn btn-group-sm btn-default btn-sm" data-toggle="modal" data-target="#exampleModal">
-      <i class="fa fa-terminal"></i>
-      <?php print t('Run in Terminal'); ?>
-    </button>
-
-    <div class="list-group">
-    <?php foreach ($environment->domains as $domain): ?>
-      <a class="list-group-item small" href="<?php print 'http://' . $domain; ?>" target="_blank"><?php print 'http://' . $domain; ?></a>
-    <?php endforeach; ?>
-    </div>
-
+    <div class="btn-group-xs">
+      <?php foreach ($environment->domains as $domain): ?>
+          <a class="btn btn-text btn-xs" href="<?php print 'http://' . $domain; ?>" target="_blank">
+              <i class="fa fa-globe"></i> <?php print $domain; ?>
+          </a>
+      <?php endforeach; ?>
 
     <?php if (isset($task_well)): ?>
       <?php print $task_well; ?>
     <?php endif; ?>
+    </div>
 
-  </div>
-
-  <?php if (count($task_args)): ?>
-    <div class="task-arguments well well-sm">
-      <!-- Default panel contents -->
-
-      <dl class="dl-horizontal">
-        <dt><?php print t('Task Arguments') ?></dt>
-        <dd>
-        <?php foreach (array_filter($task_args) as $arg => $value): ?>
-          <?php
-          if ($value === '1') {
-            $value = '';
-            $arg = '<i class="fa fa-check"></i>' . $arg;
-          }
-          ?>
-          <span class="task-arg small text-muted">
-            <strong><?php print $arg; ?></strong>
-            <span>
-              <?php print $value; ?>
-            </span>
-          </span>
-        <?php endforeach; ?>
-
-        </dd>
-      </dl>
+    <?php if (count($task_args)): ?>
+    <div class="task-args">
+    <?php foreach (array_filter($task_args) as $arg => $value): ?>
+      <?php
+      if ($value === '1') {
+        $value = '';
+        $arg = '<i class="fa fa-check"></i>' . $arg;
+      }
+      ?>
+      <span class="task-arg small text-muted">
+        <strong><?php print $arg; ?></strong>
+        <span>
+          <?php print $value; ?>
+        </span>
+      </span>
+    <?php endforeach; ?>
+    </div>
     </div>
   <?php endif; ?>
+
+  </div>
 
     <!-- Modal -->
     <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
