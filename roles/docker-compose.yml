@@ -15,6 +15,7 @@ services:
       args:
         OS: "${OS:-ubuntu1804}"
     command: "${COMMAND:-'echo DevShop Server Online'}"
+    entrypoint: "/usr/share/devshop/docker/bin/docker-systemd-entrypoint"
     extra_hosts:
       - "drpl8.testenv.devshop.local.computer:127.0.0.1"
     # @TODO: Change back to devshop.local.computer
