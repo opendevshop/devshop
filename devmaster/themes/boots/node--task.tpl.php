@@ -70,10 +70,6 @@
         <?php if ($node->task_status != HOSTING_TASK_QUEUED && $node->task_status != HOSTING_TASK_PROCESSING && isset($run_again)): ?>
           <?php print render($run_again); ?>
         <?php endif; ?>
-        <?php if (isset($content['update-status'])): ?>
-          <?php print render($content['update-status']); ?>
-        <?php endif; ?>
-
       </div>
 
     <h4>
