@@ -160,7 +160,30 @@ function devshop_projects_preprocess_node(&$vars) {
         $vars['node']->task_status == HOSTING_TASK_WARNING ||
         $vars['node']->task_status == HOSTING_TASK_SUCCESS
       )) {
-      $vars['retry'] = drupal_get_form('hosting_task_retry_form', $vars['node']->nid);
+
+      // If "install" task, change name and add "force" task arg.
+      $form = drupal_get_form('hosting_task_retry_form', $vars['node']->nid);
+
+      if ($vars['node']->task_type == 'install' && !$vars['node']->environment->settings->locked) {
+        $vars['retry'] = $form;
+        $vars['retry']['retry']['#value'] = t('Reinstall');
+      }
+      elseif ($vars['node']->task_type == 'install' && $vars['node']->environment->settings->locked) {
+        $vars['retry'] = array(
+          '#children' => t('Site is protected.'),
+          '#type' => 'container',
+          '#attributes' => array(
+            'class' => array('well well-sm')
+          ),
+        );
+        $settings_link = "node/{$vars['node']->rid}/edit";
+        if (drupal_valid_path($settings_link)) {
+          $vars['retry']['#children'] .= ' ' . l(t('Environment Settings'), $settings_link);
+        }
+      }
+      elseif ($vars['node']->task_type != 'install' && $vars['node']->task_type != 'delete') {
+        $vars['retry'] = $form;
+      }
 
       // Change the name of the form button to "Run Again" if the task ended ok.
       if ($vars['node']->task_status == HOSTING_TASK_WARNING || $vars['node']->task_status == HOSTING_TASK_SUCCESS) {
@@ -191,7 +214,7 @@ function devshop_projects_preprocess_node(&$vars) {
     $messages = devshop_task_get_messages($vars['node']);
     $vars['messages'] = implode("\n", $messages);
     switch ($vars['task_type']) {
-      case 'devshop-deploy':
+      case 'deploy':
         $vars['type'] = 'Deploy';
         break;
       case 'verify':
@@ -207,7 +230,7 @@ function devshop_projects_preprocess_node(&$vars) {
     if ($vars['node']->task_status == HOSTING_TASK_PROCESSING || $vars['node']->task_status == HOSTING_TASK_QUEUED ) {
       $vars['follow_checkbox'] = array(
         '#type' => 'markup',
-        '#markup' => '<button class="follow-checkbox btn btn-default"><input type="checkbox" id="follow">' . t('Follow Logs') . '</button>',
+        '#markup' => '<label for="follow" type="button" class="follow-checkbox btn btn-link"><input type="checkbox" id="follow"> ' . t('Scroll Logs') . '</label>',
       );
 
       $vars['follow_checkbox'] = drupal_render($vars['follow_checkbox']);

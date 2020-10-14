@@ -1,0 +1,24 @@
+#
+# docker-compose.volumes.yml
+#
+# This dockerfile is for local development only. It maps the development folders to volumes,
+#
+version: '2.2'
+services:
+  devshop:
+    # Change the entrypoint to the volume-mounted copy.
+    entrypoint: /usr/share/devshop/docker/bin/docker-systemd-entrypoint
+    volumes:
+      # Development volumes
+
+      # DevShop Core.
+      - ./:/usr/share/devshop:delegated
+      - ./aegir-home:/var/aegir:delegated
+
+      # Devmaster Drupal Install Profile
+      # This volume injects the folder `./devmaster` into the "hostmaster" platform in the container.
+      - ./devmaster:/usr/share/devshop/src/DevShop/Component/DevShopControlTemplate/web/profiles/devmaster
+      # - ./devmaster:/var/aegir/devmaster-1.x/profiles/devmaster
+
+      - $HOME/.ssh:/var/aegir/.ssh
+      - ./.github/.test-artifacts:/var/aegir/test-artifacts

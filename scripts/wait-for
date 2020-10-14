@@ -1,0 +1,84 @@
+#!/usr/bin/env bash
+# wait-for
+#
+# @author Jon Pugh
+#
+# Runs any command over and over again until it passes, hiding all output but printing a character every time it runs.
+#
+# Use Environment variables for options:
+#
+# SLEEP: Length of time to wait in-between running the command.
+# CHAR: The character to print after every command run.
+# OUTPUT: Set to 'all' to print all output, set to 'out' to print just stdOut, set to "err" to print just stdErr.
+# TIMEOUT: Default: 30. Exit with an error if process doesn't pass within this time.
+# SILENT: Set to 1 to not print any output except the timeout exceeded error. Useful when running from other scripts. See wait-mysql
+#
+
+# Document usage
+usage() {
+  cat <<<EOF
+Usage:
+  wait-for any-command any-arguments --any-options
+EOF
+}
+
+# Set Environment
+set -e
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+PATH="$DIR:$PATH"
+
+# Prepare arguments and options.
+COMMAND=$@
+
+# Environment Variables
+SLEEP=${SLEEP:-1}
+CHAR=${CHAR:-.}
+OUTPUT=${OUTPUT:-}
+TIMEOUT=${TIMEOUT:-30}
+SILENT=${SILENT:-""}
+
+# Check for required variables
+if [ -z "${COMMAND}" ]; then
+  usage
+  exit 1
+fi
+
+runCommand() {
+
+    # If $OUTPUT=out, hide errors.
+    if [ "${OUTPUT}" == "out" ]; then
+      $COMMAND 2> /dev/null
+
+    # If $OUTPUT=err, print only errors
+    elif [ "${OUTPUT}" == "err" ]; then
+      $COMMAND > /dev/null
+
+    # If $OUTPUT=all, just print
+    elif [ "${OUTPUT}" == "all" ]; then
+      $COMMAND
+
+    # Otherwise, hide output and errors
+    else
+      $COMMAND > /dev/null 2>&1
+    fi
+}
+
+if [ -z "${SILENT}" ]; then
+    devshop-log "Running command until it succeeds: $COMMAND"
+fi
+
+while ! (runCommand)
+do
+    # Exit with an error if timeout is reached.
+    [ "$SECONDS" -gt "$TIMEOUT" ] && echo "Timeout exceeded. Command did not succeed in $SECONDS seconds." && exit 1
+
+    # Pause for $SLEEP seconds.
+    sleep $SLEEP
+
+    # Print $CHAR without a new line.
+    echo -n "$CHAR"
+done
+
+if [ -z "${SILENT}" ]; then
+  echo "Done in $SECONDS seconds!"
+fi

@@ -1,0 +1,26 @@
+# tests/phpunit: phpunit
+yaml-tests/lint: find src -name '*.php' -print0 | xargs -0 -n1 php -l
+yaml-tests/phpcs: bin/phpcs --standard=PSR2 -n Command Composer --colors
+yaml-tests/environment: |
+  env
+  env | grep YAML_TESTS
+
+yaml-tests/github-comment-test:
+  description: Confirm github errors get truncated enough.
+  command:
+  - printf '+ %.0s' {1..33000}
+  - exit 1
+
+  # Set ignore-failure to TRUE to post a Success commit status not matter what.
+  ignore-failure: true
+
+  # Set post-errors-as-comments to TRUE to post the error log as a github comment on the commit.
+  post-errors-as-comments: TRUE
+
+  # Set show-output to FALSE to not print the output or show it in the github comment.
+  show-output: FALSE
+
+yaml-tests/github-no-comment-test:
+  description: Confirm errors dont get posted as comments by default. This test fails but should not post a comment to github.
+  command: exit 1
+  ignore-failure: true

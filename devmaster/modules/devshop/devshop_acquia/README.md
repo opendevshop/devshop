@@ -17,7 +17,7 @@ Hooks
 
 Changing branch or tag manually.
 
-DevShop Equivalent: provision-devshop-deploy when triggered from front-end.
+DevShop Equivalent: provision-deploy when triggered from front-end.
 
 ```
 post-code-deploy site target-env source-branch deployed-tag repo-url repo-type
@@ -27,7 +27,7 @@ post-code-deploy site target-env source-branch deployed-tag repo-url repo-type
 
 Deploying code to a branch environment automatically.
 
-DevShop Equivalent: provision-devshop-deploy
+DevShop Equivalent: provision-deploy
 
 ```
 post-code-deploy site target-env source-branch deployed-tag repo-url repo-type

@@ -30,7 +30,6 @@
   when: ansible_os_family == "Debian"
   apt:
     update_cache: true
-    cache_valid_time: 600
     name: "{{ devshop_prerequisite_packages }}"
     state: present
 
@@ -39,6 +38,7 @@
   yum:
     name: "{{ devshop_prerequisite_packages }}"
     state: present
+    enablerepo: "{{ devshop_prerequisite_enablerepo }}"
 
 - name: Populate service facts
   service_facts:
@@ -48,6 +48,10 @@
     name: "{{ aegir_user_name }}"
     state: present
     gid: "{{ aegir_user_gid }}"
+
+- name: Stop all processes running as aegir.
+  command: killall -u "{{ aegir_user_name }}"
+  ignore_errors: true
 
 - name: Create Aegir user
   when: aegir_create_user
@@ -64,14 +68,13 @@
 - name: Ensure /var/aegir is owned by aegir user.
   file:
     state: directory
+    recurse: true
     path: "{{ aegir_user_home }}"
     group: "{{ aegir_user_name }}"
     owner: "{{ aegir_user_name }}"
 
-# @TODO: Determine WHY centos needs this.
-# Aegir"s CentOS installation requires this.
-- name: Set appropriate permissions for Aegir"s home folder.
-  command: chmod -R 755 {{ aegir_user_home }}
+- name: Ensure /var/aegir has correct permissions.
+  command: chmod 755 {{ aegir_user_home }}
   when: ansible_os_family == "RedHat"
 
 - name: Create aegir's config folder
@@ -89,6 +92,12 @@
     group: "{{ aegir_user_name }}"
     state: directory
     mode: 0755
+
+- name: Create a link to aegir's logs folder
+  file:
+    src: "{{ aegir_logs_path }}"
+    dest: "{{ aegir_user_home }}/logs"
+    state: link
 
 - name: Create aegir's authorized keys file
   copy:

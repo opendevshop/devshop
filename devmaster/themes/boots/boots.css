@@ -24,6 +24,14 @@ body.admin-menu .navbar-static-top {
   border-bottom-right-radius: 0px;
 }
 
+#task-info .task-urls {
+  padding-bottom: .75em;
+}
+
+#task-info .task-urls.btn-group-xs .btn:first-child {
+  padding-left: 0px;
+}
+
 .environment .list-group-item .content {
     font-size: .7em;
     text-transform: uppercase;
@@ -471,6 +479,16 @@ input.form-control.webhook-url {
 
 .alert-spacing {
   margin-top: 15px;
+}
+
+.alert-inline {
+    padding: .2em;
+}
+
+.command-label {
+    width: 5em;
+    display: inline-block;
+    text-align: right;
 }
 
 .deploy-db-indicator {
@@ -962,6 +980,21 @@ div.hosting-task-retry form, div.hosting-task-retry form input {
 .ansi_color_bg_black {
     background: #262626;
 }
+#hosting-task-confirm-form {
+    padding-bottom: 4em;
+}
+
+#hosting-task-confirm-form .container {
+    margin-left: 0;
+}
+
+#hosting-task-confirm-form  .git-ref-label {
+    height: 34px !important;
+    padding: 10px 12px;
+    display: block;
+    height: 1.5em;
+    font-size: 14px;
+}
 
 #hosting-task-confirm-form .form-checkboxes .form-item span {
     width: 6em;
@@ -1032,7 +1065,6 @@ pre.ansi_box {
 p.wait {
     text-align: center;
     padding: 32px 0px 52px;
-    background: bottom center no-repeat url(images/loading.gif);
 }
 
 p.error {
@@ -1335,4 +1367,9 @@ form .well .form-type-radios .form-type-radio
 }
 .form-control.chosen-container.chosen-container-single .chosen-single {
     height: 34px;
+}
+
+
+kbd.alert {
+  display: block;
 }

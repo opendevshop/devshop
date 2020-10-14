@@ -30,11 +30,11 @@ services:
     #    By using the non-docker-hub image "devshop/server:local" in this docker-compose file, we force the
     #    the developer to finish that first build before any container can be launched.
     #
-    image: devshop/server:${DEVSHOP_DOCKER_TAG:-latest}
-    command: ${DOCKER_COMMAND:-}
+    image: ${DEVSHOP_DOCKER_IMAGE:-devshop/server:latest}
+    command: ${DOCKER_COMMAND:-env}
     build:
       context: '.'
-      dockerfile: 'Dockerfile'
+      dockerfile: ${DOCKERFILE:-Dockerfile}
       args:
       # If a value for local development should be different than docker hub image,
       # set a default here.
@@ -63,7 +63,7 @@ services:
       - ANSIBLE_TAGS
       - ANSIBLE_EXTRA_VARS
       - ANSIBLE_VERBOSITY
-      - ANSIBLE_PLAYBOOK
+      - ANSIBLE_PLAYBOOK=${ANSIBLE_PLAYBOOK:-/usr/share/devshop/roles/devshop.server/play.yml}
       - ANSIBLE_SKIP_TAGS
       - ANSIBLE_PLAYBOOK_COMMAND_OPTIONS
       - ANSIBLE_CONFIG
@@ -71,6 +71,7 @@ services:
       - FROM_IMAGE
       - OS_VERSION
       - DEVSHOP_USER_UID
+      - DOCKER_COMMAND_POST=${DOCKER_COMMAND_POST:-devshop login}
       - DOCKER_COMMAND_POST
 
       # Change to use a different database host.
@@ -81,39 +82,30 @@ services:
       # To allow the devmaster container to launch other docker containers, we need the host's path to aegir home directory.
       - HOST_AEGIR_HOME=/home/jon/Projects/devshop/aegir-home
 
-
       # Add additional files you would like to output in the container logs here, separated by a space.
       # - DEVSHOP_ENTRYPOINT_LOG_FILES="/var/log/aegir/*"
-      # - DEVSHOP_TESTS_ASSETS_PATH="/usr/share/devshop/.github/test-assets"
+
+      # For development, test output will be saved to the sites "files" folder so you can click the results.
+      # If you want to save test error output to a different folder change this variable.
+      # For CI, set this to the folder that will be saved as artifacts.
+      - DEVSHOP_TESTS_ASSETS_PATH=
 
     privileged: true
     volumes:
-      - ./aegir-home:/var/aegir:delegated
-      - ./devmaster:/var/aegir/devmaster-1.x/profiles/devmaster
-      - ./:/usr/share/devshop:delegated
-      - ./provision:/usr/share/drush/commands/provision:delegated
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
       - /var/lib/mysql
       - /var/logs/aegir
-      - $HOME/.ssh:/var/aegir/.ssh
 
-# Database container is now optional: for local development just use the devshop/server container.
-#  database:
-#    image: mariadb
-#    logging:
-#      driver: none
-#    environment:
-#      MYSQL_ROOT_PASSWORD: strongpassword
+    # Resource allocation.
+    # 4GB, 2CPUs is a good minimum.
 
-#  admin:
-#    image: phpmyadmin/phpmyadmin
-#    links:
-#      - devshop:db
-#    ports:
-#      - 8080:80
+    # mem_limit is a hard upper limit for the container.
+    # If using linux, make sure this is below your system's idle free memory or your desktop will slow down.
+    mem_limit: 10g
 
-#  selenium:
-#    image: selenium/standalone-chrome-debug:3.4.0-dysprosium
-#    ports:
-#      - 4444:4444
-#      - 5900:5900
+    # mem_reservation is a minimum that your system will reserve for the container.
+    # DevShop needs about 4GB to provide a good user experience.
+    mem_reservation: 4g
+
+    # Restrict the containers to only use the first 2 CPUs
+    cpuset: 0,1

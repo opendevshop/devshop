@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+DEVSHOP_PATH="$( cd "$(dirname "$0")"/.. ; pwd -P )"
+PATH="$DEVSHOP_PATH/bin:$DEVSHOP_PATH/scripts:$PATH"
+VERSION=`branch-or-tag || cat $DEVSHOP_PATH/.git/HEAD`
+echo '
+    ____              ____  _
+   |  _ \  _____   __/ ___|| |__   ___  _ __
+   | | | |/ _ \ \ / /\___ \|  _ \ / _ \|  _ \
+   | |_| |  __/\ V /  ___) | | | | (_) | |_) |
+   |____/ \___| \_/  |____/|_| |_|\___/| .__/
+            http://getdevshop.com      |_|'
+echo " Version $VERSION    "
+echo " Path $DEVSHOP_PATH    "
+
+if [ -z "$1" ]; then exit; fi
+
+devshop-line
+echo " $1 "
+devshop-line
+

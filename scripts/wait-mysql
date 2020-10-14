@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+# wait-mysql
+#
+# @author Jon Pugh
+#
+# Uses the wait-for command to pause execution until an SQL connection is active.
+#
+# Use Environment variables for options:
+#
+# DATABASE_HOST: The host to connect to. Passed to --host
+# MYSQL_ROOT_USER: The user to connect with. Passed to --user Default: root
+# COMMAND: The command to use instead of the default.
+#
+# See ./bin/wait-for for more environment variables to use.
+#
+
+# Document usage
+usage() {
+  cat <<<EOF
+Usage:
+  wait-mysql
+
+    Continously check for access to database server return once connected.
+
+EOF
+}
+
+# Set Environment
+set -e
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+PATH="$DIR:$PATH"
+
+# Prepare arguments and options.
+MYSQL_ROOT_USER=${MYSQL_ROOT_USER:-root}
+
+# Returns true once mysql can connect.
+# Thanks to http://askubuntu.com/questions/697798/shell-script-how-to-run-script-after-mysql-is-ready
+# Set SILENT=1 to tell `wait-for` script not to print the command.
+COMMAND=${COMMAND:-"mysqladmin ping --host=$DATABASE_HOST --user=$MYSQL_ROOT_USER --password=$MYSQL_ROOT_PASSWORD"}
+
+# Check for required variables
+if [ -z "${DATABASE_HOST}" ]; then
+  echo "No DATABASE_HOST variable found. Unable to check for database."
+  exit 1
+fi
+if [ -z "${MYSQL_ROOT_PASSWORD}" ]; then
+  echo "No MYSQL_ROOT_PASSWORD variable found. Unable to check for database."
+  exit 1
+fi
+
+echo "Waiting for access to database server $MYSQL_ROOT_USER@$DATABASE_HOST ..."
+
+# Set SILENT=1 to tell `wait-for` script not to print the command.
+# DO NOT CHANGE unless you want to expose MYSQL_ROOT_PASSWORD in your echos.
+export SILENT=1
+wait-for $COMMAND && \
+  echo "Database connected and accessible!" || \
+  exit 1
