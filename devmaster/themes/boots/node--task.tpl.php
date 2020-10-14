@@ -53,9 +53,14 @@
   <div class="list-group">
     <div id="task-info" class="task-info list-group-item">
       <div class="btn-group pull-right" role="group" aria-label="Actions">
-        <?php  if (isset($follow_checkbox)): ?>
-              <?php print $follow_checkbox; ?>
-        <?php endif; ?>
+
+        <!-- Terminal Tasks modal -->
+        <button type="button" class="btn btn-text" data-toggle="modal" data-target="#exampleModal">
+          <small><i class="fa fa-terminal"></i>
+            <?php print t('Run from Terminal'); ?>
+          </small>
+        </button>
+
         <?php if (isset($retry)): ?>
               <?php print render($retry); ?>
         <?php endif; ?>
@@ -69,11 +74,6 @@
           <?php print render($content['update-status']); ?>
         <?php endif; ?>
 
-          <!-- Terminal Tasks modal -->
-          <button type="button" class="btn btn-default" data-toggle="modal" data-target="#exampleModal">
-              <i class="fa fa-terminal"></i>
-            <?php print t('Run in Terminal'); ?>
-          </button>
       </div>
 
     <h4>
@@ -84,6 +84,12 @@
 
        <a href="<?php print $node_url ?>" title="<?php print $title ?>"><?php print $type_name ?></a>
     </h4>
+
+    <div class="pull-right">
+      <?php  if (isset($follow_checkbox)): ?>
+        <?php print $follow_checkbox; ?>
+      <?php endif; ?>
+    </div>
 
     <p>
       <span class="duration">
@@ -99,7 +105,7 @@
           <small><time class="timeago" datetime="<?php print $node->task_timestamp ?>"></time></small>
       </span>
     </p>
-    <div class="btn-group-xs">
+    <div class="task-urls btn-group-xs">
       <?php foreach ($environment->domains as $domain): ?>
           <a class="btn btn-text btn-xs" href="<?php print 'http://' . $domain; ?>" target="_blank">
               <i class="fa fa-globe"></i> <?php print $domain; ?>
