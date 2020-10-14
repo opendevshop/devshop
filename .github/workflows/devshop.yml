@@ -73,8 +73,8 @@ jobs:
           docker-compose exec -T devshop.server /usr/share/devshop/scripts/devshop-logo "GitHub Actions Container populated with code. Running SHA ${GITHUB_PR_SHA}"
 
           docker-compose exec -T --user aegir devshop.server \
-            composer config --global repo.devshop_devmaster {"path","/usr/share/devshop/devmaster"}
-            cd ${DEVSHOP_CONTROL_PATH} /
+            composer config --global repo.devshop_devmaster {"path","/usr/share/devshop/devmaster"} \
+            cd ${DEVSHOP_CONTROL_PATH} \
             git init \
             git checkout -b ${GITHUB_HEAD_REF:-1.x}
             composer require devshop/devmaster:${GITHUB_HEAD_REF:-1.x}-dev
