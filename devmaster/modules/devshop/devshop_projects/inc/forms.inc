@@ -1749,7 +1749,7 @@ function devshop_projects_environment_settings_submit($form, &$form_state) {
     watchdog('error', 'Environment record not saved: ' . print_r($environment, 1));
   }
 
-  $form_state['redirect'] = 'node/' . $environment->project_nid;
+  $form_state['redirect'] = 'node/' . $environment->site;
 }
 
 
@@ -1782,10 +1782,6 @@ function devshop_projects_form_server_node_form_alter(&$form, &$form_state, $for
     '#markup' => '<pre>' . variable_get('devshop_public_key', '') . '</pre>',
     '#weight' => -99,
   );
-}
-
-function devshop_projects_form_hosting_task_update_status_form_alter(&$form, &$form_state, $form_id){
-  $form['update-status']['#value'] = t('Cancel');
 }
 
 /**
