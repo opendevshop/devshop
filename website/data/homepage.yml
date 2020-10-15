@@ -28,32 +28,32 @@ feature:
     - name : "DevShop Ansible Roles"
       URL: https://github.com/opendevshop/devshop/tree/1.x/roles
       img : "/images/ansible.png"
-      content : "Curated stack of Ansible roles for all common web services."
+      content : "Curated stack of community maintained Ansible roles for all common web services."
 
     - name : "DevShop Docker Containers"
       URL: https://github.com/opendevshop/devshop/tree/1.x/docker
       img: "/images/docker.png"
-      content : "Pre-built Docker containers configurable with Ansible."
+      content : "Pre-built Docker containers, built and configured with Ansible roles and variables."
 
     - name : "DevShop Install Script"
-      URL: https://github.com/opendevshop/devshop/blob/1.x/install/install.sh
+      URL: https://get.devshop.tech
       icon: "ti-file"
-      content : "Standalone shell script to install DevShop."
+      content : "Standalone shell script to install DevShop, available at get.devshop.tech."
 
     - name : "DevShop Control"
       URL: https://github.com/opendevshop/devshop/tree/1.x/src/DevShop/Component/DevShopControlTemplate
-      icon : "ti-pulse"
-      content : "Drupal CI/CD Dashboard and Ansible Server Manager in a Box."
+      icon : "ti-drupal"
+      content : "DevOps Dashboard built in Drupal. Create and manage servers, host & test Drupal, build your own platform."
       
     - name : "YamlTasks"
       URL: https://github.com/opendevshop/devshop/tree/1.x/src/DevShop/Component/YamlTasks
       icon : "ti-check"
-      content : "Simple test runner with GitHub API integration."
+      content : "Write one file, run tests anywhere. Post results to GitHub for each task."
 
     - name : "PowerProcess"
       URL: https://github.com/opendevshop/devshop/tree/1.x/src/DevShop/Component/PowerProcess
       icon : "ti-money"
-      content : "Run commands with standard beautiful output."
+      content : "Symfony class for running more user-friendly processes."
 
     - name : "GitSplit"
       URL: https://github.com/opendevshop/devshop/tree/1.x/src/DevShop/Component/PowerProcess
@@ -63,12 +63,12 @@ feature:
     - name : "GitHub API CLI"
       URL: https://github.com/opendevshop/devshop/tree/1.x/src/DevShop/Component/GitHubApiCli
       icon : "ti-github"
-      content : "Simple abstract CLI for interacting with the GitHub API."
+      content : "Simple abstract CLI for interacting with the GitHub API. Create and update Deployment notifications with simple CLI commands."
       
     - name : "Composer Git Tools"
       URL: https://github.com/opendevshop/devshop/tree/1.x/src/DevShop/Component/ComposerCommon
       icon : "ti-briefcase"
-      content : "PHP classes to make applications git and composer aware."
+      content : "PHP classes to make applications aware of their own git and composer data."
 
 ######################### Service #####################
 service:
