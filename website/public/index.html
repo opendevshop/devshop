@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en-us"><head>
   <meta charset="utf-8">
-  <title>OpenDevShop</title>
+  <title>OpenDevShop | The Open Source DevOps Framework</title>
 
   <!-- mobile responsive meta -->
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="This is meta description">
   <meta name="author" content="Themefisher">
-  <meta name="generator" content="Hugo 0.75.1" />
+  <meta name="generator" content="Hugo 0.76.5" />
 
   <!-- plugins -->
   
@@ -16,6 +16,8 @@
   <link rel="stylesheet" href="http://opendevshop.com/plugins/themify-icons/themify-icons.css">
   
   <link rel="stylesheet" href="http://opendevshop.com/plugins/slick/slick.css">
+  
+  <link rel="stylesheet" href="http://opendevshop.com/opendevshop.css">
   
 
   <!-- Main Stylesheet -->
@@ -28,7 +30,7 @@
 
   
   
-  <meta property="og:title" content="OpenDevShop" />
+  <meta property="og:title" content="OpenDevShop | The Open Source DevOps Framework" />
 <meta property="og:description" content="This is meta description" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="http://opendevshop.com/" />
@@ -44,7 +46,7 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-transparent">
       <a class="navbar-brand" href="http://opendevshop.com/">
         
-        <img width="200px" class="img-fluid" src="http://opendevshop.com/images/logo.png" alt="OpenDevShop"></a>
+        <img width="200px" class="img-fluid" src="http://opendevshop.com/images/logo.png" alt="OpenDevShop | The Open Source DevOps Framework"></a>
         
       <button class="navbar-toggler border-0" type="button" data-toggle="collapse" data-target="#navigation">
         <i class="ti-menu h3"></i>
@@ -55,25 +57,19 @@
           
           
           <li class="nav-item">
-            <a class="nav-link" href="http://opendevshop.com/about">About</a>
+            <a class="nav-link" href="https://github.com/opendevshop/devshop">GitHub</a>
           </li>
           
           
           
           <li class="nav-item">
-            <a class="nav-link" href="http://opendevshop.com/getstarted">Get Started</a>
+            <a class="nav-link" href="https://docs.opendevshop.com">Documentation</a>
           </li>
           
           
           
           <li class="nav-item">
-            <a class="nav-link" href="http://opendevshop.com/contact">Contact</a>
-          </li>
-          
-          
-          
-          <li class="nav-item">
-            <a class="nav-link" href="http://opendevshop.com/faq">FAQ</a>
+            <a class="nav-link" href="/#community">Community</a>
           </li>
           
           
@@ -96,12 +92,9 @@
   <div class="container">
     <div class="row">
       <div class="col-lg-10 mx-auto text-center">
-        <h1 class="mb-3">Let us solve your critical website <br> development challenges</h1>
-        <p class="mb-4">Lorem ipsum dolor sit amet consectetur adipisicing elit. Quam nihil enim maxime corporis cumque <br> totam aliquid nam sint inventore optio modi neque laborum officiis necessitatibus</p>
-        
-        
-        <div><a href="#" class="btn btn-primary">Contact With Us</a></div>
-        
+        <h1 class="mb-3">The Open Source DevOps Framework</h1>
+        <p class="mb-4"><p>DevShop is an <strong>Open Source DevOps Framework</strong> and a set of reusable <strong>components</strong> designed to improve the web development, testing, and server management process, especially for <a href="https://drupal.org">Drupal</a> websites. <p> The goal of DevShop is to provide a complete <strong>web development &amp; testing pipeline</strong> out of the box, while empowering users to choose their own server infrastructure and systems architecture. <p> DevShop uses Ansible &amp; Ansible Galaxy for server configuration, Symfony Console for command line tools, and Drupal for the web interface.</p>
+</p>
         
 
         <img src="http://opendevshop.com/images/banner-art.svg" class="img-fluid mt-5" width="750px">
@@ -119,57 +112,129 @@
   <div class="container">
     <div class="row justify-content-center">
       <div class="col-12 text-center">
-        <h2 class="section-title">Something You Need To Know</h2>
+        <h2 class="section-title">The DevShop Components</h2>
       </div>
       
       <div class="col-md-4 col-sm-6 mb-4">
-        <div class="feature-card text-center">
-          <i class="ti-pulse mb-3"></i>
-          <h4 class="mb-2">Clean Code</h4>
-          <p>Lorem ipsum dolor sit amet consectetur adipisicing elit quam nihil</p>
-        </div>
+        <a href="https://github.com/opendevshop/devshop/tree/1.x/roles" target="_blank" title="DevShop Ansible Roles">
+          <div class="feature-card text-center">
+            
+            
+            <img src="/images/ansible.png" class="ti-icon mb-3"></img>
+            
+            <h4 class="mb-2">DevShop Ansible Roles</h4>
+            <p>Curated stack of Ansible roles for all common web services.</p>
+            </div>
+        </a>
       </div>
       
       <div class="col-md-4 col-sm-6 mb-4">
-        <div class="feature-card text-center">
-          <i class="ti-package mb-3"></i>
-          <h4 class="mb-2">Object Oriented</h4>
-          <p>Lorem ipsum dolor sit amet consectetur adipisicing elit quam nihil</p>
-        </div>
+        <a href="https://github.com/opendevshop/devshop/tree/1.x/docker" target="_blank" title="DevShop Docker Containers">
+          <div class="feature-card text-center">
+            
+            
+            <img src="/images/docker.png" class="ti-icon mb-3"></img>
+            
+            <h4 class="mb-2">DevShop Docker Containers</h4>
+            <p>Pre-built Docker containers configurable with Ansible.</p>
+            </div>
+        </a>
       </div>
       
       <div class="col-md-4 col-sm-6 mb-4">
-        <div class="feature-card text-center">
-          <i class="ti-alarm-clock mb-3"></i>
-          <h4 class="mb-2">24h Service</h4>
-          <p>Lorem ipsum dolor sit amet consectetur adipisicing elit quam nihil</p>
-        </div>
+        <a href="https://github.com/opendevshop/devshop/blob/1.x/install/install.sh" target="_blank" title="DevShop Install Script">
+          <div class="feature-card text-center">
+            
+            <i class="ti-file mb-3"></i>
+            
+            
+            <h4 class="mb-2">DevShop Install Script</h4>
+            <p>Standalone shell script to install DevShop.</p>
+            </div>
+        </a>
       </div>
       
       <div class="col-md-4 col-sm-6 mb-4">
-        <div class="feature-card text-center">
-          <i class="ti-credit-card mb-3"></i>
-          <h4 class="mb-2">Value for Money</h4>
-          <p>Lorem ipsum dolor sit amet consectetur adipisicing elit quam nihil</p>
-        </div>
+        <a href="https://github.com/opendevshop/devshop/tree/1.x/src/DevShop/Component/DevShopControlTemplate" target="_blank" title="DevShop Control">
+          <div class="feature-card text-center">
+            
+            <i class="ti-pulse mb-3"></i>
+            
+            
+            <h4 class="mb-2">DevShop Control</h4>
+            <p>Drupal CI/CD Dashboard and Ansible Server Manager in a Box.</p>
+            </div>
+        </a>
       </div>
       
       <div class="col-md-4 col-sm-6 mb-4">
-        <div class="feature-card text-center">
-          <i class="ti-headphone-alt mb-3"></i>
-          <h4 class="mb-2">Faster Response</h4>
-          <p>Lorem ipsum dolor sit amet consectetur adipisicing elit quam nihil</p>
-        </div>
+        <a href="https://github.com/opendevshop/devshop/tree/1.x/src/DevShop/Component/YamlTasks" target="_blank" title="YamlTasks">
+          <div class="feature-card text-center">
+            
+            <i class="ti-check mb-3"></i>
+            
+            
+            <h4 class="mb-2">YamlTasks</h4>
+            <p>Simple test runner with GitHub API integration.</p>
+            </div>
+        </a>
       </div>
       
       <div class="col-md-4 col-sm-6 mb-4">
-        <div class="feature-card text-center">
-          <i class="ti-cloud-up mb-3"></i>
-          <h4 class="mb-2">Cloud Support</h4>
-          <p>Lorem ipsum dolor sit amet consectetur adipisicing elit quam nihil</p>
-        </div>
+        <a href="https://github.com/opendevshop/devshop/tree/1.x/src/DevShop/Component/PowerProcess" target="_blank" title="PowerProcess">
+          <div class="feature-card text-center">
+            
+            <i class="ti-money mb-3"></i>
+            
+            
+            <h4 class="mb-2">PowerProcess</h4>
+            <p>Run commands with standard beautiful output.</p>
+            </div>
+        </a>
       </div>
       
+      <div class="col-md-4 col-sm-6 mb-4">
+        <a href="https://github.com/opendevshop/devshop/tree/1.x/src/DevShop/Component/PowerProcess" target="_blank" title="GitSplit">
+          <div class="feature-card text-center">
+            
+            <i class="ti-split-v-alt mb-3"></i>
+            
+            
+            <h4 class="mb-2">GitSplit</h4>
+            <p>Split a monorepo with a single command.</p>
+            </div>
+        </a>
+      </div>
+      
+      <div class="col-md-4 col-sm-6 mb-4">
+        <a href="https://github.com/opendevshop/devshop/tree/1.x/src/DevShop/Component/GitHubApiCli" target="_blank" title="GitHub API CLI">
+          <div class="feature-card text-center">
+            
+            <i class="ti-github mb-3"></i>
+            
+            
+            <h4 class="mb-2">GitHub API CLI</h4>
+            <p>Simple abstract CLI for interacting with the GitHub API.</p>
+            </div>
+        </a>
+      </div>
+      
+      <div class="col-md-4 col-sm-6 mb-4">
+        <a href="https://github.com/opendevshop/devshop/tree/1.x/src/DevShop/Component/ComposerCommon" target="_blank" title="Composer Git Tools">
+          <div class="feature-card text-center">
+            
+            <i class="ti-briefcase mb-3"></i>
+            
+            
+            <h4 class="mb-2">Composer Git Tools</h4>
+            <p>PHP classes to make applications git and composer aware.</p>
+            </div>
+        </a>
+      </div>
+      
+      <div class="col-12 text-center">
+        <a class="btn btn-default" href="https://github.com/devshop-packages" target="_blank">View all DevShop Components</a>
+      </div>
     </div>
   </div>
 </section>
@@ -182,15 +247,20 @@
 
 
 
-<section class="section">
+<section class="section section-service">
   <div class="container">
     <div class="row align-items-center">
       <div class="col-md-6 order-2 order-md-1">
-        <h2 class="section-title">It is the most advanced digital marketing and it company.</h2>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Consequat tristique eget amet, tempus eu at consecttur. Leo facilisi nunc viverra tellus. Ac laoreet sit vel consquat. consectetur adipiscing elit. Consequat tristique eget amet, tempus eu at consecttur. Leo facilisi nunc viverra tellus. Ac laoreet sit vel consquat.</p>
+        <h2 class="section-title">A complete Drupal CI/CD &amp; QA/QC solution.</h2>
+        <p><ul>
+<li><strong>DevShop</strong> provides an all-in-one solution for Continuous Integration and Delivery for Drupal.</li>
+<li>Launch <strong>unlimited environments</strong> on a single server to keep costs low during development and testing.</li>
+<li>Built-in <strong>continuous integration</strong> launches new environments automatically when developers need them. <em>No scripts or third-party integrations to maintain.</em></li>
+</ul>
+</p>
         
         
-        <a href="http://opendevshop.com/" class="btn-link">Check it out <i class="ti-arrow-right"></i></a>
+        <a href="https://drupal.tv/external-video/2019-03-11/test-driven-development-real-life" class="btn-link">Watch &#39;Test Driven Development in Real Life&#39; <i class="ti-arrow-right"></i></a>
         
         
       </div>
@@ -211,7 +281,7 @@
 
 
 
-<section class="section bg-light">
+<section class="section bg-light section-service">
   <div class="container">
     <div class="row align-items-center">
       <div class="col-md-6 mb-4 mb-md-0">
@@ -222,11 +292,17 @@
         </div>
       </div>
       <div class="col-md-6">
-        <h2 class="section-title">It is a privately owned Information and cyber security company</h2>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Consequat tristique eget amet, tempus eu at consecttur. Leo facilisi nunc viverra tellus. Ac laoreet sit vel consquat. consectetur adipiscing elit. Consequat tristique eget amet, tempus eu at consecttur. Leo facilisi nunc viverra tellus. Ac laoreet sit vel consquat.</p>
+        <h2 class="section-title">A Server Management System, powered by Ansible, built on Drupal.</h2>
+        <p><ul>
+<li>DevShop is a <strong>Server Management System</strong> that lets you track your server inventory and configure them from a central web interface.</li>
+<li>Set up your servers with the included <a href="https://github.com/opendevshop/devshop/tree/1.x/roles">Ansible Roles</a> or add your own, using Drupal as the <a href="https://docs.ansible.com/ansible/latest/user_guide/intro_inventory.html">Ansible Inventory</a> for your own cloud.</li>
+<li>Edit a server&rsquo;s configuration as easily as you edit your website&rsquo;s content, in a simple web interface using basic Yaml syntax.</li>
+<li>Launch, configure and destroy new servers using the DevShop web interface and your favorite cloud provider.</li>
+</ul>
+</p>
         
         
-        <a href="http://opendevshop.com/" class="btn-link">Check it out <i class="ti-arrow-right"></i></a>
+        <a href="https://drupal.tv/external-video/2019-07-26/cloud-management-drupal-and-ansible" class="btn-link">Watch &#39;Cloud Management with Drupal &amp; Ansible&#39; <i class="ti-arrow-right"></i></a>
         
         
       </div>
@@ -236,12 +312,17 @@
 
 
 
-<section class="section">
+<section class="section section-service">
   <div class="container">
     <div class="row align-items-center">
       <div class="col-md-6 order-2 order-md-1">
-        <h2 class="section-title">It’s a team of experienced and skilled people with distributions</h2>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Consequat tristique eget amet, tempus eu at consecttur. Leo facilisi nunc viverra tellus. Ac laoreet sit vel consquat. consectetur adipiscing elit. Consequat tristique eget amet, tempus eu at consecttur. Leo facilisi nunc viverra tellus. Ac laoreet sit vel consquat.</p>
+        <h2 class="section-title">Run anywhere with a 100% Open Source stack.</h2>
+        <p><ul>
+<li>DevShop is <strong>100% open source</strong>, allowing it to be run in any data center using Linux.</li>
+<li><strong>Choose your own server provider and network architecture</strong> to maximize functionality, minimize costs, and comply with the contraints of your organization.</li>
+<li>DevShop provides <strong>open source server configuration</strong> at the operating system and services level, making it compatible with any configuration management, security, or support system such as RHEL. Expand to containers and orchestrators at your own pace.</li>
+</ul>
+</p>
         
         
         <a href="http://opendevshop.com/" class="btn-link">Check it out <i class="ti-arrow-right"></i></a>
@@ -261,7 +342,7 @@
 
 
 
-<section class="section bg-light">
+<section class="section bg-light section-service">
   <div class="container">
     <div class="row align-items-center">
       <div class="col-md-6 mb-4 mb-md-0">
@@ -272,8 +353,11 @@
         </div>
       </div>
       <div class="col-md-6">
-        <h2 class="section-title">A company standing different from others</h2>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Consequat tristique eget amet, tempus eu at consecttur. Leo facilisi nunc viverra tellus. Ac laoreet sit vel consquat. consectetur adipiscing elit. Consequat tristique eget amet, tempus eu at consecttur. Leo facilisi nunc viverra tellus. Ac laoreet sit vel consquat.</p>
+        <h2 class="section-title">Platform-agnostic tools for better web development.</h2>
+        <p><ul>
+<li>Wherever possible, DevShop breaks out functionality into independent components. Testing tools work on any hosting platform.</li>
+</ul>
+</p>
         
         
         <a href="http://opendevshop.com/" class="btn-link">Check it out <i class="ti-arrow-right"></i></a>
@@ -296,7 +380,7 @@
   <div class="container">
     <div class="row">
       <div class="col-lg-8 mx-auto text-center">
-        <h2 class="section-title">Experience the best <br> workflow with us</h2>
+        <h2 class="section-title">#OpenOps</h2>
       </div>
     </div>
   </div>
@@ -310,17 +394,23 @@
 
 
 <section class="section">
+  <a name="chat"></a>
   <div class="container section shadow rounded-lg px-4">
     <div class="row align-items-center justify-content-center text-center text-md-left">
       <div class="col-lg-4 col-md-5 mb-4 mb-md-0">
         <img src="http://opendevshop.com/images/cta.svg" class="img-fluid">
       </div>
       <div class="col-lg-5 col-md-6">
-        <h2 class="section-title">Ready to get started?</h2>
-        <p class="mb-4">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Consequat tristique eget amet, tempus eu at consecttur.</p>
+        <h2 class="section-title">Chat with Us</h2>
+        <p class="mb-4"><p>Have a question for the DevShop Community?</p>
+<ul>
+<li><a href="https://drupal.slack.com/archives/CAU4ZA508">drupal.slack.com#devshop</a></li>
+<li><a href="https://gitter.im/opendevshop/devshop">gitter.im/opendevshop/devshop</a></li>
+</ul>
+</p>
         
         
-        <a href="http://opendevshop.com/contact" class="btn btn-primary">Contact Us</a>
+        <a href="http://opendevshop.com/" class="btn btn-primary">Join #devshop on drupal.slack.com</a>
         
         
       </div>
@@ -337,8 +427,6 @@
       <div class="col-md-3 col-sm-6 mb-5">
         <h3 class="mb-4">Company</h3>
         <ul class="list-unstyled footer-list">
-          
-          <li><a href="http://opendevshop.com/">About Us</a></li>
           
           <li><a href="http://opendevshop.com/pricing">Pricing</a></li>
           
@@ -371,7 +459,7 @@
         </ul>
       </div>
       <div class="col-md-3 col-sm-6 mb-5">
-        <a class="d-block mb-3" href="http://opendevshop.com/"><img width="200px"  class="img-fluid" src="http://opendevshop.com/images/logo.png" alt="OpenDevShop"></a>
+        <a class="d-block mb-3" href="http://opendevshop.com/"><img width="200px"  class="img-fluid" src="http://opendevshop.com/images/logo.png" alt="OpenDevShop | The Open Source DevOps Framework"></a>
         <p class="mb-4">Lorem ipsum dolor sit amet, consectetur elit. Consjat tristique eget amet, tempus eu at cttur.</p>
         
         <ul class="list-inline social-icons">

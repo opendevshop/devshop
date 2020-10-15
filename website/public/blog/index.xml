@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Latest News on OpenDevShop</title>
+    <title>Latest News on OpenDevShop | The Open Source DevOps Framework</title>
     <link>http://opendevshop.com/blog/</link>
-    <description>Recent content in Latest News on OpenDevShop</description>
+    <description>Recent content in Latest News on OpenDevShop | The Open Source DevOps Framework</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Sat, 18 Apr 2020 10:07:21 +0600</lastBuildDate><atom:link href="http://opendevshop.com/blog/index.xml" rel="self" type="application/rss+xml" />

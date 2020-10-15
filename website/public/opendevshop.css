@@ -1,0 +1,16 @@
+img.ti-icon {
+    height: 30px;
+}
+
+section.section-service ul {
+    padding-left: 0;
+}
+section.section-service ul li {
+    list-style-type: none;
+    padding: 0;
+    margin-bottom: 1em;
+    font-size: 1.2em;
+}
+section.section-service h2.section-title {
+    font-size: .9em;
+}

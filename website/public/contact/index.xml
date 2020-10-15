@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Contact Us on OpenDevShop</title>
+    <title>Contact Us on OpenDevShop | The Open Source DevOps Framework</title>
     <link>http://opendevshop.com/contact/</link>
-    <description>Recent content in Contact Us on OpenDevShop</description>
+    <description>Recent content in Contact Us on OpenDevShop | The Open Source DevOps Framework</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language><atom:link href="http://opendevshop.com/contact/index.xml" rel="self" type="application/rss+xml" />
   </channel>
