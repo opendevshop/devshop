@@ -13,9 +13,15 @@ function aegir_digital_ocean_options_form() {
 
   if (empty($token)) {
     $form['warning'] = array(
-      '#prefix' => '<div class="alert alert-danger">',
-      '#suffix' => '</div>',
-      '#value' => t('You must enter your Digital Ocean token before you can use this form.  See !link', array('!link' => l(t('Cloud Settings'), 'admin/hosting/aegir/cloud'))),
+      '#type' => 'container',
+      '#attributes' => array(
+        'class' => array('alert alert-info')
+      ),
+      '#children' => t('Enter your Digital Ocean token before you can use this form.  !link', array('!link' => l(t('Manage DigitalOcean API Keys'), 'https://cloud.digitalocean.com/account/api/tokens', array(
+        'attributes' => array(
+          'target' => array('_blank')
+        ),
+      )))),
       '#weight' => 10,
     );
   }
