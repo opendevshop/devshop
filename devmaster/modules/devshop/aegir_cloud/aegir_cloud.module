@@ -1,0 +1,218 @@
+<?php
+
+include_once('aegir_cloud.drush.inc');
+
+/**
+ * Implements hook_menu()
+ */
+function aegir_cloud_menu(){
+  $items = array();
+  $items['admin/hosting/cloud'] = array(
+    'title' => 'Cloud',
+    'description' => 'Configure cloud providers.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('aegir_cloud_settings_form'),
+    'access arguments' => array('administer aegir cloud'),
+    'file' => 'settings.php',
+    'file path' => drupal_get_path('module', 'aegir_cloud') . '/includes',
+    'type' => MENU_LOCAL_TASK,
+  );
+  return $items;
+}
+
+/**
+ * Implements hook_perm()
+ */
+function aegir_cloud_permission() {
+  return array(
+    'administer aegir cloud' => array(
+      'title' => t('Administer Aegir Cloud'),
+      'description' => t('Configure how Aegir Cloud.'),
+    ),
+  );
+}
+
+/**
+ * Expose a type of service to the Service API.
+ *
+ * Return a new type of service (such as http, dns, db etc.) to
+ * the service API.
+ *
+ * This information will be used to display the server node form,
+ * allowing you to create services of this type.
+ *
+ * Just defining a service type without any implementations of it,
+ * will automatically provide the "None" implementation.
+ *
+ * You will then need to create a new file in the same directory
+ * as your module named "$module.service.inc, containing at
+ * least a single class named "provisionService_$service", which
+ * extends the base provisionService class.
+ *
+ * @see hosting_server_services()
+ * @return
+ *    an associative array with the index declaring the service
+ *    type, and containing another associative array of properties.
+ *    At present only the 'title' property is required for display
+ *    of the server node form.
+ */
+function aegir_cloud_hosting_service_type() {
+  return array(
+    'provider' => array(
+      'title' => 'Cloud Provider',
+      'weight' => -1,
+    ),
+  );
+}
+
+/**
+ * Implementation of hook_nodeapi()
+ */
+function aegir_cloud_node_view($node, $view_mode, $langcode) {
+  if ($node->type == 'server') {
+      if ($node->services['provider']) {
+        $node->content['info']['provider'] = array(
+          '#type' => 'item',
+          '#title' => t('Cloud Provider'),
+          '#markup' => $node->services['provider']->type,
+          '#weight' => 0,
+        );
+
+        // Options
+        $rows = array();
+        foreach ($node->services['provider']->provider_options as $key => $value) {
+          $rows[] = array($key, $value);
+        }
+        $node->content['info']['provider_options'] = array(
+          '#type' => 'item',
+          '#title' => t('Options'),
+          '#markup' => theme('table', array('rows' => $rows)),
+          '#weight' => 22,
+        );
+
+        // Data
+        $rows = array();
+        foreach ($node->services['provider']->provider_data as $key => $value) {
+          if (is_string($value)) {
+            $rows[] = array($key, $value);
+          }
+          else {
+            $rows[] = array($key, print_r($value, 1));
+          }
+        }
+        $node->content['info']['provider_data'] = array(
+          '#type' => 'item',
+          '#title' => t('Data'),
+          '#markup' => theme('table', array('rows' => $rows)),
+          '#weight' => 23,
+        );
+
+        if ($node->services['provider']->provider_server_identifier) {
+          $node->content['info']['provider_server_identifier'] = array(
+            '#type' => 'item',
+            '#title' => t('Server Identifier'),
+            '#markup' => $node->services['provider']->provider_server_identifier,
+            '#weight' => 24,
+          );
+        }
+      }
+  }
+}
+
+/**
+ * Implements hook_hosting_tasks_alter().
+ */
+function aegir_cloud_hosting_tasks_alter(&$tasks) {
+  $tasks['server']['delete']['dialog'] = TRUE;
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function aegir_cloud_form_alter(&$form, &$form_state, $form_id) {
+  if ($form_id == 'server_node_form' && !isset($form_state['node']->nid)) {
+    $form['actions']['submit']['#value'] = t('Create Server');
+    $form['actions']['submit']['#icon'] = '<i class="fa fa-plus"></i>';
+  }
+
+  if ($form_id == 'hosting_task_confirm_form') {
+
+    $node = $form_state['build_info']['args'][0];
+    $task_type = $form_state['build_info']['args'][1];
+    if ($node->type == 'server' && $task_type =='delete') {
+
+      if (!empty($node->services['provider'])) {
+        $id = $node->services['provider']->provider_server_identifier;
+
+        $form['warning'] = array(
+          '#type' => 'item',
+          '#prefix' => '<div class="alert alert-danger">',
+          '#markup' => t('This server will be completely destroyed, along with all of the sites, files, and databases on it. Are you sure you want to do this?'),
+          '#suffix' => '</div>',
+        );
+        $form['provider'] = array(
+          '#type' => 'item',
+          '#title' => t('Server Provider'),
+          '#markup' => $node->services['provider']->type,
+        );
+        $form['provider_server_name'] = array(
+          '#type' => 'item',
+          '#title' => t('Hostname'),
+          '#markup' => $node->title,
+        );
+        $form['provider_server_ips'] = array(
+          '#type' => 'item',
+          '#title' => t('IP Addresses'),
+          '#markup' => implode('  ', $node->ip_addresses),
+        );
+        $form['provider_server_identifier'] = array(
+          '#type' => 'item',
+          '#title' => t('Server ID'),
+          '#markup' => l($id, $node->services['provider']->getProviderServerUrl(), array(
+            'attributes' => array(
+              'target' => '_blank',
+            ),
+          )),
+        );
+        $form['parameters']['#weight'] = 1;
+
+        $form['delete_dns'] = array(
+          '#type' => 'checkbox',
+          '#title' => t('Delete DNS Records'),
+          '#description' => t('Check the box to delete any DNS records found for this servers IP or Hostname'),
+          '#default_value' => TRUE,
+        );
+
+        if (method_exists($node->services['provider'], 'dnsEntriesOptionsList')) {
+          $items = $node->services['provider']->dnsEntriesOptionsList();
+          $form['dns_records'] = array(
+            '#title' => t('DNS Records to delete'),
+            '#type' => 'checkboxes',
+            '#options' => $items,
+            '#default_value' => array_combine(array_keys($items),array_keys($items)),
+          );
+        }
+
+        // Add a submit handler to trigger the server provider delete.
+        $form['#validate'][] = 'aegir_cloud_delete_task_form_validate';
+      }
+    }
+  }
+}
+
+/**
+ * Load up the service class and run the "destroy" method.
+ *
+ * @param $form
+ * @param $form_state
+ */
+function aegir_cloud_delete_task_form_validate($form, &$form_state) {
+  $service = $form_state['build_info']['args'][0]->services['provider'];
+  if ($form_state['values']['delete_dns'] && method_exists($service, 'destroyDnsRecords')) {
+    $service->destroyDnsRecords($form_state['values']['dns_records']);
+  }
+
+  if (method_exists($service, 'destroy')) {
+    $service->destroy();
+  }
+}

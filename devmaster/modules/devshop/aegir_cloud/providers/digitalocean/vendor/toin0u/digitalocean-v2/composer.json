@@ -1,0 +1,62 @@
+{
+    "name"       : "toin0u/digitalocean-v2",
+    "type"       : "library",
+    "description": "DigitalOcean API v2 PHP 5.4+ library",
+    "keywords"   : ["DigitalOcean", "API", "Cloud Hosting", "SSD", "VPS"],
+    "homepage"   : "https://github.com/toin0u/DigitalOceanV2",
+    "license"    : "MIT",
+
+    "authors": [
+        {
+            "name"    : "Antoine Corcy",
+            "email"   : "contact@sbin.dk",
+            "homepage": "http://sbin.dk",
+            "role"    : "Developer"
+        },
+        {
+            "name"    : "Yassir Hannnoun",
+            "email"   : "yassir.hannoun@gmail.com",
+            "homepage": "https://yassirh.com",
+            "role"    : "Developer"
+        }
+    ],
+
+    "support": {
+        "issues": "https://github.com/toin0u/DigitalOceanV2/issues",
+        "source": "https://github.com/toin0u/DigitalOceanV2"
+    },
+
+    "require": {
+        "php": ">=5.4.0"
+    },
+
+    "require-dev": {
+        "kriswallsmith/buzz"        : "~0.10",
+        "guzzle/guzzle"             : "~3.7",
+        "guzzlehttp/guzzle"         : "~5.0|~6.0",
+        "phpspec/phpspec"           : "~2.4",
+        "friendsofphp/php-cs-fixer" : "~1.11"
+    },
+
+    "suggest": {
+        "kriswallsmith/buzz": "To use BuzzAdapter, require kriswallsmith/buzz:~0.10.",
+        "guzzle/guzzle"     : "To use GuzzleAdapter, require guzzle/guzzle:~3.7.",
+        "guzzlehttp/guzzle" : "To use GuzzleHttpAdapter, require guzzlehttp/guzzle:~5.0|~6.0."
+    },
+
+    "autoload": {
+        "psr-4": {
+            "DigitalOceanV2\\": "src/"
+        }
+    },
+
+    "config": {
+        "preferred-install": "dist"
+    },
+
+    "extra": {
+        "branch-alias": {
+            "dev-master": "2.2-dev"
+        }
+    }
+}

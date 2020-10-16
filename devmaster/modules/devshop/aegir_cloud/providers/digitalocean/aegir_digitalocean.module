@@ -1,0 +1,65 @@
+<?php
+
+require_once 'vendor/autoload.php';
+use DigitalOceanV2\DigitalOceanV2;
+
+/**
+ * Implements hook_hosting_service()
+ */
+function aegir_digitalocean_hosting_service() {
+  return array(
+    'digital_ocean' => 'provider',
+  );
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter()
+ *
+ * Alters devshop cloud settings form to add digital_ocean api keys.
+ */
+function aegir_digitalocean_form_aegir_cloud_settings_form_alter(&$form, &$form_state) {
+
+  require("options.php");
+
+  $form['digital_ocean'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Digital Ocean'),
+    '#weight' => -100,
+  );
+
+  $form['digital_ocean']['aegir_cloud_digital_ocean_api_token'] = array(
+    '#type' => 'textfield',
+    '#title' => t('API token'),
+    '#description' => t('Enter your Digital Ocean API token here.'),
+    '#default_value' => variable_get('aegir_cloud_digital_ocean_api_token', ''),
+  );
+
+  $form['digital_ocean']['aegir_cloud_digital_ocean_create_dns'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Create & Destroy DNS records'),
+    '#description' => t('If the base domain of a server is managed by DigitalOcean, create a DNS record for this server once the IP address is known, and destroy it when the server is destroyed.'),
+    '#default_value' => variable_get('aegir_cloud_digital_ocean_create_dns', TRUE),
+  );
+
+  $form['digital_ocean']['options'] = aegir_digital_ocean_options_form();
+
+  // Fire off our submit
+  $form['#submit'][] = 'aegir_digital_ocean_options_form_submit';
+
+}
+
+function aegir_digitalocean_load_api(){
+
+  $api_token = variable_get('aegir_cloud_digital_ocean_api_token', array());
+
+  $adapter = new \DigitalOceanV2\Adapter\GuzzleAdapter($api_token);
+  $digitalocean = new DigitalOceanV2($adapter);
+  return $digitalocean;
+}
+
+/**
+ * Implementation of hook_nodeapi()
+ */
+function aegir_digitalocean_nodeapi_server_load(&$node) {
+  return array('digital_ocean_token' => variable_get('aegir_cloud_digital_ocean_api_token', array()));
+}

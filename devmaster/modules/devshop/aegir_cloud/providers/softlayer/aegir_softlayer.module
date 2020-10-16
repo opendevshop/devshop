@@ -1,0 +1,181 @@
+<?php
+
+/**
+ * Implements hook_hosting_service()
+ */
+function aegir_softlayer_hosting_service() {
+  return array(
+    'softlayer' => 'provider',
+  );
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter()
+ *
+ * Alters aegir cloud settings form to add softlayer api keys.
+ */
+function aegir_softlayer_form_aegir_cloud_settings_form_alter(&$form, &$form_state) {
+
+  $form['softlayer'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('SoftLayer'),
+    '#weight' => -100,
+  );
+
+  $form['softlayer']['aegir_cloud_softlayer_api_username'] = array(
+    '#type' => 'textfield',
+    '#title' => t('API Username'),
+    '#description' => t('Enter your softlayer username here.'),
+    '#default_value' => variable_get('aegir_cloud_softlayer_api_username', ''),
+  );
+
+  $url = 'https://control.softlayer.com/account/users';
+  $form['softlayer']['aegir_cloud_softlayer_api_key'] = array(
+    '#type' => 'textfield',
+    '#title' => t('API Key'),
+    '#description' => t('Enter your SoftLayer API key here.  Get your API key at !link', array(
+      '!link' => l($url, $url),
+    )),
+    '#default_value' => variable_get('aegir_cloud_softlayer_api_key', ''),
+  );
+
+
+
+  $username = variable_get('aegir_cloud_softlayer_api_username', array());
+  $key = variable_get('aegir_cloud_softlayer_api_key', array());
+
+  if (empty($username) || empty($key)) {
+  }
+  else {
+    $options = variable_get('aegir_cloud_softlayer_options', array());
+
+    $form['softlayer']['info'] = array(
+      '#type' => 'item',
+      '#title' => t('SoftLayer Options'),
+      '#markup' => empty($options)? t('No options available. Click "Refresh SoftLayer Options".'): 'SoftLayer options are saved.',
+    );
+
+    $keys = variable_get('aegir_cloud_softlayer_ssh_keys', array());
+    $key_count = count($keys);
+    $form['softlayer']['keys'] = array(
+      '#type' => 'item',
+      '#title' => t('SoftLayer SSH Keys'),
+      '#markup' => format_plural($key_count, t('One key available'), t('!num keys available', array(
+        '!num' => $key_count
+      ))),
+    );
+
+    // Get fingerprint of ssh key for comparison.
+    try {
+      $key_vars['key'] = (object) sshkey_parse(variable_get('aegir_public_key', ''));
+
+      $fingerprint = theme_sshkey_fingerprint($key_vars);
+      foreach ($keys as $key) {
+        if ($fingerprint == $key->fingerprint) {
+          $key_found = TRUE;
+          $form['softlayer']['key_ok'] = array(
+            '#prefix' => '<div class="alert alert-success">',
+            '#suffix' => '</div>',
+            '#markup' => t('!link key was found in your !link2. Ready to Provision.', array(
+            '!link' => l(t('Hostmaster public key'), 'admin/hosting/cloud'),
+            '!link2' => l(t('SoftLayer Account'), 'https://control.softlayer.com/devices/sshkeys'),
+          )));
+        }
+      }
+    }
+    catch (SSHKeyParseException $e) {
+      $key_found = FALSE;
+    }
+
+    if (!$key_found) {
+      $form['softlayer']['key_warning'] = array(
+        '#prefix' => '<div class="alert alert-danger">',
+        '#suffix' => '</div>',
+        '#markup' => t('!link1 was not found in your SoftLayer Account.  !link2', array(
+          '!link1' => l(t('Hostmaster public key'), 'admin/hosting/cloud'),
+          '!link2' => l(t('Add your public key to Softlayer'), 'https://control.softlayer.com/devices/sshkeys'),
+        )),
+      );
+    }
+
+    $form['softlayer']['refresh'] = array(
+      '#type' => 'submit',
+      '#value' => t('Refresh SoftLayer Options'),
+      '#submit' => array(
+        'aegir_softlayer_refresh_options'
+      ),
+    );
+  }
+
+  // Validate the API key.
+  $form['#validate'][] = 'aegir_softlayer_validate_key';
+}
+
+/**
+ * Form validator to check the API key.
+ * @param $form
+ * @param $form_state
+ */
+function aegir_softlayer_validate_key($form, $form_state) {
+
+  require_once dirname(__FILE__) . '/softlayer-api-php-client/SoftLayer/SoapClient.class.php';
+
+  $apiUsername = $form_state['values']['aegir_cloud_softlayer_api_username'];
+  $apiKey = $form_state['values']['aegir_cloud_softlayer_api_key'];
+
+  // Ignore if empty.
+  if (empty($form_state['values']['aegir_cloud_softlayer_api_key'])) {
+    return;
+  }
+
+  // Get Create options
+  try {
+    $client = SoftLayer_SoapClient::getClient('SoftLayer_Virtual_Guest', NULL, $apiUsername, $apiKey);
+    $options['options'] = $client->getCreateObjectOptions();
+  }
+  catch (Exception $e) {
+      form_set_error('aegir_cloud_softlayer_api_key', $e->getMessage());
+  }
+}
+
+/**
+ * Refresh softlayer options.
+ */
+function aegir_softlayer_refresh_options() {
+
+  require_once dirname(__FILE__) . '/softlayer-api-php-client/SoftLayer/SoapClient.class.php';
+
+  $apiUsername = variable_get('aegir_cloud_softlayer_api_username', array());
+  $apiKey = variable_get('aegir_cloud_softlayer_api_key', array());
+
+  // Get Create options
+  try {
+    $client = SoftLayer_SoapClient::getClient('SoftLayer_Virtual_Guest', null, $apiUsername, $apiKey);
+    $options['options'] = $client->getCreateObjectOptions();
+    variable_set('aegir_cloud_softlayer_options', $options['options']);
+
+    $ssh_key_client  = SoftLayer_SoapClient::getClient('SoftLayer_Account', null, $apiUsername, $apiKey);
+    $ssh_keys = $ssh_key_client->getSshKeys();
+
+    variable_set('aegir_cloud_softlayer_ssh_keys', $ssh_keys);
+
+    // Save a variable with an array ready to go for form options.
+    $key_vars['key'] = (object) sshkey_parse(variable_get('aegir_public_key', ''));
+    $fingerprint = theme_sshkey_fingerprint($key_vars);
+    foreach ($ssh_keys as $key) {
+      $ssh_key_options[$key->id] = $key->label;
+
+      // Save the softlayer key ID for this aegir_cloud_public_key.
+      if ($fingerprint == $key->fingerprint) {
+        variable_set('aegir_cloud_public_key_softlayer_id', $key->id);
+      }
+    }
+
+    variable_set('aegir_cloud_softlayer_ssh_keys_options', $ssh_key_options);
+
+    drupal_set_message(t('SoftLayer options and SSH keys have been retrieved.'));
+
+  } catch (Exception $e) {
+    drupal_set_message($e->getMessage(), 'error');
+  }
+}
