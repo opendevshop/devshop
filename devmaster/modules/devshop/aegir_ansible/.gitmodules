@@ -1,0 +1,9 @@
+[submodule "roles/aegir.user"]
+	path = roles/aegir.user
+	url = git@github.com:opendevshop/ansible-role-aegir-user.git
+[submodule "roles/aegir.nginx"]
+	path = roles/aegir.nginx
+	url = git@github.com:opendevshop/ansible-role-aegir-nginx.git
+[submodule "roles/aegir.apache"]
+	path = roles/aegir.apache
+	url = git@github.com:opendevshop/ansible-role-aegir-apache.git

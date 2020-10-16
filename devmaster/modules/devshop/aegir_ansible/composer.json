@@ -1,0 +1,12 @@
+{
+    "require": {
+        "symfony/yaml": "^3.0",
+        "asm/php-ansible": "dev-patch-1"
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/jonpugh/php-ansible"
+        }
+    ]
+}

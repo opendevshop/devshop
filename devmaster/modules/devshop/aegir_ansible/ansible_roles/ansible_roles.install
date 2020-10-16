@@ -1,0 +1,119 @@
+<?php
+/**
+ * @file
+ * Define the database schema and update functions for the database server module.
+ */
+
+/**
+ * Implements hook_install()
+ */
+function ansible_roles_install() {
+    db_query('UPDATE {system} SET weight = 1 WHERE name = :module', array(
+        ':module' => 'ansible_roles'
+    ));
+
+  // Insert the default roles used by existing services.
+  $services = hosting_server_services();
+  foreach ($services as $service) {
+    foreach ($service['types'] as $type => $className) {
+      $object = new $className;
+      if (method_exists($object, 'getRoles')) {
+
+        $service_roles = $object->getRoles();
+        foreach ($service_roles as $role) {
+          if (is_string($role)) {
+            $role_to_install = (object) array('name' => $role);
+          }
+          elseif (is_array($role)) {
+            $role_to_install = (object) $role;
+          }
+          elseif (is_object($role)) {
+            $role_to_install = $role;
+          }
+
+          if (isset($role)) {
+            $id = db_insert('hosting_ansible_roles_available')
+              ->fields(array('name', 'src', 'version'))
+              ->values(array($role_to_install->name, $role_to_install->src, $role_to_install->version))
+              ->execute();
+
+            if ($id) {
+              drupal_set_message(t('Role installed: !name', array('!name' => $role_to_install->name)));
+            }
+            else {
+              drupal_set_message(t('Failed to install role: !name', array('!name' => $role_to_install->name)), 'error');
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  // Queue a verify task for server master to install the roles.
+  $nid = hosting_context_nid('hostmaster');
+  hosting_add_task($nid, 'verify');
+}
+
+/**
+ * Implements hook_schema().
+ */
+function ansible_roles_schema() {
+  $schema['hosting_ansible_roles'] = array(
+    'fields' => array(
+      'vid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'nid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'role' => array(
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+    ),
+    'primary key' => array('vid', 'role'),
+  );
+
+  $schema['hosting_ansible_roles_available'] = array(
+    'fields' => array(
+      'rid' => array(
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'Primary Key: Unique role ID.',
+      ),
+      'name' => array(
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'Unique role name.',
+      ),
+      'src' => array(
+        'type' => 'varchar',
+        'length' => 256,
+        'not null' => FALSE,
+        'default' => '',
+        'description' => 'Git source URL for this role, if there is one.',
+      ),
+      'version' => array(
+        'type' => 'varchar',
+        'length' => 256,
+        'not null' => FALSE,
+        'default' => '',
+        'description' => 'Git branch, tag, or SHA for the ansible role.',
+      ),
+    ),
+    'primary key' => array('rid'),
+  );
+
+  return $schema;
+}
