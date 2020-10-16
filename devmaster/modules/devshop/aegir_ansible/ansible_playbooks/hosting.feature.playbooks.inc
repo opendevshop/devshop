@@ -13,7 +13,7 @@ function ansible_playbooks_hosting_feature() {
     'description' => t("Run Ansible playbooks with Aegir."),
     'status' => HOSTING_FEATURE_ENABLED,
     'module' => 'ansible_playbooks',
-    'group' => 'advanced',
+    'group' => 'experimental',
   );
   return $features;
 }
