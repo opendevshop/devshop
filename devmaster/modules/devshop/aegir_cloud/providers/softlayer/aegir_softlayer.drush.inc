@@ -37,7 +37,7 @@ function drush_aegir_softlayer_pre_hosting_task() {
                     drush_log('IP address loaded from API: ' . implode(', ', $ips) . "\n", 'p_ok');
 
                     // Save IP addresses
-                    $task->ref->new_ip_addresses = $ips;
+                    $task->ref->ip_addresses = $ips;
                     $task->ref->no_verify = TRUE;
                     if (!node_save($task->ref)) {
                         return drush_set_error('AEGIR_CLOUD_ERROR', 'IP addresses were not saved!');

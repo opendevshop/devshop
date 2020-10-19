@@ -33,7 +33,7 @@ function drush_aegir_cloud_packet_pre_hosting_task() {
                         // Save IP addresses
                         foreach ($device->ipAddresses as $ip) {
                             drush_log('IP address found: ' . $ip->address . "\n", 'p_ok');
-                            $task->ref->new_ip_addresses[] = $ip->address;
+                            $task->ref->ip_addresses[] = $ip->address;
                         }
                         $task->ref->no_verify = TRUE;
                         node_save($task->ref);

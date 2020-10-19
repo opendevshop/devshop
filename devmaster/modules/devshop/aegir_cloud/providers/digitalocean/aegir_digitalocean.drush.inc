@@ -37,7 +37,7 @@ function drush_aegir_digitalocean_pre_hosting_task() {
                             drush_log('IP address found: ' . $network->ipAddress . "\n", 'p_ok');
                             $new_ips[] = $network->ipAddress;
                         }
-                        $task->ref->new_ip_addresses = $new_ips;
+                        $task->ref->ip_addresses = $new_ips;
                         $task->ref->no_verify = TRUE;
                         node_save($task->ref);
 
