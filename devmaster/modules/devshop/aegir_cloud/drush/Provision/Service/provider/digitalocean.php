@@ -20,6 +20,13 @@ class Provision_Service_provider_digital_ocean extends Provision_Service_provide
         $ips[] = $network->ipAddress;
       }
 
+      // For digitalocean servers, API IPs are the only IPs.
+      if (count($ips)) {
+        db_delete('hosting_ip_addresses')
+          ->condition('id', $id)
+          ->execute();
+      }
+
       drush_set_option('ip_addresses', $ips);
       drush_log('[DEVSHOP] Cloud Server IPs updated.', 'ok');
     }
