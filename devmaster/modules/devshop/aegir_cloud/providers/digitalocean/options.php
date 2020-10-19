@@ -85,11 +85,6 @@ function aegir_digital_ocean_options_form() {
         '#title' => t('Enable Private Networking'),
         '#default_value' => $default_options['aegir_digital_ocean_default_private_networking'],
       );
-      $form['aegir_digital_ocean_default_remote_server'] = array(
-        '#type' => 'checkbox',
-        '#title' => t('Setup as remote aegir server'),
-        '#default_value' => $default_options['aegir_digital_ocean_default_remote_server'],
-      );
       $form['aegir_digital_ocean_default_user_data'] = array(
         '#type' => 'textarea',
         '#title' => t('Cloud Init'),
