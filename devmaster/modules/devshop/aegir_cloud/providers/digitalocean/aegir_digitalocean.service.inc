@@ -53,7 +53,16 @@ class hostingService_provider_digital_ocean extends hostingService_provider {
       $form['provider_options']['keys'] = array(
         '#type' => 'checkboxes',
         '#title' => t('SSH Keys'),
+        '#description' => t('Select the SSH Keys to add to this droplet. !link', array(
+          '!link' => l(t('DigitalOcean SSH Keys'), 'https://cloud.digitalocean.com/account/security', array(
+            'attributes' => array(
+              'target' => array('_blank'),
+              'class' => array('btn btn-link btn-xs')
+            ),
+          )),
+        )),
         '#options' => $options['keys'],
+        '#required' => variable_get('aegir_digital_ocean_keys_required', true),
         '#default_value' => $default_options['aegir_digital_ocean_default_keys'],
       );
       $form['provider_options']['backups'] = array(
