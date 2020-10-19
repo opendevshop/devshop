@@ -11,21 +11,7 @@ function aegir_digital_ocean_options_form() {
   aegir_digitalocean_load_api();
   $token = variable_get('aegir_cloud_digital_ocean_api_token', array());
 
-  if (empty($token)) {
-    $form['warning'] = array(
-      '#type' => 'container',
-      '#attributes' => array(
-        'class' => array('alert alert-info')
-      ),
-      '#children' => t('Enter your Digital Ocean token before you can use this form.  !link', array('!link' => l(t('Manage DigitalOcean API Keys'), 'https://cloud.digitalocean.com/account/api/tokens', array(
-        'attributes' => array(
-          'target' => array('_blank')
-        ),
-      )))),
-      '#weight' => 10,
-    );
-  }
-  else {
+  if (!empty($token)) {
     $options = variable_get('aegir_cloud_digital_ocean_options', array());
 
     $form['info'] = array(
