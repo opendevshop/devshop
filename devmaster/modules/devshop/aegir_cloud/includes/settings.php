@@ -7,11 +7,10 @@ function aegir_cloud_settings_form() {
     '#prefix' => '<div>',
     '#suffix' => '</div>',
   );
-  $devshop_key = variable_get('aegir_public_key', '');
-  $form['aegir_public_key'] = array(
-    '#title' => t('Hostmaster Public SSH Key'),
-    '#description' => t('Enter the public key of the user that will be connecting and provisioning your servers (typically "aegir". This SSH key will be used to grant access to root on new servers created by Aegir Cloud.'),
-    '#default_value' => variable_get('aegir_public_key', $devshop_key),
+  $form['devshop_public_key'] = array(
+    '#title' => t('SSH Key for new Cloud Servers'),
+    '#description' => t("Enter a public SSH key to add to new cloud server's root user. WARNING: Anyone who has the private key that matches will have root access to the new server."),
+    '#default_value' => variable_get('devshop_public_key', ''),
     '#type' => 'textarea',
   );
   return system_settings_form($form);

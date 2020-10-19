@@ -52,8 +52,8 @@ class hostingService_provider_digital_ocean extends hostingService_provider {
       );
       $form['provider_options']['keys'] = array(
         '#type' => 'checkboxes',
-        '#title' => t('SSH Keys'),
-        '#description' => t('Select the SSH Keys to add to this droplet. !link', array(
+        '#title' => t('DigitalOcean SSH Keys'),
+        '#description' => t('Select the DigitalOcean SSH Keys to add to this droplet. !link', array(
           '!link' => l(t('DigitalOcean SSH Keys'), 'https://cloud.digitalocean.com/account/security', array(
             'attributes' => array(
               'target' => array('_blank'),
