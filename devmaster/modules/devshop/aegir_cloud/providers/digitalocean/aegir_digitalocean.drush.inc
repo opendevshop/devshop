@@ -14,6 +14,7 @@ function drush_aegir_digitalocean_pre_hosting_task() {
         try {
             /** @var hostingService_provider_digital_ocean $service */
             $service = $task->ref->services['provider'];
+            $servername = $service->getServer()->title;
 
             $api = $service->load_api();
             $droplet = $api->droplet();
@@ -22,7 +23,6 @@ function drush_aegir_digitalocean_pre_hosting_task() {
 
                 drush_log('Acquiring IP Addresses', 'p_command');
                 drush_log("Waiting for IP Address...\n", 'p_info');
-
 
                 // Loop until we have an IP address.
                 while (empty($task->ref->ip_addresses)) {
@@ -88,7 +88,9 @@ function drush_aegir_digitalocean_pre_hosting_task() {
             }
 
             // Loop until we have completed all provisioning steps.
-            drush_log('Waiting for Server' . $service->getServer()->title, 'p_command');
+            drush_log(dt('Waiting for droplet %droplet to be ready.', array(
+              '%droplet' => $service->getServer()->title,
+            )), 'p_command');
             $completed = FALSE;
             while (!$completed) {
               sleep(3);
@@ -109,9 +111,12 @@ function drush_aegir_digitalocean_pre_hosting_task() {
             // Loop until DNS resolves.
             drush_log('Waiting for DNS for ... ' . $service->getServer()->title, 'p_command');
             $completed = FALSE;
+
             while (!$completed) {
               sleep(3);
-              if (gethostbyaddr($first_ip) == $task->ref->title) {
+              $hostname = gethostbyaddr($first_ip);
+              // If gethostbyaddr returns the hostname, we are done.
+              if ($hostname == $task->ref->title) {
                 $completed = TRUE;
               }
             }
