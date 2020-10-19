@@ -10,16 +10,17 @@ function aegir_digital_ocean_options_form() {
   $form = array();
   aegir_digitalocean_load_api();
   $token = variable_get('aegir_cloud_digital_ocean_api_token', array());
+  $form['info'] = array(
+    '#type' => 'container',
+    '#attributes' => array(
+      'class' => array('alert alert-warning')
+    ),
+    '#children' => t('Before you can create servers, you must configure the server provider options. Enter an API key to load this data from DigitalOcean.'),
+    '#access' => empty($token) || empty($options),
+  );
 
   if (!empty($token)) {
     $options = variable_get('aegir_cloud_digital_ocean_options', array());
-
-    $form['info'] = array(
-      '#type' => 'item',
-      '#title' => t('Digital Ocean Options'),
-      '#value' => empty($options)? t('No options available. Click "Refresh Digital Ocean Options".'): '',
-    );
-
     if (!empty($options)) {
 
       $region_options = $options['regions'];
