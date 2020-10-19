@@ -30,12 +30,16 @@ function drush_aegir_digitalocean_pre_hosting_task() {
                     $device = $droplet->getById($service->provider_server_identifier);
 
                     if (!empty($device->networks[0]->ipAddress)) {
-                        $first_ip = $device->networks[0]->ipAddress;
 
                         // Save IP addresses
                         foreach ($device->networks as $network) {
                             drush_log('IP address found: ' . $network->ipAddress . "\n", 'p_ok');
                             $new_ips[] = $network->ipAddress;
+
+                            // Save public IP address for DNS Creation.
+                            if (empty($public_ip_address) && $network->type == 'public') {
+                              $public_ip_address = $network->ipAddress;
+                            }
                         }
                         $task->ref->ip_addresses = $new_ips;
                         $task->ref->no_verify = TRUE;
@@ -53,7 +57,7 @@ function drush_aegir_digitalocean_pre_hosting_task() {
                 }
             }
             else {
-              $first_ip = current($task->ref->ip_addresses);
+              $public_ip_address = current($task->ref->ip_addresses);
             }
 
             // Save a DNS record
@@ -70,7 +74,7 @@ function drush_aegir_digitalocean_pre_hosting_task() {
                 if ($record->name == $subdomain) {
 
                   // @TODO: If IP address changed, Update Record?
-                  if ($record->data != $first_ip) {
+                  if ($record->data != $public_ip_address) {
 
                   }
                   $record_found = TRUE;
@@ -79,11 +83,10 @@ function drush_aegir_digitalocean_pre_hosting_task() {
 
               // Create domain record.
               if (!$record_found) {
-                $created = $domainRecord->create($base_domain, 'A', $subdomain, $first_ip, 0);
-
-                //@TODO! This is devshop.cloud specific! Remove it!
-                $created = $domainRecord->create($base_domain, 'A', '*.' . $subdomain, $first_ip, 0);
-                drush_log(dt('Domain Record created successfully!'), 'p_ok');
+                $created = [];
+                $created[] = $domainRecord->create($base_domain, 'A', $subdomain, $public_ip_address, 0);
+                $created[] = $domainRecord->create($base_domain, 'A', '*.' . $subdomain, $public_ip_address, 0);
+                drush_log(dt('Domain Records created successfully!'), 'p_ok');
               }
             }
 
@@ -114,7 +117,7 @@ function drush_aegir_digitalocean_pre_hosting_task() {
 
             while (!$completed) {
               sleep(3);
-              $hostname = gethostbyaddr($first_ip);
+              $hostname = gethostbyaddr($public_ip_address);
               // If gethostbyaddr returns the hostname, we are done.
               if ($hostname == $task->ref->title) {
                 $completed = TRUE;
