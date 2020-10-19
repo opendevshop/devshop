@@ -71,11 +71,6 @@ class hostingService_provider_digital_ocean extends hostingService_provider {
         '#title' => t('Enable Private Networking'),
         '#default_value' => $default_options['aegir_digital_ocean_default_private_networking'],
       );
-      $form['provider_options']['remote_server'] = array(
-        '#type' => 'checkbox',
-        '#title' => t('Setup as remote aegir server'),
-        '#default_value' => $default_options['aegir_digital_ocean_default_remote_server'],
-      );
       $form['provider_options']['user_data'] = array(
         '#type' => 'textarea',
         '#title' => t('Cloud Init'),
@@ -139,6 +134,9 @@ class hostingService_provider_digital_ocean extends hostingService_provider {
 
     } catch (Exception $e) {
       form_set_error('provider_options', $e->getMessage());
+      drupal_set_message(t('Check the !link settings page and click "Refresh DigitalOcean Options', array(
+        '!link' => l('Cloud', 'admin/hosting/cloud'),
+      )), 'error');
     }
   }
 
