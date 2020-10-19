@@ -23,12 +23,29 @@ function aegir_digital_ocean_options_form() {
     if (!empty($options)) {
 
       $region_options = $options['regions'];
+      ksort($region_options);
       $default_options = variable_get('aegir_digital_ocean_default_options', array());
-      $form['aegir_digital_ocean_default_region'] = array(
-        '#type' => 'select',
+      $form['region'] = array(
+        '#type' => 'fieldset',
         '#title' => t('Region'),
+        '#collapsible' => true,
+        '#collapsed' => true,
+      );
+      $form['region']['aegir_digital_ocean_region_default'] = array(
+        '#type' => 'select',
+        '#title' => t('Default Region'),
         '#options' => $region_options,
-        '#default_value' => $default_options['aegir_digital_ocean_default_region'],
+        '#default_value' => $default_options['aegir_digital_ocean_region_default'],
+      );
+
+      $form['region']['aegir_digital_ocean_region_allowed'] = array(
+        '#type' => 'checkboxes',
+        '#title' => t('Allowed Regions'),
+        '#description' => t('Choose the regions that are shown on the !link page.', array(
+          '!link' => l(t('Create Server'), 'node/add/server'),
+        )),
+        '#options' => $region_options,
+        '#default_value' => $default_options['aegir_digital_ocean_region_allowed'],
       );
 
       $size_options = $options['sizes'];

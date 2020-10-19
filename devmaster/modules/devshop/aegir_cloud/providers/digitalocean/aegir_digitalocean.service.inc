@@ -36,7 +36,7 @@ class hostingService_provider_digital_ocean extends hostingService_provider {
         '#type' => 'select',
         '#title' => t('Region'),
         '#options' => $options['regions'],
-        '#default_value' => $default_options['aegir_digital_ocean_default_region'],
+        '#default_value' => $default_options['aegir_digital_ocean_region_default'],
       );
       $form['provider_options']['image'] = array(
         '#type' => 'select',
