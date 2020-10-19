@@ -19,31 +19,37 @@ function drush_aegir_digitalocean_pre_hosting_task() {
             $api = $service->load_api();
             $droplet = $api->droplet();
 
-            if (empty($task->ref->ip_addresses)) {
+            // Load DNS from digitalocean API on every verify.
+            drush_log('Preparing DNS...', 'p_command');
+            drush_log("Waiting for IP Address from DigitalOcean API...\n", 'p_info');
+            $public_ip_address = null;
+            $new_ips = [];
 
-                drush_log('Acquiring IP Addresses', 'p_command');
-                drush_log("Waiting for IP Address...\n", 'p_info');
+            // Loop until we have an IP address.
+            while (empty($new_ips)) {
+                sleep(3);
+                $device = $droplet->getById($service->provider_server_identifier);
 
-                // Loop until we have an IP address.
-                while (empty($task->ref->ip_addresses)) {
-                    sleep(3);
-                    $device = $droplet->getById($service->provider_server_identifier);
+                if (!empty($device->networks[0]->ipAddress)) {
 
-                    if (!empty($device->networks[0]->ipAddress)) {
+                    // Save IP addresses
+                    foreach ($device->networks as $network) {
+                        drush_log('IP address found: ' . $network->ipAddress . "\n", 'p_ok');
+                        $new_ips[] = $network->ipAddress;
 
-                        // Save IP addresses
-                        foreach ($device->networks as $network) {
-                            drush_log('IP address found: ' . $network->ipAddress . "\n", 'p_ok');
-                            $new_ips[] = $network->ipAddress;
-
-                            // Save public IP address for DNS Creation.
-                            if (empty($public_ip_address) && $network->type == 'public') {
-                              $public_ip_address = $network->ipAddress;
-                            }
+                        // Save public IP address for DNS Creation.
+                        if (empty($public_ip_address) && $network->type == 'public') {
+                          $public_ip_address = $network->ipAddress;
                         }
-                        $task->ref->ip_addresses = $new_ips;
-                        $task->ref->no_verify = TRUE;
-                        node_save($task->ref);
+                    }
+
+                    if ($public_ip_address) {
+                      array_unshift($new_ips, $public_ip_address);
+                    }
+
+                    $task->ref->ip_addresses = $new_ips;
+                    $task->ref->no_verify = TRUE;
+                    node_save($task->ref);
 
                         // reload the node to check that IPs were saved.
 //                        $server = node_load($task->ref->nid, TRUE);
@@ -52,12 +58,8 @@ function drush_aegir_digitalocean_pre_hosting_task() {
 //                            drush_log('IP addresses were not found when reloading the node... not sure why.', 'warning');
 //                          $task->ref->ip_addresses = $new_ips;
 //                        }
-                        break;
-                    }
+                    break;
                 }
-            }
-            else {
-              $public_ip_address = current($task->ref->ip_addresses);
             }
 
             // Save a DNS record
@@ -112,28 +114,41 @@ function drush_aegir_digitalocean_pre_hosting_task() {
             }
 
             // Loop until DNS resolves.
-            drush_log('Waiting for DNS for ... ' . $service->getServer()->title, 'p_command');
+            drush_log('Waiting for DNS for ' . $service->getServer()->title, 'p_command');
             $completed = FALSE;
 
             while (!$completed) {
               sleep(3);
               $hostname = gethostbyaddr($public_ip_address);
               // If gethostbyaddr returns the hostname, we are done.
+              drush_log("gethostbyaddr($public_ip_address): $hostname \n", 'p_info');
+
               if ($hostname == $task->ref->title) {
                 $completed = TRUE;
               }
             }
+            drush_log('DNS record active!', 'p_ok');
 
             // Loop until SSH is available.
-            drush_log('Waiting for SSH ... ', 'p_command');
+            $ssh_string = "root@{$task->ref->title}";
             $completed = FALSE;
+            drush_log('Waiting for SSH to ' . $ssh_string, 'p_command');
             while (!$completed) {
               sleep(1);
-              exec("ssh -q root@{$task->ref->title} exit", $out, $code);
+              exec("ssh -q {$ssh_string} exit", $out, $code);
+              $output = implode(PHP_EOL, $out);
               if ($code == 0) {
                 $completed = TRUE;
               }
+              elseif (strpos($output, 'Permission denied (publickey)')) {
+                drush_log(dt('SSH failed: %output', array(
+                  '%command' => $ssh_string,
+                  '%output' => $output,
+                )), 'warning');
+                $completed = TRUE;
+              }
             }
+            drush_log(dt('SSH connection active!'), 'p_ok');
 
         } catch (Exception $e) {
             drush_set_error('AEGIR_CLOUD_ERROR', $e->getMessage());
