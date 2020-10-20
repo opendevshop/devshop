@@ -118,8 +118,6 @@ function aegir_softlayer_form_aegir_cloud_settings_form_alter(&$form, &$form_sta
  */
 function aegir_softlayer_validate_key($form, $form_state) {
 
-  require_once dirname(__FILE__) . '/softlayer-api-php-client/SoftLayer/SoapClient.class.php';
-
   $apiUsername = $form_state['values']['aegir_cloud_softlayer_api_username'];
   $apiKey = $form_state['values']['aegir_cloud_softlayer_api_key'];
 

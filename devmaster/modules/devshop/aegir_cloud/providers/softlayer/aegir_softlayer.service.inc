@@ -193,7 +193,6 @@ class hostingService_provider_softlayer extends hostingService_provider {
     $username = variable_get('aegir_cloud_softlayer_api_username');
 
     // Initialize an API client for the SoftLayer_Account service.
-    require_once dirname(__FILE__) . '/softlayer-api-php-client/SoftLayer/SoapClient.class.php';
     $client = SoftLayer_SoapClient::getClient($service, $id, $username, $api_key);
     return $client;
   }
