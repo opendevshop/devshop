@@ -261,6 +261,11 @@ class RoboFile extends \Robo\Tasks {
       }
     }
 
+    // Set devmaster repo globally so it installs via symlink.
+    $this->taskExecStack()
+      ->exec('composer config --global repo.devshop_devmaster {"path","$PWD/devmaster"}')
+      ->run();
+
     // Run composer install on devmaster stack so it's ready before the container launches and devmaster install command is faster.
     $this->taskExecStack()
       ->dir('src/DevShop/Component/DevShopControlTemplate')
