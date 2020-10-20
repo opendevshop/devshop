@@ -6,3 +6,6 @@ devshop_control_path: /usr/share/devshop/src/DevShop/Component/DevShopControlTem
 
 # Turn off supervisor and other back-end task runners to avoid flickers.
 supervisor_started: false
+
+# Don't try and checkout devshop_version in CI.
+devshop_cli_skip_update: true

@@ -590,6 +590,9 @@ class RoboFile extends \Robo\Tasks {
       $extra_vars = array();
       $extra_vars['devshop_control_git_reference'] = $this->git_ref;
 
+      # Don't try and checkout devshop_version in CI.
+      $extra_vars['devshop_cli_skip_update'] = true;
+
       // Set extra ansible vars when not in CI.
       if (empty($_SERVER['CI'])) {
         // Set the "hostmaster platform" path to the full DevShopControlTemplate root so we can use it directly.
