@@ -19,9 +19,9 @@ env:
   GITHUB_RUN_LOG_URL: https://github.com/opendevshop/devshop/actions/runs/${{ github.run_id }}
   DEVSHOP_TEST_ASSETS_PATH: ".github/test-artifacts"
 
-  # In CI, set devshop_control_git_reference, not git_root.
-  # If the git_root folder already exists, git_remote is ignored.
-  ANSIBLE_EXTRA_VARS: "devshop_control_git_root=/usr/share/devshop/src/DevShop/Component/DevShopControlTemplate"
+  # In CI, set devshop_control_path.
+  # If the devshop_control_path folder already exists code will not be cloned.
+  ANSIBLE_EXTRA_VARS: "devshop_control_path=/usr/share/devshop/src/DevShop/Component/DevShopControlTemplate"
 
 jobs:
   test:
