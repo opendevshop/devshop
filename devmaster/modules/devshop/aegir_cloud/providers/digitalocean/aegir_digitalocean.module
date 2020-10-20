@@ -44,6 +44,9 @@ function aegir_digitalocean_form_aegir_cloud_settings_form_alter(&$form, &$form_
     '#title' => t('DigitalOcean API Key'),
     '#description' => t('Enter  your Digital Ocean API key here.'),
     '#default_value' => variable_get('aegir_cloud_digital_ocean_api_token', ''),
+    '#element_validate' => array(
+      'aegir_digitalocean_api_element_validate',
+    ),
   );
 
   $form['digital_ocean']['aegir_cloud_digital_ocean_create_dns'] = array(
@@ -59,6 +62,26 @@ function aegir_digitalocean_form_aegir_cloud_settings_form_alter(&$form, &$form_
   // Fire off our submit
   $form['#submit'][] = 'aegir_digital_ocean_options_form_submit';
 
+}
+
+/**
+ * Form field validator for digitalocean api key.
+ */
+function aegir_digitalocean_api_element_validate($element, &$form_state, $form) {
+
+    $token = $element['#value'];
+    if (empty($token)) {
+      return;
+    }
+
+    try {
+      $adapter = new \DigitalOceanV2\Adapter\GuzzleAdapter($token);
+      $digitalocean = new DigitalOceanV2($adapter);
+      $account = $digitalocean->account()->getUserInformation();
+      drupal_set_message(t('Successfully connected to DigitalOcean API.'));
+    } catch (\Exception $e) {
+      form_error($element,  $e->getMessage());
+    }
 }
 
 function aegir_digitalocean_load_api(){
