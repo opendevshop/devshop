@@ -9,14 +9,14 @@
 function aegir_digital_ocean_options_form() {
   $form = array();
   aegir_digitalocean_load_api();
-  $token = variable_get('aegir_cloud_digital_ocean_api_token', array());
+  $token = variable_get('aegir_cloud_digital_ocean_api_token');
   $form['info'] = array(
     '#type' => 'container',
     '#attributes' => array(
       'class' => array('alert alert-warning')
     ),
     '#children' => t('Before you can create servers, you must configure the server provider options. Enter an API key to load this data from DigitalOcean.'),
-    '#access' => empty($token) || empty($options),
+    '#access' => empty($token),
   );
 
   if (!empty($token)) {
@@ -122,6 +122,11 @@ function aegir_digital_ocean_options_form() {
  *
  */
 function aegir_digital_ocean_options_form_submit($form, $form_state) {
+
+  $api_token = variable_get('aegir_cloud_digital_ocean_api_token');
+  if (empty($api_token)) {
+    return;
+  }
 
   $button = $form_state['clicked_button']['#name'];
 
