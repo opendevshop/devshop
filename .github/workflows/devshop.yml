@@ -20,9 +20,8 @@ env:
   DEVSHOP_TEST_ASSETS_PATH: ".github/test-artifacts"
 
   # In CI, set devshop_control_git_reference, not git_root.
-  # If the git_root doesn't exist, the Ansible role clones it from git_remote, using the git_reference.
-  # This way, the actual package repo is cloned (right after the git split was pushed). This is more stable.
-  ANSIBLE_EXTRA_VARS: "devshop_control_git_reference=${{ github.head_ref }}"
+  # If the git_root folder already exists, git_remote is ignored.
+  ANSIBLE_EXTRA_VARS: "devshop_control_git_root=/usr/share/devshop/src/DevShop/Component/DevShopControlTemplate"
 
 jobs:
   test:
