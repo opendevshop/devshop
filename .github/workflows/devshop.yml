@@ -18,10 +18,8 @@ env:
   GITHUB_PR_SHA: ${{ github.event.pull_request.head.sha  }}
   GITHUB_RUN_LOG_URL: https://github.com/opendevshop/devshop/actions/runs/${{ github.run_id }}
   DEVSHOP_TEST_ASSETS_PATH: ".github/test-artifacts"
-
-  # In CI, set devshop_control_path.
-  # If the devshop_control_path folder already exists code will not be cloned.
-  ANSIBLE_EXTRA_VARS: "devshop_control_path=/usr/share/devshop/src/DevShop/Component/DevShopControlTemplate"
+  # Load vars from the vars.ci.yml file.
+  ANSIBLE_EXTRA_VARS: "@/usr/share/devshop/vars.ci.yml"
 
 jobs:
   test:
