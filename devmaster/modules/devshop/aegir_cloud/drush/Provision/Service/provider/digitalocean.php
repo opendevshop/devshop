@@ -79,8 +79,6 @@ class Provision_Service_provider_digital_ocean extends Provision_Service_provide
 
   function load_api(){
     $token = drush_get_option('digital_ocean_token');
-    require_once dirname(__FILE__) . '/digital-ocean-master/vendor/autoload.php';
-    require_once dirname(__FILE__) . '/digital-ocean-master/src/DigitalOceanV2.php';
 
     $adapter = new BuzzAdapter($token);
     $digitalocean = new DigitalOceanV2($adapter);
