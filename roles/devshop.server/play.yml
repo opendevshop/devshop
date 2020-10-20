@@ -28,7 +28,7 @@
     # ansible_python_interpreter: python3
 
     # Set to false if you want to run tasks manually.
-    supervisor_started: false
+    # supervisor_started: false
 
     # @TODO: Make a cleaner separation between playbooks and makefiles for docker hub, playbooks for CI testing, and local development.s
     # Use local dev makefile because it copies the files directly from this repo.
