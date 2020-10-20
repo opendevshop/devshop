@@ -18,4 +18,4 @@ Feature: DevShop Cloud & Ansible Modules
     Then I click "Cloud Providers"
     And I fill in "xyzBadKey" for "DigitalOcean API Key"
     And I press "Save configuration"
-    Then I should see the error message "DigitalOcean API Key failed validation"
+    Then I should see "DigitalOcean API: Unable to authenticate you"
