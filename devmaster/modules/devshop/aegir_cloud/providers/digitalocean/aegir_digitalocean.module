@@ -41,8 +41,8 @@ function aegir_digitalocean_form_aegir_cloud_settings_form_alter(&$form, &$form_
 
   $form['digital_ocean']['aegir_cloud_digital_ocean_api_token'] = array(
     '#type' => 'textfield',
-    '#title' => t('API token'),
-    '#description' => t('Enter your Digital Ocean API token here.'),
+    '#title' => t('DigitalOcean API Key'),
+    '#description' => t('Enter  your Digital Ocean API key here.'),
     '#default_value' => variable_get('aegir_cloud_digital_ocean_api_token', ''),
   );
 
