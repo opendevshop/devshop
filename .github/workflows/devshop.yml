@@ -44,7 +44,10 @@ jobs:
 
       - name: Create pseudo-repo for DevShop Control
         working-directory: src/DevShop/Component/DevShopControlTemplate
-        run: git init
+        run: |
+          git init
+          git remote add origin https://github.com/devshop-packages/devshop-control-template
+          git checkout -b ${{ github.ref }}
 
       # Launch DevShop Server Container
       - name: "Launch Latest Container for 'devshop/server:${{ matrix.os }}'"
@@ -140,6 +143,8 @@ jobs:
         working-directory: src/DevShop/Component/DevShopControlTemplate
         run: |
           git init
+          git remote add origin https://github.com/devshop-packages/devshop-control-template
+          git checkout -b ${{ github.ref }}
 
       # Build "base"
       - name: "Build devshop/base:${{ matrix.os }} Container"
