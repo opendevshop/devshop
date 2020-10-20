@@ -42,6 +42,10 @@ jobs:
       - name: Check Out Sourcecode
         uses: actions/checkout@v2
 
+      - name: Create pseudo-repo for DevShop Control
+        working-directory: src/DevShop/Component/DevShopControlTemplate
+        run: git init
+
       # Launch DevShop Server Container
       - name: "Launch Latest Container for 'devshop/server:${{ matrix.os }}'"
         working-directory: roles
@@ -128,6 +132,11 @@ jobs:
 
       - name: Check Out Sourcecode
         uses: actions/checkout@v2
+
+      - name: Create pseudo-repo for DevShop Control
+        working-directory: src/DevShop/Component/DevShopControlTemplate
+        run: |
+          git init
 
       # Build "base"
       - name: "Build devshop/base:${{ matrix.os }} Container"
