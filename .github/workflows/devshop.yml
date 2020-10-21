@@ -48,6 +48,9 @@ jobs:
           git init
           git remote add origin https://github.com/devshop-packages/devshop-control-template
           git checkout -b ${{ github.ref }}
+          git add .gitignore
+          git add -A
+          git commit -m'Temporary commit'
 
       # Launch DevShop Server Container
       - name: "Launch Latest Container for 'devshop/server:${{ matrix.os }}'"
