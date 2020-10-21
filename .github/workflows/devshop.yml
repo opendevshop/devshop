@@ -50,6 +50,8 @@ jobs:
           git checkout -b ${{ github.ref }}
           git add .gitignore
           git add -A
+          git config --global user.email "github@opendevshop.com"
+          git config --global user.name "GitHub Actions"
           git commit -m'Temporary commit'
 
       # Launch DevShop Server Container
