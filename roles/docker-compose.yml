@@ -29,6 +29,7 @@ services:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
       - /var/lib/mysql
       - /var/logs/aegir
+      - ./.github/test-artifacts:${DEVSHOP_TESTS_ARTIFACTS_PATH:-/usr/share/devshop/.github/test-artifacts}
     environment:
       # @TODO: Change back to devshop.local.computer
       # DEVSHOP_DOCKER_COMMAND_RUN: ansible-playbook /etc/ansible/play.yml -vv --tags runtime --extra-vars server_hostname=localhost
@@ -40,4 +41,4 @@ services:
       - ANSIBLE_PLAYBOOK_COMMAND_OPTIONS
       - DOCKER_COMMAND_POST
       - GITHUB_HEAD_REF
-      - DEVSHOP_TESTS_ASSETS_PATH
+      - DEVSHOP_TESTS_ARTIFACTS_PATH

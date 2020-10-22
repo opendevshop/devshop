@@ -34,9 +34,7 @@
         "drupal-composer/preserve-paths": "dev-master#4c5f62fe97f48e38c5e80cf2f9be8666f683e454",
         "drupal/admin_menu": "@rc",
         "drupal/adminrole": "^1.1",
-        "drupal/aegir_ansible": "^1.0@beta",
-        "drupal/aegir_cloud": "^1.0@beta",
-        "drupal/aegir_config": "@beta",
+         "drupal/aegir_config": "@beta",
         "drupal/aegir_ssh": "^1.0",
         "drupal/betterlogin": "^1.5",
         "drupal/bootstrap": "^3.26",
@@ -122,7 +120,8 @@
         ],
         "uninstall": [
           "echo 'Removing all Drupal and vendor code...'",
-          "rm -rf vendor web/includes web/misc web/modules web/scripts web/themes",
+          "rm -rf composer.lock",
+          "rm -rf vendor web/profiles web/includes web/misc web/modules web/scripts web/themes",
           "rm -f web/*; rm -f web/.* || true"
         ],
         "reinstall": [

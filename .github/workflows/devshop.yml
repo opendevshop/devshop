@@ -17,7 +17,7 @@ env:
   GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}
   GITHUB_PR_SHA: ${{ github.event.pull_request.head.sha  }}
   GITHUB_RUN_LOG_URL: https://github.com/opendevshop/devshop/actions/runs/${{ github.run_id }}
-  DEVSHOP_TESTS_ASSETS_PATH: ".github/test-artifacts"
+  DEVSHOP_TESTS_ARTIFACTS_PATH: "/var/aegir/test-artifacts"
 
   COMMAND: "echo 'DevShop Server Online, launched by GitHub Actions.'"
   DEVSHOP_DOCKER_COMMAND_RUN: "echo 'Skipping DEVSHOP_DOCKER_COMMAND_RUN (ansible-playbook), so that GitHub Actions can run in a separate step.'"
@@ -72,6 +72,10 @@ jobs:
 
           docker cp ../ roles_devshop.server_1:/usr/share/devshop/
           docker-compose exec -T devshop.server chown aegir:aegir /usr/share/devshop -R
+          docker-compose exec -T devshop.server chown aegir:aegir $DEVSHOP_TESTS_ARTIFACTS_PATH -R
+          docker-compose exec -T devshop.server \
+            composer config --global repo.devshop_devmaster {"path","/usr/share/devshop/devmaster"}
+
           sleep 3
           docker-compose logs
           docker-compose exec -T devshop.server /usr/share/devshop/scripts/devshop-logo "GitHub Actions Container populated with code. Running SHA ${GITHUB_PR_SHA}"
