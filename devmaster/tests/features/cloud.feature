@@ -11,7 +11,7 @@ Feature: DevShop Cloud & Ansible Modules
     And I press "Save configuration"
     Then I should see the success message "Enabling Packet.net Cloud Servers feature."
 
-
+  @api
   Scenario: Configure DevShop Cloud: digitalocean
     Given I am logged in as a user with the "administrator" role
     When I am at "admin/hosting"
