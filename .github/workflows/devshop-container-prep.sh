@@ -18,4 +18,4 @@ git add -A
 git config --global user.email "github@opendevshop.com"
 git config --global user.name "GitHub Actions"
 git commit -m 'Temporary commit'
-composer require "devshop/devmaster:$GIT_REF-dev" --no-progress --no-suggest
+composer require "devshop/devmaster:@dev" --no-progress --no-suggest
