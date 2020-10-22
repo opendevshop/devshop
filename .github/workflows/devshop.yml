@@ -18,13 +18,16 @@ env:
   GITHUB_PR_SHA: ${{ github.event.pull_request.head.sha  }}
   GITHUB_RUN_LOG_URL: https://github.com/opendevshop/devshop/actions/runs/${{ github.run_id }}
   DEVSHOP_TEST_ASSETS_PATH: ".github/test-artifacts"
-  DEVSHOP_CONTROL_PATH: "/usr/share/devshop/src/DevShop/Component/DevShopControlTemplate"
 
-  # In CI, set devshop_control_git_reference, not git_root.
-  # If the git_root doesn't exist, the Ansible role clones it from git_remote, using the git_reference.
-  # This way, the actual package repo is cloned (right after the git split was pushed). This is more stable.
-  # NOTE: head_ref is EMPTY in 1.x branch workflow runs.
-  ANSIBLE_EXTRA_VARS: "devshop_control_git_reference=${{ github.head_ref }}; devshop_control_path=/usr/share/devshop/src/DevShop/Component/DevShopControlTemplate"
+  COMMAND: "echo 'DevShop Server Online, launched by GitHub Actions.'"
+  DEVSHOP_DOCKER_COMMAND_RUN: "echo 'Skipping DEVSHOP_DOCKER_COMMAND_RUN (ansible-playbook), so that GitHub Actions can run in a separate step.'"
+  DOCKER_COMMAND_POST: "echo 'GitHub Actions Container was launched.'"
+
+  # Load vars from the vars.ci.yml file.
+  ANSIBLE_EXTRA_VARS: "@/usr/share/devshop/vars.ci.yml"
+
+  # Set devshop_+version variable to the git reference.
+  ANSIBLE_PLAYBOOK_COMMAND_OPTIONS: "--extra-vars=devshop_version=${{ github.ref }}"
 
 jobs:
   test:
@@ -49,11 +52,6 @@ jobs:
       # Launch DevShop Server Container
       - name: "Launch Latest Container for 'devshop/server:${{ matrix.os }}'"
         working-directory: roles
-        env:
-          COMMAND: "echo 'DevShop Server Online, launched by GitHub Actions.'"
-          DEVSHOP_DOCKER_COMMAND_RUN: "ls -la /usr/share/devshop"
-          # DEVSHOP_DOCKER_COMMAND_RUN: "echo 'Skipping DEVSHOP_DOCKER_COMMAND_RUN (ansible-playbook), so that GitHub Actions can run in a separate step.'"
-          DOCKER_COMMAND_POST: "echo 'GitHub Actions Container was launched.'"
         # "docker-compose pull" is needed because the if the image does not exist locally, "docker-compose" will try to build.
         # "--no-build" is needed because docker-compose will build the image by default.
         run: |
@@ -164,13 +162,11 @@ jobs:
       # Launch Container
       - name: "Launch devshop/server:${{ matrix.os }} Container"
         working-directory: roles
-        env:
-          COMMAND: "echo 'DevShop Server Online, launched by GitHub Actions.'"
-          DEVSHOP_DOCKER_COMMAND_RUN: "echo 'Skipping DEVSHOP_DOCKER_COMMAND_RUN (ansible-playbook), so that GitHub Actions can run in a separate step.'"
         run: |
           docker-compose up --detach devshop.server
           sleep 3
           docker-compose logs
+          docker-compose exec -T --user aegir devshop.server /usr/share/devshop/.github/workflows/devshop-container-prep.sh
 
       - name: "Review Container Environment"
         working-directory: roles
