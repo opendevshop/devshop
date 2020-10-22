@@ -53,18 +53,6 @@ jobs:
       - name: Check Out Sourcecode
         uses: actions/checkout@v2
 
-      - name: Create pseudo-repo for DevShop Control
-        working-directory: src/DevShop/Component/DevShopControlTemplate
-        run: |
-          git init
-          git remote add origin https://github.com/devshop-packages/devshop-control-template
-          git checkout -b ${{ github.ref }}
-          git add .gitignore
-          git add -A
-          git config --global user.email "github@opendevshop.com"
-          git config --global user.name "GitHub Actions"
-          git commit -m'Temporary commit'
-
       # Launch DevShop Server Container
       - name: "Launch Latest Container for 'devshop/server:${{ matrix.os }}'"
         working-directory: roles
@@ -157,13 +145,6 @@ jobs:
 
       - name: Check Out Sourcecode
         uses: actions/checkout@v2
-
-      - name: Create pseudo-repo for DevShop Control
-        working-directory: src/DevShop/Component/DevShopControlTemplate
-        run: |
-          git init
-          git remote add origin https://github.com/devshop-packages/devshop-control-template
-          git checkout -b ${{ github.ref }}
 
       # Build "base"
       - name: "Build devshop/base:${{ matrix.os }} Container"
