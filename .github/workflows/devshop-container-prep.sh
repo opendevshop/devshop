@@ -23,3 +23,6 @@ git commit -m 'Temporary commit'
 echo "Installing local devmaster using composer..."
 rm -rf web/profiles/devmaster
 composer require "devshop/devmaster:@dev" --no-progress --no-suggest
+
+# Ensure artifacts path exists
+mkdir ${DEVSHOP_TESTS_ARTIFACTS_PATH:-/tmp/test-artifacts}
