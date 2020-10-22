@@ -17,7 +17,7 @@ env:
   GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}
   GITHUB_PR_SHA: ${{ github.event.pull_request.head.sha  }}
   GITHUB_RUN_LOG_URL: https://github.com/opendevshop/devshop/actions/runs/${{ github.run_id }}
-  DEVSHOP_TEST_ASSETS_PATH: ".github/test-artifacts"
+  DEVSHOP_TESTS_ASSETS_PATH: ".github/test-artifacts"
 
   COMMAND: "echo 'DevShop Server Online, launched by GitHub Actions.'"
   DEVSHOP_DOCKER_COMMAND_RUN: "echo 'Skipping DEVSHOP_DOCKER_COMMAND_RUN (ansible-playbook), so that GitHub Actions can run in a separate step.'"
@@ -178,7 +178,7 @@ jobs:
           docker-compose up --detach devshop.server
           sleep 3
           docker-compose logs
-          docker-compose exec -T devshop.server chown aegir:aegir /usr/share/devshop/src/DevShop/Component/DevShopControlTemplate -R
+          docker-compose exec -T devshop.server chown aegir:aegir /usr/share/devshop -R
           docker-compose exec -T --user aegir devshop.server /usr/share/devshop/.github/workflows/devshop-container-prep.sh
 
       - name: "Review Container Environment"

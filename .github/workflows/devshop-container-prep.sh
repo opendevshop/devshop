@@ -18,4 +18,8 @@ git add -A
 git config --global user.email "github@opendevshop.com"
 git config --global user.name "GitHub Actions"
 git commit -m 'Temporary commit'
-composer require "devshop/devmaster:$GIT_REF-dev" --no-progress --no-suggest
+
+# Composer require @dev and search for the Symlinking statement to ensure we are always installing from local code.
+echo "Installing local devmaster using composer..."
+rm -rf web/profiles/devmaster
+composer require "devshop/devmaster:@dev" --no-progress --no-suggest
