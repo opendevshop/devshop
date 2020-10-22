@@ -175,6 +175,7 @@ jobs:
           docker-compose up --detach devshop.server
           sleep 3
           docker-compose logs
+          docker-compose exec -T devshop.server chown aegir:aegir /usr/share/devshop/src/DevShop/Component/DevShopControlTemplate -R
           docker-compose exec -T --user aegir devshop.server /usr/share/devshop/.github/workflows/devshop-container-prep.sh
 
       - name: "Review Container Environment"
