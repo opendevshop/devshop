@@ -72,6 +72,7 @@ jobs:
 
           docker cp ../ roles_devshop.server_1:/usr/share/devshop/
           docker-compose exec -T devshop.server chown aegir:aegir /usr/share/devshop -R
+          docker-compose exec -T devshop.server chown aegir:aegir $DEVSHOP_TESTS_ARTIFACTS_PATH -R
           docker-compose exec -T devshop.server \
             composer config --global repo.devshop_devmaster {"path","/usr/share/devshop/devmaster"}
 
