@@ -15,6 +15,7 @@ services:
       args:
         OS: "${OS:-ubuntu1804}"
     command: "${COMMAND:-'echo DevShop Server Online'}"
+    entrypoint: "/usr/share/devshop/docker/bin/docker-systemd-entrypoint"
     extra_hosts:
       - "drpl8.testenv.devshop.local.computer:127.0.0.1"
     # @TODO: Change back to devshop.local.computer
@@ -36,4 +37,6 @@ services:
       # This container should always run the devshop.server/play.role when run using this docker-compose.yml.
       - ANSIBLE_PLAYBOOK=/usr/share/devshop/roles/devshop.server/play.yml
       - ANSIBLE_EXTRA_VARS
+      - ANSIBLE_PLAYBOOK_COMMAND_OPTIONS
       - DOCKER_COMMAND_POST
+      - GITHUB_HEAD_REF
