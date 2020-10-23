@@ -1,0 +1,74 @@
+<?php
+/**
+ * @file
+ * Drupal module file for Aegir Ansible Inventory.
+ */
+
+/**
+ * Implements hook_menu();
+ * @return mixed
+ */
+function aegir_ansible_inventory_menu(){
+    $items['inventory'] = array(
+        'page callback' => 'aegir_ansible_inventory_endpoint',
+        'access callback' => TRUE,
+        'file' => 'inventory-endpoint.php',
+    );
+    $items['keys/%'] = array(
+        'page callback' => 'devshop_servers_user_keys',
+        'page arguments' => array(1),
+        'access callback' => TRUE,
+    );
+    return $items;
+}
+
+/**
+ * Implements hook_node_load().
+ */
+function aegir_ansible_inventory_node_load($nodes, $types)
+{
+    if (!in_array('server', $types)) {
+      return;
+    }
+
+    // Load server_master. We need to know it's IP.
+    $name = 'server_master';
+    $server_master_ip = db_query("SELECT ip_address FROM {hosting_ip_addresses} ip LEFT JOIN {hosting_context} h ON ip.nid = h.nid WHERE name = :name", array(':name' => $name))
+        ->fetchField();
+
+    // Load host vars here.
+    foreach ($nodes as $nid => &$node) {
+        if ($node->type != 'server') {
+            continue;
+        }
+        if (!is_array($node->ansible_vars)) {
+          $node->ansible_vars = array();
+        }
+        foreach ($node->services as $type => $service) {
+            if (isset($service->ansible_vars) && is_array($service->ansible_vars)) {
+                $node->ansible_vars = array_merge($node->ansible_vars, $service->ansible_vars);
+            }
+        }
+
+        // Global ansible variables?  Not sure if this is the place.
+        // @TODO: Move this to a "users" service.
+        $node->ansible_vars['aegir_user_authorized_keys'] = variable_get('devshop_public_key', '');
+
+        // If we have an IP address, connect via that instead.
+        $ip_address = array_shift($node->ip_addresses);
+        if (!empty($ip_address)) {
+          $node->ansible_vars['ansible_host'] = $ip_address;
+        }
+    }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function aegir_ansible_inventory_form_server_node_form_alter(&$form, &$form_state, $form_id)
+{
+    $form['note'] = array();
+    $form['key'] = array();
+    $form['title']['#description'] = t('The fully qualified hostname of the server you wish to add.');
+
+}

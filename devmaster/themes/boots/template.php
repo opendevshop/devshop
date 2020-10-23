@@ -866,7 +866,7 @@ function boots_preprocess_node_task(&$vars) {
   global $user;
   $node = $vars['node'];
 
-  if ($node->task_status == HOSTING_TASK_QUEUED) {
+  if ($node->task_status == HOSTING_TASK_QUEUED || $node->task_status == HOSTING_TASK_PROCESSING) {
     $vars['cancel_button'] = l(t('Cancel'), "hosting/tasks/{$node->nid}/cancel", array(
       'attributes' => array('class' => array('btn btn-default')),
       'query' => array(

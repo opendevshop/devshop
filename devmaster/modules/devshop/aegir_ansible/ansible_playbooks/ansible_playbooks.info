@@ -1,0 +1,8 @@
+name = Aegir Ansible Playbooks
+description = Run ansible playbooks on your servers.
+package = Aegir Ansible
+dependencies[] = hosting_server
+dependencies[] = aegir_ansible_core
+
+core = 7.x
+

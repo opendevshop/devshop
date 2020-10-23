@@ -261,6 +261,11 @@ class RoboFile extends \Robo\Tasks {
       }
     }
 
+    // Set devmaster repo globally so it installs via symlink.
+    $this->taskExecStack()
+      ->exec('bash -c "composer config --global repo.devshop_devmaster {\"path\",\"$PWD/devmaster\"}"')
+      ->run();
+
     // Run composer install on devmaster stack so it's ready before the container launches and devmaster install command is faster.
     $this->taskExecStack()
       ->dir('src/DevShop/Component/DevShopControlTemplate')
@@ -547,13 +552,13 @@ class RoboFile extends \Robo\Tasks {
       if (!$opts['ci']) {
         $this->yell('Volume mounts requested. Adding docker-compose.volumes.yml');
         $this->say(' - ' . __DIR__ . '/aegir-home to /var/aegir');
-        $this->say(' - ' . __DIR__ . '/devmaster to /var/aegir/devmaster-1.x/profiles/devmaster');
+        $this->say(' - ' . __DIR__ . '/devmaster to /usr/share/devshop/devmaster');
 
         // Set COMPOSE_FILE to include volumes.
         $opts['compose-file'] = 'docker-compose.yml:docker-compose.volumes.yml';
 
         if (!file_exists('aegir-home') && !$opts['skip-source-prep']) {
-          $this->io()->warning('The aegir-home folder not present. Running prepare source code command.');
+          $this->yell('The aegir-home folder not present. Running prepare source code command.');
           $this->prepareSourcecode($opts);
         }
       }
@@ -589,6 +594,9 @@ class RoboFile extends \Robo\Tasks {
       $env_run = $this->generateEnvironmentArgs($opts);
       $extra_vars = array();
       $extra_vars['devshop_control_git_reference'] = $this->git_ref;
+
+      # Don't try and checkout devshop_version in CI.
+      $extra_vars['devshop_cli_skip_update'] = true;
 
       // Set extra ansible vars when not in CI.
       if (empty($_SERVER['CI'])) {
