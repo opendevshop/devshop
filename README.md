@@ -13,9 +13,9 @@ Console][3] for command line tools, and [Drupal][3] for the web interface.
 
 ## Core Values
 
-#### Empower and Actualize.
-  - Empower site builders to launch their own sites and services on any computer.
-  - Actualize user's missions by freeing them from the burden of building their own platform
+#### Empower and Liberate.
+  - Empower site builders with a feature complete, fully open source platform.
+  - Liberate site owners by granting them the freedom to choose their own infrastructure and architecture.
 
 #### Simplify and Demystify.
   - Simplify the management of complex systems by defining core building blocks and designing components that work independently of the platform.

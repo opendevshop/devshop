@@ -1,0 +1,181 @@
+<?php
+
+
+/**
+ * Implements hook_hosting_service().
+ */
+function ansible_roles_hosting_service() {
+    $services['custom'] = 'ansible_roles';
+    return $services;
+}
+
+/**
+ * Implements hook_hosting_service_type().
+ */
+function ansible_roles_hosting_service_type()
+{
+    return array(
+        'ansible_roles' => array(
+            'title' => t('Server Role'),
+        ),
+    );
+}
+
+/**
+ * Implements hook_permission()
+ */
+function ansible_roles_permission() {
+    return array(
+        'administer ansible roles' => array(
+            'name' => t('Administer ansible roles'),
+            'description' => t('Install and configure ansible roles.'),
+        ),
+    );
+}
+
+/**
+ * Implements hook_menu().
+ */
+function ansible_roles_menu()
+{
+    $items['admin/hosting/roles'] = array(
+      'title' => 'Ansible Roles',
+      'description' => 'Manage available ansible roles.',
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('ansible_roles_settings'),
+      'access arguments' => array('administer ansible roles'),
+      'type' => MENU_LOCAL_TASK,
+      'file' => 'ansible_roles.admin.inc',
+    );
+    $items['admin/hosting/roles/add'] = array(
+      'title' => 'Add role',
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('ansible_roles_settings_add'),
+      'access arguments' => array('administer ansible roles'),
+      'type' => MENU_LOCAL_ACTION,
+      'file' => 'ansible_roles.admin.inc',
+    );
+    $items['admin/hosting/roles/delete'] = array(
+      'title' => 'Delete role',
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('ansible_roles_settings_delete', 4),
+      'access arguments' => array('administer ansible roles'),
+      'type' => MENU_CALLBACK,
+      'file' => 'ansible_roles.admin.inc',
+    );
+    return $items;
+}
+
+/**
+ * Implements hook_node_load().
+ */
+function ansible_roles_node_load($nodes, $types)
+{
+    foreach ($nodes as $node) {
+
+        // If node is server master, load all available roles.
+        if (isset($node->hosting_name) && $node->hosting_name == 'hostmaster') {
+
+            // Load all available custom roles
+            $node->ansible_galaxy_roles = array();
+
+            // Load all ansible roles from all services that have them.
+            foreach (hosting_server_services() as $name => $service) {
+                foreach ($service['types'] as $type => $class) {
+                    if (class_exists($class)){
+                        $object = new $class($node);
+
+                        // @TODO: Probably a much classier way to do this...
+                        if (method_exists($object, 'getRoles')) {
+                            $roles = $object->getRoles();
+
+                            // @TODO: make sure getRoles() always returns an array.
+                            if (!is_array($roles)) {
+                              $roles = array();
+                            }
+                            foreach ($roles as $role) {
+                                if (is_string($role)) {
+                                    $role_data = array(
+                                      'name' => $role,
+                                    );
+                                    $role_name = $role;                                }
+                                elseif (is_object($role) || is_array($role)) {
+                                    $role = (object) $role;
+                                    $role_data = array(
+                                      'name' => $role->name,
+                                    );
+                                    if (!empty($role->src)) {
+                                        $role_data['src'] = $role->src;
+                                    }
+                                    if (!empty($role->version)) {
+                                        $role_data['version'] = $role->version;
+                                    }
+                                    $role_name = $role->name;
+                                }
+                                $node->ansible_galaxy_roles[$role_name] = $role_data;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Allow other modules to alter the galaxy roles list.
+            drupal_alter('ansible_galaxy_roles', $node->ansible_galaxy_roles);
+
+            // Maintain backwards compatibility.
+            // @TODO: Rename all mentions.
+            $node->ansible_roles_available = $node->ansible_galaxy_roles;
+
+            if (!empty($node->ansible_galaxy_roles)) {
+                $yml = new \Symfony\Component\Yaml\Dumper();
+                $node->ansible_role_file = $yml->dump(array_values($node->ansible_galaxy_roles), 10);
+            }
+            else {
+              $node->ansible_role_file = '';
+            }
+        }
+
+        // Only act on server nodes with services.
+        if (empty($node->services)) {
+            continue;
+        }
+
+        // Load all roles to generate a playbook.
+        // Pull out ansible roles to load last.
+        $services = $node->services;
+        $roles = array();
+
+        foreach ($services as $type => $service) {
+            // Load custom roles last.
+            if ($type == 'ansible_roles') {
+                continue;
+            }
+            if (property_exists($service, 'roles')) {
+                $roles = array_merge($roles, $service->roles);
+            }
+        }
+
+        if (isset($services['ansible_roles']) && property_exists($services['ansible_roles'], 'roles')) {
+            $roles = array_merge($roles, $services['ansible_roles']->roles);
+        }
+
+        $node->roles = $roles;
+    }
+}
+
+/**
+ * Implements hook_node_view().
+ */
+function ansible_roles_node_view($node, $view_mode, $langcode)
+{
+
+    if ($node->type != 'server' || !isset($node->services)) {
+        return;
+    }
+    $node->content['content'] = array(
+      '#title' => t('Server Roles'),
+      '#type' => 'item',
+      '#markup' => theme('item_list', array('items' => $node->roles)),
+    );
+
+}

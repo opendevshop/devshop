@@ -58,18 +58,18 @@ class FeatureContext extends \Drupal\DrupalExtension\Context\BatchContext implem
             $url_to_path = preg_replace("/[^a-z0-9\.]/","", strtolower($this->getSession()->getCurrentUrl()));
 
             // If environment variable is set, save assets to that.
-            if (!empty(($_SERVER['DEVSHOP_TESTS_ASSETS_PATH']))) {
-              if (is_writable($_SERVER['DEVSHOP_TESTS_ASSETS_PATH'])) {
-                $files_path = $_SERVER['DEVSHOP_TESTS_ASSETS_PATH'];
+            if (!empty(($_SERVER['DEVSHOP_TESTS_ARTIFACTS_PATH']))) {
+              if (is_writable($_SERVER['DEVSHOP_TESTS_ARTIFACTS_PATH'])) {
+                $files_path = $_SERVER['DEVSHOP_TESTS_ARTIFACTS_PATH'];
                 $output_file_name = "output-{$url_to_path}.html";
                 $output_file_path = "{$files_path}/{$output_file_name}";
                 $output_notification_string = $output_file_path;
               }
-              elseif (!file_exists($_SERVER['DEVSHOP_TESTS_ASSETS_PATH'])) {
-                throw new \Exception("DEVSHOP_TESTS_ASSETS_PATH was set, but the directory does not exist. Change the environment variable or create the directory: " . $_SERVER['DEVSHOP_TESTS_ASSETS_PATH']);
+              elseif (!file_exists($_SERVER['DEVSHOP_TESTS_ARTIFACTS_PATH'])) {
+                throw new \Exception("DEVSHOP_TESTS_ARTIFACTS_PATH was set, but the directory does not exist. Change the environment variable or create the directory: " . $_SERVER['DEVSHOP_TESTS_ARTIFACTS_PATH']);
               }
               else {
-                throw new \Exception("DEVSHOP_TESTS_ASSETS_PATH was set, but is not writable: Change the environment variable or create the directory: " . $_SERVER['DEVSHOP_TESTS_ASSETS_PATH']);
+                throw new \Exception("DEVSHOP_TESTS_ARTIFACTS_PATH was set, but is not writable: Change the environment variable or create the directory: " . $_SERVER['DEVSHOP_TESTS_ARTIFACTS_PATH']);
               }
             }
             // If not, load the public writable files folder for devshop, so the asset can be served over HTTP.
