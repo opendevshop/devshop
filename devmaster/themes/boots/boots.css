@@ -24,6 +24,14 @@ body.admin-menu .navbar-static-top {
   border-bottom-right-radius: 0px;
 }
 
+#task-info .task-urls {
+  padding-bottom: .75em;
+}
+
+#task-info .task-urls.btn-group-xs .btn:first-child {
+  padding-left: 0px;
+}
+
 .environment .list-group-item .content {
     font-size: .7em;
     text-transform: uppercase;

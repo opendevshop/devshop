@@ -88,7 +88,7 @@ services:
       # For development, test output will be saved to the sites "files" folder so you can click the results.
       # If you want to save test error output to a different folder change this variable.
       # For CI, set this to the folder that will be saved as artifacts.
-      - DEVSHOP_TESTS_ASSETS_PATH=
+      - DEVSHOP_TESTS_ARTIFACTS_PATH=
 
     privileged: true
     volumes:

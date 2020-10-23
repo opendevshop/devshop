@@ -1,0 +1,12 @@
+# Aegir Roles
+# Currently these are only available on GitHub.
+# Once they are added to http://galaxy.ansible.com, we only need to use "name".
+
+- src: https://github.com/opendevshop/ansible-role-aegir-user
+  name: aegir.user 
+
+- src: https://github.com/opendevshop/ansible-role-aegir-apache
+  name: aegir.apache
+
+- src: https://github.com/opendevshop/ansible-role-aegir-nginx
+  name: aegir.nginx

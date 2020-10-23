@@ -222,7 +222,7 @@ RUN mkdir -p /var/log/aegir/ && \
 ENV DEVSHOP_ENTRYPOINT_LOG_FILES="/var/log/aegir/*"
 
 # Keep this blank and the http-accessible path will be used. CI will override.
-ENV DEVSHOP_TESTS_ASSETS_PATH=""
+ENV DEVSHOP_TESTS_ARTIFACTS_PATH=""
 
 # Set devshop_install_phase runtime here, since the Dockerfile is ALWAYS buildtime.
 ENV ANSIBLE_BUILD_COMMAND="devshop-ansible-playbook \
