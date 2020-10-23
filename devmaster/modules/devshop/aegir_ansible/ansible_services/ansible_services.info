@@ -1,0 +1,13 @@
+name = Aegir Ansible Services
+description = Provision Apache and MySQL with Ansible.
+package = Aegir Ansible
+dependencies[] = hosting_server
+dependencies[] = hosting_https
+dependencies[] = aegir_ansible_core
+
+core = 7.x
+
+files[] = src/hostingService_db_ansible_mysql.php
+files[] = src/hostingService_http_ansible_apache.php
+files[] = src/hostingService_http_ansible_nginx.php
+files[] = src/hostingService_http_ansible_haproxy.php

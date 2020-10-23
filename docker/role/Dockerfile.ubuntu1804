@@ -42,9 +42,9 @@ RUN echo "Running $DEVSHOP_ANSIBLE_INVENTORY_INFO_COMMAND ...\n" && \
 RUN echo "Running $DEVSHOP_DOCKER_COMMAND_BUILD ...\n" && \
   $DEVSHOP_DOCKER_COMMAND_BUILD
 
-# Set CMD to ansible-playbook with runtime tag.
+# Set CMD to a status command. $DEVSHOP_DOCKER_COMMAND_RUN is run later by the entrypoint.
 # REMEMBER: This command is not run until a container using this image is started.
-CMD $DEVSHOP_DOCKER_COMMAND_RUN
+CMD ["devshop-logo", "Docker Command: ./docker/role/Dockerfile.ubuntu1804"]
 
 RUN \
 echo "\n\n\
