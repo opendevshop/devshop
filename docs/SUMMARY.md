@@ -35,6 +35,7 @@
 ## Developing DevShop
 
 * [Developing DevShop](developing-devshop/developing-devshop.md)
+* [DevShop Git Repo Management](developing-devshop/devshop-repos.md)
 
 ## Learning DevShop
 

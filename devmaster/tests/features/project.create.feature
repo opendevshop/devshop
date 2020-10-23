@@ -98,13 +98,15 @@ Feature: Create a project and check settings
     When I fill in "testuser" for "Username"
     And I fill in "testpassword" for "Password"
     And I fill in "What's the password?" for "Message"
+    # @TODO: "Domain Aliases" <label> tag is missing the "for" attribute, so we can't target the string "Domain Aliases"
+    And I fill in "test.mysite.com" for "aliases[0]"
 
     Then I press "Create New Environment"
+    Then I should see the link "http://test.mysite.com"
     Then I should see "Environment testenv created in project composer."
 
     When I run drush "hosting-tasks --force --fork=0 --strict=0"
 
-    When I click "testenv" in the "main" region
     Then I should see "Environment Dashboard"
     And I should see "Environment Settings"
 
