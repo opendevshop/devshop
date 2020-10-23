@@ -10,7 +10,7 @@
   register: running_processes
 
 - name: "User ID Change: Kill all user processes"
-  shell: "kill {{ item }}"
+  command: "kill {{ item }}"
   with_items: "{{ running_processes.stdout_lines }}"
 
 - name: "User ID Change: Wait for all processes to end"
@@ -22,5 +22,5 @@
   register: killed_processes
 
 - name: "User ID Change: Force stop stuck processes"
-  shell: "kill -9 {{ item }}"
+  command: "kill -9 {{ item }}"
   with_items: "{{ killed_processes.results | select('failed') | map(attribute='item') | list }}"
