@@ -1,0 +1,6 @@
+name = Aegir Cloud
+description = Connects to cloud hosting providers to provision servers for use with Aegir.
+core = 7.x
+package = Aegir Cloud
+
+dependencies[] = hosting_server
