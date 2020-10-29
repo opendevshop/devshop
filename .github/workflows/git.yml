@@ -45,7 +45,7 @@ jobs:
         run: ssh-keyscan github.com > $HOME/.ssh/known_hosts
 
       - name: Install the expected version of composer.
-        run: composer self-update --1
+        run: sudo composer self-update --1
 
       - name: Get Composer Cache Directory
         id: composer-cache
