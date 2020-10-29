@@ -15,7 +15,9 @@ devshop_github_token: ''
 php_version: '7.2'
 
 # Set Composer version to 1.x byusing composer_self_update_options variable.
-composer_keep_updated: '--1'
+# Even if setting 1.10.0, composer self-update will run ensuring the latest result.
+composer_version: "1.10.0"
+composer_keep_updated: true
 composer_self_update_options: '--1'
 
 devshop_cli_repo: http://github.com/opendevshop/devshop.git
