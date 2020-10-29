@@ -27,13 +27,15 @@
 - name: Desired Aegir User UID & GID
   debug:
     msg: "UID: {{ aegir_user_uid }}  GID: {{ aegir_user_gid }}"
-    when:
-      - getent_passwd is defined
+  when:
+    - getent_passwd is defined
 
 - name: Include Reset Aegir User tasks
   include_tasks: "reset-uid.yml"
-  # TODO: Also run if gid doesn't match.
-  when: aegir_user_uid != aegir_user_uid_current
+  when:
+    (aegir_user_uid != aegir_user_uid_current)
+    or (aegir_user_gid != aegir_user_gid_current)
+    or (aegir_user_force_set_uid)
   tags: [always]
 
 - name: Create Aegir Group (so we can set the GID)
