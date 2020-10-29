@@ -5,6 +5,7 @@ env:
   GITSPLIT_GITHUB_TOKEN: ${{ secrets.INPUT_GITHUB_TOKEN }}
   DEVSHOP_REPO: opendevshop/devshop
   DEVSHOP_PACKAGES_REPO: devshop-packages/git-split
+  COMPOSER_VERSION: 1
 
 jobs:
   monorepo-split:
@@ -45,7 +46,7 @@ jobs:
         run: ssh-keyscan github.com > $HOME/.ssh/known_hosts
 
       - name: Install the expected version of composer.
-        run: sudo composer self-update --1
+        run: sudo composer self-update --$COMPOSER_VERSION
 
       - name: Get Composer Cache Directory
         id: composer-cache
