@@ -14,6 +14,10 @@ devshop_github_token: ''
 # See README.md for variable details: https://github.com/geerlingguy/ansible-role-php-versions#role-variables
 php_version: '7.2'
 
+# Set Composer version.
+# @TODO: geerlingguy.composer role does not update an existing composer install.
+composer_version: 1.10.16
+
 devshop_cli_repo: http://github.com/opendevshop/devshop.git
 devshop_cli_skip_update: false
 devshop_cli_path: /usr/share/devshop
@@ -102,7 +106,6 @@ ansible_become_method_aegir: sudo
 ansible_share_path: /usr/share/ansible
 
 # Server Options
-php_memory_limit: "512M"
 
 # Get a support license at https://devshop.support
 devshop_support_license_key: ""
