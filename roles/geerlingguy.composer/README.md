@@ -21,6 +21,12 @@ The path where composer will be installed and available to your system. Should b
 
 Set this to `true` to update Composer to the latest release every time the playbook is run.
 
+    composer_self_update_options: '--1'
+
+Set this to customize the options and arguments passed to the `composer self-update` command. This command is only run if `composer_keep_updated` is set to true. Default: *empty*.
+
+See the *Options* section of the [Composer self-update command Documentation](https://getcomposer.org/doc/03-cli.md#self-update-selfupdate-) or run `composer self-update --help` for a list of possible options.
+
     composer_home_path: '~/.composer'
     composer_home_owner: root
     composer_home_group: root

@@ -14,9 +14,9 @@ devshop_github_token: ''
 # See README.md for variable details: https://github.com/geerlingguy/ansible-role-php-versions#role-variables
 php_version: '7.2'
 
-# Set Composer version.
-# @TODO: geerlingguy.composer role does not update an existing composer install.
-composer_version: '1.10.16'
+# Set Composer version to 1.x byusing composer_self_update_options variable.
+composer_keep_updated: '--1'
+composer_self_update_options: '--1'
 
 devshop_cli_repo: http://github.com/opendevshop/devshop.git
 devshop_cli_skip_update: false

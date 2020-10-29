@@ -37,7 +37,7 @@
 
 - name: Update Composer to latest version (if configured).
   command: >
-    {{ php_executable }} {{ composer_path }} self-update
+    {{ php_executable }} {{ composer_path }} self-update {{ composer_self_update_options }}
   register: composer_update
   changed_when: "'Updating to version' in composer_update.stdout"
   when: composer_keep_updated | bool
