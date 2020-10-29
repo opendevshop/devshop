@@ -11,6 +11,7 @@
 
 - name: "User ID Change: Kill all user processes"
   command: "kill {{ item }}"
+  ignore_errors: true
   with_items: "{{ running_processes.stdout_lines }}"
 
 - name: "User ID Change: Wait for all processes to end"
