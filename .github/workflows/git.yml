@@ -44,6 +44,9 @@ jobs:
       - name: Authorize GitHub.com as a known_host
         run: ssh-keyscan github.com > $HOME/.ssh/known_hosts
 
+      - name: Install the expected version of composer.
+        run: composer self-update --1
+
       - name: Get Composer Cache Directory
         id: composer-cache
         run: |

@@ -87,6 +87,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-versions }}
+          tools: composer:v1
       #            extensions: intl #optional
       #            ini-values: "post_max_size=256M" #optional
 
@@ -140,6 +141,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-versions }}
+          tools: composer:v1
       #            extensions: intl #optional
       #            ini-values: "post_max_size=256M" #optional
 
@@ -194,6 +196,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-versions }}
+          tools: composer:v1
       #            extensions: intl #optional
       #            ini-values: "post_max_size=256M" #optional
 
@@ -245,6 +248,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-versions }}
+          tools: composer:v1
       #            extensions: intl #optional
       #            ini-values: "post_max_size=256M" #optional
 
