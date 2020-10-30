@@ -689,7 +689,7 @@
             "dist": {
                 "type": "path",
                 "url": "src/DevShop/Component/GitSplit",
-                "reference": "43c140153da25bb227a2e3d43903be533439bffd"
+                "reference": "e6ca819a26fcf5c307bb08fb5fec61746a5a64f7"
             },
             "require": {
                 "composer-plugin-api": "^1.1",
@@ -713,6 +713,7 @@
                     "DevShop\\Component\\GitSplit\\": ""
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -727,7 +728,8 @@
                 }
             ],
             "description": "DevShop GitSplit Component",
-            "homepage": "https://getdevshop.com"
+            "homepage": "https://getdevshop.com",
+            "time": "2020-08-10T17:09:56+00:00"
         },
         {
             "name": "devshop/github-api-cli",
