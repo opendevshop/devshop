@@ -30,13 +30,15 @@ class Plugin implements PluginInterface, Capable, EventSubscriberInterface
     /**
      * @inheritDoc
      */
-    public function deactivate(Composer $composer, IOInterface $io) {
+    public function deactivate(Composer $composer, IOInterface $io)
+    {
     }
 
     /**
      * @inheritDoc
      */
-    public function uninstall(Composer $composer, IOInterface $io) {
+    public function uninstall(Composer $composer, IOInterface $io)
+    {
     }
 
     /**
