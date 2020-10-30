@@ -22,15 +22,14 @@
         "drush/drush": "^8",
         "ext-json": "*",
         "devshop/docker-bin-tools": "@dev",
-        "devshop/git-split": "self.version",
-        "devshop/github-api-cli": "self.version",
+        "devshop/git-split": "@dev",
+        "devshop/github-api-cli": "@dev",
         "devshop/bin-tools": "@dev",
-        "devshop/yaml-tasks": "self.version",
-        "devshop/power-process": "self.version",
+        "devshop/yaml-tasks": "@dev",
+        "devshop/power-process": "@dev",
         "drupal/provision": "4.x-dev@dev"
     },
     "replace": {
-        "devshop/yaml-tasks": "self.version",
         "drupal/drupal": "*"
     },
     "require-dev": {
