@@ -126,7 +126,8 @@
           "echo 'Removing all Drupal and vendor code...'",
           "rm -rf composer.lock",
           "rm -rf vendor web/profiles web/includes web/misc web/modules web/scripts web/themes",
-          "rm -f web/*; rm -f web/.* || true"
+          "rm -f web/*; rm -f web/.* || true",
+          "echo 'Done.'"
         ],
         "reinstall": [
           "@uninstall",
