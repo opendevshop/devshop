@@ -96,5 +96,6 @@
     - role: geerlingguy.php-mysql
 
     - role: geerlingguy.composer
+      tags: [runtime]
 
     - role: opendevshop.devmaster
