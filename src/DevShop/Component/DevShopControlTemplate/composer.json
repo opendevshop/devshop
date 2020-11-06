@@ -78,7 +78,7 @@
         "npm-asset/chosen-js": "^1.8",
         "npm-asset/modernizr": "^3.11",
         "npm-asset/underscore": "^1.10",
-        "oomphinc/composer-installers-extender": "^1.1",
+        "oomphinc/composer-installers-extender": "^2.0",
         "symfony/filesystem": "~2.7|^3",
         "toin0u/digitalocean-v2": "~2.0",
         "webflo/drupal-finder": "^1.0.0"
