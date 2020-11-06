@@ -134,7 +134,7 @@
         ]
     },
     "extra": {
-      "installer-types": ["library", "npm-asset"],
+      "installer-types": ["npm-asset"],
       "installer-paths": {
             "web/": ["type:drupal-core"],
             "web/profiles/{$name}/": ["type:drupal-profile"],
