@@ -17,6 +17,10 @@
         {
             "type": "composer",
             "url": "https://asset-packagist.org"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/VladimirAus/preserve-paths"
         }
     ],
     "require": {
@@ -31,7 +35,7 @@
         "composer/semver": "^1.4",
         "cweagans/composer-patches": "dev-master#a18d1ca",
         "devshop/devmaster": "@dev",
-        "drupal-composer/preserve-paths": "dev-master#4c5f62fe97f48e38c5e80cf2f9be8666f683e454",
+        "drupal-composer/preserve-paths": "dev-composer2",
         "drupal/admin_menu": "@rc",
         "drupal/adminrole": "^1.1",
          "drupal/aegir_config": "@beta",
@@ -74,7 +78,7 @@
         "npm-asset/chosen-js": "^1.8",
         "npm-asset/modernizr": "^3.11",
         "npm-asset/underscore": "^1.10",
-        "oomphinc/composer-installers-extender": "^1.1",
+        "oomphinc/composer-installers-extender": "^2.0",
         "symfony/filesystem": "~2.7|^3",
         "toin0u/digitalocean-v2": "~2.0",
         "webflo/drupal-finder": "^1.0.0"
@@ -122,15 +126,16 @@
           "echo 'Removing all Drupal and vendor code...'",
           "rm -rf composer.lock",
           "rm -rf vendor web/profiles web/includes web/misc web/modules web/scripts web/themes",
-          "rm -f web/*; rm -f web/.* || true"
+          "rm -f web/*; rm -f web/.* || true",
+          "echo 'Done.'"
         ],
         "reinstall": [
           "@uninstall",
-          "@composer install --prefer-source --ansi"
+          "@composer update --prefer-source --ansi"
         ]
     },
     "extra": {
-      "installer-types": ["library", "npm-asset"],
+      "installer-types": ["npm-asset"],
       "installer-paths": {
             "web/": ["type:drupal-core"],
             "web/profiles/{$name}/": ["type:drupal-profile"],
