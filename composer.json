@@ -116,6 +116,15 @@
         ],
         "pre-update-cmd": [
         ],
+        "uninstall": [
+            "echo 'Removing all vendor code...'",
+            "rm -rf vendor bin/*",
+            "echo 'Done.'"
+        ],
+        "reinstall": [
+            "@uninstall",
+            "@composer install --prefer-source --ansi"
+        ],
         "roles:update": [
             "DevShop\\Composer::updateRoles"
         ]
