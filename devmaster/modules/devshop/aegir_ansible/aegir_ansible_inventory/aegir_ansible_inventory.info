@@ -1,0 +1,5 @@
+name = Aegir Ansible Inventory
+package = Aegir Ansible
+description = Ansible Dynamic Inventory endpoint for aegir servers.
+core = 7.x
+dependencies[] = hosting_server

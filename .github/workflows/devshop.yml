@@ -17,12 +17,17 @@ env:
   GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}
   GITHUB_PR_SHA: ${{ github.event.pull_request.head.sha  }}
   GITHUB_RUN_LOG_URL: https://github.com/opendevshop/devshop/actions/runs/${{ github.run_id }}
-  DEVSHOP_TEST_ASSETS_PATH: ".github/test-artifacts"
+  DEVSHOP_TESTS_ARTIFACTS_PATH: "/var/aegir/test-artifacts"
 
-  # In CI, set devshop_control_git_reference, not git_root.
-  # If the git_root doesn't exist, the Ansible role clones it from git_remote, using the git_reference.
-  # This way, the actual package repo is cloned (right after the git split was pushed). This is more stable.
-  ANSIBLE_EXTRA_VARS: "devshop_control_git_reference=${{ github.head_ref }}"
+  COMMAND: "echo 'DevShop Server Online, launched by GitHub Actions.'"
+  DEVSHOP_DOCKER_COMMAND_RUN: "echo 'Skipping DEVSHOP_DOCKER_COMMAND_RUN (ansible-playbook), so that GitHub Actions can run in a separate step.'"
+  DOCKER_COMMAND_POST: "echo 'GitHub Actions Container was launched.'"
+
+  # Load vars from the vars.ci.yml file.
+  ANSIBLE_EXTRA_VARS: "@/usr/share/devshop/vars.ci.yml"
+
+  # Set devshop_+version variable to the git reference.
+  ANSIBLE_PLAYBOOK_COMMAND_OPTIONS: "--extra-vars=devshop_version=${{ github.ref }}"
 
 jobs:
   test:
@@ -37,9 +42,14 @@ jobs:
     env:
       OS: "${{ matrix.os }}"
       HOSTNAME: "devshop.${{ github.event.pull_request.number }}.${{ matrix.os }}.actions.github.com"
+      ANSIBLE_VERBOSITY: 2
 
     runs-on: ubuntu-latest
     steps:
+      - name: Set devshop_version to the PR head_ref, if this is a PR.
+        if: github.event_name=='pull_request'
+        run: |
+          echo "ANSIBLE_PLAYBOOK_COMMAND_OPTIONS=--extra-vars=devshop_version=${{ github.head_ref }}" >> $GITHUB_ENV
 
       - name: Check Out Sourcecode
         uses: actions/checkout@v2
@@ -47,10 +57,6 @@ jobs:
       # Launch DevShop Server Container
       - name: "Launch Latest Container for 'devshop/server:${{ matrix.os }}'"
         working-directory: roles
-        env:
-          COMMAND: "echo 'DevShop Server Online, launched by GitHub Actions.'"
-          DEVSHOP_DOCKER_COMMAND_RUN: "echo 'Skipping DEVSHOP_DOCKER_COMMAND_RUN (ansible-playbook), so that GitHub Actions can run in a separate step.'"
-          DOCKER_COMMAND_POST: "echo 'GitHub Actions Container was launched.'"
         # "docker-compose pull" is needed because the if the image does not exist locally, "docker-compose" will try to build.
         # "--no-build" is needed because docker-compose will build the image by default.
         run: |
@@ -63,12 +69,18 @@ jobs:
             /etc/ansible/play.yml \
             /var/aegir/.drush \
             /var/aegir/config \
+            /usr/local/bin/docker-* \
 
           docker cp ../ roles_devshop.server_1:/usr/share/devshop/
           docker-compose exec -T devshop.server chown aegir:aegir /usr/share/devshop -R
+          docker-compose exec -T devshop.server chown aegir:aegir $DEVSHOP_TESTS_ARTIFACTS_PATH -R
+          docker-compose exec -T devshop.server \
+            composer config --global repo.devshop_devmaster {"path","/usr/share/devshop/devmaster"}
+
           sleep 3
           docker-compose logs
           docker-compose exec -T devshop.server /usr/share/devshop/scripts/devshop-logo "GitHub Actions Container populated with code. Running SHA ${GITHUB_PR_SHA}"
+          docker-compose exec -T --user aegir devshop.server /usr/share/devshop/.github/workflows/devshop-container-prep.sh
 
       - name: "Review Container Environment"
         working-directory: roles
@@ -128,6 +140,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
+      - name: Set devshop_version to the PR head_ref, if this is a PR.
+        if: github.event_name=='pull_request'
+        run: |
+          echo "ANSIBLE_PLAYBOOK_COMMAND_OPTIONS=--extra-vars=devshop_version=${{ github.head_ref }}" >> $GITHUB_ENV
+
       - name: Check Out Sourcecode
         uses: actions/checkout@v2
 
@@ -159,13 +176,12 @@ jobs:
       # Launch Container
       - name: "Launch devshop/server:${{ matrix.os }} Container"
         working-directory: roles
-        env:
-          COMMAND: "echo 'DevShop Server Online, launched by GitHub Actions.'"
-          DEVSHOP_DOCKER_COMMAND_RUN: "echo 'Skipping DEVSHOP_DOCKER_COMMAND_RUN (ansible-playbook), so that GitHub Actions can run in a separate step.'"
         run: |
           docker-compose up --detach devshop.server
           sleep 3
           docker-compose logs
+          docker-compose exec -T devshop.server chown aegir:aegir /usr/share/devshop -R
+          docker-compose exec -T --user aegir devshop.server /usr/share/devshop/.github/workflows/devshop-container-prep.sh
 
       - name: "Review Container Environment"
         working-directory: roles

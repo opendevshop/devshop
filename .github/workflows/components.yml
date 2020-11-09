@@ -267,8 +267,9 @@ jobs:
         run: composer validate
         working-directory: ${{env.working-directory}}
 
+      # If installing without a lockfile, composer suggests using "update" command instead.
       - name: Install dependencies
-        run: composer install --prefer-dist --no-progress --no-suggest
+        run: composer update --prefer-dist --no-progress
         working-directory: ${{env.working-directory}}
 
       - name: Test Project Creation

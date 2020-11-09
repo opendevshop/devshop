@@ -1,0 +1,9 @@
+name = Aegir Ansible Custom Roles
+description = Add arbitrary roles via the web interface.
+package = Aegir Ansible
+dependencies[] = hosting_server
+dependencies[] = aegir_ansible_core
+
+core = 7.x
+
+files[] = src/hostingService_ansible_roles_custom.php

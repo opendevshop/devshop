@@ -576,6 +576,10 @@ function devshop_projects_menu_alter(&$items) {
     'page arguments' => array(2),
     'access callback' => TRUE,
   );
+
+  $items['admin/devshop/cloud'] = $items['admin/hosting/cloud'];
+  $items['admin/devshop/cloud']['weight'] = 10;
+
 }
 
 /**
