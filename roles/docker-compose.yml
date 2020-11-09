@@ -39,6 +39,7 @@ services:
       - ANSIBLE_PLAYBOOK=/usr/share/devshop/roles/devshop.server/play.yml
       - ANSIBLE_EXTRA_VARS
       - ANSIBLE_PLAYBOOK_COMMAND_OPTIONS
+      - ANSIBLE_VERBOSITY
       - DOCKER_COMMAND_POST
       - GITHUB_HEAD_REF
       - DEVSHOP_TESTS_ARTIFACTS_PATH
