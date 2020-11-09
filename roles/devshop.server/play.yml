@@ -39,6 +39,9 @@
     # @TODO: figure out a system to separate test vars from prod vars.  Molecule?
     devshop_cli_skip_update: true
 
+    # Set to TRUE to always run composer self-update.
+    composer_keep_updated: true
+
   pre_tasks:
     - name: Set all Debian systems to use python3 as the interpretor, and python3-mysqldb for mysql_python_package_debian.
       when:
@@ -96,5 +99,6 @@
     - role: geerlingguy.php-mysql
 
     - role: geerlingguy.composer
+      tags: [runtime]
 
     - role: opendevshop.devmaster
