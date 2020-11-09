@@ -26,8 +26,9 @@ env:
   # Load vars from the vars.ci.yml file.
   ANSIBLE_EXTRA_VARS: "@/usr/share/devshop/vars.ci.yml"
 
-  # Set devshop_+version variable to the git reference.
-  ANSIBLE_PLAYBOOK_COMMAND_OPTIONS: "--extra-vars=devshop_version=${{ github.ref }}"
+  # If you need any additional ansible-playbook command line options, add them here.
+  # When run with Ansible, the 1.x version is installed, because the "devmaster:install" command is set via ansible variables.
+  ANSIBLE_PLAYBOOK_COMMAND_OPTIONS: ""
 
 jobs:
   test:
