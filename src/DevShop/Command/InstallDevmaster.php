@@ -623,7 +623,10 @@ PHP;
     $drush_path = $this->input->getOption('drush-path');
     $this->output->writeln("");
     $this->output->writeln("Running <comment>drush @{$name} provision-verify</comment> ...");
-    $process = $this->getProcess("{$drush_path} @{$name} provision-verify");
+
+    // Set to --verbose or use other options to see provision-verify logs when running devmaster:install (for debugging).
+    $provision_verify_options = '--verbose';
+    $process = $this->getProcess("{$drush_path} @{$name} provision-verify $provision_verify_options");
     $process->setTimeout(NULL);
 
     if ($this->runProcess($process)) {
