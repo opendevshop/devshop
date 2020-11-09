@@ -1,0 +1,16 @@
+---
+- hosts: ansible_mysql
+  roles:
+  - aegir.user
+  - geerlingguy.mysql
+- hosts: ansible_apache
+  roles:
+  - aegir.apache
+  - geerlingguy.php
+  - geerlingguy.php-mysql
+  - geerlingguy.composer
+- hosts: nginx
+  roles:
+  - aegir.nginx
+  - geerlingguy.php
+  - geerlingguy.php-mysql

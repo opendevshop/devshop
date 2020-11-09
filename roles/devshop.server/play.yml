@@ -27,8 +27,8 @@
     # @TODO: This is now set only for Debian systems, in the `pre_tasks` section below..
     # ansible_python_interpreter: python3
 
-    # Supervisor will start when the container and systemd start.
-    supervisor_started: false
+    # Set to false if you want to run tasks manually.
+    # supervisor_started: false
 
     # @TODO: Make a cleaner separation between playbooks and makefiles for docker hub, playbooks for CI testing, and local development.s
     # Use local dev makefile because it copies the files directly from this repo.
@@ -38,6 +38,9 @@
     # Set devshop_cli_skip_update to avoid resetting the /usr/share/devshop version on playbook run to `devshop_version`
     # @TODO: figure out a system to separate test vars from prod vars.  Molecule?
     devshop_cli_skip_update: true
+
+    # Set to TRUE to always run composer self-update.
+    composer_keep_updated: true
 
   pre_tasks:
     - name: Set all Debian systems to use python3 as the interpretor, and python3-mysqldb for mysql_python_package_debian.
@@ -96,5 +99,6 @@
     - role: geerlingguy.php-mysql
 
     - role: geerlingguy.composer
+      tags: [runtime]
 
     - role: opendevshop.devmaster

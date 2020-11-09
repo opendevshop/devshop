@@ -1,0 +1,36 @@
+<?php
+
+/**
+ * Implements hook_hosting_service().
+ */
+function ansible_services_hosting_service() {
+    $services = array();
+    if (module_exists('hosting_site')) {
+        $services['ansible_mysql'] = 'db';
+        $services['ansible_apache'] = 'http';
+
+        // NGINX only exists if the module is enabled.
+        if (module_exists('hosting_nginx_ssl')) {
+            $services['ansible_nginx'] = 'http';
+        }
+
+        // HA Proxy depends on hosting_cluster module.
+        if (module_exists('hosting_web_cluster')) {
+            $services['ansible_haproxy'] = 'http';
+        }
+    }
+    return $services;
+}
+
+// For now we will keep our service in the "web" service category.
+/**
+ * Implements hook_hosting_service_type().
+ */
+//function ansible_services_hosting_service_type()
+//{
+//    return array(
+//      'load' => array(
+//        'title' => t('Load Balancer'),
+//      ),
+//    );
+//}

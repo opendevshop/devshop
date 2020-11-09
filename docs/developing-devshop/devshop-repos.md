@@ -1,6 +1,11 @@
-# Developing DevShop
+# DevShop Git Repositories
 
-## The Monorepo
+## The Megarepo
+
+Many components of the devshop framework are included in one single "megarepo".
+
+This page documents how to add new components that need to be split up into separate git repos, and how to import existing git repos into new components.
+
 ## Secondary Repos
 
 ## Components
