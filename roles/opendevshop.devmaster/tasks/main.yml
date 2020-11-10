@@ -5,20 +5,13 @@
   register: _server_hostname_fqdn_command
   failed_when: "_server_hostname_fqdn_command.stdout is undefined"
   become: false
-  tags: [runtime]
+  tags: [always]
 
-- name: Set default server_hostname at buildtime only.
-  set_fact:
-    server_hostname: "{{ default_server_hostname }}"
-  when:
-    - ('runtime' not in ansible_run_tags)
-    - server_hostname is not defined
-
-- name: Define server_hostname using 'hostname -f' command.
+- name: Set server_hostname from server hostname.
   set_fact:
     server_hostname: "{{ _server_hostname_fqdn_command.stdout }}"
   when: server_hostname is not defined
-  tags: [runtime]
+  tags: [always]
 
 - name: Display server_hostname.
   debug:
