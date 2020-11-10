@@ -526,7 +526,8 @@ fi
 # Strangest thing: if you leave a space after the variable "name:" the output will convert to a new line.
 IFS=$'\n'
 ANSIBLE_EXTRA_VARS=()
-ANSIBLE_EXTRA_VARS+=("server_hostname: ${HOSTNAME_FQDN}")
+# @TODO: Remove once we know #627 is passing: Ansible roles now detect the hostname.
+# ANSIBLE_EXTRA_VARS+=("server_hostname: ${HOSTNAME_FQDN}")
 ANSIBLE_EXTRA_VARS+=("devshop_cli_path: ${DEVSHOP_INSTALL_PATH}")
 ANSIBLE_EXTRA_VARS+=("playbook_path: ${DEVSHOP_INSTALL_PATH}")
 ANSIBLE_EXTRA_VARS+=("aegir_server_webserver: ${SERVER_WEBSERVER}")
