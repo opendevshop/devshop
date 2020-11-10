@@ -412,9 +412,10 @@ class InstallDevmaster extends Command
   /**
    * return the FQDN of the machine or provided host
    *
-   * this replicates hostname -f, which is not portable
+   * this replicates hostname -f, which is not portable across OS.
    *
    * Copy of provision_fqdn()
+   * @TODO: We rely on `hostname --fqdn` in other places. Shouldn't we use it consistently?
    */
   private function findFqdn($host = NULL) {
     if (is_null($host)) {
