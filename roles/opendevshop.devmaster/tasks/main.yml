@@ -7,12 +7,6 @@
   become: false
   tags: [runtime]
 
-- name: Define server_hostname using 'hostname -f' command.
-  set_fact:
-    server_hostname: "{{ _server_hostname_fqdn_command.stdout }}"
-  when: server_hostname is not defined
-  tags: [runtime]
-
 - name: Set default server_hostname at buildtime only.
   set_fact:
     server_hostname: "{{ default_server_hostname }}"
@@ -20,10 +14,16 @@
     - ('runtime' not in ansible_run_tags)
     - server_hostname is not defined
 
+- name: Define server_hostname using 'hostname -f' command.
+  set_fact:
+    server_hostname: "{{ _server_hostname_fqdn_command.stdout }}"
+  when: server_hostname is not defined
+  tags: [runtime]
+
 - name: Display server_hostname.
   debug:
     msg: "{{ server_hostname }}"
-  tags: [runtime]
+  tags: [always]
 
 - name: Set Server Hostname
   hostname:
