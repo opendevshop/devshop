@@ -1,13 +1,13 @@
 ---
 
 - name: Detect current server hostname.
-  command: "hostname -f"
+  command: "hostname --fqdn"
   register: _server_hostname_fqdn_command
   failed_when: "_server_hostname_fqdn_command.stdout is undefined"
   become: false
   tags: [always]
 
-- name: Set server_hostname from server hostname.
+- name: Set server_hostname from current server hostname.
   set_fact:
     server_hostname: "{{ _server_hostname_fqdn_command.stdout }}"
   when: server_hostname is not defined
