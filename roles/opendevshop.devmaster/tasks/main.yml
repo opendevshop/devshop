@@ -7,7 +7,7 @@
   become: false
   tags: [always]
 
-- name: Set server_hostname from current server hostname.
+- name: Set server_hostname variable from current server hostname.
   set_fact:
     server_hostname: "{{ _server_hostname_fqdn_command.stdout }}"
   when: server_hostname is not defined
