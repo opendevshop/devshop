@@ -26,8 +26,8 @@ env:
   # Load vars from the vars.ci.yml file.
   ANSIBLE_EXTRA_VARS: "@/usr/share/devshop/vars.ci.yml"
 
-  # Set devshop_+version variable to the git reference.
-  ANSIBLE_PLAYBOOK_COMMAND_OPTIONS: "--extra-vars=devshop_version=${{ github.ref }}"
+  # Set devshop_+version variable to the default git branch, it will be changed on each PR below.
+  ANSIBLE_PLAYBOOK_COMMAND_OPTIONS: "--extra-vars=devshop_version=1.x"
 
 jobs:
   test:
@@ -42,6 +42,7 @@ jobs:
     env:
       OS: "${{ matrix.os }}"
       HOSTNAME: "devshop.${{ github.event.pull_request.number }}.${{ matrix.os }}.actions.github.com"
+      ANSIBLE_VERBOSITY: 2
 
     runs-on: ubuntu-latest
     steps:

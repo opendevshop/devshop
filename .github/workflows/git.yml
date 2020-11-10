@@ -57,7 +57,7 @@ jobs:
             ${{ runner.os }}-composer-
 
       - name: Install Composer dependencies
-        run: composer install --prefer-dist --no-progress --no-suggest
+        run: composer install --prefer-dist --no-progress
 
       # @TODO: Our plugin could be coded to output the commands needed to run splitsh-lite.sh directly. This would shorten CI runs because we wouldn't need composer install for the Git Split job.
       - name: Split monorepo
