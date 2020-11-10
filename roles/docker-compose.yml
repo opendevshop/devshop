@@ -20,7 +20,7 @@ services:
       - "drpl8.testenv.devshop.local.computer:127.0.0.1"
     # @TODO: Change back to devshop.local.computer
     # Windows WSL2 Docker was not allowing me to load by devshop.local.computer. This is a workaround.
-    hostname: localhost
+    hostname: devshop.local.computer
     ports:
       - "80:80"
       - "2222:22"
