@@ -56,7 +56,7 @@ services:
     ports:
       - "80:80"
       - "2222:22"
-    hostname: devshop.local.computer
+    hostname: docker.devshop.local.computer
     extra_hosts:
       - "drpl8.testenv.devshop.local.computer:127.0.0.1"
     environment:
