@@ -2,7 +2,8 @@
 
 # Server hostname will default to this unless overridden in your inventory or extra_vars.
 # It is overridden in devshop's install.sh file to match the server's current hostname.
-server_hostname: devshop.local.computer
+# server_hostname: devshop.local.computer
+
 server_hostname_ignore_errors: true
 devshop_devmaster_email: admin@devshop.local.computer
 
@@ -69,8 +70,9 @@ devshop_control_install_options: ""
 
 devshop_install_profile: devmaster
 
+# The command used to install the control site.
+# Do not pass --site, it will be detected from the server's current hostname.
 devmaster_install_command: "{{ devshop_cli_bin_path }}/devshop devmaster:install -n \
-                                --site={{ server_hostname }} \
                                 --aegir_db_host={{ database_host }} \
                                 --aegir_db_pass={{ mysql_root_password }} \
                                 --aegir_db_user={{ mysql_root_username }} \

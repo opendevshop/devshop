@@ -8,10 +8,6 @@
   become: true
 
   vars:
-    # Hostname must be set when container is launched, which "hostname" option.
-    server_hostname: "devshop.local.computer"
-    server_hostname_ignore_errors: true
-
     # The geerlingguy.mysql and opendevshop.devmaster roles both use this
     mysql_root_password: root
 
