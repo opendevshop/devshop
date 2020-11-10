@@ -20,6 +20,5 @@ git config --global user.name "GitHub Actions"
 git commit -m 'Temporary commit'
 
 # Composer require @dev and search for the Symlinking statement to ensure we are always installing from local code.
-echo "Installing local devmaster using composer..."
-rm -rf web/profiles/devmaster
-composer require "devshop/devmaster:@dev" --no-progress --no-suggest
+echo "Reinstalling local devmaster using composer..."
+composer reinstall
