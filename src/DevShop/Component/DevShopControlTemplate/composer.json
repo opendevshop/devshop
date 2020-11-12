@@ -38,7 +38,7 @@
         "drupal-composer/preserve-paths": "dev-composer2",
         "drupal/admin_menu": "@rc",
         "drupal/adminrole": "^1.1",
-         "drupal/aegir_config": "@beta",
+        "drupal/aegir_config": "@beta",
         "drupal/aegir_ssh": "^1.0",
         "drupal/betterlogin": "^1.5",
         "drupal/bootstrap": "^3.26",
