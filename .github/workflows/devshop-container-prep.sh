@@ -15,7 +15,7 @@ devshop-log "Creating local branch from the checked out commit with the expected
 # Locally, it says `devshop/devmaster[1.x-dev]` instead, because my local path repo is on a branch.
 
 cd "$DEVSHOP_PATH"
-git checkout -b 1.x
+git checkout -b 1.x || echo "1.x branch already exists."
 
 devshop-log "Adding repos to composer global config."
 set -x
