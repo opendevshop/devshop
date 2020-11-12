@@ -150,5 +150,6 @@
             "web/profiles"
         ]
     },
+    "minimum-stability": "dev",
     "prefer-stable": true
 }
