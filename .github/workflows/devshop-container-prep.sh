@@ -5,6 +5,9 @@ PATH="$DEVSHOP_PATH/bin:$PATH"
 GIT_REF=${GITHUB_HEAD_REF:-"1.x"}
 
 devshop-logo "Preparing DevShop Control for CI Tests"
+devshop-log "Creating local branch from the checked out commit with the expected name..."
+cd "$DEVSHOP_PATH"
+git checkout -b $GIT_REF
 
 devshop-log "Adding repos to composer global config."
 set -x
