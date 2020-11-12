@@ -34,7 +34,7 @@
         "composer/installers": "^1.2",
         "composer/semver": "^1.4",
         "cweagans/composer-patches": "dev-master#a18d1ca",
-        "devshop/devmaster": "^1.7@alpha||1.x-dev",
+        "devshop/devmaster": "^1.7||1.x-dev",
         "drupal-composer/preserve-paths": "dev-composer2",
         "drupal/admin_menu": "@rc",
         "drupal/adminrole": "^1.1",
@@ -150,6 +150,6 @@
             "web/profiles"
         ]
     },
-    "minimum-stability": "dev",
+    "minimum-stability": "alpha",
     "prefer-stable": true
 }
