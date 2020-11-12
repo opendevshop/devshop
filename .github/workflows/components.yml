@@ -5,7 +5,7 @@ on:
     branches: 1.x
   pull_request:
     types: [opened, synchronize]
-
+  workflow_dispatch:
   schedule:
     # Once per day. https://crontab.guru/#*_0_*_*_*
     - cron: "* 0 * * *"
