@@ -104,7 +104,6 @@ ansible_become_method_aegir: sudo
 ansible_share_path: /usr/share/ansible
 
 # Server Options
-php_memory_limit: "512M"
 
 # Get a support license at https://devshop.support
 devshop_support_license_key: ""

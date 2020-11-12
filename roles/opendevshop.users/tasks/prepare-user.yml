@@ -1,0 +1,60 @@
+---
+- name: Detect current Aegir user UID
+  getent:
+    database: passwd
+    key: "{{ aegir_user_name }}"
+  failed_when: false
+
+- name: Detect current Aegir user GID
+  getent:
+    database: group
+    key: "{{ aegir_user_name }}"
+  failed_when: false
+
+- name: Save variables for current user UID and GID
+  set_fact:
+    aegir_user_uid_current: "{{ getent_passwd[aegir_user_name][1] }}"
+    aegir_user_gid_current: "{{ getent_group[aegir_user_name][1] }}"
+  when:
+    - getent_passwd is defined
+
+- name: Current Aegir User UID & GID
+  debug:
+    msg: "UID: {{ aegir_user_uid_current }}  GID: {{ aegir_user_gid_current }}"
+  when:
+    - getent_passwd is defined
+
+- name: Desired Aegir User UID & GID
+  debug:
+    msg: "UID: {{ aegir_user_uid }}  GID: {{ aegir_user_gid }}"
+  when:
+    - getent_passwd is defined
+
+- name: Include Reset Aegir User tasks
+  include_tasks: "reset-uid.yml"
+  when:
+    (aegir_user_uid != aegir_user_uid_current)
+    or (aegir_user_gid != aegir_user_gid_current)
+    or (aegir_user_force_set_uid)
+  tags: [always]
+
+- name: Create Aegir Group (so we can set the GID)
+  group:
+    name: "{{ aegir_user_name }}"
+    state: present
+    gid: "{{ aegir_user_gid }}"
+
+- name: Populate service facts
+  service_facts:
+
+- name: Create Aegir user
+  when:
+    - aegir_create_user
+  user:
+    name: "{{ aegir_user_name }}"
+    shell: /bin/bash
+    group: "{{ aegir_user_name }}"
+    system: true
+    home: "{{ aegir_user_home }}"
+    generate_ssh_key: true
+    uid: "{{ aegir_user_uid }}"
