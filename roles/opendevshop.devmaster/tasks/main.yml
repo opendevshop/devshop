@@ -1,4 +1,23 @@
 ---
+
+- name: Detect current server hostname.
+  command: "hostname --fqdn"
+  register: _server_hostname_fqdn_command
+  failed_when: "_server_hostname_fqdn_command.stdout is undefined"
+  become: false
+  tags: [always]
+
+- name: Set server_hostname variable from current server hostname.
+  set_fact:
+    server_hostname: "{{ _server_hostname_fqdn_command.stdout }}"
+  when: server_hostname is not defined
+  tags: [always]
+
+- name: Display server_hostname.
+  debug:
+    msg: "{{ server_hostname }}"
+  tags: [always]
+
 - name: Set Server Hostname
   hostname:
     name: "{{ server_hostname }}"
@@ -183,7 +202,7 @@
   become_method: "{{ ansible_become_method_aegir }}"
   tags: [runtime]
 
-- name: "Remove existing Devmaster Source Code from {{ devshop_control_path }} before installing, if requested."
+- name: "Remove existing DevShop Control Source Code from {{ devshop_control_path }} before installing, if requested."
   when: devshop_danger_remove_devmaster
   file:
     path: "{{ devshop_control_path }}"
