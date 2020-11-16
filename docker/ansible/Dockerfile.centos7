@@ -11,8 +11,8 @@ RUN run-quiet bash /tmp/docker-ansible-prepare
 
 # Prepare Ansible folder, config & inventory
 RUN mkdir -p ${DEVSHOP_ANSIBLE_PATH}
-COPY ./ansible/inventory  ${DEVSHOP_ANSIBLE_PATH}/hosts
-COPY ./ansible/ansible.cfg  ${DEVSHOP_ANSIBLE_PATH}/ansible.cfg
+COPY ./docker/ansible/inventory  ${DEVSHOP_ANSIBLE_PATH}/hosts
+COPY ./docker/ansible/ansible.cfg  ${DEVSHOP_ANSIBLE_PATH}/ansible.cfg
 
 RUN \
 echo "\n\n\
