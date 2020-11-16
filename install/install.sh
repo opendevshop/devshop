@@ -1,4 +1,4 @@
- #!/bin/sh
+#!/usr/bin/env bash
 set -e
 # OpenDevShop for Linux installation script
 #
@@ -374,7 +374,12 @@ echo $LINE
 cd $DEVSHOP_INSTALL_PATH
 
 # INSTALL ANSIBLE, quietly
-bash scripts/devshop-ansible-install > /dev/null
+if ! command_exists ansible; then
+  echo " Installing Ansible with ./scripts/devshop-ansible-install script..."
+  bash scripts/devshop-ansible-install > /dev/null
+  echo "Done!"
+  echo $LINE
+fi
 
 ansible --version
 python --version
