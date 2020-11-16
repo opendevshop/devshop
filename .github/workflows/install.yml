@@ -15,4 +15,4 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Run Install Script
-      run: bash .github/scripts/install.sh
+      run: bash .github/workflows/install.sh
