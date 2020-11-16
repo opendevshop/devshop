@@ -5,7 +5,7 @@ on:
   pull_request:
     types: [opened, synchronize]
 jobs:
-  install script:
+  install_script:
     runs-on: ubuntu-latest
     container:
       image: devshop/base:ubuntu1804
