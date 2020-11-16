@@ -8,17 +8,18 @@ jobs:
   install_script:
     name: Install Script
     runs-on: ubuntu-latest
-    container:
-      image: devshop/base:ubuntu1804
-      options: --hostname=devshop.local.computer --entrypoint=$PWD/docker/bin/docker-systemd-entrypoint --publish=80:80 --privileged
-      volumes:
-        - "/sys/fs/cgroup:/sys/fs/cgroup:ro"
-
     steps:
     - uses: actions/checkout@v2
-    - name: Operating System
-      run: uname -a
-    - name: Environment
-      run: env
+    - name: Launch a base container
+      run: docker-compose up -d
+      env:
+        - COMPOSE_FILE: docker-compose.yml:docker-compose.volumes.yml
+        - DEVSHOP_DOCKER_IMAGE: devshop/base
+
+    - name: System Status
+      run: |
+        sleep 5
+        systemctl status
+
     - name: install.sh
       run: bash install/install.sh
