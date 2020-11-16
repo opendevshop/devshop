@@ -20,7 +20,5 @@ jobs:
       run: uname -a
     - name: Environment
       run: env
-    - name: System Status
-      run: bash scripts/wait-for systemctl status
     - name: install.sh
       run: bash install/install.sh
