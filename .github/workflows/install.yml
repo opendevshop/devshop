@@ -9,8 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: devshop/base:ubuntu1804
-      options:
-        - "--entrypoint=/github/workspace/docker/bin/docker-systemd-entrypoint"
+      options: "--entrypoint=/github/workspace/docker/bin/docker-systemd-entrypoint"
       volumes:
         - "/sys/fs/cgroup:/sys/fs/cgroup:ro"
 
