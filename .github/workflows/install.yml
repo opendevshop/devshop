@@ -21,6 +21,6 @@ jobs:
     - name: Environment
       run: env
     - name: System Status
-      run: systemctl status
+      run: /github/workspace/scripts/wait-for systemctl status
     - name: install.sh
       run: bash install/install.sh
