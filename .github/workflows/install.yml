@@ -21,6 +21,6 @@ jobs:
     - name: Environment
       run: env
     - name: System Status
-      run: sh scripts/wait-for systemctl status
+      run: bash scripts/wait-for systemctl status
     - name: install.sh
-      run: sh install/install.sh
+      run: bash install/install.sh
