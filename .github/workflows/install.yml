@@ -1,0 +1,30 @@
+name: Install Methods
+on:
+  push:
+    branches: 1.x
+  pull_request:
+    types: [opened, synchronize]
+jobs:
+  install_sh:
+    name: Install Script
+    strategy:
+      matrix:
+        os:
+        - "ubuntu1804"
+    container:
+      image: devshop/base:${{ matrix.os }}
+      env:
+        CI_ENV: github
+      ports:
+        - 80
+      privileged: true
+      volumes:
+        - "/sys/fs/cgroup:/sys/fs/cgroup:ro
+    steps:
+      - uses: actions/checkout@v1
+      - name: Container Environment
+        run: env
+      - name: Container User
+        run: whoami
+      - name: Container Directory
+        run: pwd && ls -la
