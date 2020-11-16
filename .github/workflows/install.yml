@@ -14,12 +14,5 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Launch a base container
-      run: docker-compose up -d
-    - name: System Status
-      run: |
-        sleep 5
-        systemctl status
-
-    - name: install.sh
-      run: bash install/install.sh
+    - name: Run Install Script
+      run: bash .github/scripts/install.sh
