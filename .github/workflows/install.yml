@@ -6,6 +6,7 @@ on:
     types: [opened, synchronize]
 jobs:
   install_script:
+    name: Install Script
     runs-on: ubuntu-latest
     container:
       image: devshop/base:ubuntu1804
