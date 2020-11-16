@@ -14,6 +14,7 @@ DOCKER_COMMAND_POST=${DOCKER_COMMAND_POST:-"echo 'No DOCKER_COMMAND_POST variabl
 SYSTEM_STATUS_COMMAND=${SYSTEM_STATUS_COMMAND:-systemctl status --no-pager}
 WELCOME_MESSAGE="Enjoy the DevShop Containers!"
 
+DEVSHOP_PATH="$( cd "$(dirname "$0")"/.. ; pwd -P )"
 PATH="$DEVSHOP_PATH/bin:$DEVSHOP_PATH/scripts:$PATH"
 export PATH
 
