@@ -7,7 +7,7 @@ ANSIBLE_VERSION=${ANSIBLE_VERSION:-"2.9"}
 pip_packages="ansible==${ANSIBLE_VERSION}"
 
 #
-# docker-ansible-prepare
+# devshop-ansible-install
 #
 # This script prepares the operating system to run Ansible and Python
 #

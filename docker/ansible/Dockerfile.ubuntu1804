@@ -6,8 +6,8 @@ ENV DEVSHOP_ANSIBLE_PATH /etc/ansible
 
 # Install Ansible
 # The script is put into /tmp because it is only needed once.
-COPY ./docker/bin/docker-ansible-prepare /tmp/docker-ansible-prepare
-RUN run-quiet bash /tmp/docker-ansible-prepare
+COPY ./scripts/devshop-ansible-install /tmp/devshop-ansible-install
+RUN run-quiet bash /tmp/devshop-ansible-install
 
 # Prepare Ansible folder, config & inventory
 RUN mkdir -p ${DEVSHOP_ANSIBLE_PATH}
