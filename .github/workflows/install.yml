@@ -26,3 +26,5 @@ jobs:
       run: env
     - name: System Status
       run: systemctl status
+    - name: install.sh
+      run: bash install/install.sh
