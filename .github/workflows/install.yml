@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: devshop/base:ubuntu1804
-      options: --hostname=devshop.local.computer --entrypoint=/github/workspace/docker/bin/docker-systemd-entrypoint --publish=80:80
+      options: --hostname=devshop.local.computer --entrypoint=$PWD/docker/bin/docker-systemd-entrypoint --publish=80:80
       volumes:
         - "/sys/fs/cgroup:/sys/fs/cgroup:ro"
 
