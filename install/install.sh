@@ -395,7 +395,7 @@ else
 fi
 
 # Check inventory file for [devmaster] group or is executable, leave it alone.
-if [ `cat ${ANSIBLE_DEFAULT_HOST_LIST} | grep ${HOSTNAME_FQDN}` ] || [[ -x "$ANSIBLE_DEFAULT_HOST_LIST" ]]; then
+if [[ -x "$ANSIBLE_DEFAULT_HOST_LIST" ]] || [ `cat ${ANSIBLE_DEFAULT_HOST_LIST} | grep ${HOSTNAME_FQDN}` ]; then
   echo "Inventory file found at $ANSIBLE_DEFAULT_HOST_LIST has $HOSTNAME_FQDN. Not modifying."
 else
 # Create inventory file.
