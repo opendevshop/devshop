@@ -438,7 +438,6 @@ ANSIBLE_EXTRA_VARS=()
 # @TODO: Remove once we know #627 is passing: Ansible roles now detect the hostname.
 # ANSIBLE_EXTRA_VARS+=("server_hostname: ${HOSTNAME_FQDN}")
 ANSIBLE_EXTRA_VARS+=("devshop_cli_path: ${DEVSHOP_INSTALL_PATH}")
-ANSIBLE_EXTRA_VARS+=("playbook_path: ${DEVSHOP_INSTALL_PATH}")
 ANSIBLE_EXTRA_VARS+=("aegir_server_webserver: ${SERVER_WEBSERVER}")
 # @TODO: Remove this var? a vars file gets created from this. We don't want old "devshop_version" vars around.
 # ANSIBLE_EXTRA_VARS+=("devshop_version: ${DEVSHOP_VERSION}")
