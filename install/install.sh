@@ -538,6 +538,7 @@ if [ ! `ansible-playbook --syntax-check ${ANSIBLE_PLAYBOOK}` ]; then
 fi
 
 export ANSIBLE_PLAYBOOK
+export ANSIBLE_TAGS=all
 $DEVSHOP_INSTALL_PATH/scripts/devshop-ansible-playbook
 
 # Run devshop status, return exit code.
