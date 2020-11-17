@@ -273,7 +273,7 @@ Your contributions make DevShop possible. Please consider becoming a patron of o
 # Must be a branch or tag.
 DEVSHOP_VERSION=1.x
 DEVSHOP_INSTALL_PATH=/usr/share/devshop
-DEVSHOP_PLAYBOOK='playbook.yml'
+DEVSHOP_PLAYBOOK='roles/devshop.server/play.yml'
 SERVER_WEBSERVER=apache
 MAKEFILE_PATH=''
 AEGIR_USER_UID=${AEGIR_USER_UID:-12345}
