@@ -187,6 +187,45 @@ get_distribution_version() {
   echo "$dist_version"
 }
 
+prepare_ubuntu1804() {
+  PYTHON_DEFAULT=/usr/bin/python3
+  DEBIAN_FRONTEND=noninteractive
+  apt-get update \
+      && apt-get install -y --no-install-recommends \
+         apt-utils \
+         locales \
+         python3-setuptools \
+         python3-pip \
+         software-properties-common \
+         git \
+      && rm -Rf /var/lib/apt/lists/* \
+      && rm -Rf /usr/share/doc && rm -Rf /usr/share/man \
+      && apt-get clean
+
+  # Set Python3 to be the default (allow users to call "python" and "pip" instead of "python3" "pip3"
+  update-alternatives --install /usr/bin/python python /usr/bin/python3 1
+
+  pip3 install $pip_packages
+}
+
+prepare_centos7() {
+    system_packages_pre="\
+        deltarpm \
+        epel-release \
+        initscripts \
+        git \
+    "
+    system_packages="python-pip"
+
+    yum makecache fast
+    yum -y install $system_packages_pre
+    yum -y update
+    yum -y install $system_packages
+    yum clean all
+
+    pip install $pip_packages
+}
+
 usage() {
 
     echo \
@@ -321,6 +360,16 @@ echo " Hostname: $HOSTNAME_FQDN"
     # This will override any selected option for web server. This is so we don't install
     # a second webserver accidentally.
 
+# Break out preparation into separate functions.
+case "$lsb_dist $dist_version" in
+  "ubuntu 18.04")
+    prepare_ubuntu1804
+  ;;
+  "centos 7")
+    prepare_centos7
+  ;;
+esac
+
 if [ -f "/var/aegir/config/server_master/nginx.conf" ]; then
   SERVER_WEBSERVER=nginx
 elif [ -f "/var/aegir/config/server_master/apache.conf" ]; then
@@ -379,14 +428,6 @@ echo $LINE
 
 
 cd $DEVSHOP_INSTALL_PATH
-
-# INSTALL ANSIBLE, quietly
-if ! command_exists git || ! command_exists ansible; then
-  echo " Installing prerequisites with ./install/devshop-install-prerequisites.sh script..."
-  bash install/devshop-install-prerequisites.sh > /dev/null
-  echo " Done!"
-  echo $LINE
-fi
 
 ansible --version
 python --version
