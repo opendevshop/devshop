@@ -545,6 +545,7 @@ fi
 
 export ANSIBLE_PLAYBOOK
 export ANSIBLE_TAGS=all
+export ANSIBLE_PLAYBOOK_COMMAND_OPTIONS=${ANSIBLE_PLAYBOOK_COMMAND_OPTIONS:-"--connection=local"}
 $DEVSHOP_INSTALL_PATH/scripts/devshop-ansible-playbook
 
 # Run devshop status, return exit code.
