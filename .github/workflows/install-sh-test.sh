@@ -1,7 +1,7 @@
 # Build a core container and run the install script in it.
 # Run from repository root:
 # bash .github/scripts/install-container.sh
-echo "Installing $DEVSHOP_VERSION..."
+echo "Running test of install.sh script version $DEVSHOP_VERSION..."
 
 # Remove existing install server test containers.
 docker kill install-server-test > /dev/null 2>&1
