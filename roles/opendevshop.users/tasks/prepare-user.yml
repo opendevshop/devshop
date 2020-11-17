@@ -30,7 +30,7 @@
   when:
     - getent_passwd is defined
 
-# This is failing in install.sh method.
+# @TODO: This step is being run even if the desired UID matches the current UID.
 #- name: Include Reset Aegir User tasks
 #  include_tasks: "reset-uid.yml"
 #  when:
