@@ -2,14 +2,15 @@
 # Run from repository root:
 # bash .github/scripts/install-container.sh
 echo "Installing $DEVSHOP_VERSION..."
+
+# Remove existing install server test containers.
+docker kill install-server-test > /dev/null 2>&1
+sleep 2
+
 set -ex
 
 # Rebuild a base container to include this PR's systemd scripts.
 docker-compose --file docker/docker-compose.yml build base
-
-# Remove existing install server test containers.
-docker kill install-server-test || true
-docker rm -fv install-server-test || true
 
 # Launch a devshop/base container with this PR's install.sh script inside.
 docker run \
@@ -22,7 +23,6 @@ docker run \
   devshop/base
 
 docker exec \
-  --env="ANSIBLE_PLAYBOOK_COMMAND_OPTIONS=--inventory devshop.server" \
   --env="DEVSHOP_VERSION" \
   install-server-test \
   bash /tmp/devshop-install.sh \
