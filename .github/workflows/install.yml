@@ -10,7 +10,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       COMPOSE_FILE: docker-compose.yml:docker-compose.volumes.yml
-      DEVSHOP_DOCKER_IMAGE: devshop/base
 
     steps:
     - uses: actions/checkout@v2
