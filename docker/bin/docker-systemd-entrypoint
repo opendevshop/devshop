@@ -57,15 +57,6 @@ echo "SYSTEM_STATUS_COMMAND: $SYSTEM_STATUS_COMMAND"
 echo "PATH: $PATH"
 
 devshop_line
-echo "The following commands will be run in this container: "
-
-echo "INIT_COMMAND:        $INIT_COMMAND"
-echo "DOCKER_COMMAND:      $DOCKER_COMMAND"
-echo "DEVSHOP_DOCKER_COMMAND_RUN: $DEVSHOP_DOCKER_COMMAND_RUN"
-echo "DOCKER_COMMAND_POST: $DOCKER_COMMAND_POST"
-echo "DOCKER_COMMAND_LOGS: $DOCKER_COMMAND_LOGS"
-
-devshop_line
 echo "Starting command chain..."
 
 if [ ! -z "$DOCKER_COMMAND" ]; then
