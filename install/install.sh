@@ -483,13 +483,13 @@ echo " Installing with Ansible..."
 echo $LINE
 
 # If ansible playbook fails syntax check, report it and exit.
-PLAYBOOK_PATH="$DEVSHOP_INSTALL_PATH/$DEVSHOP_PLAYBOOK"
-if [[ ! `ansible-playbook --syntax-check ${PLAYBOOK_PATH}` ]]; then
-    echo " Ansible syntax check failed! Check ${PLAYBOOK_PATH} and try again."
+ANSIBLE_PLAYBOOK="$DEVSHOP_INSTALL_PATH/$DEVSHOP_PLAYBOOK"
+if [ ! `ansible-playbook --syntax-check ${ANSIBLE_PLAYBOOK}` ]; then
+    echo " Ansible syntax check failed! Check ${ANSIBLE_PLAYBOOK} and try again."
     exit 1
 fi
 
-ansible-playbook $PLAYBOOK_PATH --connection=local --limit $HOSTNAME_FQDN $ANSIBLE_VERBOSITY
+$DEVSHOP_INSTALL_PATH/scripts/devshop-ansible-playbook
 
 # Run devshop status, return exit code.
 su - aegir -c "devshop status"
