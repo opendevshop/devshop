@@ -381,9 +381,9 @@ echo $LINE
 cd $DEVSHOP_INSTALL_PATH
 
 # INSTALL ANSIBLE, quietly
-if ! command_exists ansible; then
-  echo " Installing Ansible with ./scripts/devshop-ansible-install script..."
-  bash scripts/devshop-ansible-install > /dev/null
+if ! command_exists git || ! command_exists ansible; then
+  echo " Installing prerequisites with ./install/devshop-install-prerequisites.sh script..."
+  bash install/devshop-install-prerequisites.sh > /dev/null
   echo " Done!"
   echo $LINE
 fi
