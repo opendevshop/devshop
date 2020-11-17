@@ -377,7 +377,7 @@ cd $DEVSHOP_INSTALL_PATH
 if ! command_exists ansible; then
   echo " Installing Ansible with ./scripts/devshop-ansible-install script..."
   bash scripts/devshop-ansible-install > /dev/null
-  echo "Done!"
+  echo " Done!"
   echo $LINE
 fi
 
