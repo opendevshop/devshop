@@ -448,7 +448,7 @@ if [[ -x "$ANSIBLE_DEFAULT_HOST_LIST" ]] || [ `cat ${ANSIBLE_DEFAULT_HOST_LIST} 
 else
 # Create inventory file.
   echo "Hostname $HOSTNAME_FQDN not found in the file $ANSIBLE_DEFAULT_HOST_LIST... Creating new file..."
-  echo "[devmaster]" > $ANSIBLE_DEFAULT_HOST_LIST
+  echo "[local]" > $ANSIBLE_DEFAULT_HOST_LIST
   echo $HOSTNAME_FQDN >> $ANSIBLE_DEFAULT_HOST_LIST
 fi
 
