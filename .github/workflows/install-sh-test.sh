@@ -9,7 +9,7 @@ docker-compose --file docker/docker-compose.yml build base
 
 # Remove existing install server test containers.
 docker kill install-server-test || true
- docker rm -rf install-server-test || true
+docker rm -fv install-server-test || true
 
 # Launch a devshop/base container with this PR's install.sh script inside.
 docker run \
