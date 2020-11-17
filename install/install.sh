@@ -489,7 +489,7 @@ if [ ! `ansible-playbook --syntax-check ${ANSIBLE_PLAYBOOK}` ]; then
     exit 1
 fi
 
-$DEVSHOP_INSTALL_PATH/scripts/devshop-ansible-playbook
+$DEVSHOP_INSTALL_PATH/scripts/devshop-ansible-playbook $ANSIBLE_PLAYBOOK
 
 # Run devshop status, return exit code.
 su - aegir -c "devshop status"
