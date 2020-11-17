@@ -9,9 +9,8 @@ LABEL maintainer="Jon Pugh"
 # The last thing the user sees in the logs.
 ENV DOCKER_COMMAND_POST devshop login
 
-# Copy this role's play.yml into the image (over the default)
 ENV DEVSHOP_ANSIBLE_PLAYBOOK ./roles/devshop.server/play.yml
-COPY $DEVSHOP_ANSIBLE_PLAYBOOK $DEVSHOP_ANSIBLE_PLAYBOOK_DESTINATION
+ENV ANSIBLE_PLAYBOOK $DEVSHOP_PATH/$DEVSHOP_ANSIBLE_PLAYBOOK
 
 ENV DEVSHOP_ANSIBLE_INVENTORY ./roles/devshop.server/inventory
 COPY $DEVSHOP_ANSIBLE_INVENTORY $DEVSHOP_ANSIBLE_INVENTORY_DESTINATION
