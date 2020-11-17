@@ -26,15 +26,17 @@ set -e
 # Will be the SHA used to publish the install.sh file to get.devshop.tech.
 SCRIPT_COMMIT_SHA="${LOAD_SCRIPT_COMMIT_SHA}"
 
-# Version to install (branch or tag). Must point to SCRIPT_COMMIT_SHA
+# Version to install (branch or tag).
 # If testing a branch is needed, set the DEVSHOP_VERSION environment variable in
 # the command line environment:
 #
 #     $ export DEVSHOP_VERSION=bug/XXX/fix
 #     $ bash install.sh
 #
+# See the GitHub action ./.github/workflows/install.yml
 DEVSHOP_VERSION=${DEVSHOP_VERSION:-1.x}
 
+# Version of Ansible to install
 ANSIBLE_VERSION=${ANSIBLE_VERSION:-"2.9"}
 pip_packages="ansible==${ANSIBLE_VERSION}"
 
@@ -334,7 +336,7 @@ export ANSIBLE_FORCE_COLOR=true
 
 echo "============================================="
 echo " Welcome to the DevShop Standalone Installer "
-echo "                   v $DEVSHOP_VERSION        "
+echo " Version $DEVSHOP_VERSION                    "
 echo "============================================="
 
 # Fail if not running as root (sudo)
@@ -543,6 +545,7 @@ if [ ! `ansible-playbook --syntax-check ${ANSIBLE_PLAYBOOK}` ]; then
     exit 1
 fi
 
+# Set the ENV vars that devshop-ansible-playbook expects, and run it.
 export ANSIBLE_PLAYBOOK
 export ANSIBLE_TAGS=all
 export ANSIBLE_PLAYBOOK_COMMAND_OPTIONS=${ANSIBLE_PLAYBOOK_COMMAND_OPTIONS:-"--connection=local"}
