@@ -9,9 +9,14 @@ jobs:
     name: Install Script
     runs-on: ubuntu-latest
     env:
-      COMPOSE_FILE: docker-compose.yml:docker-compose.volumes.yml
+      # The version of devshop to install with install.sh.
+      # This variable is overwritten to match the PR in the first step.
+      DEVSHOP_VERSION: 1.x
 
     steps:
+    - name: Install PR version of DevShop
+      if: github.event_name=='pull_request'
+      run: echo "DEVSHOP_VERSION=${{ github.head_ref }}" >> $GITHUB_ENV
     - uses: actions/checkout@v2
     - name: Run Install Script
       run: bash .github/workflows/install.sh

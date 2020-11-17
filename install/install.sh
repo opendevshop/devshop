@@ -23,7 +23,17 @@ set -e
 
 # Git commit from https://github.com/opendevshop/devshop/blob/1.x/install/install.sh when
 # the script was uploaded (Should only be modified by upload job):
+# Will be the SHA used to publish the install.sh file to get.devshop.tech.
 SCRIPT_COMMIT_SHA="${LOAD_SCRIPT_COMMIT_SHA}"
+
+# Version to install (branch or tag). Must point to SCRIPT_COMMIT_SHA
+# If testing a branch is needed, set the DEVSHOP_VERSION environment variable in
+# the command line environment:
+#
+#     $ export DEVSHOP_VERSION=bug/XXX/fix
+#     $ bash install.sh
+#
+DEVSHOP_VERSION=${DEVSHOP_VERSION:-1.x}
 
 # Git repo to install.
 DEFAULT_DOWNLOAD_URL="http://github.com/opendevshop/devshop.git"
@@ -269,9 +279,6 @@ Your contributions make DevShop possible. Please consider becoming a patron of o
 
 "
 
-# Version used for cloning devshop playbooks
-# Must be a branch or tag.
-DEVSHOP_VERSION=1.x
 DEVSHOP_INSTALL_PATH=/usr/share/devshop
 DEVSHOP_PLAYBOOK='roles/devshop.server/play.yml'
 SERVER_WEBSERVER=apache
