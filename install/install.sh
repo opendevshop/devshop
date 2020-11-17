@@ -35,6 +35,9 @@ SCRIPT_COMMIT_SHA="${LOAD_SCRIPT_COMMIT_SHA}"
 #
 DEVSHOP_VERSION=${DEVSHOP_VERSION:-1.x}
 
+ANSIBLE_VERSION=${ANSIBLE_VERSION:-"2.9"}
+pip_packages="ansible==${ANSIBLE_VERSION}"
+
 # Git repo to install.
 DEFAULT_DOWNLOAD_URL="http://github.com/opendevshop/devshop.git"
 if [ -z "$DOWNLOAD_URL" ]; then
@@ -361,12 +364,15 @@ echo " Hostname: $HOSTNAME_FQDN"
     # a second webserver accidentally.
 
 # Break out preparation into separate functions.
+echo $LINE
+echo " Installing prerequisites (ansible, git etc)..."
+
 case "$lsb_dist $dist_version" in
   "ubuntu 18.04")
-    prepare_ubuntu1804
+    prepare_ubuntu1804 > /dev/null
   ;;
   "centos 7")
-    prepare_centos7
+    prepare_centos7 > /dev/null
   ;;
 esac
 
