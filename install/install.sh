@@ -46,7 +46,17 @@ if [ -z "$DOWNLOAD_URL" ]; then
     DOWNLOAD_URL=$DEFAULT_DOWNLOAD_URL
 fi
 
-# Parse Options
+# Environment Options:
+HOSTNAME_FQDN=${HOSTNAME_FQDN:-`hostname --fqdn`}
+ANSIBLE_DEFAULT_HOST_LIST=${ANSIBLE_DEFAULT_HOST_LIST:-"/etc/ansible/hosts"}
+DEVSHOP_INSTALL_PATH=${DEVSHOP_INSTALL_PATH:-"/usr/share/devshop"}
+DEVSHOP_PLAYBOOK=${DEVSHOP_PLAYBOOK:-"roles/devshop.server/play.yml"}
+SERVER_WEBSERVER=${SERVER_WEBSERVER:-"apache"}
+AEGIR_USER_UID=${AEGIR_USER_UID:-12345}
+ANSIBLE_VERBOSITY=${ANSIBLE_VERBOSITY:-12345};
+DEVSHOP_SUPPORT_LICENSE_KEY=${DEVSHOP_SUPPORT_LICENSE_KEY:-""};
+
+# Command line Options
 while [ $# -gt 0 ]; do
     case "$1" in
         --hostname=*)
@@ -91,6 +101,22 @@ while [ $# -gt 0 ]; do
     esac
     shift $(( $# > 0 ? 1 : 0 ))
 done
+
+# Initial Ansible Variables
+# Generate host specific vars to be injected into inventory.
+# All command line options that are ansible variables should be saved here.
+ANSIBLE_EXTRA_VARS=()
+ANSIBLE_EXTRA_VARS+=("server_hostname: ${HOSTNAME_FQDN}")
+ANSIBLE_EXTRA_VARS+=("devshop_cli_path: ${DEVSHOP_INSTALL_PATH}")
+ANSIBLE_EXTRA_VARS+=("aegir_server_webserver: ${SERVER_WEBSERVER}")
+ANSIBLE_EXTRA_VARS+=("aegir_user_uid: ${AEGIR_USER_UID}")
+ANSIBLE_EXTRA_VARS+=("devshop_github_token: ${GITHUB_TOKEN}")
+if [ -n "$DEVMASTER_ADMIN_EMAIL" ]; then
+  ANSIBLE_EXTRA_VARS+=("devshop_devmaster_email: ${DEVMASTER_ADMIN_EMAIL}")
+fi
+if [ -n "$DEVSHOP_SUPPORT_LICENSE_KEY" ]; then
+  ANSIBLE_EXTRA_VARS+=("devshop_support_license_key: ${DEVSHOP_SUPPORT_LICENSE_KEY}")
+fi
 
 # FUNCTIONS
 
@@ -231,6 +257,34 @@ prepare_centos7() {
     pip install $pip_packages
 }
 
+write_ansible_hosts_static() {
+  # Strangest thing: if you leave a space after the variable "name:" the output will convert to a new line.
+  IFS=$'\n'
+
+  echo "---
+# DevShop Ansible Static Inventory File
+# -------------------------------------
+# This Ansible Inventory file was written by devshop's install.sh script at `date`
+# You may add edit this inventory file as you wish, or to additional files in /etc/ansible/group_vars or /etc/ansible/host_vars
+# Run 'devshop-ansible-playbook' as root after changing this file to apply the configuration.
+devshop_server:
+  hosts:
+    $HOSTNAME_FQDN:
+  vars:" > $ANSIBLE_DEFAULT_HOST_LIST
+
+  # Write all extra vars to the file.
+  for i in ${ANSIBLE_EXTRA_VARS[@]}; do
+      echo -e "      $i" >> $ANSIBLE_DEFAULT_HOST_LIST
+  done
+  echo $LINE
+  echo "Wrote static inventory to $ANSIBLE_DEFAULT_HOST_LIST:";
+  echo $LINE
+  cat $ANSIBLE_DEFAULT_HOST_LIST
+  echo $LINE
+  echo "List Ansible Hosts:"
+  ansible all --list-hosts -i $ANSIBLE_DEFAULT_HOST_LIST
+}
+
 usage() {
 
     echo \
@@ -322,16 +376,6 @@ Your contributions make DevShop possible. Please consider becoming a patron of o
   https://www.patreon.com/devshop
 
 "
-
-DEVSHOP_INSTALL_PATH=/usr/share/devshop
-DEVSHOP_PLAYBOOK='roles/devshop.server/play.yml'
-SERVER_WEBSERVER=apache
-MAKEFILE_PATH=''
-AEGIR_USER_UID=${AEGIR_USER_UID:-12345}
-ANSIBLE_VERBOSITY="";
-ANSIBLE_DEFAULT_HOST_LIST="/etc/ansible/hosts"
-DEVSHOP_SUPPORT_LICENSE_KEY=""
-
 export ANSIBLE_FORCE_COLOR=true
 
 echo "============================================="
@@ -354,7 +398,6 @@ dist_version=$( get_distribution_version $lsb_dist )
 
 OS=$lsb_dist
 VERSION=$dist_version
-HOSTNAME_FQDN=`hostname --fqdn`
 
 # Output some info.
 echo " OS: $lsb_dist"
@@ -375,6 +418,10 @@ case "$lsb_dist $dist_version" in
   ;;
   "centos 7")
     prepare_centos7 > /dev/null
+  ;;
+  default)
+    echo "Automatic ansible install is not yet supported in $lsb_dist $dist_version. Install ansible according using the instructions for your operating system found at https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html and try to run this script again."
+    exit 1
   ;;
 esac
 
@@ -414,6 +461,8 @@ else
   echo $MYSQL_ROOT_PASSWORD > /tmp/mysql_root_password
 fi
 
+ANSIBLE_EXTRA_VARS+=("mysql_root_password: ${MYSQL_ROOT_PASSWORD}")
+
 # Clone the installer if $DEVSHOP_INSTALL_PATH does not exist yet.
 if [ ! -d "$DEVSHOP_INSTALL_PATH" ]; then
     git clone $DOWNLOAD_URL $DEVSHOP_INSTALL_PATH
@@ -451,35 +500,13 @@ else
 fi
 
 # Check inventory file for [devmaster] group or is executable, leave it alone.
-if [[ -x "$ANSIBLE_DEFAULT_HOST_LIST" ]] || [ `cat ${ANSIBLE_DEFAULT_HOST_LIST} | grep ${HOSTNAME_FQDN}` ]; then
-  echo "Inventory file found at $ANSIBLE_DEFAULT_HOST_LIST has $HOSTNAME_FQDN. Not modifying."
+if [[ -x "$ANSIBLE_DEFAULT_HOST_LIST" ]]; then
+  echo "Ansible Inventory file found at $ANSIBLE_DEFAULT_HOST_LIST. Not modifying."
 else
 # Create inventory file.
   echo "Hostname $HOSTNAME_FQDN not found in the file $ANSIBLE_DEFAULT_HOST_LIST... Creating new file..."
-  echo "[devshop.server]" > $ANSIBLE_DEFAULT_HOST_LIST
-  echo $HOSTNAME_FQDN >> $ANSIBLE_DEFAULT_HOST_LIST
-fi
-
-    # Create ansible vars files.
-    #   ./group_vars/HOSTNAME: reserved for devshop control.
-    #   ./hostname_vars/HOSTNAME: reserved for users to customize.
-    ANSIBLE_CONFIG_PATH=$(dirname "${ANSIBLE_DEFAULT_HOST_LIST}")
-
-ANSIBLE_VARS_HOSTNAME_PATH="$ANSIBLE_CONFIG_PATH/host_vars/$HOSTNAME_FQDN"
-ANSIBLE_VARS_GROUP_PATH="$ANSIBLE_CONFIG_PATH/group_vars/devmaster"
-
-# If Ansible host variables file is not found for this server, create the dir and write the file.
-if [ ! -d "$ANSIBLE_CONFIG_PATH/host_vars" ]; then
-  mkdir "$ANSIBLE_CONFIG_PATH/host_vars"
-  echo "# Custom Variables for $HOSTNAME_FQDN." >> $ANSIBLE_VARS_HOSTNAME_PATH
-  echo "# You may edit these variables which are used during the 'devshop verify' command." >> $ANSIBLE_VARS_HOSTNAME_PATH
-  echo "# This file must be valid YML." >> $ANSIBLE_VARS_HOSTNAME_PATH
-  echo "---" >> $ANSIBLE_VARS_HOSTNAME_PATH
-  echo "name: value" >> $ANSIBLE_VARS_HOSTNAME_PATH
-fi
-# If Ansible group variables file is not found for this server, create the dir.
-if [ ! -d "$ANSIBLE_CONFIG_PATH/group_vars" ]; then
-  mkdir "$ANSIBLE_CONFIG_PATH/group_vars"
+  echo "Ansible Inventory file not found at $ANSIBLE_DEFAULT_HOST_LIST. Creating new file..."
+  write_ansible_hosts_static
 fi
 
 # If Ansible.cfg file does not exist, copy it in.
@@ -487,54 +514,8 @@ if [ ! -f "$ANSIBLE_CONFIG_PATH/ansible.cfg" ]; then
   cp $DEVSHOP_INSTALL_PATH/ansible.cfg $ANSIBLE_CONFIG_PATH/ansible.cfg
 fi
 
-# Write to our devmaster group file every time install.sh is run."
-# Strangest thing: if you leave a space after the variable "name:" the output will convert to a new line.
-IFS=$'\n'
-ANSIBLE_EXTRA_VARS=()
-# @TODO: Remove once we know #627 is passing: Ansible roles now detect the hostname.
-# ANSIBLE_EXTRA_VARS+=("server_hostname: ${HOSTNAME_FQDN}")
-ANSIBLE_EXTRA_VARS+=("devshop_cli_path: ${DEVSHOP_INSTALL_PATH}")
-ANSIBLE_EXTRA_VARS+=("aegir_server_webserver: ${SERVER_WEBSERVER}")
-# @TODO: Remove this var? a vars file gets created from this. We don't want old "devshop_version" vars around.
-# ANSIBLE_EXTRA_VARS+=("devshop_version: ${DEVSHOP_VERSION}")
-ANSIBLE_EXTRA_VARS+=("aegir_user_uid: ${AEGIR_USER_UID}")
-ANSIBLE_EXTRA_VARS+=("devshop_github_token: ${GITHUB_TOKEN}")
-
-# Lookup special variable overrides.
-if [ -n "$MAKEFILE_PATH" ]; then
-  ANSIBLE_EXTRA_VARS+=("devshop_makefile: ${MAKEFILE_PATH}")
-fi
-if [ -n "$DEVMASTER_ADMIN_EMAIL" ]; then
-  ANSIBLE_EXTRA_VARS+=("devshop_devmaster_email: ${DEVMASTER_ADMIN_EMAIL}")
-fi
-if [ -n "$DEVSHOP_SUPPORT_LICENSE_KEY" ]; then
-  ANSIBLE_EXTRA_VARS+=("devshop_support_license_key: ${DEVSHOP_SUPPORT_LICENSE_KEY}")
-fi
-
-# Render vars YML file
-echo "# This variables file is written by devshop's install.sh script and 'devshop upgrade' command. Do not edit." > $ANSIBLE_VARS_GROUP_PATH
-echo "# You may add variables to the host_vars file located at $ANSIBLE_VARS_HOSTNAME_PATH" >> $ANSIBLE_VARS_GROUP_PATH
-echo "---" >> $ANSIBLE_VARS_GROUP_PATH
-for i in ${ANSIBLE_EXTRA_VARS[@]}; do
-    echo -e $i >> $ANSIBLE_VARS_GROUP_PATH
-done
-
-echo $LINE
-echo "Wrote group variables file for devmaster to $ANSIBLE_VARS_GROUP_PATH:"
-cat $ANSIBLE_VARS_GROUP_PATH
-echo $LINE
-
-ANSIBLE_VARS_GROUP_MYSQL_PATH="$ANSIBLE_CONFIG_PATH/group_vars/mysql"
-echo "# This variables file is written by devshop's install.sh script and 'devshop upgrade' command. Do not edit." > $ANSIBLE_VARS_GROUP_MYSQL_PATH
-echo "# You may add variables to the host_vars file located at $ANSIBLE_VARS_HOSTNAME_PATH" >> $ANSIBLE_VARS_GROUP_MYSQL_PATH
-echo "---" >> $ANSIBLE_VARS_GROUP_MYSQL_PATH
-echo "mysql_root_password: $MYSQL_ROOT_PASSWORD" >> $ANSIBLE_VARS_GROUP_MYSQL_PATH
-
-echo $LINE
-echo "Wrote database secrets file for devmaster to $ANSIBLE_VARS_GROUP_MYSQL_PATH"
-echo $LINE
-
 # Run the playbook.
+echo $LINE
 echo " Installing with Ansible..."
 echo $LINE
 
