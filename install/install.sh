@@ -106,6 +106,9 @@ done
 # Generate host specific vars to be injected into inventory.
 # All command line options that are ansible variables should be saved here.
 ANSIBLE_EXTRA_VARS=()
+# This is to saved to local /etc/ansible/hosts file, so always use local connect.
+ANSIBLE_EXTRA_VARS+=("ansible_host: ${HOSTNAME_FQDN}")
+ANSIBLE_EXTRA_VARS+=("ansible_connection: local")
 ANSIBLE_EXTRA_VARS+=("server_hostname: ${HOSTNAME_FQDN}")
 ANSIBLE_EXTRA_VARS+=("devshop_cli_path: ${DEVSHOP_INSTALL_PATH}")
 ANSIBLE_EXTRA_VARS+=("aegir_server_webserver: ${SERVER_WEBSERVER}")
@@ -274,7 +277,7 @@ devshop_server:
 
   # Write all extra vars to the file.
   for i in ${ANSIBLE_EXTRA_VARS[@]}; do
-      echo -e "      $i" >> $ANSIBLE_DEFAULT_HOST_LIST
+      echo -e "    $i" >> $ANSIBLE_DEFAULT_HOST_LIST
   done
   echo $LINE
   echo "Wrote static inventory to $ANSIBLE_DEFAULT_HOST_LIST:";
