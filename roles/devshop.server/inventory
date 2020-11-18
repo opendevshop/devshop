@@ -1,3 +1,11 @@
-# The group name here must match the "hosts" string in role-playbook.yml.
-[devshop_server]
-localhost ansible_connection=local
+---
+# DevShop Ansible Static Inventory File
+# -------------------------------------
+# This Ansible Inventory file was written by devshop's install.sh script at Wed Nov 18 21:03:04 UTC 2020
+# You may add edit this inventory file as you wish, or to additional files in /etc/ansible/group_vars or /etc/ansible/host_vars
+# Run 'devshop-ansible-playbook' as root after changing this file to apply the configuration.
+devshop_server:
+  hosts:
+    localhost:
+  vars:
+    ansible_connection: local
