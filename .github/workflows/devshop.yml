@@ -72,6 +72,7 @@ jobs:
             /usr/local/bin/docker-* \
 
           docker cp ../ roles_devshop.server_1:/usr/share/devshop/
+          docker cp devshop.server/inventory roles_devshop.server_1:/etc/ansible/inventory
           docker-compose exec -T devshop.server chown aegir:aegir /usr/share/devshop -R
           docker-compose exec -T devshop.server chown aegir:aegir $DEVSHOP_TESTS_ARTIFACTS_PATH -R
           docker-compose exec -T devshop.server \
