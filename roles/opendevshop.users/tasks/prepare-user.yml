@@ -13,8 +13,8 @@
 
 - name: Save variables for current user UID and GID
   set_fact:
-    aegir_user_uid_current: "{{ getent_passwd[aegir_user_name][1] | int }}"
-    aegir_user_gid_current: "{{ getent_group[aegir_user_name][1] | int }}"
+    aegir_user_uid_current: "{{ getent_passwd[aegir_user_name][1] }}"
+    aegir_user_gid_current: "{{ getent_group[aegir_user_name][1] }}"
   when:
     - getent_passwd is defined
 
