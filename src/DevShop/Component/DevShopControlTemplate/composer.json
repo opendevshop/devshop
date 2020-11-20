@@ -118,7 +118,8 @@
             "echo 'Checking for drupal/devmaster..' && cd web/profiles/devmaster && cat web/profiles/devmaster/devmaster.info && git status"
         ],
         "post-update-cmd": [
-            "DrupalProject\\composer\\ScriptHandler::createRequiredFiles"
+            "DrupalProject\\composer\\ScriptHandler::createRequiredFiles",
+            "echo 'Checking for drupal/devmaster..' && cd web/profiles/devmaster && cat web/profiles/devmaster/devmaster.info && git status"
         ],
         "post-create-project-cmd": [
             "DrupalProject\\composer\\ScriptHandler::removeInternalFiles"
