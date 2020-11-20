@@ -115,11 +115,11 @@
         ],
         "post-install-cmd": [
             "DrupalProject\\composer\\ScriptHandler::createRequiredFiles",
-            "echo 'Checking for drupal/devmaster..' && cd web/profiles/devmaster && cat web/profiles/devmaster/devmaster.info && git status"
+            "DrupalProject\\composer\\ScriptHandler::checkDevmasterPackage"
         ],
         "post-update-cmd": [
             "DrupalProject\\composer\\ScriptHandler::createRequiredFiles",
-            "echo 'Checking for drupal/devmaster..' && cd web/profiles/devmaster && cat web/profiles/devmaster/devmaster.info && git status"
+            "DrupalProject\\composer\\ScriptHandler::checkDevmasterPackage"
         ],
         "post-create-project-cmd": [
             "DrupalProject\\composer\\ScriptHandler::removeInternalFiles"

@@ -14,6 +14,23 @@ use Symfony\Component\Filesystem\Filesystem;
 
 class ScriptHandler {
 
+  public static function checkDevmasterPackage(Event $event) {
+    $fs = new Filesystem();
+    $io = $event->getIO();
+    $drupalFinder = new DrupalFinder();
+    $drupalFinder->locateRoot(getcwd());
+    $drupalRoot = $drupalFinder->getDrupalRoot();
+
+    $devmaster_path = $drupalRoot . '/profiles/devmaster/devmaster.info';
+    if (!$fs->exists($devmaster_path)) {
+      $io->writeError('<error>Devmaster profile was not found at' . $devmaster_path . '. Check "preserve-paths" settings.</error>');
+      exit(1);
+    }
+    else {
+      $io->write('Devmaster profile found at ' . $devmaster_path);
+    }
+  }
+
   public static function createRequiredFiles(Event $event) {
     $fs = new Filesystem();
     $drupalFinder = new DrupalFinder();
