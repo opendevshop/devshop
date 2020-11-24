@@ -23,7 +23,9 @@ class ScriptHandler {
 
     $devmaster_path = $drupalRoot . '/profiles/devmaster';
     if (is_link($devmaster_path)) {
-      $devmaster_path = realpath($devmaster_path);
+      $real_devmaster_path = realpath($devmaster_path);
+      $io->write("Devmaster path ($devmaster_path) is a symlink to $real_devmaster_path");
+      $devmaster_path = $real_devmaster_path;
     }
 
     $devmaster_info_path = $devmaster_path  . '/devmaster.info';
