@@ -22,7 +22,7 @@ class ScriptHandler {
     $drupalRoot = $drupalFinder->getDrupalRoot();
 
     $io->write("Contents of web/profiles/devmaster:");
-    passthru("ls -la web/profiles/devmaster/");
+    passthru("ls -la web/profiles/devmaster");
     passthru("ls -la web/profiles/devmaster/devmaster.info");
 
     $devmaster_path = $drupalRoot . '/profiles/devmaster';
