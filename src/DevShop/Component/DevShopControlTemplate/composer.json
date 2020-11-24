@@ -143,9 +143,8 @@
             "web/sites/all/modules/contrib/{$name}/": ["type:drupal-module"],
             "web/sites/all/themes/contrib/{$name}/": ["type:drupal-theme"]
       },
-        "preserve-paths": [
-            "web/sites",
-            "web/profiles/devmaster"
+      "preserve-paths": [
+          "web/sites"
         ]
     },
     "minimum-stability": "alpha",
