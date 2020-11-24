@@ -22,12 +22,12 @@ class ScriptHandler {
     $drupalRoot = $drupalFinder->getDrupalRoot();
 
     $devmaster_path = $drupalRoot . '/profiles/devmaster';
-    if ($fs->readlink($devmaster_path)) {
-      $devmaster_path = $fs->readlink($devmaster_path, TRUE);
+    if (is_link($devmaster_path)) {
+      $devmaster_path = realpath($devmaster_path);
     }
 
     $devmaster_info_path = $devmaster_path  . '/devmaster.info';
-    if ($fs->readlink() || !$fs->exists($devmaster_info_path)) {
+    if (!$fs->exists($devmaster_info_path)) {
       $io->writeError('<error>Devmaster profile info file was not found at ' . $devmaster_info_path . '</error>');
       exit(1);
     }
