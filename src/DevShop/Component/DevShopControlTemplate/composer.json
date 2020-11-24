@@ -111,11 +111,13 @@
         ],
         "post-install-cmd": [
             "DrupalProject\\composer\\ScriptHandler::createRequiredFiles",
-            "DrupalProject\\composer\\ScriptHandler::checkDevmasterPackage"
+            "DrupalProject\\composer\\ScriptHandler::checkDevmasterPackage",
+            "ls -la web/profiles"
         ],
         "post-update-cmd": [
             "DrupalProject\\composer\\ScriptHandler::createRequiredFiles",
-            "DrupalProject\\composer\\ScriptHandler::checkDevmasterPackage"
+            "DrupalProject\\composer\\ScriptHandler::checkDevmasterPackage",
+            "ls -la web/profiles"
         ],
         "post-create-project-cmd": [
             "DrupalProject\\composer\\ScriptHandler::removeInternalFiles"
