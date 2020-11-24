@@ -21,7 +21,17 @@ class ScriptHandler {
     $drupalFinder->locateRoot(getcwd());
     $drupalRoot = $drupalFinder->getDrupalRoot();
 
+    $io->write("Contents of web/profiles/devmaster:");
+    passthru("ls -la web/profiles/devmaster");
+    passthru("ls -la web/profiles/devmaster/devmaster.info");
+
     $devmaster_path = $drupalRoot . '/profiles/devmaster';
+    if (is_link($devmaster_path)) {
+      $real_devmaster_path = realpath($devmaster_path);
+      $io->write("Devmaster path ($devmaster_path) is a symlink to $real_devmaster_path");
+      $devmaster_path = $real_devmaster_path;
+    }
+
     $devmaster_info_path = $devmaster_path  . '/devmaster.info';
     if (!$fs->exists($devmaster_info_path)) {
       $io->writeError('<error>Devmaster profile info file was not found at ' . $devmaster_info_path . '</error>');
