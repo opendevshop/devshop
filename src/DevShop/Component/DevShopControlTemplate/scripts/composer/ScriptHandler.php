@@ -21,13 +21,14 @@ class ScriptHandler {
     $drupalFinder->locateRoot(getcwd());
     $drupalRoot = $drupalFinder->getDrupalRoot();
 
-    $devmaster_path = $drupalRoot . '/profiles/devmaster/devmaster.info';
-    if (!$fs->exists($devmaster_path)) {
-      $io->writeError('<error>Devmaster profile was not found at' . $devmaster_path . '. Check "preserve-paths" settings.</error>');
+    $devmaster_path = $drupalRoot . '/profiles/devmaster';
+    $devmaster_info_path = $devmaster_path  . '/devmaster.info';
+    if (!$fs->exists($devmaster_info_path)) {
+      $io->writeError('<error>Devmaster profile info file was not found at ' . $devmaster_info_path . '</error>');
       exit(1);
     }
     else {
-      $io->write('Devmaster profile found at ' . $devmaster_path);
+      $io->write('Devmaster.info file was found at ' . $devmaster_info_path);
     }
   }
 
