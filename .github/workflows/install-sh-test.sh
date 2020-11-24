@@ -1,7 +1,12 @@
 # Build a core container and run the install script in it.
 # Run from repository root:
 # bash .github/scripts/install-container.sh
+DEVSHOP_VERSION=${DEVSHOP_VERSION:-1.x}
+
 echo "Running test of install.sh script version $DEVSHOP_VERSION..."
+echo "  To test a different version, specify the DEVSHOP_VERSION environment variable: "
+echo ""
+echo "  DEVSHOP_VERSION=example/branch bash .github/workflows/install-sh-test.sh"
 
 # Remove existing install server test containers.
 docker kill install-server-test > /dev/null 2>&1
