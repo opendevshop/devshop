@@ -21,6 +21,10 @@ class ScriptHandler {
     $drupalFinder->locateRoot(getcwd());
     $drupalRoot = $drupalFinder->getDrupalRoot();
 
+    $io->write("Contents of web/profiles/devmaster:");
+    passthru("ls -la web/profiles/devmaster/");
+    passthru("ls -la web/profiles/devmaster/devmaster.info");
+
     $devmaster_path = $drupalRoot . '/profiles/devmaster';
     if (is_link($devmaster_path)) {
       $real_devmaster_path = realpath($devmaster_path);
