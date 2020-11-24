@@ -270,7 +270,8 @@ jobs:
 
       # If installing without a lockfile, composer suggests using "update" command instead.
       - name: Install dependencies
-        run: composer reinstall
+        run: |
+          composer install --ansi
         working-directory: ${{env.working-directory}}
 
       - name: Test Project Creation
