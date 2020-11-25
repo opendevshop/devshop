@@ -28,6 +28,7 @@ env:
 
   # Set devshop_+version variable to the default git branch, it will be changed on each PR below.
   ANSIBLE_PLAYBOOK_COMMAND_OPTIONS: "--extra-vars=devshop_version=1.x"
+  GIT_REF: 1.x
 
 jobs:
   test:
@@ -50,17 +51,20 @@ jobs:
         if: github.event_name=='pull_request'
         run: |
           echo "ANSIBLE_PLAYBOOK_COMMAND_OPTIONS=--extra-vars=devshop_version=${{ github.head_ref }}" >> $GITHUB_ENV
+          echo "GIT_REF=${{ github.head_ref }}" >> $GITHUB_ENV
 
       - name: Check Out Sourcecode
         uses: actions/checkout@v2
 
       # Launch DevShop Server Container
-      - name: "Launch Latest Container for 'devshop/server:${{ matrix.os }}'"
+      - name: "Launch & Prepare a pre-built 'devshop/server:${{ matrix.os }}' container"
         working-directory: roles
         # "docker-compose pull" is needed because the if the image does not exist locally, "docker-compose" will try to build.
         # "--no-build" is needed because docker-compose will build the image by default.
         run: |
           set -x
+          git status
+          git checkout -b $GIT_REF
           docker-compose pull --quiet devshop.server
           docker-compose up --no-build --detach devshop.server
           docker-compose exec -T devshop.server rm -rf \
@@ -71,7 +75,11 @@ jobs:
             /var/aegir/config \
             /usr/local/bin/docker-* \
 
+          echo "Checking git status in /usr/share/devshop inside container:"
           docker cp ../ roles_devshop.server_1:/usr/share/devshop/
+          docker cp devshop.server/inventory roles_devshop.server_1:/etc/ansible/hosts
+          echo "Checking git status in /usr/share/devshop after copying devshop source into container:"
+          docker-compose exec -T --workdir /usr/share/devshop devshop.server git status
           docker-compose exec -T devshop.server chown aegir:aegir /usr/share/devshop -R
           docker-compose exec -T devshop.server chown aegir:aegir $DEVSHOP_TESTS_ARTIFACTS_PATH -R
           docker-compose exec -T devshop.server \
@@ -174,7 +182,7 @@ jobs:
         run: docker-compose build devshop.server
 
       # Launch Container
-      - name: "Launch devshop/server:${{ matrix.os }} Container"
+      - name: "Launch a freshly built devshop/server:${{ matrix.os }} container"
         working-directory: roles
         run: |
           docker-compose up --detach devshop.server

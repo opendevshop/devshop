@@ -43,3 +43,5 @@ services:
       - DOCKER_COMMAND_POST
       - GITHUB_HEAD_REF
       - DEVSHOP_TESTS_ARTIFACTS_PATH
+      # Setting this ensures the docker containers have this value, regardless if the container is an older image.
+      - DEVSHOP_ANSIBLE_GROUP_NAME=devshop_server
