@@ -33,4 +33,17 @@ git commit -m 'Temporary commit'
 # Composer require @dev and search for the Symlinking statement to ensure we are always installing from local code.
 echo "Reinstalling local devmaster using composer..."
 composer uninstall
-composer install --ansi --no-progress
+
+# Workaround for PATH bug: If composer install fails, run again but confirm path repo and show a message.
+COMPOSER_INSTALL_CMD="composer install --ansi --no-progress"
+if $COMPOSER_INSTALL_CMD; then
+    echo "Composer Install successfully the first time."
+else
+    echo "Composer Install failed the first time. This is a known bug when using the 'path' repository for devshop/devmaster. Running composer install again..."
+    if $COMPOSER_INSTALL_CMD; then
+      echo "Composer Install succeeded the second time!"
+    else
+      echo "Composer Install failed the second time too!"
+      exit 1
+    fi
+fi
