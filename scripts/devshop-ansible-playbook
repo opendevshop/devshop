@@ -15,6 +15,9 @@ ANSIBLE_EXTRA_VARS=${ANSIBLE_EXTRA_VARS:-""}
 ANSIBLE_PLAYBOOK_COMMAND_OPTIONS=${ANSIBLE_PLAYBOOK_COMMAND_OPTIONS:-}
 ANSIBLE_VERBOSITY=${ANSIBLE_VERBOSITY:-"0"}
 
+# Used for validating inventory is setup correctly. Set to match the devshop role play.yml and inventory.
+DEVSHOP_ANSIBLE_GROUP_NAME=${DEVSHOP_ANSIBLE_GROUP_NAME:-"all"}
+
 # Build options string if ENV vars exist.
 if [[ -n "${ANSIBLE_TAGS}" ]]; then
   ANSIBLE_PLAYBOOK_COMMAND_OPTIONS="--tags $ANSIBLE_TAGS $ANSIBLE_PLAYBOOK_COMMAND_OPTIONS"
@@ -27,6 +30,9 @@ if [[ -n "${ANSIBLE_EXTRA_VARS}" ]]; then
 fi
 
 ON_FAIL=${ON_FAIL:-"systemctl status --no-pager"}
+
+devshop-logo "Checking Ansible Inventory..."
+ansible --list-hosts --limit $DEVSHOP_ANSIBLE_GROUP_NAME all
 
 devshop-logo "Running Ansible Playbook..."
 echo "ANSIBLE_PLAYBOOK: $ANSIBLE_PLAYBOOK"
