@@ -61,6 +61,7 @@ jobs:
         # "--no-build" is needed because docker-compose will build the image by default.
         run: |
           set -x
+          git status
           docker-compose pull --quiet devshop.server
           docker-compose up --no-build --detach devshop.server
           docker-compose exec -T devshop.server rm -rf \
