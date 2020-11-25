@@ -72,7 +72,11 @@ jobs:
             /var/aegir/config \
             /usr/local/bin/docker-* \
 
+          echo "Checking git status in /usr/share/devshop inside container:"
+          docker-compose exec -T --workdir /usr/share/devshop devshop.server git status
           docker cp ../ roles_devshop.server_1:/usr/share/devshop/
+          echo "Checking git status in /usr/share/devshop after copying devshop source into container:"
+          docker-compose exec -T --workdir /usr/share/devshop devshop.server git status
           docker-compose exec -T devshop.server chown aegir:aegir /usr/share/devshop -R
           docker-compose exec -T devshop.server chown aegir:aegir $DEVSHOP_TESTS_ARTIFACTS_PATH -R
           docker-compose exec -T devshop.server \
