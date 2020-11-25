@@ -127,6 +127,7 @@ class ScriptHandler {
 
     // If Composer is installed through git we have no easy way to determine if
     // it is new enough, just display a warning.
+    $io->write("Composer version <comment>$version</comment> detected.");
     if ($version === '@package_version@' || $version === '@package_branch_alias_version@') {
       $io->writeError('<warning>You are running a development version of Composer. If you experience problems, please update Composer to the latest stable version.</warning>');
     }
