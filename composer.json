@@ -33,7 +33,6 @@
         "drupal/drupal": "*"
     },
     "require-dev": {
-        "composer/composer": "^1.9"
     },
     "suggest": {
         "mouf/nodejs-installer": "Use to install nodejs into the devshop bin dir using composer."

@@ -7,6 +7,7 @@
 
 namespace DrupalProject\composer;
 
+use Composer\EventDispatcher\ScriptExecutionException;
 use Composer\Script\Event;
 use Composer\Semver\Comparator;
 use DrupalFinder\DrupalFinder;
@@ -21,24 +22,28 @@ class ScriptHandler {
     $drupalFinder->locateRoot(getcwd());
     $drupalRoot = $drupalFinder->getDrupalRoot();
 
-    $io->write("Contents of web/profiles/devmaster:");
-    passthru("ls -la web/profiles/devmaster");
-    passthru("ls -la web/profiles/devmaster/devmaster.info");
-
     $devmaster_path = $drupalRoot . '/profiles/devmaster';
     if (is_link($devmaster_path)) {
       $real_devmaster_path = realpath($devmaster_path);
-      $io->write("Devmaster path ($devmaster_path) is a symlink to $real_devmaster_path");
+      $io->write("<info>NOTICE</info> The package devshop/devmaster is installed via symlink to <comment>$real_devmaster_path</comment>");
       $devmaster_path = $real_devmaster_path;
     }
 
     $devmaster_info_path = $devmaster_path  . '/devmaster.info';
-    if (!$fs->exists($devmaster_info_path)) {
-      $io->writeError('<error>Devmaster profile info file was not found at ' . $devmaster_info_path . '</error>');
-      exit(1);
+
+    // Both web/profiles/devmaster directory and devmaster.info file are found.
+    if ($fs->exists($devmaster_path) && $fs->exists($devmaster_info_path)) {
+      $io->write("<info>NOTICE</info> The install profile package <comment>devshop/devmaster</comment> was found at <comment>$devmaster_path</comment>");
+      passthru("ls -la web/profiles/devmaster");
+      passthru("ls -la web/profiles/devmaster/devmaster.info");
     }
-    else {
-      $io->write('Devmaster.info file was found at ' . $devmaster_info_path);
+    // Error: web/profiles/devmaster directory exists but no info file found.
+    elseif ($fs->exists($devmaster_path) && !$fs->exists($devmaster_info_path)) {
+      throw new \Exception('There is no devmaster.info file in the path for package devshop/devmaster: ' . $devmaster_info_path);
+    }
+    // Error: No web/profiles/devmaster directory found at all.
+    elseif (!$fs->exists($devmaster_path)) {
+      throw new \Exception('There is no directory at the expected location for the devshop/devmaster install profile. A second call to composer install will fix the problem. Expected path: ' . $devmaster_path);
     }
   }
 
