@@ -28,7 +28,7 @@ Available variables are listed below, along with default values (see `defaults/m
 
 See the [default playbook](./role-playbook.yml) for the best example. 
 
-    - hosts: devshop
+    - hosts: devshop_server
       vars:
         server_hostname: "devshop.example.com"
       roles:
