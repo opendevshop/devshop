@@ -1,9 +1,11 @@
 ---
 
+# Supervisor isn't always installed at this point in the play, so allow errors.
 - name: "User ID Change: Stop supervisord"
   service:
     name: supervisord
     state: stopped
+  ignore_errors: true
 
 - name: "User ID Change: Find all user processes"
   shell: "ps -ef | grep -v grep | grep -w {{ aegir_user_name }} | awk '{print $2}'"
