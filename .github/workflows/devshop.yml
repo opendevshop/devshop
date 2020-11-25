@@ -55,7 +55,7 @@ jobs:
         uses: actions/checkout@v2
 
       # Launch DevShop Server Container
-      - name: "Launch Latest Container for 'devshop/server:${{ matrix.os }}'"
+      - name: "Launch & Prepare a pre-built 'devshop/server:${{ matrix.os }}' container"
         working-directory: roles
         # "docker-compose pull" is needed because the if the image does not exist locally, "docker-compose" will try to build.
         # "--no-build" is needed because docker-compose will build the image by default.
@@ -174,7 +174,7 @@ jobs:
         run: docker-compose build devshop.server
 
       # Launch Container
-      - name: "Launch devshop/server:${{ matrix.os }} Container"
+      - name: "Launch a freshly built devshop/server:${{ matrix.os }} container"
         working-directory: roles
         run: |
           docker-compose up --detach devshop.server
