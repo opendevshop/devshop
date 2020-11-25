@@ -33,4 +33,4 @@ git commit -m 'Temporary commit'
 # Composer require @dev and search for the Symlinking statement to ensure we are always installing from local code.
 echo "Reinstalling local devmaster using composer..."
 composer uninstall
-composer install --ansi
+composer install --ansi --no-progress
