@@ -9,10 +9,14 @@ LABEL maintainer="Jon Pugh"
 # The last thing the user sees in the logs.
 ENV DOCKER_COMMAND_POST devshop login
 
+# DEVSHOP_ANSIBLE_GROUP_NAME string must match in 'inventory' and 'play.yml' files.
+
 ENV DEVSHOP_ANSIBLE_PLAYBOOK ./roles/devshop.server/play.yml
 ENV ANSIBLE_PLAYBOOK $DEVSHOP_PATH/$DEVSHOP_ANSIBLE_PLAYBOOK
 
 ENV DEVSHOP_ANSIBLE_INVENTORY ./roles/devshop.server/inventory
+ENV DEVSHOP_ANSIBLE_GROUP_NAME devshop_server
+
 COPY $DEVSHOP_ANSIBLE_INVENTORY $DEVSHOP_ANSIBLE_INVENTORY_DESTINATION
 
 # Copy this roles dependencies into the image. Each role can decide what to copy in.
