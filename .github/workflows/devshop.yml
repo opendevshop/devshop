@@ -48,10 +48,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Set devshop_version to the PR head_ref, if this is a PR.
+        working-directory: roles
         if: github.event_name=='pull_request'
         run: |
           echo "ANSIBLE_PLAYBOOK_COMMAND_OPTIONS=--extra-vars=devshop_version=${{ github.head_ref }}" >> $GITHUB_ENV
           echo "GIT_REF=${{ github.head_ref }}" >> $GITHUB_ENV
+          git checkout -b ${{ github.head_ref }}
 
       - name: Check Out Sourcecode
         uses: actions/checkout@v2
@@ -64,7 +66,6 @@ jobs:
         run: |
           set -x
           git status
-          git checkout -b $GIT_REF
           docker-compose pull --quiet devshop.server
           docker-compose up --no-build --detach devshop.server
           docker-compose exec -T devshop.server rm -rf \
