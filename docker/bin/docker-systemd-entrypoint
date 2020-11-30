@@ -85,8 +85,7 @@ if [ ! -z "$DOCKER_COMMAND" ]; then
               fi
             )
         ) || (
-          echo "The DOCKER_COMMAND failed. (exit $?) Triggering a shutdown to end INIT_COMMAND ..." && \
-          shutdown
+          echo "The DEVSHOP_DOCKER_COMMAND_RUN failed. (exit $?) Continuing on. If you wish to exit on failure, run the command as the docker 'command' instead."
         )
 
     ) || ( \
