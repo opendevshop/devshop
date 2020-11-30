@@ -47,6 +47,9 @@ jobs:
 
     runs-on: ubuntu-latest
     steps:
+      - name: Check Out Sourcecode
+        uses: actions/checkout@v2
+
       - name: Set devshop_version to the PR head_ref, if this is a PR.
         working-directory: roles
         if: github.event_name=='pull_request'
@@ -54,9 +57,6 @@ jobs:
           echo "ANSIBLE_PLAYBOOK_COMMAND_OPTIONS=--extra-vars=devshop_version=${{ github.head_ref }}" >> $GITHUB_ENV
           echo "GIT_REF=${{ github.head_ref }}" >> $GITHUB_ENV
           git checkout -b ${{ github.head_ref }}
-
-      - name: Check Out Sourcecode
-        uses: actions/checkout@v2
 
       # Launch DevShop Server Container
       - name: "Launch & Prepare a pre-built 'devshop/server:${{ matrix.os }}' container"
