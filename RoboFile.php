@@ -593,10 +593,12 @@ class RoboFile extends \Robo\Tasks {
       // Runtime Environment for the $cmd list.
       $env_run = $this->generateEnvironmentArgs($opts);
       $extra_vars = array();
+      $extra_vars['devshop_version'] = $this->git_ref;
       $extra_vars['devshop_control_git_reference'] = $this->git_ref;
 
-      # Don't try and checkout devshop_version in CI.
+      # Don't upgrade every time we robo up.
       $extra_vars['devshop_cli_skip_update'] = true;
+      $extra_vars['devmaster_skip_upgrade'] = true;
 
       // Set extra ansible vars when not in CI.
       if (empty($_SERVER['CI'])) {
