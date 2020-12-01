@@ -110,12 +110,10 @@
             "DrupalProject\\composer\\ScriptHandler::checkComposerVersion"
         ],
         "post-install-cmd": [
-            "DrupalProject\\composer\\ScriptHandler::createRequiredFiles",
-            "DrupalProject\\composer\\ScriptHandler::checkDevmasterPackage"
+            "DrupalProject\\composer\\ScriptHandler::createRequiredFiles"
         ],
         "post-update-cmd": [
-            "DrupalProject\\composer\\ScriptHandler::createRequiredFiles",
-            "DrupalProject\\composer\\ScriptHandler::checkDevmasterPackage"
+            "DrupalProject\\composer\\ScriptHandler::createRequiredFiles"
         ],
         "post-create-project-cmd": [
             "DrupalProject\\composer\\ScriptHandler::removeInternalFiles"
@@ -143,8 +141,9 @@
             "web/sites/all/modules/contrib/{$name}/": ["type:drupal-module"],
             "web/sites/all/themes/contrib/{$name}/": ["type:drupal-theme"]
       },
-      "preserve-paths": [
-          "web/sites"
+        "preserve-paths": [
+            "web/sites",
+            "web/profiles"
         ]
     },
     "minimum-stability": "alpha",
