@@ -3,8 +3,8 @@
 # Set PHP Version:
 # DevShop uses geerlingguy.php-versions to handle PHP Version.
 # See README.md for variable details: https://github.com/geerlingguy/ansible-role-php-versions#role-variables
-php_version: '7.2'
-php_default_version_debian: "{{ php_version }}"
+php_version: '7.3'
+php_default_version_debian: '7.3'
 
 devshop_devmaster_email: admin@devshop.local.computer
 
