@@ -596,6 +596,7 @@ class RoboFile extends \Robo\Tasks {
       $extra_vars['devshop_version'] = $this->git_ref;
       $extra_vars['devshop_control_git_reference'] = $this->git_ref;
 
+      # @TODO: Move all static vars into vars.development.yml.
       # Don't upgrade every time we robo up.
       $extra_vars['devshop_cli_skip_update'] = true;
       $extra_vars['devmaster_skip_upgrade'] = true;
