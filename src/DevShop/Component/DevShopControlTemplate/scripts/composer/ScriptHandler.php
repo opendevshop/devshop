@@ -7,12 +7,45 @@
 
 namespace DrupalProject\composer;
 
+use Composer\EventDispatcher\ScriptExecutionException;
 use Composer\Script\Event;
 use Composer\Semver\Comparator;
 use DrupalFinder\DrupalFinder;
 use Symfony\Component\Filesystem\Filesystem;
 
 class ScriptHandler {
+
+  public static function checkDevmasterPackage(Event $event) {
+    $fs = new Filesystem();
+    $io = $event->getIO();
+    $drupalFinder = new DrupalFinder();
+    $drupalFinder->locateRoot(getcwd());
+    $drupalRoot = $drupalFinder->getDrupalRoot();
+
+    $devmaster_path = $drupalRoot . '/profiles/devmaster';
+    if (is_link($devmaster_path)) {
+      $real_devmaster_path = realpath($devmaster_path);
+      $io->write("<info>NOTICE</info> The package devshop/devmaster is installed via symlink to <comment>$real_devmaster_path</comment>");
+      $devmaster_path = $real_devmaster_path;
+    }
+
+    $devmaster_info_path = $devmaster_path  . '/devmaster.info';
+
+    // Both web/profiles/devmaster directory and devmaster.info file are found.
+    if ($fs->exists($devmaster_path) && $fs->exists($devmaster_info_path)) {
+      $io->write("<info>NOTICE</info> The install profile package <comment>devshop/devmaster</comment> was found at <comment>$devmaster_path</comment>");
+      passthru("ls -la web/profiles/devmaster");
+      passthru("ls -la web/profiles/devmaster/devmaster.info");
+    }
+    // Error: web/profiles/devmaster directory exists but no info file found.
+    elseif ($fs->exists($devmaster_path) && !$fs->exists($devmaster_info_path)) {
+      throw new \Exception('There is no devmaster.info file in the path for package devshop/devmaster: ' . $devmaster_info_path);
+    }
+    // Error: No web/profiles/devmaster directory found at all.
+    elseif (!$fs->exists($devmaster_path)) {
+      throw new \Exception('There is no directory at the expected location for the devshop/devmaster install profile. A second call to composer install will fix the problem. Expected path: ' . $devmaster_path);
+    }
+  }
 
   public static function createRequiredFiles(Event $event) {
     $fs = new Filesystem();
@@ -99,6 +132,7 @@ class ScriptHandler {
 
     // If Composer is installed through git we have no easy way to determine if
     // it is new enough, just display a warning.
+    $io->write("Composer version <comment>$version</comment> detected.");
     if ($version === '@package_version@' || $version === '@package_branch_alias_version@') {
       $io->writeError('<warning>You are running a development version of Composer. If you experience problems, please update Composer to the latest stable version.</warning>');
     }
