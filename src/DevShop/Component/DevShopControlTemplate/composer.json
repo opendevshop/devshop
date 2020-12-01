@@ -17,10 +17,6 @@
         {
             "type": "composer",
             "url": "https://asset-packagist.org"
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/VladimirAus/preserve-paths"
         }
     ],
     "require": {
@@ -34,8 +30,7 @@
         "composer/installers": "^1.2",
         "composer/semver": "^1.4",
         "cweagans/composer-patches": "dev-master#a18d1ca",
-        "devshop/devmaster": "^1.7||1.x-dev",
-        "drupal-composer/preserve-paths": "dev-composer2",
+        "drupal-composer/preserve-paths": "^0.1.6",
         "drupal/admin_menu": "@rc",
         "drupal/adminrole": "^1.1",
         "drupal/aegir_config": "@beta",
@@ -81,7 +76,8 @@
         "oomphinc/composer-installers-extender": "^2.0",
         "symfony/filesystem": "~2.7|^3",
         "toin0u/digitalocean-v2": "~2.0",
-        "webflo/drupal-finder": "^1.0.0"
+        "webflo/drupal-finder": "^1.0.0",
+        "devshop/devmaster": "^1.7||1.x-dev"
     },
     "conflict": {
         "drupal/core": "8.*"
