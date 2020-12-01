@@ -9,7 +9,7 @@ php_default_version_debian: "{{ php_version }}"
 devshop_devmaster_email: admin@devshop.local.computer
 
 # You should specify your own random mysql_root_password in your own playbooks or inventory.
-mysql_root_password: root
+mysql_root_password: default_devshop_password
 
 # Set to TRUE if you need to change the root password.
 mysql_root_password_update: false
