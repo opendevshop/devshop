@@ -17,6 +17,10 @@
         {
             "type": "composer",
             "url": "https://asset-packagist.org"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/VladimirAus/preserve-paths"
         }
     ],
     "require": {
@@ -29,9 +33,9 @@
         "ext-xml": "*",
         "composer/installers": "^1.2",
         "composer/semver": "^1.4",
-        "cweagans/composer-patches": "^1.7",
+        "cweagans/composer-patches": "dev-master#a18d1ca",
         "devshop/devmaster": "^1.7||1.x-dev",
-        "drupal-composer/preserve-paths": "^0.1.6",
+        "drupal-composer/preserve-paths": "dev-composer2",
         "drupal/admin_menu": "@rc",
         "drupal/adminrole": "^1.1",
         "drupal/aegir_config": "@beta",
@@ -110,12 +114,10 @@
             "DrupalProject\\composer\\ScriptHandler::checkComposerVersion"
         ],
         "post-install-cmd": [
-            "DrupalProject\\composer\\ScriptHandler::createRequiredFiles",
-            "DrupalProject\\composer\\ScriptHandler::checkDevmasterPackage"
+            "DrupalProject\\composer\\ScriptHandler::createRequiredFiles"
         ],
         "post-update-cmd": [
-            "DrupalProject\\composer\\ScriptHandler::createRequiredFiles",
-            "DrupalProject\\composer\\ScriptHandler::checkDevmasterPackage"
+            "DrupalProject\\composer\\ScriptHandler::createRequiredFiles"
         ],
         "post-create-project-cmd": [
             "DrupalProject\\composer\\ScriptHandler::removeInternalFiles"
@@ -143,8 +145,9 @@
             "web/sites/all/modules/contrib/{$name}/": ["type:drupal-module"],
             "web/sites/all/themes/contrib/{$name}/": ["type:drupal-theme"]
       },
-      "preserve-paths": [
-          "web/sites"
+        "preserve-paths": [
+            "web/sites",
+            "web/profiles"
         ]
     },
     "minimum-stability": "alpha",

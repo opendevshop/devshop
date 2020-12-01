@@ -55,7 +55,7 @@ services:
 
     ports:
       - "80:80"
-      - "2223:22"
+      - "2222:22"
     hostname: devshop.local.computer
     extra_hosts:
       - "drpl8.testenv.devshop.local.computer:127.0.0.1"
