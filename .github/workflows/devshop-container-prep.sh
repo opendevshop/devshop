@@ -36,7 +36,7 @@ echo "Reinstalling local devmaster using composer..."
 composer uninstall
 
 # Workaround for PATH bug: If composer install fails, run again but confirm path repo and show a message.
-COMPOSER_INSTALL_CMD="composer install --ansi --no-progress"
+COMPOSER_INSTALL_CMD="composer update --ansi --no-progress"
 if $COMPOSER_INSTALL_CMD; then
     echo "Composer Install successfully the first time."
 else
