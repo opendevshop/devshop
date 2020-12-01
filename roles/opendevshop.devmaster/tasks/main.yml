@@ -121,6 +121,7 @@
   tags: [always]
   args:
     chdir: "{{ devshop_cli_path }}"
+ # TODO: Change permissions of devshop source folder with recurse.
 
 - name: Add DevShop bin directory to Path
   copy:
