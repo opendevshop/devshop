@@ -7,36 +7,9 @@
 - hosts: devshop_server
   become: true
 
+  # These vars override everything except command line variables. Set variables per host in the inventory or vars files in /etc/ansible.
   vars:
-    # The geerlingguy.mysql and opendevshop.devmaster roles both use this
-    mysql_root_password: root
-
-    # @TODO: Install multiple versions per-container: https://github.com/oerdnj/deb.sury.org/wiki/Managing-Multiple-Versions
-    php_version: "7.2"
-
-    php_default_version_debian: "{{ php_version }}"
-
-    # This is set to TRUE to ensure the playbooks don't try to run the devmaster upgade every time they run (aka on robo up).
-    devmaster_skip_upgrade: true
-
-    # Use Python3.
-    # @TODO: This is now set only for Debian systems, in the `pre_tasks` section below..
-    # ansible_python_interpreter: python3
-
-    # Set to false if you want to run tasks manually.
-    # supervisor_started: false
-
-    # @TODO: Make a cleaner separation between playbooks and makefiles for docker hub, playbooks for CI testing, and local development.s
-    # Use local dev makefile because it copies the files directly from this repo.
-    # build-devmaster.make is designed for standalone use, and always downloads 1.x until release.
-    devshop_makefile: "{{ devshop_cli_path }}/build-devmaster-dev.make.yml"
-
-    # Set devshop_cli_skip_update to avoid resetting the /usr/share/devshop version on playbook run to `devshop_version`
-    # @TODO: figure out a system to separate test vars from prod vars.  Molecule?
-    devshop_cli_skip_update: true
-
-    # Set to TRUE to always run composer self-update.
-    composer_keep_updated: true
+   devshop_server_role: 'devshop.server'
 
   pre_tasks:
     - name: Set all Debian systems to use python3 as the interpretor, and python3-mysqldb for mysql_python_package_debian.

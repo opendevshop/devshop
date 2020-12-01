@@ -1,19 +1,32 @@
 ---
-
-# Server hostname will default to this unless overridden in your inventory or extra_vars.
-# It is overridden in devshop's install.sh file to match the server's current hostname.
-# server_hostname: devshop.local.computer
-
-server_hostname_ignore_errors: true
-devshop_devmaster_email: admin@devshop.local.computer
-
-# Get a GitHub Token from 'https://github.com/settings/tokens/new?scopes=repo,admin:public_key,admin:repo_hook&description=devshop-ansible-token
-devshop_github_token: ''
-
+# Server Customization Vars
 # Set PHP Version:
 # DevShop uses geerlingguy.php-versions to handle PHP Version.
 # See README.md for variable details: https://github.com/geerlingguy/ansible-role-php-versions#role-variables
 php_version: '7.2'
+php_default_version_debian: "{{ php_version }}"
+
+devshop_devmaster_email: admin@devshop.local.computer
+
+# You should specify your own random mysql_root_password in your own playbooks or inventory.
+mysql_root_password: root
+
+# Set to TRUE if you need to change the root password.
+mysql_root_password_update: false
+
+# Get a GitHub Token from 'https://github.com/settings/tokens/new?scopes=repo,admin:public_key,admin:repo_hook&description=devshop-ansible-token
+devshop_github_token: ''
+
+# Set to TRUE to always run composer self-update.
+composer_keep_updated: true
+
+php_opcache_enabled_in_ini: true
+php_apc_enabled_in_ini: true
+
+# Server hostname will default to this unless overridden in your inventory or extra_vars.
+# It is overridden in devshop's install.sh file to match the server's current hostname.
+# server_hostname: devshop.local.computer
+server_hostname_ignore_errors: true
 
 devshop_cli_repo: http://github.com/opendevshop/devshop.git
 devshop_cli_skip_update: false
@@ -24,7 +37,6 @@ devshop_cli_composer_install_command: "install"
 drush_bin_path: "{{ devshop_cli_bin_path }}/drush"
 
 aegir_server_webserver: apache
-mysql_root_password_update: false
 
 database_host: localhost
 database_host_port: 3306
@@ -46,9 +58,6 @@ devshop_drush_packages:
   registry_rebuild: 7.x-2.2
 
 php_date_timezone: "America/New_York"
-
-# You should specify your own random mysql_root_password in your own playbooks or inventory.
-# mysql_root_password: PleaseRandomizeOnPlaybookRun
 
 # The version of devshop & devmaster to install.
 # Overridden by install.sh
