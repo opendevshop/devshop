@@ -39,11 +39,16 @@ class ScriptHandler {
     }
     // Error: web/profiles/devmaster directory exists but no info file found.
     elseif ($fs->exists($devmaster_path) && !$fs->exists($devmaster_info_path)) {
-      throw new \Exception('There is no devmaster.info file in the path for package devshop/devmaster: ' . $devmaster_info_path);
+
+      // @TODO: Uncomment this when attempting to fix the missing profile problenm for good.
+      // throw new \Exception('There is no devmaster.info file in the path for package devshop/devmaster: ' . $devmaster_info_path);
+      $io->writeError('There is no devmaster.info file in the path for package devshop/devmaster: ' . $devmaster_info_path);
     }
     // Error: No web/profiles/devmaster directory found at all.
     elseif (!$fs->exists($devmaster_path)) {
-      throw new \Exception('There is no directory at the expected location for the devshop/devmaster install profile. A second call to composer install will fix the problem. Expected path: ' . $devmaster_path);
+      // @TODO: Uncomment this when attempting to fix the missing profile problenm for good.
+      // throw new \Exception('There is no directory at the expected location for the devshop/devmaster install profile. A second call to composer install will fix the problem. Expected path: ' . $devmaster_path);
+      $io->writeError('There is no directory at the expected location for the devshop/devmaster install profile. A second call to composer install will fix the problem. Expected path: ' . $devmaster_path);
     }
   }
 
