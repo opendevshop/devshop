@@ -8,6 +8,7 @@
   become: true
 
   # These vars override everything except command line variables. Set variables per host in the inventory or vars files in /etc/ansible.
+  # See https://docs.ansible.com/ansible/latest/user_guide/playbooks_variables.html#variable-precedence-where-should-i-put-a-variable
   vars:
    devshop_server_role: 'devshop.server'
 
