@@ -36,7 +36,7 @@
     # Do not run if aegir_user_uid_current is blank (happens on first install).
     - aegir_user_uid_current|length > 0
     # Run if UID or GID needs to be changed.
-    - (aegir_user_uid != aegir_user_uid_current OR aegir_user_gid != aegir_user_gid_current)
+    - aegir_user_uid != aegir_user_uid_current or aegir_user_gid != aegir_user_gid_current
   tags: [always]
 
 - name: Create Aegir Group (so we can set the GID)
