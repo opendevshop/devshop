@@ -21,6 +21,7 @@ devshop-log "Adding repos to composer global config."
 set -x
 composer config --global repo.devshop_devmaster {"path","/usr/share/devshop/devmaster"}
 cd "$DEVSHOP_PATH/src/DevShop/Component/DevShopControlTemplate"
+git log -2
 git init
 git checkout -b $GIT_REF
 git remote add origin https://github.com/devshop-packages/devshop-control-template
