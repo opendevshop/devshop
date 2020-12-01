@@ -4,7 +4,6 @@
 # Used in Docker build or image build process
 default_server_hostname: devshop.local.computer
 
-empty_string: ""
 
 # Add hosting-queue-runner to supervisor programs.
 supervisor_programs:
