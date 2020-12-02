@@ -42,10 +42,9 @@
       when: mysql_daemon is not defined
       tags: [always]
 
-    - name: Define php_default_version_debian.
+    - name: Force php_default_version_debian to match php_version.
       set_fact:
         php_default_version_debian: "{{ php_version }}"
-      when: php_default_version_debian != "{{ php_version }}"
       tags: [always]
 
     - name: MySQL Information
