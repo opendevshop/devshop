@@ -42,6 +42,12 @@
       when: mysql_daemon is not defined
       tags: [always]
 
+    - name: Define php_default_version_debian.
+      set_fact:
+        php_default_version_debian: "{{ php_version }}"
+      when: php_default_version_debian != "{{ php_version }}"
+      tags: [always]
+
     - name: MySQL Information
       debug:
         msg: "MySQL Root password: {{ mysql_root_password }}"
