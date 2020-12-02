@@ -66,8 +66,6 @@
     - role: geerlingguy.repo-remi
       when: ansible_os_family == 'RedHat'
 
-    - role: opendevshop.apache
-
     - role: geerlingguy.apache
 
     - role: geerlingguy.php-versions
@@ -80,6 +78,9 @@
       tags: [always]
 
     - role: geerlingguy.composer
+      tags: [always]
+
+    - role: opendevshop.apache
       tags: [always]
 
     - role: opendevshop.devmaster
