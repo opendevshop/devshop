@@ -870,7 +870,7 @@ class RoboFile extends \Robo\Tasks {
    */
   public function exec($cmd = '') {
     return $this->_exec("docker-compose exec -T \
-      --env ANSIBLE_TAGS \
+      --env ANSIBLE_TAGS=runtime \
       --env ANSIBLE_SKIP_TAGS \
       --env ANSIBLE_VARS \
       devshop $cmd")->getExitCode();
