@@ -17,6 +17,7 @@ use DevShop\Component\Common\ComposerRepositoryAwareTrait;
 use DevShop\Component\Common\GitRepository;
 use Robo\Common\OutputAwareTrait;
 use Symfony\Component\Console\Command\Command as BaseCommand;
+use Symfony\Component\Console\Exception\LogicException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -116,17 +117,13 @@ EOF
     {
         $this->io->title('Deploy');
 
-        // @TODO: Convert to use the Deploy class to load config from anywhere.
-        // @TODO: Create common DeployTemplates so every project does not need extras.deploy.stages
-        if (empty($this->getComposerConfig()->extra()->deploy)) {
-            // @TODO: Allow Fail or Warn
-            $this->io->warning(
-              "No 'extra.deploy' section found in composer.json in directory " . $this->composerPath
-            );
+        $deploy_config = new DeployConfig($this->getRepository());
+        if (empty($deploy_config)) {
+            throw new LogicException("No deploy configuration found.");
         }
         else {
             // @TODO: Create a simple config class so stage commands can be loaded from many places.
-            $deploy_extra_config = $this->getComposerConfig()->extra()->deploy;
+            $deploy_extra_config = $deploy_config->getAll();
 
             // Create Deploy class.
             $deploy = new Deploy(null, $this->getRepository());
