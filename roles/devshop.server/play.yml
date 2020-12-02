@@ -42,11 +42,6 @@
       when: mysql_daemon is not defined
       tags: [always]
 
-    - name: Force php_default_version_debian to match php_version.
-      set_fact:
-        php_default_version_debian: "{{ php_version }}"
-      tags: [always]
-
     - name: MySQL Information
       debug:
         msg: "MySQL Root password: {{ mysql_root_password }}"
@@ -75,10 +70,10 @@
 
     - role: geerlingguy.apache
 
-    - role: geerlingguy.php
+    - role: geerlingguy.php-versions
       tags: [runtime]
 
-    - role: geerlingguy.php-versions
+    - role: geerlingguy.php
       tags: [runtime]
 
     - role: geerlingguy.php-mysql
