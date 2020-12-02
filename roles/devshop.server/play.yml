@@ -71,10 +71,13 @@
     - role: geerlingguy.apache
 
     - role: geerlingguy.php
+      tags: [runtime]
 
     - role: geerlingguy.php-versions
+      tags: [runtime]
 
     - role: geerlingguy.php-mysql
+      tags: [runtime]
 
     - role: geerlingguy.composer
       tags: [runtime]
