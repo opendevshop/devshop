@@ -7,27 +7,28 @@ devshop_github_token: ''
 
 # Server Customization Vars
 # These variables are provided by other roles. Changing them here will NOT override the defaults provided by geerlingguy roles.
-# Use these as examples: copy these variables into your ansible inventory at /etc/ansible/hosts
+# Use these as examples: copy these variables into your ansible inventory at /etc/ansible/hosts or playbook yml files.
 
 # Set PHP Version:
 # DevShop uses geerlingguy.php-versions to handle PHP Version.
 # See README.md for variable details: https://github.com/geerlingguy/ansible-role-php-versions#role-variables
-php_version: '7.3'
-php_default_version_debian: '7.3'
-php_opcache_enabled_in_ini: true
-php_apc_enabled_in_ini: true
+# php_version: '7.3'
+# php_default_version_debian: '7.3'
+
+# php_opcache_enabled_in_ini: true
+# php_apc_enabled_in_ini: true
 
 # You should specify your own random mysql_root_password in your own playbooks or inventory.
-mysql_root_password: root
+# mysql_root_password: root
 
 # Set to TRUE if you need to change the root password.
-mysql_root_password_update: false
+# mysql_root_password_update: false
 
 # Composer version 2 is the default. Set composer_self_update_args to --1 to downgrade.
-composer_self_update_args: '--2'
+# composer_self_update_args: '--2'
 
 # Set to TRUE to always run composer self-update.
-composer_keep_updated: true
+#composer_keep_updated: true
 
 # Server hostname will default to this unless overridden in your inventory or extra_vars.
 # It is overridden in devshop's install.sh file to match the server's current hostname.
