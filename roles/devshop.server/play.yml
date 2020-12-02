@@ -61,7 +61,7 @@
       tags: [runtime]
 
     - role: geerlingguy.mysql
-      tags: [runtime]
+      tags: [always]
 
     - role: geerlingguy.repo-remi
       when: ansible_os_family == 'RedHat'
@@ -71,15 +71,15 @@
     - role: geerlingguy.apache
 
     - role: geerlingguy.php-versions
-      tags: [runtime]
+      tags: [always]
 
     - role: geerlingguy.php
-      tags: [runtime]
+      tags: [always]
 
     - role: geerlingguy.php-mysql
-      tags: [runtime]
+      tags: [always]
 
     - role: geerlingguy.composer
-      tags: [runtime]
+      tags: [always]
 
     - role: opendevshop.devmaster
