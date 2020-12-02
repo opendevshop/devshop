@@ -18,7 +18,7 @@ php_opcache_enabled_in_ini: true
 php_apc_enabled_in_ini: true
 
 # You should specify your own random mysql_root_password in your own playbooks or inventory.
-mysql_root_password: default_devshop_password
+mysql_root_password: root
 
 # Set to TRUE if you need to change the root password.
 mysql_root_password_update: false
