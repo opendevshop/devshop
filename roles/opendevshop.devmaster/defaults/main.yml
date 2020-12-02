@@ -28,7 +28,7 @@ devshop_github_token: ''
 # composer_self_update_args: '--2'
 
 # Set to TRUE to always run composer self-update.
-#composer_keep_updated: true
+# composer_keep_updated: true
 
 # Server hostname will default to this unless overridden in your inventory or extra_vars.
 # It is overridden in devshop's install.sh file to match the server's current hostname.
