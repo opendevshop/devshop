@@ -31,11 +31,11 @@ trait ComposerRepositoryAwareTrait
       $this->composerConfig = $configuration;
     }
     else {
-      if (file_exists(getcwd() . '/composer.json' )) {
-        $path = getcwd();
+      if ($this->getRepository() && file_exists($this->getRepository()->getRepositoryPath())) {
+        $path = $this->getRepository()->getRepositoryPath();
       }
       else {
-        $path = $this->getRepository()->getRepositoryPath();
+        $path = getcwd();
       }
       $this->composerConfig =  $reader->read($path . '/composer.json');
       $this->composerPath = $path;
