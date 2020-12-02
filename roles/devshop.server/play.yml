@@ -42,6 +42,12 @@
       when: mysql_daemon is not defined
       tags: [always]
 
+    - name: MySQL Information
+      debug:
+        msg: "MySQL Root password: {{ mysql_root_password }}"
+      tags: [always]
+
+    # This is here for the devshop/server container, which already has mysql installed. For some reason, it wouldn't start later on.
     # @TODO: This works, but using Service module fails!
     - name: Start MySQL
       command: "service {{ mysql_daemon }} start"
@@ -55,6 +61,7 @@
       tags: [runtime]
 
     - role: geerlingguy.mysql
+      tags: [runtime]
 
     - role: geerlingguy.repo-remi
       when: ansible_os_family == 'RedHat'
