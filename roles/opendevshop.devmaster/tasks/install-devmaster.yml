@@ -50,6 +50,31 @@
     msg: "{{ devmaster_install_environment }}"
   tags: [runtime]
 
+- name: Define devmaster_install_command.
+  set_fact:
+    devmaster_install_command: "{{ devshop_cli_bin_path }}/devshop devmaster:install -n \
+                                --site={{ server_hostname }} \
+                                --aegir_db_host={{ database_host }} \
+                                --aegir_db_pass={{ mysql_root_password }} \
+                                --aegir_db_user={{ mysql_root_username }} \
+                                --aegir_db_port={{ database_host_port }} \
+                                --aegir_host={{ server_hostname }} \
+                                --client_name={{ aegir_client_name }} \
+                                --client_email={{ devshop_devmaster_email }} \
+                                --http_service_type={{ aegir_server_webserver }} \
+                                --profile={{ devshop_install_profile }} \
+                                --root={{ devshop_control_path }}/{{ devshop_control_git_docroot }} \
+                                --devshop_version={{ devshop_version }} \
+                                --drush-path={{ devshop_cli_bin_path }}/drush \
+                                --git_root={{ devshop_control_path }} \
+                                --git_remote={{ devshop_control_git_remote }} \
+                                --git_reference={{ devshop_control_git_reference }}
+                                --git_docroot={{ devshop_control_git_docroot }}
+                                {{ devshop_control_install_options }}
+"
+  when: devmaster_install_command is not defined
+  tags: [runtime]
+
 - name: DevShop Control Install Command (DEBUG)
   debug:
     msg: "{{ devmaster_install_command }}"
