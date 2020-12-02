@@ -16,7 +16,7 @@
   become_method: "{{ ansible_become_method_aegir }}"
   ignore_errors: true
   register: devmaster_site_root
-  changed_when: "devmaster_site_root.stdout != empty_string"
+  changed_when: "devmaster_site_root.stdout | length > 0"
   tags: [runtime]
 
 - name: Get DevShop Control URI
@@ -26,7 +26,7 @@
   become_method: "{{ ansible_become_method_aegir }}"
   ignore_errors: true
   register: devmaster_site_uri
-  changed_when: "devmaster_site_uri.stdout != empty_string"
+  changed_when: "devmaster_site_uri.stdout | length > 0"
   tags: [runtime]
 
 - name: Set devmaster_site_root and devmaster_site_uri variables
@@ -50,6 +50,31 @@
     msg: "{{ devmaster_install_environment }}"
   tags: [runtime]
 
+- name: Define devmaster_install_command.
+  set_fact:
+    devmaster_install_command: "{{ devshop_cli_bin_path }}/devshop devmaster:install -n \
+                                --site={{ server_hostname }} \
+                                --aegir_db_host={{ database_host }} \
+                                --aegir_db_pass={{ mysql_root_password }} \
+                                --aegir_db_user={{ mysql_root_username }} \
+                                --aegir_db_port={{ database_host_port }} \
+                                --aegir_host={{ server_hostname }} \
+                                --client_name={{ aegir_client_name }} \
+                                --client_email={{ devshop_devmaster_email }} \
+                                --http_service_type={{ aegir_server_webserver }} \
+                                --profile={{ devshop_install_profile }} \
+                                --root={{ devshop_control_path }}/{{ devshop_control_git_docroot }} \
+                                --devshop_version={{ devshop_version }} \
+                                --drush-path={{ devshop_cli_bin_path }}/drush \
+                                --git_root={{ devshop_control_path }} \
+                                --git_remote={{ devshop_control_git_remote }} \
+                                --git_reference={{ devshop_control_git_reference }}
+                                --git_docroot={{ devshop_control_git_docroot }}
+                                {{ devshop_control_install_options }}
+"
+  when: devmaster_install_command is not defined
+  tags: [runtime]
+
 - name: DevShop Control Install Command (DEBUG)
   debug:
     msg: "{{ devmaster_install_command }}"
@@ -69,7 +94,7 @@
   become_method: "{{ ansible_become_method_aegir }}"
   command: "{{ devmaster_install_command }}"
   when:
-    - (devmaster_site_uri == empty_string) or (devshop_control_install_options is search("--force-reinstall"))
+    - (devmaster_site_uri | length == 0) or (devshop_control_install_options is search("--force-reinstall"))
   tags: [runtime]
 
 - name: DevShop Control Upgrade Command
@@ -80,7 +105,7 @@
 - name: "Upgrade DevShop Control to {{ devshop_version }}"
   command: "{{ devmaster_upgrade_command }}"
   when:
-    - devmaster_site_uri != empty_string
+    - devmaster_site_uri | length > 0
     - not devmaster_skip_upgrade
   tags: [runtime]
 
@@ -90,7 +115,7 @@
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
   register: drush_cache_clear
-  changed_when: "drush_cache_clear.stdout != empty_string"
+  changed_when: "drush_cache_clear.stdout | length > 0"
   tags: [runtime]
 
 - name: Clear all DevShop Control Caches.
@@ -99,7 +124,7 @@
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
   register: devshop_cache_clear
-  changed_when: "devshop_cache_clear.stdout != empty_string"
+  changed_when: "devshop_cache_clear.stdout | length > 0"
   tags: [runtime]
 
 - name: restart supervisor
