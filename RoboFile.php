@@ -627,6 +627,7 @@ class RoboFile extends \Robo\Tasks {
         $env_run['DOCKER_COMMAND_POST'] = 'devshop login';
       }
 
+      // Process $extra vars into JSON for ENV var.
       $env_run['ANSIBLE_EXTRA_VARS'] = json_encode($extra_vars);
       if ($this->output->isVerbose()) {
         $this->say('Ansible Extra Vars');
