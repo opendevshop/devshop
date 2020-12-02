@@ -15,11 +15,12 @@ services:
       args:
         OS: "${OS:-ubuntu1804}"
     command: "${COMMAND:-'echo DevShop Server Online'}"
+    entrypoint: "/usr/share/devshop/docker/bin/docker-systemd-entrypoint"
     extra_hosts:
       - "drpl8.testenv.devshop.local.computer:127.0.0.1"
     # @TODO: Change back to devshop.local.computer
     # Windows WSL2 Docker was not allowing me to load by devshop.local.computer. This is a workaround.
-    hostname: localhost
+    hostname: devshop.local.computer
     ports:
       - "80:80"
       - "2222:22"
@@ -28,6 +29,7 @@ services:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
       - /var/lib/mysql
       - /var/logs/aegir
+      - ./.github/test-artifacts:${DEVSHOP_TESTS_ARTIFACTS_PATH:-/usr/share/devshop/.github/test-artifacts}
     environment:
       # @TODO: Change back to devshop.local.computer
       # DEVSHOP_DOCKER_COMMAND_RUN: ansible-playbook /etc/ansible/play.yml -vv --tags runtime --extra-vars server_hostname=localhost
@@ -36,4 +38,10 @@ services:
       # This container should always run the devshop.server/play.role when run using this docker-compose.yml.
       - ANSIBLE_PLAYBOOK=/usr/share/devshop/roles/devshop.server/play.yml
       - ANSIBLE_EXTRA_VARS
+      - ANSIBLE_PLAYBOOK_COMMAND_OPTIONS
+      - ANSIBLE_VERBOSITY
       - DOCKER_COMMAND_POST
+      - GITHUB_HEAD_REF
+      - DEVSHOP_TESTS_ARTIFACTS_PATH
+      # Setting this ensures the docker containers have this value, regardless if the container is an older image.
+      - DEVSHOP_ANSIBLE_GROUP_NAME=devshop_server

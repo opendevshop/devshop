@@ -50,12 +50,17 @@
 
   <?php print $user_picture ?>
 
-  <div id="task-info" class="task-info well well-sm">
-
+  <div class="list-group">
+    <div id="task-info" class="task-info list-group-item">
       <div class="btn-group pull-right" role="group" aria-label="Actions">
-        <?php  if (isset($follow_checkbox)): ?>
-              <?php print $follow_checkbox; ?>
-        <?php endif; ?>
+
+        <!-- Terminal Tasks modal -->
+        <button type="button" class="btn btn-text" data-toggle="modal" data-target="#exampleModal">
+          <small><i class="fa fa-terminal"></i>
+            <?php print t('Run from Terminal'); ?>
+          </small>
+        </button>
+
         <?php if (isset($retry)): ?>
               <?php print render($retry); ?>
         <?php endif; ?>
@@ -65,9 +70,6 @@
         <?php if ($node->task_status != HOSTING_TASK_QUEUED && $node->task_status != HOSTING_TASK_PROCESSING && isset($run_again)): ?>
           <?php print render($run_again); ?>
         <?php endif; ?>
-        <?php if (isset($content['update-status'])): ?>
-          <?php print render($content['update-status']); ?>
-        <?php endif; ?>
       </div>
 
     <h4>
@@ -76,8 +78,14 @@
         <span class="label label-default label-<?php print $task_label_class ?> task-status"><?php print $task_label ?></span>
       </div>
 
-      <a href="<?php print $node_url ?>" title="<?php print $title ?>"><?php print $title ?></a>
+       <a href="<?php print $node_url ?>" title="<?php print $title ?>"><?php print $type_name ?></a>
     </h4>
+
+    <div class="pull-right">
+      <?php  if (isset($follow_checkbox)): ?>
+        <?php print $follow_checkbox; ?>
+      <?php endif; ?>
+    </div>
 
     <p>
       <span class="duration">
@@ -93,50 +101,39 @@
           <small><time class="timeago" datetime="<?php print $node->task_timestamp ?>"></time></small>
       </span>
     </p>
-
-    <!-- Terminal Tasks modal -->
-    <button type="button" class="pull-right btn btn-group-sm btn-default btn-sm" data-toggle="modal" data-target="#exampleModal">
-      <i class="fa fa-terminal"></i>
-      <?php print t('Run in Terminal'); ?>
-    </button>
-
-    <?php if (isset($site_url)): ?>
-      <?php print $site_url ?>
-    <?php endif; ?>
-
+    <div class="task-urls btn-group-xs">
+      <?php foreach ($environment->domains as $domain): ?>
+          <a class="btn btn-text btn-xs" href="<?php print 'http://' . $domain; ?>" target="_blank">
+              <i class="fa fa-globe"></i> <?php print $domain; ?>
+          </a>
+      <?php endforeach; ?>
 
     <?php if (isset($task_well)): ?>
       <?php print $task_well; ?>
     <?php endif; ?>
+    </div>
 
-  </div>
-
-  <?php if (count($task_args)): ?>
-    <div class="task-arguments well well-sm">
-      <!-- Default panel contents -->
-
-      <dl class="dl-horizontal">
-        <dt><?php print t('Task Arguments') ?></dt>
-        <dd>
-        <?php foreach (array_filter($task_args) as $arg => $value): ?>
-          <?php
-          if ($value === '1') {
-            $value = '';
-            $arg = '<i class="fa fa-check"></i>' . $arg;
-          }
-          ?>
-          <span class="task-arg small text-muted">
-            <strong><?php print $arg; ?></strong>
-            <span>
-              <?php print $value; ?>
-            </span>
-          </span>
-        <?php endforeach; ?>
-
-        </dd>
-      </dl>
+    <?php if (count($task_args)): ?>
+    <div class="task-args">
+    <?php foreach (array_filter($task_args) as $arg => $value): ?>
+      <?php
+      if ($value === '1') {
+        $value = '';
+        $arg = '<i class="fa fa-check"></i>' . $arg;
+      }
+      ?>
+      <span class="task-arg small text-muted">
+        <strong><?php print $arg; ?></strong>
+        <span>
+          <?php print $value; ?>
+        </span>
+      </span>
+    <?php endforeach; ?>
+    </div>
     </div>
   <?php endif; ?>
+
+  </div>
 
     <!-- Modal -->
     <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -172,8 +169,6 @@
             </div>
         </div>
     </div>
-
-    <h3><?php print $type; ?></h3>
 
     <div id='task-logs'>
         <?php print $messages; ?>

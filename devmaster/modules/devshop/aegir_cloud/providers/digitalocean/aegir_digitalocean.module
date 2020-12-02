@@ -1,0 +1,121 @@
+<?php
+
+use DigitalOceanV2\DigitalOceanV2;
+
+/**
+ * Implements hook_hosting_service()
+ */
+function aegir_digitalocean_hosting_service() {
+  return array(
+    'digital_ocean' => 'provider',
+  );
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter()
+ *
+ * Alters devshop cloud settings form to add digital_ocean api keys.
+ */
+function aegir_digitalocean_form_aegir_cloud_settings_form_alter(&$form, &$form_state) {
+
+  require("options.php");
+  $key = trim(variable_get('aegir_cloud_digital_ocean_api_token', null));
+  $key_exists = !empty($key);
+  $uuid = null;
+
+  if ($key_exists) {
+    try {
+      $uuid = aegir_digitalocean_load_api()->account()->getUserInformation()->uuid;
+    } catch (\Exception $e) {
+      drupal_set_message($e->getMessage());
+    }
+  }
+
+  $form['digital_ocean'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Digital Ocean'),
+    '#weight' => -100,
+  );
+
+  $form['digital_ocean']['warning'] = array(
+    '#type' => 'container',
+    '#attributes' => array(
+      'class' => array('alert alert-info')
+    ),
+    '#children' => t('Enter your Digital Ocean token. !link', array('!link' => l(t('Manage DigitalOcean API Keys'), 'https://cloud.digitalocean.com/account/api/tokens', array(
+      'attributes' => array(
+        'target' => array('_blank')
+      ),
+    )))),
+  );
+
+  $form['digital_ocean']['aegir_cloud_digital_ocean_api_token'] = array(
+    '#type' => 'password',
+    '#title' => t('DigitalOcean API Key'),
+    '#attributes' => array(
+      'placeholder' => $key_exists
+        ? t('Replace current DigitalOcean API Key')
+        : t('Enter a new DigitalOcean API Key'),
+    ),
+    '#default_value' => variable_get('aegir_cloud_digital_ocean_api_token', ''),
+    '#description' => $key_exists
+      ? t('The DigitalOcean API Key is saved and valid. Account: %account', array(
+          '%account' => $uuid,
+        ))
+      : t('Enter a DigitalOcean API Key to enable creation of servers from this DevShop instance.'),
+    '#element_validate' => array(
+      'aegir_digitalocean_api_element_validate',
+    ),
+  );
+
+  $form['digital_ocean']['aegir_cloud_digital_ocean_create_dns'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Create & Destroy DNS records'),
+    '#description' => t('If the base domain of a server is managed by DigitalOcean, create a DNS record for this server once the IP address is known, and destroy it when the server is destroyed.'),
+    '#default_value' => variable_get('aegir_cloud_digital_ocean_create_dns', TRUE),
+    '#access' => variable_get('aegir_cloud_digital_ocean_api_token', 0),
+  );
+
+  $form['digital_ocean']['options'] = aegir_digital_ocean_options_form();
+
+  // Fire off our submit
+  $form['#submit'][] = 'aegir_digital_ocean_options_form_submit';
+
+}
+
+/**
+ * Form field validator for digitalocean api key.
+ */
+function aegir_digitalocean_api_element_validate($element, &$form_state, $form) {
+
+    $token = $element['#value'];
+    if (empty($token)) {
+      form_set_value($element, variable_get('aegir_cloud_digital_ocean_api_token'), $form_state);
+      return;
+    }
+
+    try {
+      $adapter = new \DigitalOceanV2\Adapter\GuzzleAdapter($token);
+      $digitalocean = new DigitalOceanV2($adapter);
+      $account = $digitalocean->account()->getUserInformation();
+      drupal_set_message(t('Successfully connected to DigitalOcean API.'));
+    } catch (\Exception $e) {
+      form_error($element,  t('DigitalOcean API: ') . $e->getMessage());
+    }
+}
+
+function aegir_digitalocean_load_api(){
+
+  $api_token = variable_get('aegir_cloud_digital_ocean_api_token', array());
+
+  $adapter = new \DigitalOceanV2\Adapter\GuzzleAdapter($api_token);
+  $digitalocean = new DigitalOceanV2($adapter);
+  return $digitalocean;
+}
+
+/**
+ * Implementation of hook_nodeapi()
+ */
+function aegir_digitalocean_nodeapi_server_load(&$node) {
+  return array('digital_ocean_token' => variable_get('aegir_cloud_digital_ocean_api_token', array()));
+}

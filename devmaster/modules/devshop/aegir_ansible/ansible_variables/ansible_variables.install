@@ -1,0 +1,45 @@
+<?php
+/**
+ * @file
+ * Install, update and uninstall functions for the ansible_variables module.
+ */
+
+/**
+ * Implements hook_install()
+ */
+function ansible_variables_install() {
+    db_query('UPDATE {system} SET weight = 1 WHERE name = :module', array(
+        ':module' => 'ansible_variables'
+    ));
+}
+
+/**
+ * Implements hook_schema().
+ */
+function ansible_variables_schema() {
+  $schema['ansible_variables'] = array(
+    'fields' => array(
+      'vid' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'nid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'ansible_variables' => array(
+        'description' => 'Ansible variables to pass to the inventory, stored as YML.',
+        'type' => 'text',
+        'size' => 'medium',
+      ),
+    ),
+    'indexes' => array(
+      'vid' => array('vid'),
+    ),
+  );
+
+  return $schema;
+}

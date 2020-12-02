@@ -1,0 +1,58 @@
+<?php
+
+/**
+ * Implements hook_hosting_tasks().
+ */
+function ansible_playbooks_hosting_tasks() {
+  $tasks = array();
+  $tasks['server']['playbook'] = array(
+    'title' => t('Run Playbook'),
+    'description' => t('Run an ansible playbook.'),
+    'dialog' => TRUE,
+  );
+  return $tasks;
+}
+
+/**
+ * Implements hook_permission().
+ */
+function ansible_playbooks_permission() {
+  return array(
+    'create playbook task' => array(
+      'title' => t('create playbook task'),
+    ),
+  );
+}
+
+
+/**
+ * Implements hosting_task_TASK_TYPE_form().
+ */
+function hosting_task_playbook_form($node) {
+ $form['playbook'] = array(
+   '#type' => 'textfield',
+   '#title' => t('Playbook'),
+   '#description' => t('The absolute path to a playbook file on the server.'),
+ );
+ $form['inventory'] = array(
+   '#type' => 'textfield',
+   '#title' => t('Inventory'),
+   '#description' => t('The absolute path to an inventory file or a comma separated list of hosts.'),
+ );
+ $form['limit'] = array(
+   '#type' => 'textfield',
+   '#title' => t('Limit'),
+   '#description' => t('Limit selected hosts to an additional pattern.'),
+ );
+ $form['user'] = array(
+   '#type' => 'textfield',
+   '#title' => t('User'),
+   '#description' => t('The user to use to connect to remote hosts.'),
+ );
+ $form['connection'] = array(
+   '#type' => 'textfield',
+   '#title' => t('Connection'),
+   '#description' => t('The connection method to use.'),
+ );
+  return $form;
+}
