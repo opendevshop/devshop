@@ -69,10 +69,10 @@
                                 --client_email={{ devshop_devmaster_email }} \
                                 --http_service_type={{ aegir_server_webserver }} \
                                 --profile={{ devshop_install_profile }} \
-                                --root={{ devshop_control_path }}/{{ devshop_control_git_docroot }} \
+                                --root={{ devshop_control_publish_path }} \
                                 --devshop_version={{ devshop_version }} \
                                 --drush-path={{ devshop_cli_bin_path }}/drush \
-                                --git_root={{ devshop_control_path }} \
+                                --git_root={{ devshop_control_git_root }} \
                                 --git_remote={{ devshop_control_git_remote }} \
                                 --git_reference={{ devshop_control_git_reference }}
                                 --git_docroot={{ devshop_control_git_docroot }}
