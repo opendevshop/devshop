@@ -127,7 +127,10 @@
     path: "{{ devshop_cli_path }}"
     state: directory
     recurse: yes
-    mode: 0755
+    mode: "u+rwX,go+rX"
+    owner: "root"
+    group: "root"
+  when: not devshop_cli_skip_update
 
 - name: Add DevShop bin directory to Path
   copy:
