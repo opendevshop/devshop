@@ -17,13 +17,16 @@ set -ex
 # Rebuild a base container to include this PR's systemd scripts.
 docker-compose --file docker/docker-compose.yml build base
 
+cd install
+make build
+
 # Launch a devshop/base container with this PR's install.sh script inside.
 docker run \
   --name install-server-test \
   --detach --privileged --rm \
   --hostname devshop.local.computer \
   --publish 80:80 \
-  --volume $PWD/install/install.sh:/tmp/devshop-install.sh \
+  --volume $PWD/install/index.html:/tmp/devshop-install.sh \
   --volume /sys/fs/cgroup:/sys/fs/cgroup:ro \
   devshop/base
 
