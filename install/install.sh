@@ -261,7 +261,16 @@ prepare_centos7() {
     pip install $pip_packages
 }
 
-write_ansible_hosts_static() {
+ansible_prepare_server() {
+  if [[ -x "$ANSIBLE_DEFAULT_HOST_LIST" ]]; then
+    echo "Ansible Inventory file found at $ANSIBLE_DEFAULT_HOST_LIST. Not modifying."
+    return
+  fi
+
+  ANSIBLE_HOME=$(dirname "$ANSIBLE_DEFAULT_HOST_LIST")
+  echo "Ansible Inventory file not found at $ANSIBLE_DEFAULT_HOST_LIST. Creating new Ansible home directory at $ANSIBLE_HOME..."
+  mkdir --parent $ANSIBLE_HOME
+
   # Strangest thing: if you leave a space after the variable "name:" the output will convert to a new line.
   IFS=$'\n'
 
@@ -503,15 +512,8 @@ else
   exit 1
 fi
 
-# Check inventory file for [devmaster] group or is executable, leave it alone.
-if [[ -x "$ANSIBLE_DEFAULT_HOST_LIST" ]]; then
-  echo "Ansible Inventory file found at $ANSIBLE_DEFAULT_HOST_LIST. Not modifying."
-else
-# Create inventory file.
-  echo "Hostname $HOSTNAME_FQDN not found in the file $ANSIBLE_DEFAULT_HOST_LIST... Creating new file..."
-  echo "Ansible Inventory file not found at $ANSIBLE_DEFAULT_HOST_LIST. Creating new file..."
-  write_ansible_hosts_static
-fi
+# Prepare Ansible inventory
+ansible_prepare_server
 
 # If Ansible.cfg file does not exist, copy it in.
 if [ ! -f "$ANSIBLE_CONFIG_PATH/ansible.cfg" ]; then
