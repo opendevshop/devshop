@@ -34,8 +34,3 @@ galaxy_info:
     - webops
     - webserver
 
-dependencies:
-  - opendevshop.users
-  - geerlingguy.apache
-  - geerlingguy.php-versions
-  - geerlingguy.php
