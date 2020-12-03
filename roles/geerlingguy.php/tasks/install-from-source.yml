@@ -85,6 +85,7 @@
     version: "{{ php_source_version }}"
     accept_hostkey: true
     depth: "{{ php_source_clone_depth }}"
+    umask: 0022
   when: php_installed.rc != 0
 
 - name: Ensure PHP installation path exists.

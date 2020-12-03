@@ -112,6 +112,7 @@
     update: "{{ not devshop_cli_skip_update }}"
     dest: "{{ devshop_cli_path }}"
     force: true
+    umask: 0022
   when: not devshop_cli_skip_update
 
 - name: Composer Install Devshop CLI
