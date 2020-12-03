@@ -187,6 +187,16 @@
     owner: "{{ aegir_user_name }}"
   tags: [runtime]
 
+- name: Ensure DevShop Control code is owned by aegir user.
+  file:
+    state: directory
+    path: "{{ devshop_control_git_root }}"
+    group: "{{ aegir_user_name }}"
+    owner: "{{ aegir_user_name }}"
+  # String-based way to tell if root is in the CLI
+  when: devshop_control_git_root is search("{{ devshop_cli_path }}")
+  tags: [runtime]
+
 - name: Create /var/aegir/.drush
   file:
     path: "{{ aegir_user_home }}/.drush/commands"
