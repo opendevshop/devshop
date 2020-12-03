@@ -262,15 +262,22 @@ prepare_centos7() {
 }
 
 ansible_prepare_server() {
-  if [[ -x "$ANSIBLE_DEFAULT_HOST_LIST" ]]; then
-    echo "Ansible Inventory file found at $ANSIBLE_DEFAULT_HOST_LIST. Not modifying."
-    return
-  fi
-
   ANSIBLE_HOME=$(dirname "$ANSIBLE_DEFAULT_HOST_LIST")
-  echo "Ansible Inventory file not found at $ANSIBLE_DEFAULT_HOST_LIST. Creating new Ansible home directory at $ANSIBLE_HOME..."
-  mkdir --parent $ANSIBLE_HOME
+  if [[ ! -d "$ANSIBLE_HOME" ]]; then
+    echo "No ansible home directory found at $ANSIBLE_HOME. Preparing..."
+    mkdir --parent "$ANSIBLE_HOME"
+  fi
+  if [[ ! -f "$ANSIBLE_DEFAULT_HOST_LIST" ]]; then
+    echo "No ansible inventory found at $ANSIBLE_DEFAULT_HOST_LIST. Preparing inventory..."
+    ansible_prepare_server_inventory
+  fi
+  if [[ ! -f "$ANSIBLE_HOME/ansible.cfg" ]]; then
+    echo "No ansible.cfg file found at $ANSIBLE_HOME/ansible.cfg. Copying ansible.default.cfg ..."
+    cp "$DEVSHOP_INSTALL_PATH/ansible.default.cfg" "$ANSIBLE_HOME/ansible.cfg"
+  fi
+}
 
+ansible_prepare_server_inventory() {
   # Strangest thing: if you leave a space after the variable "name:" the output will convert to a new line.
   IFS=$'\n'
 
@@ -514,11 +521,6 @@ fi
 
 # Prepare Ansible inventory
 ansible_prepare_server
-
-# If Ansible.cfg file does not exist, copy it in.
-if [ ! -f "$ANSIBLE_CONFIG_PATH/ansible.cfg" ]; then
-  cp $DEVSHOP_INSTALL_PATH/ansible.cfg $ANSIBLE_CONFIG_PATH/ansible.cfg
-fi
 
 # Run the playbook.
 echo $LINE
