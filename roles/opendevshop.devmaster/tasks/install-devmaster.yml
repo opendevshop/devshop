@@ -1,5 +1,11 @@
 ---
 
+- name: Ensure Supervisor is stopped for install (if configured).
+  service:
+    name: supervisord
+    state: stopped
+  when: supervisor_started
+
 - name: Get Install DevShop Control Environment (DEBUG)
   become: true
   become_user: "{{ aegir_user_name }}"
@@ -127,8 +133,9 @@
   changed_when: "devshop_cache_clear.stdout | length > 0"
   tags: [runtime]
 
-- name: restart supervisor
-  debug:
-  tags: [runtime]
+- name: Ensure Supervisor is started after install (if configured).
+  service:
+    name: supervisord
+    state: started
   when: supervisor_started
-  notify: restart supervisor
+  tags: [runtime]
