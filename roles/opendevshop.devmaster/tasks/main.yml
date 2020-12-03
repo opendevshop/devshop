@@ -118,7 +118,7 @@
 - name: Set Default Umask
   copy:
     dest: /etc/profile.d/devshop-umask.sh
-    content: 'umask 022'
+    content: 'umask 0022'
   tags: [always]
   args:
     mode: 0644
