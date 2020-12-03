@@ -21,7 +21,7 @@
 - name: Set Server Hostname
   hostname:
     name: "{{ server_hostname }}"
-  when: server_hostname != empty_string
+  when: server_hostname | length > 0
   ignore_errors: "{{ server_hostname_ignore_errors }}"
   tags: [runtime]
 
