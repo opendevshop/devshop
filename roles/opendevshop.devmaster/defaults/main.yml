@@ -120,7 +120,7 @@ devshop_support_license_key: ""
 # The path to the script to use for the Hosting Task Queue Runner. See opendevshop/devshop/bin/hosting-queue-runner
 hosting_queue_runner_bin_path: "{{ devshop_cli_bin_path }}/hosting-queue-runner"
 
-# Triggers the removal of devshop_control_path: `rm -rf {{ devshop_control_path }}`
+# Triggers the removal of devshop_control_git_root: `rm -rf {{ devshop_control_git_root }}`
 devshop_danger_remove_devmaster: false
 
 # By default, devshop assumes it is being installed at "runtime" (like on a running server).
