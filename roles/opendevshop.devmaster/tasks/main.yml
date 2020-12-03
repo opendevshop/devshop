@@ -1,5 +1,18 @@
 ---
 
+- name: "opendevshop.devmaster"
+  debug:
+    msg: "Welcome the opendevshop.devmaster playbook! We are about to install: "
+  tags: [always]
+
+- debug:
+    msg:
+      - "Repo: {{ devshop_cli_repo }}"
+      - "Path: {{ devshop_cli_path }}"
+      - "Version: {{ devshop_version }}"
+      - "CLI Version: {{ devshop_cli_version }}"
+  tags: [always]
+
 - name: Detect current server hostname.
   command: "hostname --fqdn"
   register: _server_hostname_fqdn_command
