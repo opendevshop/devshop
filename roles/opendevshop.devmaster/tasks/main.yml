@@ -115,6 +115,14 @@
     umask: 0022
   when: not devshop_cli_skip_update
 
+- name: Set Default Umask
+  copy:
+    dest: /etc/profile.d/devshop-umask.sh
+    content: 'umask 022'
+  tags: [always]
+  args:
+    mode: 0644
+
 - name: Composer Install Devshop CLI
   command: "{{ php_executable }} {{ composer_path }} {{ devshop_cli_composer_install_command }}"
   # Changed: true is so we don't fail ansible lint.
