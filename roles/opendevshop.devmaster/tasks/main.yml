@@ -193,8 +193,7 @@
     path: "{{ devshop_control_git_root }}"
     group: "{{ aegir_user_name }}"
     owner: "{{ aegir_user_name }}"
-  # String-based way to tell if root is in the CLI
-  when: devshop_control_git_root is search("{{ devshop_cli_path }}")
+  when: devshop_control_git_root is match(devshop_cli_path)
   tags: [runtime]
 
 - name: Create /var/aegir/.drush
