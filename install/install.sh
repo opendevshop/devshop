@@ -538,6 +538,10 @@ fi
 export ANSIBLE_PLAYBOOK
 export ANSIBLE_TAGS=all
 export ANSIBLE_PLAYBOOK_COMMAND_OPTIONS=${ANSIBLE_PLAYBOOK_COMMAND_OPTIONS:-"--connection=local"}
+
+# Set devshop_version at runtime so it installs the correct source code via git and we don't get the version stuck in the static inventory file.
+export ANSIBLE_EXTRA_VARS="{devshop_version: ${DEVSHOP_VERSION}}"
+
 $DEVSHOP_INSTALL_PATH/scripts/devshop-ansible-playbook
 
 # Run devshop status, return exit code.
