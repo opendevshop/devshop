@@ -110,7 +110,6 @@ ANSIBLE_EXTRA_VARS=()
 ANSIBLE_EXTRA_VARS+=("ansible_host: ${HOSTNAME_FQDN}")
 ANSIBLE_EXTRA_VARS+=("ansible_connection: local")
 ANSIBLE_EXTRA_VARS+=("server_hostname: ${HOSTNAME_FQDN}")
-ANSIBLE_EXTRA_VARS+=("devshop_control_git_reference: ${DEVSHOP_VERSION}")
 ANSIBLE_EXTRA_VARS+=("devshop_cli_path: ${DEVSHOP_INSTALL_PATH}")
 ANSIBLE_EXTRA_VARS+=("aegir_server_webserver: ${SERVER_WEBSERVER}")
 ANSIBLE_EXTRA_VARS+=("aegir_user_uid: ${AEGIR_USER_UID}")
@@ -540,9 +539,7 @@ export ANSIBLE_TAGS=all
 export ANSIBLE_PLAYBOOK_COMMAND_OPTIONS=${ANSIBLE_PLAYBOOK_COMMAND_OPTIONS:-"--connection=local"}
 
 # Set devshop_version at runtime so it installs the correct source code via git and we don't get the version stuck in the static inventory file.
-export ANSIBLE_EXTRA_VARS="{devshop_version: ${DEVSHOP_VERSION}}"
-
-$DEVSHOP_INSTALL_PATH/scripts/devshop-ansible-playbook
+$DEVSHOP_INSTALL_PATH/scripts/devshop-ansible-playbook --extra-vars=devshop_version=${DEVSHOP_VERSION}
 
 # Run devshop status, return exit code.
 su - aegir -c "devshop status"
