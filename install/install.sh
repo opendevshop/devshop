@@ -273,7 +273,7 @@ ansible_prepare_server() {
   fi
   if [[ ! -f "$ANSIBLE_HOME/ansible.cfg" ]]; then
     echo "No ansible.cfg file found at $ANSIBLE_HOME/ansible.cfg. Copying ansible.default.cfg ..."
-    cp "$DEVSHOP_INSTALL_PATH/ansible.default.cfg" "$ANSIBLE_HOME/ansible.cfg"
+    cp "$DEVSHOP_INSTALL_PATH/ansible.cfg" "$ANSIBLE_HOME/ansible.cfg"
   fi
 }
 
