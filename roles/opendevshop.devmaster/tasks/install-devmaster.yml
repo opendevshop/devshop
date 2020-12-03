@@ -132,10 +132,3 @@
   register: devshop_cache_clear
   changed_when: "devshop_cache_clear.stdout | length > 0"
   tags: [runtime]
-
-- name: Ensure Supervisor is started after install (if configured).
-  service:
-    name: supervisord
-    state: started
-  when: supervisor_started
-  tags: [runtime]

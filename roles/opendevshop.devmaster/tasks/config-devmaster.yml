@@ -36,6 +36,22 @@
   changed_when: devshop_ansible_command_output.stdout | length > 0
   tags: [runtime]
 
+- name: Ensure hosting-dispatch crontab is setup
+  become: true
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
+  command: "{{ drush_bin_path }} {{ devshop_control_drush_alias }} hosting-setup -y"
+  register: devshop_ansible_command_output
+  changed_when: devshop_ansible_command_output.stdout | length > 0
+  tags: [runtime]
+
+- name: Ensure Supervisor is started after install (if configured).
+  service:
+    name: supervisord
+    state: started
+  when: supervisor_started
+  tags: [runtime]
+
 - name: DevShop.Support | Save License Key
   become: true
   become_user: "{{ aegir_user_name }}"
@@ -50,15 +66,6 @@
   become_method: "{{ ansible_become_method_aegir }}"
   command: "{{ drush_bin_path }} {{ devshop_control_drush_alias }} hosting-devshop_support"
   when: devshop_support_license_key | length > 0
-  tags: [runtime]
-
-- name: Ensure hosting-dispatch crontab is setup
-  become: true
-  become_user: "{{ aegir_user_name }}"
-  become_method: "{{ ansible_become_method_aegir }}"
-  command: "{{ drush_bin_path }} {{ devshop_control_drush_alias }} hosting-setup -y"
-  register: devshop_ansible_command_output
-  changed_when: devshop_ansible_command_output.stdout | length > 0
   tags: [runtime]
 
 - name: Save SSH key as variable
