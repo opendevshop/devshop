@@ -28,6 +28,6 @@ docker run \
   devshop/base
 
 docker exec \
-  --env="DEVSHOP_VERSION" \
+  --env="LOAD_DEVSHOP_VERSION=${DEVSHOP_VERSION}" \
   install-server-test \
   bash /tmp/devshop-install.sh \

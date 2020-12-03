@@ -34,7 +34,7 @@ SCRIPT_COMMIT_SHA="${LOAD_SCRIPT_COMMIT_SHA}"
 #     $ bash install.sh
 #
 # See the GitHub action ./.github/workflows/install.yml
-DEVSHOP_VERSION=${DEVSHOP_VERSION:-1.x}
+ DEVSHOP_VERSION="${LOAD_DEVSHOP_VERSION:-1.x}"
 
 # Version of Ansible to install
 ANSIBLE_VERSION=${ANSIBLE_VERSION:-"2.9"}
