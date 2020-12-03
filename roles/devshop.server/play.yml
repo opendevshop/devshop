@@ -81,7 +81,6 @@
     - role: geerlingguy.composer
       tags: [always]
 
-   # @TODO: Does this role see the supervisor_programs var being set in opendevshop.devmaster?
     - role: geerlingguy.supervisor
       tags: [always]
 
