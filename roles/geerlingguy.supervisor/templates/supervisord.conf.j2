@@ -3,6 +3,7 @@ nodaemon = {{ supervisor_nodaemon }}
 childlogdir = {{ supervisor_log_dir }}
 user = {{ supervisor_user }}
 pidfile = /var/run/supervisord.pid
+umask = 022
 
 {% if supervisor_unix_http_server_enable %}
 [unix_http_server]
