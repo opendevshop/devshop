@@ -48,7 +48,7 @@ class ScriptHandler {
     elseif (!$fs->exists($devmaster_path)) {
       // @TODO: Uncomment this when attempting to fix the missing profile problenm for good.
       // throw new \Exception('There is no directory at the expected location for the devshop/devmaster install profile. A second call to composer install will fix the problem. Expected path: ' . $devmaster_path);
-      $io->writeError('There is no directory at the expected location for the devshop/devmaster install profile. A second call to composer install will fix the problem. Expected path: ' . $devmaster_path);
+      $io->writeError('<error>ERROR:</error> The devshop/devmaster install profile package was not installed. A second call to composer install will fix the problem. Expected path: ' . $devmaster_path);
     }
   }
 
