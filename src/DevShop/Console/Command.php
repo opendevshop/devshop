@@ -317,7 +317,7 @@ abstract class Command extends BaseCommand
     }
 
     try {
-      $ref = $client->getHttpClient()->get('repos/opendevshop/devshop/git/refs/commits/' . $version);
+      $ref = $client->getHttpClient()->get('repos/opendevshop/devshop/git/commits/' . $version);
       $sha_found = TRUE;
       $this->targetVersionRef = 'sha';
     }
