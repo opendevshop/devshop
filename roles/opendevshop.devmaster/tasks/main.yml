@@ -114,7 +114,30 @@
     force: true
   when: not devshop_cli_skip_update
 
-- name: Composer Install Devshop CLI
+- name: "Configure composer repositories for root user."
+  command: "{{ php_executable }} {{ composer_path }} {{ item }}"
+  changed_when: true
+  tags: [always]
+  with_items:
+    # Set devshop/devmaster repository to a path repo so it is symlinked into the DevShop Control site.
+    # This is so that when "devshop control" gets "composer install"ed via ansible, it runs as root, and it will symlink to /usr/share/devshop/devmaster.
+    # We only this as root so that aegir user can composer install a custom devshop control site without using the linked devmaster repo, but a composer package release.
+    - 'config --global repo.devshop_devmaster {"path","{{ devshop_cli_path }}"}'
+
+- name: "Install DevShop Dependencies"
+  command: "{{ php_executable }} {{ composer_path }} {{ devshop_cli_composer_install_command }}"
+  # Changed: true is so we don't fail ansible lint.
+  changed_when: true
+  tags: [always]
+  args:
+    chdir: "{{ item }}"
+  with_items:
+    - "{{ devshop_cli_path }}"
+    # Composer.json is not in publish_path, but it will work with --no-interaction at the path above.
+    # We can use this, otherwise we would have to create another variable for "composer.json" path.
+    - "{{ devshop_cli_path }}/src/DevShop/Component/DevShopControlTemplate"
+
+- name: "Install DevShop Dependencies"
   command: "{{ php_executable }} {{ composer_path }} {{ devshop_cli_composer_install_command }}"
   # Changed: true is so we don't fail ansible lint.
   changed_when: true
@@ -173,6 +196,19 @@
     group: "{{ aegir_user_name }}"
     owner: "{{ aegir_user_name }}"
   tags: [runtime]
+
+- name: Ensure DevShop Control code is owned by aegir user.
+  file:
+    state: directory
+    path: "{{ item }}"
+    group: "{{ aegir_user_name }}"
+    owner: "{{ aegir_user_name }}"
+    recurse: true
+  when: devshop_control_git_root is match(devshop_cli_path)
+  tags: [runtime]
+  with_items:
+    - "{{ devshop_control_git_root }}"
+    - "{{ devshop_cli_path }}/devmaster"
 
 - name: Create /var/aegir/.drush
   file:
