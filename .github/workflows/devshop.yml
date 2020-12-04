@@ -43,7 +43,6 @@ jobs:
     env:
       OS: "${{ matrix.os }}"
       HOSTNAME: "devshop.${{ github.event.pull_request.number }}.${{ matrix.os }}.actions.github.com"
-      ANSIBLE_VERBOSITY: 2
 
     runs-on: ubuntu-latest
     steps:
@@ -63,6 +62,7 @@ jobs:
         run: |
           echo "ANSIBLE_PLAYBOOK_COMMAND_OPTIONS=--extra-vars=devshop_version=${{ github.head_ref }}" >> $GITHUB_ENV
           echo "GIT_REF=${{ github.head_ref }}" >> $GITHUB_ENV
+          echo "ANSIBLE_VERBOSITY=2" >> $GITHUB_ENV
           git checkout -b ${{ github.head_ref }}
 
       # Launch DevShop Server Container
@@ -170,6 +170,7 @@ jobs:
         run: |
           echo "ANSIBLE_PLAYBOOK_COMMAND_OPTIONS=--extra-vars=devshop_version=${{ github.head_ref }}" >> $GITHUB_ENV
           echo "GIT_REF=${{ github.head_ref }}" >> $GITHUB_ENV
+          echo "ANSIBLE_VERBOSITY=2" >> $GITHUB_ENV
           git checkout -b ${{ github.head_ref }}
 
       # Build "base"
