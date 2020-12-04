@@ -147,6 +147,6 @@
           "web/sites"
         ]
     },
-    "minimum-stability": "alpha",
+    "minimum-stability": "dev",
     "prefer-stable": true
 }
