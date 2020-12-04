@@ -19,7 +19,6 @@ jobs:
       run: echo "DEVSHOP_VERSION=${{ github.event.after }}" >> $GITHUB_ENV
     - uses: actions/checkout@v2
       with:
-        ref: ${{ github.event.pull_request.head.sha }}
-
+        ref: ${{ github.event.pull_request.head.sha }}
     - name: Run Install Script
       run: bash .github/workflows/install-sh-test.sh
