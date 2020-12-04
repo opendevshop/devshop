@@ -138,7 +138,7 @@
     - "{{ devshop_cli_path }}"
     # Composer.json is not in publish_path, but it will work with --no-interaction at the path above.
     # We can use this, otherwise we would have to create another variable for "composer.json" path.
-    - "{{ devshop_control_publish_path }}"
+    - "{{ devshop_cli_path }}/src/DevShop/Component/DevShopControlTemplate"
 
 - name: Add DevShop bin directory to Path
   copy:
