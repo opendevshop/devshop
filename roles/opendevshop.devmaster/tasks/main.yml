@@ -127,13 +127,18 @@
     force: true
   when: not devshop_cli_skip_update
 
-- name: Composer Install Devshop CLI
+- name: "Install DevShop Dependencies"
   command: "{{ php_executable }} {{ composer_path }} {{ devshop_cli_composer_install_command }}"
   # Changed: true is so we don't fail ansible lint.
   changed_when: true
   tags: [always]
   args:
-    chdir: "{{ devshop_cli_path }}"
+    chdir: "{{ item }}"
+  with_items:
+    - "{{ devshop_cli_path }}"
+    # Composer.json is not in publish_path, but it will work with --no-interaction at the path above.
+    # We can use this, otherwise we would have to create another variable for "composer.json" path.
+    - "{{ devshop_control_publish_path }}"
 
 - name: Add DevShop bin directory to Path
   copy:
