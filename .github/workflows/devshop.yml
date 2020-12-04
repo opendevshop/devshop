@@ -49,9 +49,16 @@ jobs:
     steps:
       - name: Check Out Sourcecode
         uses: actions/checkout@v2
+        if: github.event_name!='pull_request'
 
-      - name: Set devshop_version to the PR head_ref, if this is a PR.
-        working-directory: roles
+      - name: Check Out Pull Request Sourcecode
+        uses: actions/checkout@v2
+        if: github.event_name=='pull_request'
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      # This also creates a local branch from the SHA checked out by actions/checkout. This helps devshop know it is on a branch, and composer needs the branch for versioning of devshop/devmaster.
+      - name: Set devshop_version and create a git branch.
         if: github.event_name=='pull_request'
         run: |
           echo "ANSIBLE_PLAYBOOK_COMMAND_OPTIONS=--extra-vars=devshop_version=${{ github.head_ref }}" >> $GITHUB_ENV
@@ -89,7 +96,6 @@ jobs:
           sleep 3
           docker-compose logs
           docker-compose exec -T devshop.server /usr/share/devshop/scripts/devshop-logo "GitHub Actions Container populated with code. Running SHA ${GITHUB_PR_SHA}"
-          docker-compose exec -T --user aegir devshop.server /usr/share/devshop/.github/workflows/devshop-container-prep.sh
 
       - name: "Review Container Environment"
         working-directory: roles
@@ -148,14 +154,23 @@ jobs:
 
     runs-on: ubuntu-latest
     steps:
+      - name: Check Out Sourcecode
+        uses: actions/checkout@v2
+        if: github.event_name!='pull_request'
 
-      - name: Set devshop_version to the PR head_ref, if this is a PR.
+      - name: Check Out Pull Request Sourcecode
+        uses: actions/checkout@v2
+        if: github.event_name=='pull_request'
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      # This also creates a local branch from the SHA checked out by actions/checkout, for composer packaging.  See
+      - name: Set devshop_version and create a git branch.
         if: github.event_name=='pull_request'
         run: |
           echo "ANSIBLE_PLAYBOOK_COMMAND_OPTIONS=--extra-vars=devshop_version=${{ github.head_ref }}" >> $GITHUB_ENV
-
-      - name: Check Out Sourcecode
-        uses: actions/checkout@v2
+          echo "GIT_REF=${{ github.head_ref }}" >> $GITHUB_ENV
+          git checkout -b ${{ github.head_ref }}
 
       # Build "base"
       - name: "Build devshop/base:${{ matrix.os }} Container"
@@ -190,7 +205,6 @@ jobs:
           sleep 3
           docker-compose logs
           docker-compose exec -T devshop.server chown aegir:aegir /usr/share/devshop -R
-          docker-compose exec -T --user aegir devshop.server /usr/share/devshop/.github/workflows/devshop-container-prep.sh
 
       - name: "Review Container Environment"
         working-directory: roles
