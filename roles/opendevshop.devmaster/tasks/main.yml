@@ -1,5 +1,18 @@
 ---
 
+- name: "opendevshop.devmaster"
+  debug:
+    msg: "Welcome the opendevshop.devmaster playbook! We are about to install: "
+  tags: [always]
+
+- debug:
+    msg:
+      - "Repo: {{ devshop_cli_repo }}"
+      - "Path: {{ devshop_cli_path }}"
+      - "Version: {{ devshop_version }}"
+      - "CLI Version: {{ devshop_cli_version }}"
+  tags: [always]
+
 - name: Detect current server hostname.
   command: "hostname --fqdn"
   register: _server_hostname_fqdn_command
@@ -64,7 +77,7 @@
     state: present
 
 - name: Detect currently installed version of DevShop.
-  command: "{{ devshop_cli_path }}/bin/branch-or-tag"
+  command: "{{ devshop_cli_path }}/scripts/branch-or-tag"
   register: __devshop_version_installed
   changed_when: true
   ignore_errors: true
@@ -114,13 +127,18 @@
     force: true
   when: not devshop_cli_skip_update
 
-- name: Composer Install Devshop CLI
+- name: "Install DevShop Dependencies"
   command: "{{ php_executable }} {{ composer_path }} {{ devshop_cli_composer_install_command }}"
   # Changed: true is so we don't fail ansible lint.
   changed_when: true
   tags: [always]
   args:
-    chdir: "{{ devshop_cli_path }}"
+    chdir: "{{ item }}"
+  with_items:
+    - "{{ devshop_cli_path }}"
+    # Composer.json is not in publish_path, but it will work with --no-interaction at the path above.
+    # We can use this, otherwise we would have to create another variable for "composer.json" path.
+    - "{{ devshop_cli_path }}/src/DevShop/Component/DevShopControlTemplate"
 
 - name: Add DevShop bin directory to Path
   copy:
@@ -174,6 +192,16 @@
     owner: "{{ aegir_user_name }}"
   tags: [runtime]
 
+- name: Ensure DevShop Control code is owned by aegir user.
+  file:
+    state: directory
+    path: "{{ devshop_control_git_root }}"
+    group: "{{ aegir_user_name }}"
+    owner: "{{ aegir_user_name }}"
+    recurse: true
+  when: devshop_control_git_root is match(devshop_cli_path)
+  tags: [runtime]
+
 - name: Create /var/aegir/.drush
   file:
     path: "{{ aegir_user_home }}/.drush/commands"
@@ -202,10 +230,10 @@
   become_method: "{{ ansible_become_method_aegir }}"
   tags: [runtime]
 
-- name: "Remove existing DevShop Control Source Code from {{ devshop_control_path }} before installing, if requested."
+- name: "Remove existing DevShop Control Source Code from {{ devshop_control_git_root }} before installing, if requested."
   when: devshop_danger_remove_devmaster
   file:
-    path: "{{ devshop_control_path }}"
+    path: "{{ devshop_control_git_root }}"
     state: absent
   tags: [never, remove-devmaster, rebuild-devmaster]
 

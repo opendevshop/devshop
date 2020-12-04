@@ -1,9 +1,6 @@
 # Use this file to alter variables in the devshop container.
 server_hostname: devshop.local.computer
 
-# Set to path inside devshop source so that the tested code is used directly.
-devshop_control_path: /usr/share/devshop/src/DevShop/Component/DevShopControlTemplate
-
 # Turn off supervisor and other back-end task runners to avoid flickers.
 supervisor_started: false
 

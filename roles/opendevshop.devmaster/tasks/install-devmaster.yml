@@ -1,5 +1,11 @@
 ---
 
+- name: Ensure Supervisor is stopped for install (if configured).
+  service:
+    name: supervisord
+    state: stopped
+  when: supervisor_started
+
 - name: Get Install DevShop Control Environment (DEBUG)
   become: true
   become_user: "{{ aegir_user_name }}"
@@ -63,10 +69,10 @@
                                 --client_email={{ devshop_devmaster_email }} \
                                 --http_service_type={{ aegir_server_webserver }} \
                                 --profile={{ devshop_install_profile }} \
-                                --root={{ devshop_control_path }}/{{ devshop_control_git_docroot }} \
+                                --root={{ devshop_control_publish_path }} \
                                 --devshop_version={{ devshop_version }} \
                                 --drush-path={{ devshop_cli_bin_path }}/drush \
-                                --git_root={{ devshop_control_path }} \
+                                --git_root={{ devshop_control_git_root }} \
                                 --git_remote={{ devshop_control_git_remote }} \
                                 --git_reference={{ devshop_control_git_reference }}
                                 --git_docroot={{ devshop_control_git_docroot }}
@@ -126,9 +132,3 @@
   register: devshop_cache_clear
   changed_when: "devshop_cache_clear.stdout | length > 0"
   tags: [runtime]
-
-- name: restart supervisor
-  debug:
-  tags: [runtime]
-  when: supervisor_started
-  notify: restart supervisor
