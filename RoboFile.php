@@ -878,18 +878,17 @@ class RoboFile extends \Robo\Tasks {
    */
   public function destroy($opts = ['force' => 0]) {
     if ($opts['no-interaction'] || $this->confirm("Destroy all local data? (docker containers, volumes, config)")) {
-      $this->_exec('docker-compose kill');
-      $this->_exec('docker-compose rm -fv');
-
       // Remove devmaster site folder
       $version = self::DEVSHOP_LOCAL_VERSION;
       $uri = self::DEVSHOP_LOCAL_URI;
-      $this->_exec("sudo rm -rf src/DevShop/Component/DevShopControlTemplate/web/sites/{$uri}");
+      $this->_exec("docker-compose exec devshop rm -rf /usr/share/devshop/src/DevShop/Component/DevShopControlTemplate/web/sites/{$uri}");
+      $this->_exec('docker-compose kill');
+      $this->_exec('docker-compose rm -fv');
     }
 
     // Don't run when -n is specified,
     if ($opts['no-interaction'] || $this->confirm("Destroy container home directory? (aegir-home)")) {
-      if ($this->_exec("sudo rm -rf aegir-home")->wasSuccessful()) {
+      if ($this->_exec("rm -rf aegir-home")->wasSuccessful()) {
         $this->say("Entire aegir-home folder deleted.");
       }
     }
