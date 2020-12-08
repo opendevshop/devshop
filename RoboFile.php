@@ -911,6 +911,13 @@ class RoboFile extends \Robo\Tasks {
     else {
       $this->say("The aegir-home directory was retained. It will be  present when 'robo up' is run again.");
     }
+
+    // Uninstall composer vendor code?
+    if ($opts['no-interaction'] || $this->confirm("Composer uninstall DevShop Control?")) {
+      $this->taskExec("composer uninstall")
+        ->dir("src/DevShop/Component/DevShopControlTemplate")
+        ->run();
+    }
   }
 
   /**
