@@ -58,6 +58,7 @@ jobs:
         if: github.event_name=='pull_request'
         with:
           ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
 
       # This also creates a local branch from the SHA checked out by actions/checkout. This helps devshop know it is on a branch, and composer needs the branch for versioning of devshop/devmaster.
       - name: Set devshop_version and create a git branch.
