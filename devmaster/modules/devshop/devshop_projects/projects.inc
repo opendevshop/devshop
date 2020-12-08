@@ -182,8 +182,12 @@ function devshop_project_load($node) {
           name;   ", array(
     ':nid' => $node->nid,
 
-    // Query includes sites that are either enabled, queued, unverified, or have no site NID.
-    ':site_status' => [HOSTING_SITE_QUEUED, HOSTING_SITE_ENABLED]
+    // Query includes sites that are either enabled, disabled, queued, unverified, or have no site NID.
+    ':site_status' => [
+      HOSTING_SITE_DISABLED,
+      HOSTING_SITE_QUEUED,
+      HOSTING_SITE_ENABLED
+    ]
   ));
   foreach ($environment_data as $environment) {
 
