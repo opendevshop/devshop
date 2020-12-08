@@ -67,8 +67,6 @@ jobs:
           echo "ANSIBLE_PLAYBOOK_COMMAND_OPTIONS=--extra-vars=devshop_version=${{ github.head_ref }}" >> $GITHUB_ENV
           echo "GIT_REF=${{ github.head_ref }}" >> $GITHUB_ENV
           echo "ANSIBLE_VERBOSITY=2" >> $GITHUB_ENV
-          echo "Making sure 1.x branch exists in the checkout so composer can handle the dependency resolution..."
-          git branch --track 1.x origin/1.x
           git switch --create ${{ github.head_ref }}
 
       # Launch DevShop Server Container
