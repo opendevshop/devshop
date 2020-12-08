@@ -17,6 +17,7 @@ class ScriptHandler {
 
   public static function checkDevmasterPackage(Event $event) {
     $fs = new Filesystem();
+    $io = $event->getIO();
     $drupalFinder = new DrupalFinder();
     $drupalFinder->locateRoot(getcwd());
     $drupalRoot = $drupalFinder->getDrupalRoot();
