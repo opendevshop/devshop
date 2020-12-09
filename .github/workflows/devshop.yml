@@ -62,8 +62,7 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
 
-      # This also creates a local branch from the SHA checked out by actions/checkout. This helps devshop know it is on a branch, and composer needs the branch for versioning of devshop/devmaster.
-      - name: Set devshop_version and create a git branch.
+      - name: Set Pull Request-only environment variables
         if: github.event_name=='pull_request'
         run: |
           echo "ANSIBLE_PLAYBOOK_COMMAND_OPTIONS=--extra-vars=devshop_version=${{ github.head_ref }}" >> $GITHUB_ENV
@@ -176,8 +175,7 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
 
-      # This also creates a local branch from the SHA checked out by actions/checkout, for composer packaging.  See
-      - name: Set devshop_version and create a git branch.
+      - name: Set Pull Request-only environment variables
         if: github.event_name=='pull_request'
         run: |
           echo "ANSIBLE_PLAYBOOK_COMMAND_OPTIONS=--extra-vars=devshop_version=${{ github.head_ref }}" >> $GITHUB_ENV
