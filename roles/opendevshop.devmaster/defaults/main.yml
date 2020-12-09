@@ -76,10 +76,10 @@ devshop_cli_version: "{{ devshop_version }}"
 devshop_control_git_remote: "https://github.com/devshop-packages/devshop-control-template"
 devshop_control_git_reference: ""
 devshop_control_git_docroot: "web"
-devshop_control_path: "{{ aegir_user_home }}/devshop-control"
+devshop_control_git_root: "{{ aegir_user_home }}/devshop-control"
+devshop_control_path: "{{ devshop_control_git_root }}"
 devshop_control_drush_alias: "@hostmaster"
 devshop_control_install_options: ""
-
 devshop_install_profile: devmaster
 
 devmaster_upgrade_command: |
