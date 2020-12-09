@@ -124,7 +124,7 @@
   when: devshop_control_git_root is match(devshop_cli_path)
   tags: [runtime]
   with_items:
-    - "{{ devshop_control_git_root }}"
+    - "{{ devshop_cli_path }}/src/DevShop/Component/DevShopControlTemplate"
     - "{{ devshop_cli_path }}/devmaster"
 
 - name: "Configure composer"
