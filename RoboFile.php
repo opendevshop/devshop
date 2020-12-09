@@ -462,19 +462,21 @@ class RoboFile extends \Robo\Tasks {
     // Build the image if --build option specified, or if the image doesn't exist yet locally.
     // If we don't, docker-compose up will automatically build it, but without these options.
     // Run a "docker-compose pull" here confirms that the remote container by this name exists, and gets us a local copy.
-    $docker_image_exists_remotely = $this->_exec("docker pull {$opts['docker-image']}")->wasSuccessful();
+    $this->say("<comment>Getting latest devshop/server image...</comment>");
+    $docker_image_name_exists = $this->_exec("docker pull {$opts['docker-image']}")->wasSuccessful();
 
-    // The image was just pulled, so this should always be true if $docker_image_exists_remotely is true.
+    // The image was just pulled, so this should always be true if $docker_image_name_exists is true.
     $docker_image_exists_locally = $this->_exec("docker inspect {$opts['docker-image']} > /dev/null")->wasSuccessful();
 
     // If --build option is used, or if docker image does not exist anywhere, build it with "local-$OS" tag
-    if ($opts['build'] || !$docker_image_exists_remotely && !$docker_image_exists_locally) {
-      $this->yell("Docker Image {$opts['docker-image']} was not found on this system or on docker hub. Building it...");
+    if ($opts['build'] || !$docker_image_name_exists && !$docker_image_exists_locally) {
+      $this->yell("Docker Image {$opts['docker-image']} was not found on this system or on docker hub.", 40, "blue");
+      $this->say("Building it locally...");
       $this->prepareContainers($opts['user-uid'], 'devshop.local.computer', $opts);
     }
     // Warn the user that this container is not being built.
-    elseif (!$opts['build'] && $docker_image_exists_locally) {
-      $this->yell("Docker image {$opts['docker-image']} was found locally. Launching that container image. Use --build to rebuild it.", 40, "yellow");
+    elseif (!$opts['build'] && $docker_image_name_exists) {
+      $this->yell("Launching {$opts['docker-image']}... Use --build to rebuild it.", 40, "blue");
     }
 
     // @TODO: Figure out why centos can't enable service in build phase.
@@ -495,15 +497,13 @@ class RoboFile extends \Robo\Tasks {
 
       // Volumes
       if (!$opts['ci']) {
-        $this->yell('Volume mounts requested. Adding docker-compose.volumes.yml');
-        $this->say(' - ' . __DIR__ . '/aegir-home to /var/aegir');
-        $this->say(' - ' . __DIR__ . '/devmaster to /usr/share/devshop/devmaster');
+        $this->yell('Mounting Docker Volumes... Use --ci to disable volumes.', 40, 'blue');
 
         // Set COMPOSE_FILE to include volumes.
         $opts['compose-file'] = 'docker-compose.yml:docker-compose.volumes.yml';
 
         if (!file_exists('aegir-home') && !$opts['skip-source-prep']) {
-          $this->yell('The aegir-home folder not present. Running prepare source code command.');
+          $this->say('<warning>The aegir-home folder not present. Running prepare source code command.</warning>');
           $this->prepareSourcecode($opts);
         }
       }
