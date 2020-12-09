@@ -134,7 +134,7 @@
   with_items:
     # Set devshop/devmaster repository to a path repo so it is symlinked into the DevShop Control site.
     # This is so that when "devshop control" gets "composer install"ed via ansible, it runs as root, and it will symlink to /usr/share/devshop/devmaster.
-    # We only this as root so that aegir user can composer install a custom devshop control site without using the linked devmaster repo, but a composer package release.
+    # We only this as root so that aegir user can composer install a custom devshop control site without using the linked devmaster repo, but a real release
     - "config --global repo.devshop_devmaster path {{ devshop_devmaster_composer_repository_path }}"
 
 - name: "Install DevShop Dependencies"
