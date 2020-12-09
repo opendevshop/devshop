@@ -114,6 +114,17 @@
     force: true
   when: not devshop_cli_skip_update
 
+- name: "Install DevShop dependencies with composer"
+  command: "{{ php_executable }} {{ composer_path }} {{ devshop_cli_composer_install_command }}"
+  # Changed: true is so we don't fail ansible lint.
+  changed_when: true
+  tags: [always]
+  args:
+    chdir: "{{ item }}"
+  with_items:
+    - "{{ devshop_control_git_root }}"
+    - "{{ devshop_cli_path }}"
+
 - name: Ensure DevShop Control code is owned by aegir user.
   file:
     state: directory
@@ -126,33 +137,6 @@
   with_items:
     - "{{ devshop_control_git_root }}"
     - "{{ devshop_cli_path }}/devmaster"
-
-- name: "Configure composer"
-  command: "{{ php_executable }} {{ composer_path }} {{ item }}"
-  changed_when: true
-  tags: [always]
-  become: true
-  become_user: "{{ aegir_user_name }}"
-  become_method: "{{ ansible_become_method_aegir }}"
-  with_items:
-    # Set devshop/devmaster repository to a path repo so the DevShop Control site loads devshop/devmaster package as a symlink to /usr/share/devshop
-    - "config --global repo.devshop_devmaster path {{ devshop_devmaster_composer_repository_path }}"
-
-- name: "Install DevShop Dependencies"
-  command: "{{ php_executable }} {{ composer_path }} {{ devshop_cli_composer_install_command }}"
-  # Changed: true is so we don't fail ansible lint.
-  changed_when: true
-  tags: [always]
-  become: true
-  become_user: "{{ aegir_user_name }}"
-  become_method: "{{ ansible_become_method_aegir }}"
-  args:
-    chdir: "{{ item }}"
-  with_items:
-    - "{{ devshop_cli_path }}"
-    # Composer.json is not in publish_path, but it will work with --no-interaction at the path above.
-    # We can use this, otherwise we would have to create another variable for "composer.json" path.
-    - "{{ devshop_cli_path }}/src/DevShop/Component/DevShopControlTemplate"
 
 - name: Add DevShop bin directory to Path
   copy:
