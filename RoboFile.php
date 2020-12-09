@@ -267,23 +267,7 @@ class RoboFile extends \Robo\Tasks {
   }
 
   /**
-   * Build devshop containers.
-   *
-   * By default, `robo prepare:containers` will build a new container image
-   * using the 'Dockerfile' using FROM 'devshop/server:latest'. This shortens
-   * build times because the image was pre-built on docker hub.
-   *
-   * To force a new local build of the 'devshop/server' container image from
-   * scratch, use the '--from' option to specify a full docker image string or
-   * the `--os` option to use a  `geerlingguy/docker-*-ansible` image.
-   *
-   * For example:
-   *
-   *   robo up --os centos7
-   *
-   * will build the container from geerlingguy/docker-centos7-ansible.
-   *
-   * @example bin/robo prepare:containers
+   * Build all devshop containers from scratch. Rarely necessary: `robo up` will re-run ansible configuration.
    *
    * @param $user_uid Pass a UID to build the image with. Defaults to the UID of the user running `robo`
    *
