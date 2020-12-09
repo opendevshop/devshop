@@ -32,27 +32,6 @@ services:
     #
     image: ${DEVSHOP_DOCKER_IMAGE:-devshop/server:latest}
     command: ${DOCKER_COMMAND:-env}
-    build:
-      context: '.'
-      dockerfile: ${DOCKERFILE:-Dockerfile}
-      args:
-      # If a value for local development should be different than docker hub image,
-      # set a default here.
-      # Otherwise values are inherited from `docker-compose` execution environment.
-      - ANSIBLE_VERBOSITY_ARG
-      - ANSIBLE_PLAYBOOK_ARG
-      - ANSIBLE_SKIP_TAGS_ARG
-      - ANSIBLE_TAGS_ARG
-      - ANSIBLE_PLAYBOOK_COMMAND_OPTIONS_ARG
-      - ANSIBLE_CONFIG_ARG
-      - ANSIBLE_ROLES_PATH_ARG
-      - FROM_IMAGE_ARG
-      - OS_VERSION_ARG
-      - DEVSHOP_USER_UID_ARG
-
-      - DRUPAL_MAKEFILE
-      - DRUPAL_ROOT
-
     ports:
       - "80:80"
       - "2222:22"
@@ -67,10 +46,9 @@ services:
       - ANSIBLE_SKIP_TAGS
       - ANSIBLE_PLAYBOOK_COMMAND_OPTIONS
       - ANSIBLE_CONFIG
-      - ANSIBLE_ROLES_PATH
       - FROM_IMAGE
       - OS_VERSION
-      - DEVSHOP_USER_UID
+      - DEVSHOP_DOCKER_COMMAND_RUN
       - DOCKER_COMMAND_POST=${DOCKER_COMMAND_POST:-devshop login}
       - DOCKER_COMMAND_POST
 
