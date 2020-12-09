@@ -32,10 +32,6 @@ class RoboFile extends \Robo\Tasks {
   // Defines the URI we will use for the devmaster site.
   const DEVSHOP_LOCAL_URI = 'devshop.local.computer';
 
-  // DevShop application user name.
-  protected $devshopInstall = "ansible-playbook /usr/share/devshop/docker/playbook.server.yml --tags install-devmaster --extra-vars \"devmaster_skip_install=false\"";
-  protected $devshopUsername = "aegir";
-
   use \Robo\Common\IO;
 
   /**
@@ -57,9 +53,8 @@ class RoboFile extends \Robo\Tasks {
     'skip-tags' => 'ANSIBLE_SKIP_TAGS',
     'playbook' => 'ANSIBLE_PLAYBOOK',
     'playbook-command-options' => 'ANSIBLE_PLAYBOOK_COMMAND_OPTIONS',
-    'roles-path' => 'ANSIBLE_ROLES_PATH',
-    'config' => 'ANSIBLE_CONFIG',
-    'build-command' => 'DOCKER_BUILD_COMMAND',
+    'build-command' => 'DEVSHOP_DOCKER_COMMAND_BUILD',
+    'run-command' => 'DEVSHOP_DOCKER_COMMAND_RUN',
 
     // Used in docker compose image.
     'from' => 'FROM_IMAGE',
@@ -140,23 +135,6 @@ class RoboFile extends \Robo\Tasks {
     putenv('PROVISION_PROCESS_OUTPUT=direct');
   }
 
-//
-//  /**
-//   * Launch devshop after running prep:host and prep:source. Use --build to
-//   * build new local containers.
-//   *
-//   * If you only run one command, run this one.
-//   */
-//  public function launch($opts = ['build' => 0]) {
-//    $this->prepareHost();
-//    $this->prepareSourcecode();
-//
-//    if ($opts['build']) {
-//      $this->prepareContainers();
-//    }
-//
-//    $this->up(['follow' => TRUE]);
-//  }
 
   /**
    * Check for docker, docker-compose and drush. Install them if they are
@@ -198,12 +176,10 @@ class RoboFile extends \Robo\Tasks {
   /**
    * Clone all needed source code and build devmaster from the makefile.
    *
-   * @option no-dev Ensure git remote URLs are SSH format so developers can push.
-   * @option devshop-version The directory to put the
+   * @option no-dev Skip setting git remotes to SSH URLs.
    */
   public function prepareSourcecode($opts = [
     'no-dev' => FALSE,
-    'devshop-version' => '1.x',
     'test-upgrade' => FALSE,
   ]) {
 
@@ -214,9 +190,6 @@ class RoboFile extends \Robo\Tasks {
       parent::yell("Preparing Sourcecode: Branch $this->git_ref");
     }
 
-    if ($opts['devshop-version'] == NULL) {
-      $opts['devshop-version'] = $this->git_ref;
-    }
     $this->devshop_root_path = __DIR__;
 
     // Create the Aegir Home directory.
@@ -269,7 +242,8 @@ class RoboFile extends \Robo\Tasks {
   /**
    * Build all devshop containers from scratch. Rarely necessary: `robo up` will re-run ansible configuration.
    *
-   * @param $user_uid Pass a UID to build the image with. Defaults to the UID of the user running `robo`
+   * @param folder The folder to run 'docker-compose build' in. Use "all" to build in folder 'docker', then 'roles'.
+   * @param service The service to build. passed to 'docker-compose build $SERVICE'. Use "all" to build all services.
    *
    * @option $tag The string to tag the resulting container with.
    * @option $from The image to use to build the docker image FROM. Ignored if "os" is set.
@@ -279,8 +253,9 @@ class RoboFile extends \Robo\Tasks {
    * @option $skip_tags Ansible tags to pass to --skip-tags option.
    * @option $playbook Ansible tags to pass to ansible-playbook command.
    * @option install-at-runtime Launch bare containers and then install devshop.
+   * @option $build-command The command to run at the end of the docker build process. (Defaults to scripts/devshop-ansible-playbook)
    */
-  public function prepareContainers($user_uid = NULL, $hostname = 'devshop.local.computer', $opts = [
+  public function build($folder = 'roles', $service = 'devshop.server', $opts = [
       'docker-image' => 'devshop/server:latest',
       'from' => NULL,
       'build-command' => NULL,
@@ -290,10 +265,17 @@ class RoboFile extends \Robo\Tasks {
       'skip-tags' => '',
       'playbook' => 'roles/devshop.server/play.yml',
       'environment' => [],
-      'roles-path' => '/usr/share/devshop/roles',
-      'config' => '/usr/share/devshop/ansible.cfg',
       'install-at-runtime' => FALSE,
   ]) {
+
+    if ($service == "all") {
+      $service = '';
+    }
+    if ($folder == "all") {
+      $folders = ['docker', 'roles'];
+    } else {
+      $folders = [$folder];
+    }
 
     // Define docker-image (name for the "image" in docker-compose)
     // Set FROM_IMAGE and DEVSHOP_DOCKER_IMAGE if --os option is used. (and --from was not used)
@@ -326,13 +308,8 @@ class RoboFile extends \Robo\Tasks {
     // Runtime Environment for the docker-compose build command.
     $env_build = $this->generateEnvironmentArgs($opts);
 
-    // Determine current UID.
-    if (is_null($user_uid)) {
-      $env_build['DEVSHOP_USER_UID_ARG'] = trim(shell_exec('id -u'));
-    }
-
     $provision_io = new \DevShop\Component\PowerProcess\PowerProcessStyle($this->input(), $this->output());
-    $process = new \DevShop\Component\PowerProcess\PowerProcess('docker-compose build --no-cache', $provision_io);
+    $process = new \DevShop\Component\PowerProcess\PowerProcess("docker-compose build --no-cache $service", $provision_io);
     $process->setEnv($env_build);
     $process->disableOutput();
     $process->setTimeout(null);
@@ -341,7 +318,7 @@ class RoboFile extends \Robo\Tasks {
     // @TODO: Figure out why PowerProcess::mustRun() fails so miserably: https://github.com/opendevshop/devshop/pull/541/checks?check_run_id=518074346#step:7:45
 
     // Run docker-compose build in docker and in roles folder.
-    foreach (['docker', 'roles'] as $compose_files_path) {
+    foreach ($folders as $compose_files_path) {
       $this->yell("Building in directory: $compose_files_path", 40, 'blue');
       $process->setWorkingDirectory($compose_files_path);
       $process->run();
@@ -357,54 +334,74 @@ class RoboFile extends \Robo\Tasks {
    * Launch devshop in a variety of ways. Useful for local development and CI
    * testing.
    *
-   * Builds a container to match the local user to allow write permissions to
-   * Aegir Home.
-   *
    * Examples:
    *
    *   robo up
-   *   Launch a devshop in containers using docker-compose.
+   *   Launch a devshop in containers using docker-compose.yml
    *
    *   robo up --test
    *   Launch then test a devshop in a single process.
    *
-   *   robo up --test
+   *   robo up --upgrade --test
    *   Launch, upgrade, then test a devshop in a single process.
    *
    *   robo up --mode=install.sh --test
    *   Launch an OS container, then install devshop using install.sh, then run
    * tests.
    *
-   *   robo up --mode=manual
-   *   Just launch the container. Allows you to manually run the install.sh script.
+   *   robo up ps
+   *   Launch the container and run "ps" instead of "devshop-ansible-playbook"
    *
+   *   robo up --build
+   *   Run robo build before launching.
+   *
+   *   bin/robo up whoami --build --build-command=whoami
+   *   Launch containers using "whoami" instead of devshop-ansible-playbook, after building containers using "whoami" instead of "devshop-ansible-playbook".
+   *
+   *   bin/robo up --tags=install-devmaster
+   *   Launch containers passing ansible tags "install-devmaster" to skip straight to installing Drupal Devmaster.
+   *
+   *   bin/robo up --destroy --no-interaction
+   *   Destroy and relaunch containers without being prompted to confirm destruction of data.
+   *
+   * @option $destroy Run 'robo destroy' before up to rebuild the entire stack.
+   * @option $no-follow Don't tail the docker logs after launching.
    * @option $test Run tests after containers are up and devshop is installed.
    * @option $test-upgrade Install an old version, upgrade it to this version,
    *   then run tests.
    * @option $mode Set to 'install.sh' to use the install.sh script for setup.
    * @option $user-uid Override the detected current user's UID when building
    *   containers.
-   * @option $xdebug Set this option to launch with an xdebug container.
-   * @option $build Run `robo prepare:containers` to rebuild the container first.
-   * @option os-version An OS "slug" for any of the geerlingguy/docker-*-ansible images: https://hub.docker.com/u/geerlingguy/
-   * @option environment pass an environment variable to docker-compose in the form --environment NAME=VALUE
-   * @option ci Set to TRUE when run in CI, such as in build.yml. If not set, docker-compose.volumes.yml will be included to produce a development environment.
-   * @option install-at-runtime Launch bare containers and then install devshop.
+   * @option $no-dev Skip setting git remotes to SSH URLs.
+   * @option $build Rebuild devshop containers from scratch before launching.
+   * @option $os An OS "slug" for any of the geerlingguy/docker-*-ansible images: https://hub.docker.com/u/geerlingguy/
+   * @option $environment pass an environment variable to docker-compose in the form --environment NAME=VALUE
+   * @option $ci Run 'robo up' in CI mode. Disables docker volumes.
+   * @option $install-at-runtime Run with ansible tag "all" and skip-tags set to "none". Ensures a full playbook run on docker up.
+   * @option $build-command The command to run at the end of the docker build process. (Defaults to scripts/devshop-ansible-playbook)
+   * @option $skip-source-prep Prevent prepare:sourcecode from running if the aegir-home folder does not exist.
+   * @option $vars Ansible variables string to pass to the 'ansible-playbook' command in devshop-ansible-playbook.
+   * @option $tags Ansible tags to pass to the 'ansible-playbook' command in devshop-ansible-playbook.
+   * @option $skip-tags Ansible tags to pass to the 'ansible-playbook' command in devshop-ansible-playbook.
+   * @option $playbook The path to an ansible playbook to pass to the 'ansible-playbook' command in devshop-ansible-playbook.
+   * @option $playbook-command-options Command line options to append to the 'ansible-playbook' command in devshop-ansible-playbook.
+   * @option $compose-file Use a different docker-compose.yml file. Passes to COMPOSE_FILE env var.
+   * @option $force-reinstall Delete and reinstall the devmaster site, if it exists.
+   * @option $build-folder If using --build, the folder to run 'docker-compose build' in. Use "all" to build in folder 'docker', then 'roles'.
+   * @option $build-service If using --build, the service to build. passed to 'docker-compose build $SERVICE'. Use "all" to build all services.
    */
-  public function up($docker_command = '', $opts = [
-    'follow' => 1,
+  public function up($docker_command = '/usr/share/devshop/scripts/devshop-ansible-playbook', $opts = [
+    'destroy' => FALSE,
+    'no-follow' => FALSE,
     'test' => FALSE,
     'test-upgrade' => FALSE,
 
     // Set 'mode' => 'install.sh' to run a traditional OS install.
     'mode' => 'docker-compose',
     'user-uid' => NULL,
-    'disable-xdebug' => TRUE,
     'no-dev' => FALSE,
-    'devshop-version' => '1.x',
     'build' => FALSE,
     'skip-source-prep' => FALSE,
-    'skip-install' => FALSE,
     // This is the image string used in docker-compose.
     'docker-image' => 'devshop/server:latest',
     // The OS "slug" to use instead of devshop/server:ubuntu1804. If specified, "docker-image" option will be ignored.
@@ -415,16 +412,26 @@ class RoboFile extends \Robo\Tasks {
     'skip-tags' => '',
     'playbook' => 'roles/devshop.server/play.yml',
     'playbook-command-options' => '',
-    'roles-path' => '/usr/share/devshop/roles',
-    'config' => '/usr/share/devshop/ansible.cfg',
-    'local' => FALSE,
     'environment' => [],
     'ci' => FALSE,
     'install-at-runtime' => FALSE,
     'build-command' => NULL,
     'compose-file' => NULL,
     'force-reinstall' => FALSE,
+    'build-folder' => 'roles',
+    'build-service' => 'devshop.server',
   ]) {
+
+    // Override the DEVSHOP_DOCKER_COMMAND_RUN if specified.
+    if (!empty($docker_command)) {
+      # Ensures argument is passed to DEVSHOP_DOCKER_COMMAND_RUN later.
+      $opts['run-command'] = $docker_command;
+    }
+
+    if ($opts['destroy']) {
+      $this->yell('Destroying instance: --destroy option was used.', 80, "red");
+      $this->destroy();
+    }
 
     // Define docker-image (name for the "image" in docker-compose.
     // Set FROM_IMAGE and DEVSHOP_DOCKER_IMAGE if --os option is used. (and --from was not used)
@@ -450,10 +457,6 @@ class RoboFile extends \Robo\Tasks {
       parent::yell("Launching DevShop: Branch $this->git_ref");
     }
 
-    if ($opts['devshop-version'] == NULL) {
-      $opts['devshop-version'] = $this->git_ref;
-    }
-
     // Determine current UID.
     if (empty($opts['user-uid'])) {
       $opts['user-uid'] = trim(shell_exec('id -u'));
@@ -472,7 +475,7 @@ class RoboFile extends \Robo\Tasks {
     if ($opts['build'] || !$docker_image_name_exists && !$docker_image_exists_locally) {
       $this->yell("Docker Image {$opts['docker-image']} was not found on this system or on docker hub.", 40, "blue");
       $this->say("Building it locally...");
-      $this->prepareContainers($opts['user-uid'], 'devshop.local.computer', $opts);
+      $this->build($opts['build-folder'], $opts['build-service'], $opts);
     }
     // Warn the user that this container is not being built.
     elseif (!$opts['build'] && $docker_image_name_exists) {
@@ -526,8 +529,8 @@ class RoboFile extends \Robo\Tasks {
         $test_command = "/usr/share/devshop/tests/devshop-tests-upgrade.sh";
       }
       else {
-        $cmd[] = "docker-compose up --detach --force-recreate devshop {$docker_command}";
-        if ($opts['follow']) {
+        $cmd[] = "docker-compose up --detach --force-recreate devshop";
+        if (!$opts['no-follow']) {
           $cmd[] = "docker-compose logs -f";
         }
         else {
@@ -574,18 +577,18 @@ class RoboFile extends \Robo\Tasks {
 
       // Process $extra vars into JSON for ENV var.
       $env_run['ANSIBLE_EXTRA_VARS'] = json_encode($extra_vars);
-      if ($this->output->isVerbose()) {
-        $this->say('Ansible Extra Vars');
-        print_r($extra_vars);
-      }
 
       // Override the DEVSHOP_DOCKER_COMMAND_RUN if specified.
       if (!empty($docker_command)) {
         $env_run['DEVSHOP_DOCKER_COMMAND_RUN'] = $docker_command;
       }
 
-      // @TODO: Write to .env file so user does not have to keep using CLI args.
-
+      if ($this->output->isVerbose()) {
+        $this->say('Ansible Extra Vars:');
+        print_r($extra_vars);
+        $this->say('Execution environment:');
+        print_r($env_run);
+      }
 
       if (!empty($cmd)) {
         foreach ($cmd as $command) {
@@ -656,7 +659,7 @@ class RoboFile extends \Robo\Tasks {
    * Running with --force
    */
   public function destroy($opts = ['force' => 0]) {
-    if ($opts['no-interaction'] || $this->confirm("Destroy all local data? (docker containers, volumes, config)")) {
+    if (!$this->input()->isInteractive() || $this->confirm("Destroy all local data? (docker containers, volumes, config)")) {
       // Remove devmaster site folder
       $version = self::DEVSHOP_LOCAL_VERSION;
       $uri = self::DEVSHOP_LOCAL_URI;
@@ -666,7 +669,7 @@ class RoboFile extends \Robo\Tasks {
     }
 
     // Don't run when -n is specified,
-    if ($opts['no-interaction'] || $this->confirm("Destroy container home directory? (aegir-home)")) {
+    if (!$this->input()->isInteractive() || $this->confirm("Destroy container home directory? (aegir-home)")) {
       if ($this->_exec("rm -rf aegir-home")->wasSuccessful()) {
         $this->say("Entire aegir-home folder deleted.");
       }
@@ -676,7 +679,7 @@ class RoboFile extends \Robo\Tasks {
     }
 
     // Uninstall composer vendor code?
-    if ($opts['no-interaction'] || $this->confirm("Composer uninstall DevShop Control?")) {
+    if (!$this->input()->isInteractive() || $this->confirm("Composer uninstall DevShop Control?")) {
       $this->taskExec("composer uninstall")
         ->dir("src/DevShop/Component/DevShopControlTemplate")
         ->run();
