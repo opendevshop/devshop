@@ -93,12 +93,11 @@ jobs:
           docker-compose exec -T --workdir /usr/share/devshop devshop.server git status
           docker-compose exec -T devshop.server chown aegir:aegir /usr/share/devshop -R
           docker-compose exec -T devshop.server chown aegir:aegir $DEVSHOP_TESTS_ARTIFACTS_PATH -R
-          docker-compose exec -T devshop.server \
-            composer config --global repo.devshop_devmaster {"path","/usr/share/devshop/devmaster"}
 
           sleep 3
           docker-compose logs
           docker-compose exec -T devshop.server /usr/share/devshop/scripts/devshop-logo "GitHub Actions Container populated with code. Running SHA ${GITHUB_PR_SHA}"
+          docker-compose exec -T --user aegir devshop.server /usr/share/devshop/.github/workflows/devshop-container-prep.sh
 
       - name: "Review Container Environment"
         working-directory: roles
@@ -215,6 +214,8 @@ jobs:
           sleep 3
           docker-compose logs
           docker-compose exec -T devshop.server chown aegir:aegir /usr/share/devshop -R
+          docker-compose exec -T devshop.server /usr/share/devshop/scripts/devshop-logo "GitHub Actions Container populated with code. Running SHA ${GITHUB_PR_SHA}"
+          docker-compose exec -T --user aegir devshop.server /usr/share/devshop/.github/workflows/devshop-container-prep.sh
 
       - name: "Review Container Environment"
         working-directory: roles
