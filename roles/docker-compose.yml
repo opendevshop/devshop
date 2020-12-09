@@ -13,7 +13,7 @@ services:
       context: ".."
       dockerfile: "roles/devshop.server/Dockerfile.${OS:-ubuntu1804}"
       args:
-        OS: "${OS:-ubuntu1804}"
+        - DEVSHOP_DOCKER_COMMAND_BUILD_ARG
     command: "${COMMAND:-'echo DevShop Server Online'}"
     entrypoint: "/usr/share/devshop/docker/bin/docker-systemd-entrypoint"
     extra_hosts:
