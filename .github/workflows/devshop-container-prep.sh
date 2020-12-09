@@ -18,7 +18,6 @@ cd "$DEVSHOP_PATH"
 
 devshop-log "Adding repos to composer global config."
 set -x
-composer config --global repo.devshop_devmaster {"path","/usr/share/devshop/devmaster"}
 cd "$DEVSHOP_PATH/src/DevShop/Component/DevShopControlTemplate"
 
 # Composer require @dev and search for the Symlinking statement to ensure we are always installing from local code.

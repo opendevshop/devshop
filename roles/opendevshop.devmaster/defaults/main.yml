@@ -94,7 +94,6 @@ devshop_control_publish_path: "{{ devshop_control_git_root }}/{{ devshop_control
 
 devshop_control_drush_alias: "@hostmaster"
 devshop_control_install_options: ""
-
 devshop_install_profile: devmaster
 
 # Composer repository path.

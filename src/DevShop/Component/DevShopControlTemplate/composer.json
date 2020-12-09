@@ -9,16 +9,20 @@
             "role": ""
         }
     ],
-    "repositories": [
-        {
-            "type": "composer",
-            "url": "https://packages.drupal.org/7"
-        },
-        {
-            "type": "composer",
-            "url": "https://asset-packagist.org"
-        }
-    ],
+    "repositories": {
+      "drupal": {
+        "type": "composer",
+        "url": "https://packages.drupal.org/7"
+      },
+      "npm": {
+        "type": "composer",
+        "url": "https://asset-packagist.org"
+      },
+      "devshop_devmaster": {
+        "type": "path",
+        "url": "../../../../devmaster"
+      }
+    },
     "require": {
         "php": ">=5.3.3",
         "ext-curl": "*",
