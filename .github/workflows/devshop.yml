@@ -92,7 +92,6 @@ jobs:
           echo "Checking git status in /usr/share/devshop after copying devshop source into container:"
           docker-compose exec -T --workdir /usr/share/devshop devshop.server git status
           docker-compose exec -T devshop.server chown aegir:aegir /usr/share/devshop -R
-          docker-compose exec -T devshop.server chown aegir:aegir $DEVSHOP_TESTS_ARTIFACTS_PATH -R
 
           sleep 3
           docker-compose logs
