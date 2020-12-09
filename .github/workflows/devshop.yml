@@ -53,11 +53,14 @@ jobs:
       - name: Check Out Sourcecode
         uses: actions/checkout@v2
         if: github.event_name!='pull_request'
+
+      # Fetch all branches and tags so composer can resolve the version.
       - name: Check Out Pull Request Sourcecode
         uses: actions/checkout@v2
         if: github.event_name=='pull_request'
         with:
           ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
 
       # This also creates a local branch from the SHA checked out by actions/checkout. This helps devshop know it is on a branch, and composer needs the branch for versioning of devshop/devmaster.
       - name: Set devshop_version and create a git branch.
@@ -158,15 +161,21 @@ jobs:
 
     runs-on: ubuntu-18.04
     steps:
+      # By default, actions/checkout uses the current SHA for the branch it is testing. See on.push.branches: 1.x
+      # https://github.com/opendevshop/devshop/runs/1517209717?check_suite_focus=true#step:2:465
+      # For Pull Requests, actions/checkout will use a Merge SHA by default.
+      # This code sets ref to the PR head SHA instead, so it matches what developers see.
       - name: Check Out Sourcecode
         uses: actions/checkout@v2
         if: github.event_name!='pull_request'
 
+      # Fetch all branches and tags so composer can resolve the version.
       - name: Check Out Pull Request Sourcecode
         uses: actions/checkout@v2
         if: github.event_name=='pull_request'
         with:
           ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
 
       # This also creates a local branch from the SHA checked out by actions/checkout, for composer packaging.  See
       - name: Set devshop_version and create a git branch.
