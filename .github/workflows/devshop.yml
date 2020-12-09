@@ -82,7 +82,8 @@ jobs:
             /usr/share/devshop \
             /etc/ansible/roles \
             /etc/ansible/play.yml \
-            /var/aegir \
+            /var/aegir/* \
+            /var/aegir/.* \
             /usr/local/bin/docker-* \
 
           echo "Checking git status in /usr/share/devshop inside container:"
