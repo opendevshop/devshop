@@ -220,11 +220,6 @@ class RoboFile extends \Robo\Tasks {
       }
     }
 
-    // Set devmaster repo globally so it installs via symlink.
-    $this->taskExecStack()
-      ->exec('bash -c "composer config --global repo.devshop_devmaster {\"path\",\"$PWD/devmaster\"}"')
-      ->run();
-
     // Set git remote urls
     if ($opts['no-dev'] == FALSE) {
       // @TODO: Set git url for others like provision
