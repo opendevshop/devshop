@@ -180,7 +180,6 @@ jobs:
           echo "ANSIBLE_VERBOSITY=2" >> $GITHUB_ENV
           echo "GIT_REF=${{ github.head_ref }}" >> $GITHUB_ENV
           echo "ANSIBLE_VERBOSITY=2" >> $GITHUB_ENV
-          git checkout -b ${{ github.head_ref }}
 
       # Build "base"
       - name: "Build devshop/base:${{ matrix.os }} Container"

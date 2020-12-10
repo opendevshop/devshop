@@ -2,7 +2,7 @@
 set -e
 DEVSHOP_PATH="$( cd "$(dirname "$0")"/../.. ; pwd -P )"
 PATH="$DEVSHOP_PATH/bin:$PATH"
-GIT_REF=${GITHUB_HEAD_REF:-"1.x"}
+GIT_REF=${GIT_REF:-"1.x"}
 
 devshop-logo "Preparing DevShop Control for CI Tests"
 devshop-log "Creating local branch from the checked out commit with the expected name..."
@@ -15,6 +15,7 @@ devshop-log "Creating local branch from the checked out commit with the expected
 # Locally, it says `devshop/devmaster[1.x-dev]` instead, because my local path repo is on a branch.
 
 cd "$DEVSHOP_PATH"
+git switch --create $GIT_REF
 
 devshop-log "Adding repos to composer global config."
 set -x
