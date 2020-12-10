@@ -133,7 +133,7 @@
         ],
         "reinstall": [
           "@uninstall",
-          "@composer update --no-install --no-scripts --no-dev --no-progress --prefer-source"
+          "@composer update --no-dev --no-progress --prefer-source"
         ]
     },
     "extra": {
