@@ -55,6 +55,19 @@ class ScriptHandler {
       // throw new \Exception('There is no directory at the expected location for the devshop/devmaster install profile. A second call to composer install will fix the problem. Expected path: ' . $devmaster_path);
       $io->writeError('<error>ERROR</error>There is no directory at the expected location for the devshop/devmaster install profile. A second call to composer install will fix the problem. Expected path: ' . $devmaster_path);
     }
+
+    // Confirm that views is present.
+    $views_path = $drupalRoot . '/sites/all/modules/contrib/views';
+    if (!$fs->exists($views_path)) {
+      throw new \Exception('ERROR: Composer failed to install required modules. Views was not found. This is a known issue. Run composer install without the --no-dev option to fix. Expected path: ' . $views_path);
+    }
+    elseif (!$fs->exists("$views_path/views.info")) {
+      throw new \Exception('ERROR: Composer failed to install required modules. An empty folder is present where views should be. This will prevent installation. Run "composer uninstall" to remove the folders, then "composer install" without the --no-dev option to fix. Expected path: ' . $views_path);
+    }
+    else {
+      $io->write("<info>SUCCESS</info> The package <comment>drupal/views</comment> was installed to <comment>$views_path</comment>");
+      passthru("ls -la $views_path/views.info");
+    }
   }
 
   public static function createRequiredFiles(Event $event) {
