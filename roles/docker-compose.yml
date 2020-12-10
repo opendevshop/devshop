@@ -14,6 +14,7 @@ services:
       dockerfile: "roles/devshop.server/Dockerfile.${OS:-ubuntu1804}"
       args:
         - DEVSHOP_DOCKER_COMMAND_BUILD_ARG
+        - ANSIBLE_PLAYBOOK_COMMAND_OPTIONS_ARG
     command: "${COMMAND:-'echo DevShop Server Online'}"
     entrypoint: "/usr/share/devshop/docker/bin/docker-systemd-entrypoint"
     extra_hosts:

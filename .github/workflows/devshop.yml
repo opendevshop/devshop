@@ -176,8 +176,7 @@ jobs:
         if: github.event_name=='pull_request'
         run: |
           echo "ANSIBLE_PLAYBOOK_COMMAND_OPTIONS=--extra-vars=devshop_version=${{ github.head_ref }}" >> $GITHUB_ENV
-          echo "GIT_REF=${{ github.head_ref }}" >> $GITHUB_ENV
-          echo "ANSIBLE_VERBOSITY=2" >> $GITHUB_ENV
+          echo "ANSIBLE_PLAYBOOK_COMMAND_OPTIONS_ARG=--extra-vars=devshop_version=${{ github.head_ref }}" >> $GITHUB_ENV
           echo "GIT_REF=${{ github.head_ref }}" >> $GITHUB_ENV
           echo "ANSIBLE_VERBOSITY=2" >> $GITHUB_ENV
 
