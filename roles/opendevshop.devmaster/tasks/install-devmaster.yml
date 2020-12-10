@@ -95,13 +95,27 @@
     DATABASE_HOST: "{{ database_host }}"
 
 - name: Install DevShop Control
-  become: true
-  become_user: "{{ aegir_user_name }}"
-  become_method: "{{ ansible_become_method_aegir }}"
-  command: "{{ devmaster_install_command }}"
-  when:
-    - (devmaster_site_uri | length == 0) or (devshop_control_install_options is search("--force-reinstall"))
-  tags: [runtime]
+  block:
+    - name: Run Install DevShop Control Install Command
+      become: true
+      become_user: "{{ aegir_user_name }}"
+      become_method: "{{ ansible_become_method_aegir }}"
+      command: "{{ devmaster_install_command }}"
+      when:
+        - (devmaster_site_uri | length == 0) or (devshop_control_install_options is search("--force-reinstall"))
+      tags: [runtime]
+  rescue:
+    - name: DevShop Control install failed
+      debug:
+        msg:
+          - "DevShop Control Install Failed."
+          - "  Repo: {{ devshop_cli_repo }}"
+          - "  Path: {{ devshop_cli_path }}"
+          - "  Version: {{ devshop_version }}"
+          - "  CLI Version: {{ devshop_cli_version }}"
+          - "  DevShop Control Install Command: {{ devmaster_install_command }}"
+      failed_when: true
+      tags: [ always ]
 
 - name: DevShop Control Upgrade Command
   debug:
