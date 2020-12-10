@@ -96,7 +96,7 @@ devshop_control_drush_alias: "@hostmaster"
 devshop_control_install_options: ""
 
 # Composer recommends using "update" when a project has no composer.lock file.
-devshop_control_composer_prepare_command: "update --no-install --no-scripts --no-dev --no-progress"
+devshop_control_composer_prepare_command: "update --no-install --no-scripts --no-dev --no-progress --prefer-source"
 
 devshop_install_profile: devmaster
 
