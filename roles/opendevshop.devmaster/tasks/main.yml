@@ -141,7 +141,7 @@
     owner: "{{ aegir_user_name }}"
     recurse: true
   when: devshop_control_git_root is match(devshop_cli_path)
-  tags: [runtime]
+  tags: [always]
   with_items:
     - "{{ devshop_control_git_root }}"
     - "{{ devshop_cli_path }}/devmaster"
