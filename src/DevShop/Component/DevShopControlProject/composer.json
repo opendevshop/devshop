@@ -1,6 +1,6 @@
 {
-    "name": "devshop/control-template",
-    "description": "Project template for DevShop Devmaster. Use to create a custom devmaster front-end.",
+    "name": "devshop/control-project",
+    "description": "Composer project for DevShop Control: the Drupal based front-end for DevShop.",
     "type": "project",
     "license": "GPL-2.0-or-later",
     "authors": [
