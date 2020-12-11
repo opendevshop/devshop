@@ -100,9 +100,6 @@ devshop_control_composer_prepare_command: "update --no-dev --no-progress --prefe
 
 devshop_install_profile: devmaster
 
-# Composer repository path.
-devshop_devmaster_composer_repository_path: "{{ devshop_cli_path }}/devmaster"
-
 devmaster_upgrade_command: |
   {{ devshop_cli_bin_path }}/devshop devmaster:upgrade {{ devshop_version }} -n --run-from-playbooks
 
