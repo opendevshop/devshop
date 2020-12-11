@@ -279,6 +279,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.INPUT_GITHUB_TOKEN }}
         working-directory: ./src/DevShop/Component/
         run: |
-          composer create-project devshop/control-template:@dev temp --repository='{"type":"path","url":"DevShopControlProject"}'
+          composer create-project devshop/control-project:@dev temp --repository='{"type":"path","url":"DevShopControlProject"}'
 
         # @TODO: Launch a devshop test container around this devshop-control code.
