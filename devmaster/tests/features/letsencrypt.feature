@@ -9,6 +9,8 @@ Feature: DevShop Servers have LetsEncrypt enabled out of the box.
     Given I am logged in as a user with the "administrator" role
     When I am at "hosting/c/server_master"
     And I click "Edit"
+    # Intentional failure. Fix in next commit.
+    Then I should see "Let's Encrypt"
     Then I select the radio button with the label "LetsEncrypt"
     Then I select the radio button with the label "Staging"
 #    Then I select the radio button with the label "Apache HTTPS"
