@@ -316,24 +316,10 @@ abstract class Command extends BaseCommand
       }
     }
 
-    try {
-      $ref = $client->getHttpClient()->get('repos/opendevshop/devshop/git/commits/' . $version);
-      $sha_found = TRUE;
-      $this->targetVersionRef = 'sha';
-    }
-    catch (RuntimeException $e) {
-      $sha_found = FALSE;
 
-      // Detect GitHub limit issues and just pass.
-      if (isset($e) && strpos($e->getMessage(), 'You have reached GitHub hour limit! Actual limit is:') === 0) {
-        return TRUE;
-      }
-    }
-
-
-    // If we don't find a branch, tag or sha, throw an exception.
-    if (!$branch_found && !$tag_found && !$sha_found) {
-      throw new \Exception("An exception was thrown when trying to find a branch, tag, or SHA named {$version}:" . $e->getCode() . ' ' . $e->getMessage());
+    // If we don't find a branch or tag, throw an exception
+    if (!$branch_found && !$tag_found) {
+      throw new \Exception("An exception was thrown when trying to find a branch or tag named {$version}:" . $e->getCode() . ' ' . $e->getMessage());
     }
 
     // If no exceptions were thrown, return TRUE.

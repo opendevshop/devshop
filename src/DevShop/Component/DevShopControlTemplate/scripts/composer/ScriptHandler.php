@@ -25,30 +25,45 @@ class ScriptHandler {
     $devmaster_path = $drupalRoot . '/profiles/devmaster';
     if (is_link($devmaster_path)) {
       $real_devmaster_path = realpath($devmaster_path);
-      $io->write("<info>NOTICE</info> The package devshop/devmaster is installed via symlink to <comment>$real_devmaster_path</comment>");
       $devmaster_path = $real_devmaster_path;
     }
 
     $devmaster_info_path = $devmaster_path  . '/devmaster.info';
+    $bug_warning_message = 'This is a known issue. Run "composer reinstall" to fully delete and rebuild your site code. See https://github.com/opendevshop/devshop/issues/649';
 
     // Both web/profiles/devmaster directory and devmaster.info file are found.
     if ($fs->exists($devmaster_path) && $fs->exists($devmaster_info_path)) {
-      $io->write("<info>NOTICE</info> The install profile package <comment>devshop/devmaster</comment> was found at <comment>$devmaster_path</comment>");
-      passthru("ls -la web/profiles/devmaster");
-      passthru("ls -la web/profiles/devmaster/devmaster.info");
+      if (is_link($drupalRoot . '/profiles/devmaster')) {
+        $io->write("<info>SUCCESS</info> The package <comment>devshop/devmaster</comment> was installed via symlink from <comment>$real_devmaster_path</comment> to <comment>web/profiles/devmaster</comment> ");
+        passthru("ls -la web/profiles/devmaster");
+        passthru("ls -la $real_devmaster_path/devmaster.info");
+      }
+      else {
+        $io->write("<info>SUCCESS</info> The package <comment>devshop/devmaster</comment> was installed to <comment>web/profiles/devmaster</comment>");
+        passthru("ls -la web/profiles/devmaster/devmaster.info");
+      }
     }
     // Error: web/profiles/devmaster directory exists but no info file found.
     elseif ($fs->exists($devmaster_path) && !$fs->exists($devmaster_info_path)) {
 
-      // @TODO: Uncomment this when attempting to fix the missing profile problenm for good.
-      // throw new \Exception('There is no devmaster.info file in the path for package devshop/devmaster: ' . $devmaster_info_path);
-      $io->writeError('There is no devmaster.info file in the path for package devshop/devmaster: ' . $devmaster_info_path);
+       throw new \Exception('There is no devmaster.info file in the path for package devshop/devmaster: ' . $devmaster_info_path . ' ' . $bug_warning_message);
     }
     // Error: No web/profiles/devmaster directory found at all.
     elseif (!$fs->exists($devmaster_path)) {
-      // @TODO: Uncomment this when attempting to fix the missing profile problenm for good.
-      // throw new \Exception('There is no directory at the expected location for the devshop/devmaster install profile. A second call to composer install will fix the problem. Expected path: ' . $devmaster_path);
-      $io->writeError('<error>ERROR:</error> The devshop/devmaster install profile package was not installed. A second call to composer install will fix the problem. Expected path: ' . $devmaster_path);
+       throw new \Exception('There is no directory at the expected location for the devshop/devmaster install profile. Expected path: ' . $devmaster_path . ' ' . $bug_warning_message);
+    }
+
+    // Confirm that views is present.
+    $views_path = $drupalRoot . '/sites/all/modules/contrib/views';
+    if (!$fs->exists($views_path)) {
+      throw new \Exception('ERROR: Composer failed to install required modules. Views was not found. Expected path: ' . $views_path . ' ' . $bug_warning_message);
+    }
+    elseif (!$fs->exists("$views_path/views.info")) {
+      throw new \Exception('ERROR: Composer failed to install required modules. An empty folder is present where views should be. This will prevent installation. Expected path: ' . $views_path . ' ' . $bug_warning_message);
+    }
+    else {
+      $io->write("<info>SUCCESS</info> The package <comment>drupal/views</comment> was installed to <comment>$views_path</comment>");
+      passthru("ls -la $views_path/views.info");
     }
   }
 

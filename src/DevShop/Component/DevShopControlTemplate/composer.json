@@ -9,16 +9,20 @@
             "role": ""
         }
     ],
-    "repositories": [
-        {
-            "type": "composer",
-            "url": "https://packages.drupal.org/7"
-        },
-        {
-            "type": "composer",
-            "url": "https://asset-packagist.org"
-        }
-    ],
+    "repositories": {
+      "drupal": {
+        "type": "composer",
+        "url": "https://packages.drupal.org/7"
+      },
+      "npm": {
+        "type": "composer",
+        "url": "https://asset-packagist.org"
+      },
+      "devshop_devmaster": {
+        "type": "path",
+        "url": "../../../../devmaster"
+      }
+    },
     "require": {
         "php": ">=5.3.3",
         "ext-curl": "*",
@@ -77,7 +81,7 @@
         "symfony/filesystem": "~2.7|^3",
         "toin0u/digitalocean-v2": "~2.0",
         "webflo/drupal-finder": "^1.0.0",
-        "devshop/devmaster": "^1.7||1.x-dev"
+        "devshop/devmaster": "^1.7||1.x-dev@dev"
     },
     "conflict": {
         "drupal/core": "8.*"
@@ -123,13 +127,13 @@
         "uninstall": [
           "echo 'Removing all Drupal and vendor code...'",
           "rm -rf composer.lock",
-          "rm -rf vendor web/profiles web/includes web/misc web/modules web/scripts web/themes",
+          "rm -rf vendor web/profiles web/includes web/misc web/modules web/scripts web/themes web/sites/all/modules/contrib web/sites/all/modules/themes",
           "rm -f web/*; rm -f web/.* || true",
           "echo 'Done.'"
         ],
         "reinstall": [
           "@uninstall",
-          "@composer update --prefer-source --ansi"
+          "@composer update --no-dev --no-progress --prefer-source"
         ]
     },
     "extra": {
@@ -144,9 +148,10 @@
             "web/sites/all/themes/contrib/{$name}/": ["type:drupal-theme"]
       },
       "preserve-paths": [
-          "web/sites"
+          "web/sites",
+          "web/profiles/devmaster"
         ]
     },
-    "minimum-stability": "alpha",
+    "minimum-stability": "dev",
     "prefer-stable": true
 }

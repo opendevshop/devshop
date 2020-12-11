@@ -6,7 +6,7 @@
   # @TODO: inject SHA into index.html so the script has the version in it. 
   # Use docker as example: https://github.com/docker/docker-install/blob/master/Makefile#L16 
   # They use envsubst
-  command = "make build"
+  command = "cp install.sh index.html"
 
 
 [[headers]]
