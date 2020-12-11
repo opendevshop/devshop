@@ -1013,9 +1013,20 @@ div.hosting-task-retry form, div.hosting-task-retry form input {
     background: #262626;
     padding: 0;
 }
-
+.devshop-command.panel {
+    margin-top: 20px;
+}
+.devshop-command.panel.panel-default {
+    margin-top: 0;
+    margin-bottom: 0;
+    border: 0;
+}
 .panel-type-error pre {
   white-space: normal;
+}
+
+.devshop-command.panel.panel-default pre.ansi_box {
+  padding: .2em 1.25em;
 }
 
 pre.ansi_box {
@@ -1023,7 +1034,6 @@ pre.ansi_box {
     white-space: pre-wrap;
     line-height: 120%;
 }
-
 .errors-table td > div {
     color: rgb(51, 51, 51);
     display: block;
