@@ -1,25 +1,32 @@
-# DevShop Control Composer Project
+# DevShop Control
 
 The web interface for DevShop is called the "DevShop Control" site. Every DevShop has one.
 
-This code, the *DevShop Control Composer Project*, is used as a template to create
- each DevShop's Control site codebase.
+This code, the *DevShop Control Composer Project*, is the codebase for the Devshop Control site.
 
-This Composer project includes the [devmaster](https://drupal.org/project/devmaster) Drupal install profile and all 
-other required libraries.
- 
-This project gets installed in every DevShop to `/var/aegir/devshop-control-1.x`, with the [opendevshop.devmaster Ansible role](../../../roles/opendevshop.devmaster/tasks/install-devmaster.yml) 
+DevShop Control includes the [devmaster](https://drupal.org/project/devmaster) Drupal install profile and all 
+other required modules and libraries via Composer.
 
-Every *DevShop Server* can then extend their *DevShop Control Site* using `composer require`, 
-and can add their custom code to a private git repository to maintain customizations over time.
+This project was developed from the `7.x` branch of the [drupal-composer/drupal-project](https://github.com/drupal-composer/drupal-project#updating-drupal-core).
 
-DevShop Control sites can now be updated in place using git and `composer`. See [Updating your DevShop Control Site](#updating-your-devshop-control-site) below.
 
-## Customizing your DevShop Control Site
+## Source Code
 
-You can customize your DevShop Control site in place, but it is recommended to
- set up a Git repo to store your changes:
- 
+This project is included in the main DevShop source code in the folder [./src/DevShop/Component/DevShopControlProject](src/DevShop/Component/DevShopControlProject) which is typically installed to `/usr/share/devshop`.
+
+A standard DevShop install will set up the DevShopControl site using that folder. 
+
+If you want to extend your DevShop Control site, you can copy the files from that folder, or use the `composer create-project` command to scaffold up a new composer stack.
+
+Once you have a custom codebase, you can put the code into a git repository.
+
+## Creating a custom DevShop Control Site.
+
+Creating a custom DevShop Control is just like any other Drupal site: Use Composer and Git.
+
+
+### Part 1: Create the codebase.
+
 1. Create a git repository on your favorite git host:
 
       - https://gitlab.com/projects/new
@@ -32,55 +39,33 @@ You can customize your DevShop Control site in place, but it is recommended to
 
 3. Run the composer command to create a new project using this repo as a template:
 
-        composer create-project devshop/control-template:@dev
+        composer create-project devshop/control-project:@dev
 
     With no directory argument, the project will be built in the current directory.
 
 4. Add to git and push.
 
         git add -A
-        git commit -m 'Initial Commit!'
-        git push origin master
+        git commit -m 'First Commit!'
+        git branch -M main
+        git push -u origin main
 
-5. Install the repo in your DevShop:
+### Part 2: Installing the Codebase
 
-    When installing DevShop, set the Ansible variable `devshop_control_git_remote` to your new git repository. 
+When installing DevShop, you can change what git repo is used for installing the DevShop Control site via Ansible Variables.
 
-    See [roles/opendevshop.devmaster/defaults/main.yml](https://github.com/opendevshop/devshop/tree/1.x/roles/opendevshop.devmaster/defaults/main.yml) to see the default variable.
-    
-        devshop_control_git_remote: 'git@git.example.com:org/devshop.example.com.git'
-        devshop_control_git_docroot: web
-        devshop_control_git_reference: "1.0.0"
+Set the following variables in your Ansible inventory. There are many places Ansible variables can go, such as `/etc/ansible/hosts` or a file in `/etc/ansible/host_vars`. 
 
-    If you wish to swap in your own install profile, set the Ansible variable `devshop_install_profile`:
-    
-        devshop_install_profile: devmaster
+See [roles/opendevshop.devmaster/defaults/main.yml](./roles/opendevshop.devmaster/defaults/main.yml) to see the default variable values.
+ 
+     devshop_control_git_remote: 'git@git.example.com:org/devshop.example.com.git'
+     devshop_control_git_docroot: web
+     devshop_control_git_reference: "main"
+     devshop_control_git_root: "/var/aegir/devshop.example.com"
 
-    @TODO: Add `--control-git-remote` option to `install.sh`.
-
-## Updating your DevShop Control Site
-
-This project is still in an alpha state. Upgrades will be handled with composer 
-but the specific behavior of `composer update` can vary. 
-
-These instructions are a DRAFT. We will create a single command to update properly
-and will re-implement upgrade tests. 
-
-1. Update Drupal core first:
-
-         composer update drupal/drupal --with-dependencies
-
-    If using git, commit the results.
-
-3. Update the `devshop/devmaster` dependency:
-
-         composer update devshop/devmaster --with-dependencies
-
-4. Update the rest of the project:
-
-         composer update devshop/devmaster --with-dependencies
-
-See the [`drupal-composer/drupal-project` composer project for more information](https://github.com/drupal-composer/drupal-project#updating-drupal-core).
+ If you wish to run your own install profile during the Ansible install, set the variable `devshop_install_profile`:
+ 
+     devshop_install_profile: devmaster
 
 ## Development
 
