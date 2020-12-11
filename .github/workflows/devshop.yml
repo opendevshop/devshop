@@ -123,9 +123,16 @@ jobs:
         working-directory: roles
         if: always()
         run: |
-          docker ps -a >        artifact-docker-ps.log && \
-          $DEBUG_COMMAND >      artifact-debug-command-output.log && \
-          docker-compose logs > artifact-docker-compose.log
+          docker ps -a >        ../artifact-docker-ps.log && \
+          $DEBUG_COMMAND >      ../artifact-debug-command-output.log && \
+          docker-compose logs > ../artifact-docker-compose.log
+
+      - name: Upload Log Artifacts
+        uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: DockerLogs
+          path: artifact-*
 
       - name: Upload Test Artifacts
         uses: actions/upload-artifact@v2
@@ -134,12 +141,6 @@ jobs:
           name: TestFailures
           path: ./.github/test-artifacts
 
-      - name: Upload Log Artifacts
-        uses: actions/upload-artifact@v2
-        if: always()
-        with:
-          name: DockerLogs
-          path: artifact-*
 
   docker:
     name: "Build DevShop"
