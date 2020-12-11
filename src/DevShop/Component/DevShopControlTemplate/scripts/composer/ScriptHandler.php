@@ -29,6 +29,7 @@ class ScriptHandler {
     }
 
     $devmaster_info_path = $devmaster_path  . '/devmaster.info';
+    $bug_warning_message = 'This is a known issue. Run "composer reinstall" to fully delete and rebuild your site code. See https://github.com/opendevshop/devshop/issues/649';
 
     // Both web/profiles/devmaster directory and devmaster.info file are found.
     if ($fs->exists($devmaster_path) && $fs->exists($devmaster_info_path)) {
@@ -45,24 +46,20 @@ class ScriptHandler {
     // Error: web/profiles/devmaster directory exists but no info file found.
     elseif ($fs->exists($devmaster_path) && !$fs->exists($devmaster_info_path)) {
 
-      // @TODO: Uncomment this when attempting to fix the missing profile problenm for good.
-      // throw new \Exception('There is no devmaster.info file in the path for package devshop/devmaster: ' . $devmaster_info_path);
-      $io->writeError('<error>ERROR</error> There is no devmaster.info file in the path for package devshop/devmaster: ' . $devmaster_info_path);
+       throw new \Exception('There is no devmaster.info file in the path for package devshop/devmaster: ' . $devmaster_info_path . ' ' . $bug_warning_message);
     }
     // Error: No web/profiles/devmaster directory found at all.
     elseif (!$fs->exists($devmaster_path)) {
-      // @TODO: Uncomment this when attempting to fix the missing profile problenm for good.
-      // throw new \Exception('There is no directory at the expected location for the devshop/devmaster install profile. A second call to composer install will fix the problem. Expected path: ' . $devmaster_path);
-      $io->writeError('<error>ERROR</error>There is no directory at the expected location for the devshop/devmaster install profile. A second call to composer install will fix the problem. Expected path: ' . $devmaster_path);
+       throw new \Exception('There is no directory at the expected location for the devshop/devmaster install profile. Expected path: ' . $devmaster_path . ' ' . $bug_warning_message);
     }
 
     // Confirm that views is present.
     $views_path = $drupalRoot . '/sites/all/modules/contrib/views';
     if (!$fs->exists($views_path)) {
-      throw new \Exception('ERROR: Composer failed to install required modules. Views was not found. This is a known issue. Run composer install without the --no-dev option to fix. Expected path: ' . $views_path);
+      throw new \Exception('ERROR: Composer failed to install required modules. Views was not found. Expected path: ' . $views_path . ' ' . $bug_warning_message);
     }
     elseif (!$fs->exists("$views_path/views.info")) {
-      throw new \Exception('ERROR: Composer failed to install required modules. An empty folder is present where views should be. This will prevent installation. Run "composer uninstall" to remove the folders, then "composer install" without the --no-dev option to fix. Expected path: ' . $views_path);
+      throw new \Exception('ERROR: Composer failed to install required modules. An empty folder is present where views should be. This will prevent installation. Expected path: ' . $views_path . ' ' . $bug_warning_message);
     }
     else {
       $io->write("<info>SUCCESS</info> The package <comment>drupal/views</comment> was installed to <comment>$views_path</comment>");
