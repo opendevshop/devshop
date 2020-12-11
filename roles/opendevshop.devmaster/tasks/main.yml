@@ -7,7 +7,7 @@
       - "  Path: {{ devshop_cli_path }}"
       - "  Version: {{ devshop_version }}"
       - "  CLI Version: {{ devshop_cli_version }}"
-  tags: [ always ]
+  tags: [always]
 
 - name: Detect current server hostname.
   command: "hostname --fqdn"
@@ -316,4 +316,4 @@
       - "  Path: {{ devshop_cli_path }}"
       - "  Version: {{ devshop_version }}"
       - "  CLI Version: {{ devshop_cli_version }}"
-  tags: [ always ]
+  tags: [always]

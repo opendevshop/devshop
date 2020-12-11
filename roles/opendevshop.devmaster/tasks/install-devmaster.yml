@@ -115,7 +115,7 @@
           - "  CLI Version: {{ devshop_cli_version }}"
           - "  DevShop Control Install Command: {{ devmaster_install_command }}"
       failed_when: true
-      tags: [ always ]
+      tags: [always]
 
 - name: DevShop Control Upgrade Command
   debug:
