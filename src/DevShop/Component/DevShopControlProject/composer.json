@@ -122,7 +122,8 @@
             "DrupalProject\\composer\\ScriptHandler::checkDevmasterPackage"
         ],
         "post-create-project-cmd": [
-            "DrupalProject\\composer\\ScriptHandler::removeInternalFiles"
+            "DrupalProject\\composer\\ScriptHandler::removeInternalFiles",
+            "@composer config repositories.devshop_devmaster --unset"
         ],
         "uninstall": [
           "echo 'Removing all Drupal and vendor code...'",
