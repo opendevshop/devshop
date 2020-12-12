@@ -654,7 +654,7 @@ class RoboFile extends \Robo\Tasks {
       // Remove devmaster site folder
       $version = self::DEVSHOP_LOCAL_VERSION;
       $uri = self::DEVSHOP_LOCAL_URI;
-      $this->_exec("docker-compose exec devshop rm -rf /usr/share/devshop/src/DevShop/Component/DevShopControlProject/web/sites/{$uri}");
+      $this->_exec("docker-compose exec devshop rm -rf /usr/share/devshop/src/DevShop/Control/web/sites/{$uri}");
       $this->_exec('docker-compose kill');
       $this->_exec('docker-compose rm -fv');
     }
@@ -672,7 +672,7 @@ class RoboFile extends \Robo\Tasks {
     // Uninstall composer vendor code?
     if (!$this->input()->isInteractive() || $this->confirm("Composer uninstall DevShop Control?")) {
       $this->taskExec("composer uninstall")
-        ->dir("src/DevShop/Component/DevShopControlProject")
+        ->dir("src/DevShop/Control")
         ->run();
     }
   }
