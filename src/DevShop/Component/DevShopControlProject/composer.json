@@ -121,9 +121,11 @@
             "DrupalProject\\composer\\ScriptHandler::createRequiredFiles",
             "DrupalProject\\composer\\ScriptHandler::checkDevmasterPackage"
         ],
+        "post-root-package-install": [
+          "@composer config repositories.devshop_devmaster --unset"
+        ],
         "post-create-project-cmd": [
-            "DrupalProject\\composer\\ScriptHandler::removeInternalFiles",
-            "@composer config repositories.devshop_devmaster --unset"
+            "DrupalProject\\composer\\ScriptHandler::removeInternalFiles"
         ],
         "uninstall": [
           "echo 'Removing all Drupal and vendor code...'",
