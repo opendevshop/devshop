@@ -20,7 +20,7 @@
       },
       "devshop_devmaster": {
         "type": "path",
-        "url": "../../../../devmaster"
+        "url": "../../../devmaster"
       }
     },
     "require": {
