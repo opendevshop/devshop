@@ -17,10 +17,6 @@
       "npm": {
         "type": "composer",
         "url": "https://asset-packagist.org"
-      },
-      "devshop_devmaster": {
-        "type": "path",
-        "url": "../../../../devmaster"
       }
     },
     "require": {
