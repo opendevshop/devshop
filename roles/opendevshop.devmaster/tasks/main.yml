@@ -123,6 +123,16 @@
     force: true
   when: not devshop_cli_skip_update
 
+- name: "Configure Composer Globally"
+  command: "{{ php_executable }} {{ composer_path }} {{ devshop_cli_composer_install_command }}"
+  # Changed: true is so we don't fail ansible lint.
+  changed_when: true
+  tags: [always]
+  args:
+    chdir: "{{ item }}"
+  with_items:
+    - "{{ devshop_cli_path }}"
+
 - name: "Install DevShop dependencies with composer"
   command: "{{ php_executable }} {{ composer_path }} {{ devshop_cli_composer_install_command }}"
   # Changed: true is so we don't fail ansible lint.
