@@ -2,4 +2,4 @@
 
 This is the default DevShop web interface code.
 
-See ./src/DevShop/Component/DevShopControlProject for the custom template.
+See ./src/DevShop/Component/ControlProject for the custom template.

@@ -228,8 +228,8 @@ jobs:
         run: |
           ./Tests/repo-info.php
 
-  DevShopControlProject:
-    name: DevShopControlProject
+  ControlProject:
+    name: ControlProject
 
     runs-on: ubuntu-18.04
     strategy:
@@ -238,7 +238,7 @@ jobs:
           # - '5.6'
           - '7.2'
     env:
-      working-directory: ./src/DevShop/Component/DevShopControlProject
+      working-directory: ./src/DevShop/Component/ControlProject
     steps:
       - uses: actions/checkout@v1
 
@@ -279,6 +279,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.INPUT_GITHUB_TOKEN }}
         working-directory: ./src/DevShop/Component/
         run: |
-          composer create-project devshop/control-project:@dev temp --repository='{"type":"path","url":"DevShopControlProject"}'
+          composer create-project devshop/control-project:@dev temp --repository='{"type":"path","url":"ControlProject"}'
 
         # @TODO: Launch a devshop test container around this devshop-control code.

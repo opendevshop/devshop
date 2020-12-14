@@ -12,7 +12,7 @@ This project was developed from the `7.x` branch of the [drupal-composer/drupal-
 
 ## Source Code
 
-This project is included in the main DevShop source code in the folder [./src/DevShop/Component/DevShopControlProject](src/DevShop/Component/DevShopControlProject) which is typically installed to `/usr/share/devshop`.
+This project is included in the main DevShop source code in the folder [./src/DevShop/Component/ControlProject](src/DevShop/Component/ControlProject) which is typically installed to `/usr/share/devshop`.
 
 A standard DevShop install will set up the DevShopControl site using that folder. 
 
@@ -69,7 +69,7 @@ See [roles/opendevshop.devmaster/defaults/main.yml](./roles/opendevshop.devmaste
 
 ## Development
 
-This is a mini repo, split from the [DevShop Mega repo](https://github.com/opendevshop/devshop/tree/1.x/src/DevShop/Component/DevShopControlProject).
+This is a mini repo, split from the [DevShop Mega repo](https://github.com/opendevshop/devshop/tree/1.x/src/DevShop/Component/ControlProject).
 
 Please submit pull requests and issues there.
 

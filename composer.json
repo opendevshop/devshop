@@ -103,7 +103,7 @@
                 "src/DevShop/Component/GitSplit": "https://github.com/devshop-packages/git-split.git",
                 "src/DevShop/Component/PowerProcess": "https://github.com/devshop-packages/power-process.git",
                 "src/DevShop/Component/YamlTasks": "https://github.com/devshop-packages/yaml-tasks.git",
-                "src/DevShop/Component/DevShopControlProject": "https://github.com/devshop-packages/devshop-control-project.git",
+                "src/DevShop/Component/ControlProject": "https://github.com/devshop-packages/devshop-control-project.git",
                 "install": "https://github.com/opendevshop/devshop-install.git"
             }
         }
