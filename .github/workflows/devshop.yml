@@ -40,9 +40,15 @@ jobs:
           - 'ubuntu1804'
           # Sorry, centos. You must wait until the next PR.
           # - 'centos7'
+        vars:
+          - 'php_version=7.1'
+          - 'php_version=7.2'
+          - 'php_version=7.3'
+          - 'php_version=7.4'
     env:
       OS: "${{ matrix.os }}"
       HOSTNAME: "devshop.${{ github.event.pull_request.number }}.${{ matrix.os }}.actions.github.com"
+      ANSIBLE_EXTRA_VARS: "${{ matrix.vars }}"
 
     runs-on: ubuntu-18.04
     steps:
@@ -152,9 +158,15 @@ jobs:
           - 'ubuntu1804'
           # Sorry, centos. You must wait until the next PR.
           # - 'centos7'
+        vars:
+          - 'php_version=7.1'
+          - 'php_version=7.2'
+          - 'php_version=7.3'
+          - 'php_version=7.4'
     env:
       OS: "${{ matrix.os }}"
       HOSTNAME: "devshop.${{ github.event.pull_request.number }}.${{ matrix.os }}.actions.github.com"
+      ANSIBLE_EXTRA_VARS: "${{ matrix.vars }}"
 
     runs-on: ubuntu-18.04
     steps:
