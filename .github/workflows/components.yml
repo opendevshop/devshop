@@ -86,8 +86,10 @@ jobs:
     strategy:
       matrix:
         php-versions:
-          # - '5.6'
           - '7.1'
+          - '7.2'
+          - '7.3'
+          - '7.4'
 
     # Set working directory for entire file. https://github.community/t5/GitHub-Actions/use-working-directory-for-entire-job/td-p/36759
     env:
@@ -139,8 +141,10 @@ jobs:
     strategy:
       matrix:
         php-versions:
-          # - '5.6'
           - '7.1'
+          - '7.2'
+          - '7.3'
+          - '7.4'
 
     # Set working directory for entire file. https://github.community/t5/GitHub-Actions/use-working-directory-for-entire-job/td-p/36759
     env:
@@ -193,8 +197,10 @@ jobs:
     strategy:
       matrix:
         php-versions:
-          # - '5.6'
           - '7.1'
+          - '7.2'
+          - '7.3'
+          - '7.4'
 
     # Set working directory for entire file. https://github.community/t5/GitHub-Actions/use-working-directory-for-entire-job/td-p/36759
     env:
@@ -247,8 +253,10 @@ jobs:
     strategy:
       matrix:
         php-versions:
-          # - '5.6'
+          - '7.1'
           - '7.2'
+          - '7.3'
+          - '7.4'
     env:
       working-directory: ./src/DevShop/Component/ControlProject
     steps:
