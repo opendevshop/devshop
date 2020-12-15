@@ -34,7 +34,6 @@
         "composer/installers": "^1.2",
         "composer/semver": "^1.4",
         "cweagans/composer-patches": "dev-master#a18d1ca",
-        "devshop/devmaster": "^1.7||1.x-dev@dev",
         "drupal-composer/preserve-paths": "^0.1.6",
         "drupal/admin_menu": "@rc",
         "drupal/adminrole": "^1.1",
@@ -52,7 +51,7 @@
         "drupal/drupal": "^7.62",
         "drupal/entity": "^1.9",
         "drupal/features": "^2.11",
-        "drupal/hosting": "^4",
+        "drupal/hosting": "4.x-dev",
         "drupal/hosting_filemanager": "dev-1.x",
         "drupal/hosting_git": "^3.181",
         "drupal/hosting_https": "^3.182",
@@ -81,7 +80,8 @@
         "oomphinc/composer-installers-extender": "^2.0",
         "symfony/filesystem": "~2.7|^3",
         "toin0u/digitalocean-v2": "~2.0",
-        "webflo/drupal-finder": "^1.0.0"
+        "webflo/drupal-finder": "^1.0.0",
+        "devshop/devmaster": "^1.7||1.x-dev@dev"
     },
     "conflict": {
         "drupal/core": "8.*"

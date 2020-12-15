@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5ef480c51ab92c17d1450594702a917f",
+    "content-hash": "19a338ff1d786bb53f220f2159cb4821",
     "packages": [
         {
             "name": "clue/stream-filter",
@@ -1582,17 +1582,11 @@
         },
         {
             "name": "drupal/hosting",
-            "version": "4.0.0-alpha3",
+            "version": "dev-4.x",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/hosting.git",
-                "reference": "7.x-4.0-alpha3"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/hosting-7.x-4.0-alpha3.zip",
-                "reference": "7.x-4.0-alpha3",
-                "shasum": "f6f110f6619b65ff0c689b45afbdd4c3cd5d584b"
+                "reference": "3c0ed3bed8f69662db687f18d8f3aab8d69be269"
             },
             "require": {
                 "drupal/drupal": "~7.0",
@@ -1613,12 +1607,15 @@
             },
             "type": "drupal-module",
             "extra": {
+                "branch-alias": {
+                    "dev-4.x": "4.x-dev"
+                },
                 "drupal": {
-                    "version": "7.x-4.0-alpha3",
-                    "datestamp": "1608035826",
+                    "version": "7.x-4.0-alpha2+6-dev",
+                    "datestamp": "1607015365",
                     "security-coverage": {
                         "status": "not-covered",
-                        "message": "Alpha releases are not covered by Drupal security advisories."
+                        "message": "Dev releases are not covered by Drupal security advisories."
                     }
                 }
             },
@@ -6063,13 +6060,14 @@
     "minimum-stability": "dev",
     "stability-flags": {
         "cweagans/composer-patches": 20,
-        "devshop/devmaster": 20,
         "drupal/admin_menu": 5,
         "drupal/aegir_config": 10,
         "drupal/cas_attributes": 5,
         "drupal/devshop_stats": 20,
+        "drupal/hosting": 20,
         "drupal/hosting_filemanager": 20,
-        "drupal/hosting_statsd": 10
+        "drupal/hosting_statsd": 10,
+        "devshop/devmaster": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,

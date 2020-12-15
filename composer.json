@@ -27,7 +27,7 @@
         "devshop/bin-tools": "@dev",
         "devshop/yaml-tasks": "@dev",
         "devshop/power-process": "@dev",
-        "drupal/provision": "^4.0||4.x-dev"
+        "drupal/provision": "4.x-dev@dev"
     },
     "replace": {
         "drupal/drupal": "*"

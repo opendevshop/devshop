@@ -176,7 +176,7 @@ class YamlTasksConsoleCommand extends BaseCommand
         $this->workingDir = getcwd();
 
         $this->gitRepo = Repository::open($this->workingDir);
-        $this->gitDir = $this->gitRepo->getRepositoryPath();
+        $this->gitRepo->getCurrentCommit();
 
         $composer_json = $this->workingDir . '/composer.json';
         if (!is_readable($composer_json)) {
@@ -244,7 +244,7 @@ class YamlTasksConsoleCommand extends BaseCommand
         $this->say("Git Remote: <comment>{$remote_url}</comment>");
         $this->say("Local Git Branch: <comment>{$this->gitRepo->getCurrentBranch()}</comment>");
         $this->say("Composer working directory: <comment>{$this->workingDir}</comment>");
-        $this->say("Git Repository directory: <comment>{$this->gitDir}</comment>");
+        $this->say("Git Repository directory: <comment>{$this->workingDir}</comment>");
         $this->say("Git Commit: <comment>{$this->gitRepo->getCurrentCommit()}</comment>");
         $this->say("Tasks File: <comment>{$this->tasksFilePath}</comment>");
 
