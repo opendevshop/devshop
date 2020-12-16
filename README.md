@@ -37,13 +37,14 @@ These tools are designed to be useful regardless of the hosting or DevOps system
 
 ### Composer Packages
 
-#### [DevShop Control](src/DevShop/Component/ControlProject)
+#### [DevShop Control](src/DevShop/Control) & [DevShop Control Project](src/DevShop/Component/ControlProject)
 
 > Drupal CI/CD Dashboard and Ansible Server Manager in a Box
 
 - Web-based front-end for a DevShop server. Drupal 7 based. 
 - Add unlimited Drupal projects and environments per server.
-- Create and configure servers all through the web interface.  
+- Create and configure servers all through the web interface.
+- DevShop Control is built into the devshop codebase. The DevShop Control Project is a composer project template that can be used to deploy a custom devshop control site.
 
 #### [Deploy](./src/DevShop/Component/Deploy)
 
