@@ -72,7 +72,8 @@ jobs:
       - name: Prepare Pull Request-only environment
         if: github.event_name=='pull_request'
         run: |
-          echo "ANSIBLE_PLAYBOOK_COMMAND_OPTIONS=--extra-vars=devshop_version=${{ github.head_ref }}" >> $GITHUB_ENV
+          echo "devshop_version: ${{ github.head_ref }}" >> vars.ci.yml
+          echo "devshop_cli_repo: ${{ github.pr.head.repo.clone_url }}" >> vars.ci.yml
           echo "GIT_REF=${{ github.head_ref }}" >> $GITHUB_ENV
           echo "ANSIBLE_VERBOSITY=2" >> $GITHUB_ENV
           git switch --create ${{ github.head_ref }}
