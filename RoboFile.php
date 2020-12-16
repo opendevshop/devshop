@@ -537,6 +537,7 @@ class RoboFile extends \Robo\Tasks {
       $env_run = $this->generateEnvironmentArgs($opts);
       $extra_vars = array();
       $extra_vars['devshop_version'] = $this->git_ref;
+      $extra_vars['devshop_control_git_reference'] = $this->git_ref;
 
       # @TODO: Move all static vars into vars.development.yml.
       # Don't upgrade every time we robo up.
@@ -545,6 +546,9 @@ class RoboFile extends \Robo\Tasks {
 
       // Set extra ansible vars when not in CI.
       if (empty($_SERVER['CI'])) {
+        // Set the "hostmaster platform" path to the full DevShopControlTemplate root so we can use it directly.
+        $extra_vars['devshop_control_path'] = '/usr/share/devshop/src/DevShop/Component/DevShopControlTemplate';
+
         if ($opts['force-reinstall']) {
           $extra_vars['devshop_control_install_options'] = '--force-reinstall';
         }

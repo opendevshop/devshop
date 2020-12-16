@@ -15,21 +15,11 @@ devshop-log "Creating local branch from the checked out commit with the expected
 # Locally, it says `devshop/devmaster[1.x-dev]` instead, because my local path repo is on a branch.
 
 cd "$DEVSHOP_PATH"
-git checkout -b 1.x || echo "1.x branch already exists."
 
 devshop-log "Adding repos to composer global config."
 set -x
 composer config --global repo.devshop_devmaster {"path","/usr/share/devshop/devmaster"}
 cd "$DEVSHOP_PATH/src/DevShop/Component/DevShopControlTemplate"
-git log -2
-git init
-git checkout -b $GIT_REF
-git remote add origin https://github.com/devshop-packages/devshop-control-template
-git add .gitignore
-git add -A
-git config --global user.email "github@opendevshop.com"
-git config --global user.name "GitHub Actions"
-git commit -m 'Temporary commit'
 
 # Composer require @dev and search for the Symlinking statement to ensure we are always installing from local code.
 echo "Reinstalling local devmaster using composer..."
