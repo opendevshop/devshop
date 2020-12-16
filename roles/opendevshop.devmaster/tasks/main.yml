@@ -1,4 +1,13 @@
 ---
+- name: "opendevshop.devmaster"
+  debug:
+    msg:
+      - "Welcome the opendevshop.devmaster playbook! We are about to install: "
+      - "  Repo: {{ devshop_cli_repo }}"
+      - "  Path: {{ devshop_cli_path }}"
+      - "  Version: {{ devshop_version }}"
+      - "  CLI Version: {{ devshop_cli_version }}"
+  tags: [always]
 
 - name: Detect current server hostname.
   command: "hostname --fqdn"
@@ -64,7 +73,7 @@
     state: present
 
 - name: Detect currently installed version of DevShop.
-  command: "{{ devshop_cli_path }}/bin/branch-or-tag"
+  command: "{{ devshop_cli_path }}/scripts/branch-or-tag"
   register: __devshop_version_installed
   changed_when: true
   ignore_errors: true
@@ -114,13 +123,54 @@
     force: true
   when: not devshop_cli_skip_update
 
-- name: Composer Install Devshop CLI
+- name: "Configure Composer Globally"
   command: "{{ php_executable }} {{ composer_path }} {{ devshop_cli_composer_install_command }}"
   # Changed: true is so we don't fail ansible lint.
   changed_when: true
   tags: [always]
   args:
-    chdir: "{{ devshop_cli_path }}"
+    chdir: "{{ item }}"
+  with_items:
+    - "{{ devshop_cli_path }}"
+
+- name: "Install DevShop dependencies with composer"
+  command: "{{ php_executable }} {{ composer_path }} {{ devshop_cli_composer_install_command }}"
+  # Changed: true is so we don't fail ansible lint.
+  changed_when: true
+  tags: [always]
+  args:
+    chdir: "{{ item }}"
+  with_items:
+    - "{{ devshop_cli_path }}"
+
+- name: Ensure DevShop Control code is owned by aegir user.
+  file:
+    state: directory
+    path: "{{ item }}"
+    group: "{{ aegir_user_name }}"
+    owner: "{{ aegir_user_name }}"
+    recurse: true
+  when: devshop_control_git_root is match(devshop_cli_path)
+  tags: [always]
+  with_items:
+    - "{{ devshop_control_git_root }}"
+    - "{{ devshop_cli_path }}/devmaster"
+
+- name: "Detect DevShop Control composer.lock file."
+  stat:
+    path: "{{ devshop_control_git_docroot }}/../composer.lock"
+  register: devshop_control_lock
+
+- name: "Prepare DevShop Control Composer lock file"
+  command: "{{ php_executable }} {{ composer_path }} {{ devshop_control_composer_prepare_command }}"
+  changed_when: true
+  args:
+    chdir: "{{ devshop_control_publish_path }}/../"
+  become: true
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
+  when: not devshop_control_lock.stat.exists
+  tags: [always]
 
 - name: Add DevShop bin directory to Path
   copy:
@@ -174,6 +224,19 @@
     owner: "{{ aegir_user_name }}"
   tags: [runtime]
 
+- name: Ensure DevShop Control code is owned by aegir user.
+  file:
+    state: directory
+    path: "{{ item }}"
+    group: "{{ aegir_user_name }}"
+    owner: "{{ aegir_user_name }}"
+    recurse: true
+  when: devshop_control_git_root is match(devshop_cli_path)
+  tags: [runtime]
+  with_items:
+    - "{{ devshop_control_git_root }}"
+    - "{{ devshop_cli_path }}/devmaster"
+
 - name: Create /var/aegir/.drush
   file:
     path: "{{ aegir_user_home }}/.drush/commands"
@@ -202,10 +265,10 @@
   become_method: "{{ ansible_become_method_aegir }}"
   tags: [runtime]
 
-- name: "Remove existing DevShop Control Source Code from {{ devshop_control_path }} before installing, if requested."
+- name: "Remove existing DevShop Control Source Code from {{ devshop_control_git_root }} before installing, if requested."
   when: devshop_danger_remove_devmaster
   file:
-    path: "{{ devshop_control_path }}"
+    path: "{{ devshop_control_git_root }}"
     state: absent
   tags: [never, remove-devmaster, rebuild-devmaster]
 
@@ -254,3 +317,13 @@
 #    dest: '{{ php_cli_ini_path }}'
 #    line: 'date.timezone = America/Chicago'
 #  when: ansible_os_family == "RedHat"
+
+- name: "opendevshop.devmaster"
+  debug:
+    msg:
+      - "Ansible Playbook run complete!"
+      - "  Repo: {{ devshop_cli_repo }}"
+      - "  Path: {{ devshop_cli_path }}"
+      - "  Version: {{ devshop_version }}"
+      - "  CLI Version: {{ devshop_cli_version }}"
+  tags: [always]

@@ -17,4 +17,4 @@ services:
       - ./roles/devshop.server/inventory:/etc/ansible/hosts
 
       - $HOME/.ssh:/var/aegir/.ssh
-      - ./.github/.test-artifacts:/var/aegir/test-artifacts
+      - ./.github/test-artifacts:/var/aegir/test-artifacts

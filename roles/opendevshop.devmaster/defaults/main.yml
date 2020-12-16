@@ -39,7 +39,7 @@ devshop_cli_repo: http://github.com/opendevshop/devshop.git
 devshop_cli_skip_update: false
 devshop_cli_path: /usr/share/devshop
 devshop_cli_bin_path: "{{ devshop_cli_path }}/bin"
-devshop_cli_composer_install_command: "install"
+devshop_cli_composer_install_command: "install --no-interaction"
 
 drush_bin_path: "{{ devshop_cli_bin_path }}/drush"
 
@@ -71,14 +71,32 @@ php_date_timezone: "America/New_York"
 devshop_version: 1.x
 devshop_cli_version: "{{ devshop_version }}"
 
+# DevShop uses a built in Drupal stack for devmaster now.
+# These are the provision properties for git_remote, git_root, git_reference, and git_docroot.
+devshop_control_git_remote: "https://github.com/opendevshop/devshop.git"
+devshop_control_git_root: "{{ devshop_cli_path }}"
+devshop_control_git_reference: "{{ devshop_version }}"
+
+# Relative path to docroot. This is usually just "web" but we want devshop-control and devshop to share source code, and aegir to know where the git repo is.
+devshop_control_git_docroot: "src/DevShop/Control/web"
+
+# Path to drupal's index.php
+devshop_control_publish_path: "{{ devshop_control_git_root }}/{{ devshop_control_git_docroot }}"
+
 # Set devshop_control_git_remote to deploy a devmaster instance from an existing git repo.
 # The devshop_control_git_reference will be checked out on provision verify. Leave blank to use default branch.
-devshop_control_git_remote: "https://github.com/devshop-packages/devshop-control-template"
-devshop_control_git_reference: ""
-devshop_control_git_docroot: "web"
-devshop_control_path: "{{ aegir_user_home }}/devshop-control"
+# If a custom devshop_control is needed, copy vars below with correct values into your ansible inventory.
+# devshop_control_git_remote: "https://github.com/devshop-packages/devshop-control-template"
+# devshop_control_git_root: "{{ aegir_user_home }}/devshop-control-custom"
+# devshop_control_git_reference: "master"
+# devshop_control_git_docroot: "web"
+# devshop_control_publish_path: "{{ devshop_control_git_root }}/{{ devshop_control_git_docroot }}"
+
 devshop_control_drush_alias: "@hostmaster"
 devshop_control_install_options: ""
+
+# Composer recommends using "update" when a project has no composer.lock file.
+devshop_control_composer_prepare_command: "update --no-dev --no-progress --prefer-source"
 
 devshop_install_profile: devmaster
 
@@ -105,7 +123,7 @@ devshop_support_license_key: ""
 # The path to the script to use for the Hosting Task Queue Runner. See opendevshop/devshop/bin/hosting-queue-runner
 hosting_queue_runner_bin_path: "{{ devshop_cli_bin_path }}/hosting-queue-runner"
 
-# Triggers the removal of devshop_control_path: `rm -rf {{ devshop_control_path }}`
+# Triggers the removal of devshop_control_git_root: `rm -rf {{ devshop_control_git_root }}`
 devshop_danger_remove_devmaster: false
 
 # By default, devshop assumes it is being installed at "runtime" (like on a running server).

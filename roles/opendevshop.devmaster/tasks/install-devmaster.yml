@@ -1,5 +1,11 @@
 ---
 
+- name: Ensure Supervisor is stopped for install (if configured).
+  service:
+    name: supervisord
+    state: stopped
+  when: supervisor_started
+
 - name: Get Install DevShop Control Environment (DEBUG)
   become: true
   become_user: "{{ aegir_user_name }}"
@@ -63,10 +69,10 @@
                                 --client_email={{ devshop_devmaster_email }} \
                                 --http_service_type={{ aegir_server_webserver }} \
                                 --profile={{ devshop_install_profile }} \
-                                --root={{ devshop_control_path }}/{{ devshop_control_git_docroot }} \
+                                --root={{ devshop_control_publish_path }} \
                                 --devshop_version={{ devshop_version }} \
                                 --drush-path={{ devshop_cli_bin_path }}/drush \
-                                --git_root={{ devshop_control_path }} \
+                                --git_root={{ devshop_control_git_root }} \
                                 --git_remote={{ devshop_control_git_remote }} \
                                 --git_reference={{ devshop_control_git_reference }}
                                 --git_docroot={{ devshop_control_git_docroot }}
@@ -89,13 +95,27 @@
     DATABASE_HOST: "{{ database_host }}"
 
 - name: Install DevShop Control
-  become: true
-  become_user: "{{ aegir_user_name }}"
-  become_method: "{{ ansible_become_method_aegir }}"
-  command: "{{ devmaster_install_command }}"
-  when:
-    - (devmaster_site_uri | length == 0) or (devshop_control_install_options is search("--force-reinstall"))
-  tags: [runtime]
+  block:
+    - name: Run Install DevShop Control Install Command
+      become: true
+      become_user: "{{ aegir_user_name }}"
+      become_method: "{{ ansible_become_method_aegir }}"
+      command: "{{ devmaster_install_command }}"
+      when:
+        - (devmaster_site_uri | length == 0) or (devshop_control_install_options is search("--force-reinstall"))
+      tags: [runtime]
+  rescue:
+    - name: DevShop Control install failed
+      debug:
+        msg:
+          - "DevShop Control Install Failed."
+          - "  Repo: {{ devshop_cli_repo }}"
+          - "  Path: {{ devshop_cli_path }}"
+          - "  Version: {{ devshop_version }}"
+          - "  CLI Version: {{ devshop_cli_version }}"
+          - "  DevShop Control Install Command: {{ devmaster_install_command }}"
+      failed_when: true
+      tags: [always]
 
 - name: DevShop Control Upgrade Command
   debug:
@@ -126,9 +146,3 @@
   register: devshop_cache_clear
   changed_when: "devshop_cache_clear.stdout | length > 0"
   tags: [runtime]
-
-- name: restart supervisor
-  debug:
-  tags: [runtime]
-  when: supervisor_started
-  notify: restart supervisor

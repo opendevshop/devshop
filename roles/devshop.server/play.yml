@@ -58,7 +58,7 @@
     # Run the opendevshop.users role first at runtime so UIDs are changed ASAP.
     # The playbook will ALSO be run before opendevshop.devmaster below because it is stored as a dependency.
     - role: opendevshop.users
-      tags: [runtime]
+      tags: [always]
 
     - role: geerlingguy.mysql
       tags: [always]
@@ -67,6 +67,7 @@
       when: ansible_os_family == 'RedHat'
 
     - role: geerlingguy.apache
+      tags: [always]
 
     - role: geerlingguy.php-versions
       tags: [always]
@@ -80,7 +81,12 @@
     - role: geerlingguy.composer
       tags: [always]
 
+    - role: geerlingguy.supervisor
+      tags: [always]
+
     - role: opendevshop.apache
       tags: [always]
 
+    # Always run everything. Tags inside the roles will limit tasks run.
     - role: opendevshop.devmaster
+      tags: [always]
