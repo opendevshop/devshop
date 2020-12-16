@@ -22,6 +22,13 @@ jobs:
     name: YamlTasks
 
     runs-on: ubuntu-18.04
+    strategy:
+      matrix:
+        php-versions:
+          - '7.1'
+          - '7.2'
+          - '7.3'
+          - '7.4'
 
     # Set working directory for entire file. https://github.community/t5/GitHub-Actions/use-working-directory-for-entire-job/td-p/36759
     env:
@@ -31,6 +38,11 @@ jobs:
     - uses: actions/checkout@v2
       with:
         ref: ${{ github.event.pull_request.head.sha }}
+
+    - name: Install PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ matrix.php-versions }}
 
     - name: Get Composer Cache Directory
       working-directory: ${{env.working-directory}}
@@ -74,8 +86,10 @@ jobs:
     strategy:
       matrix:
         php-versions:
-          # - '5.6'
           - '7.1'
+          - '7.2'
+          - '7.3'
+          - '7.4'
 
     # Set working directory for entire file. https://github.community/t5/GitHub-Actions/use-working-directory-for-entire-job/td-p/36759
     env:
@@ -127,8 +141,10 @@ jobs:
     strategy:
       matrix:
         php-versions:
-          # - '5.6'
           - '7.1'
+          - '7.2'
+          - '7.3'
+          - '7.4'
 
     # Set working directory for entire file. https://github.community/t5/GitHub-Actions/use-working-directory-for-entire-job/td-p/36759
     env:
@@ -181,8 +197,10 @@ jobs:
     strategy:
       matrix:
         php-versions:
-          # - '5.6'
           - '7.1'
+          - '7.2'
+          - '7.3'
+          - '7.4'
 
     # Set working directory for entire file. https://github.community/t5/GitHub-Actions/use-working-directory-for-entire-job/td-p/36759
     env:
@@ -228,17 +246,19 @@ jobs:
         run: |
           ./Tests/repo-info.php
 
-  DevShopControlTemplate:
-    name: DevShopControlTemplate
+  ControlProject:
+    name: ControlProject
 
     runs-on: ubuntu-18.04
     strategy:
       matrix:
         php-versions:
-          # - '5.6'
+          - '7.1'
           - '7.2'
+          - '7.3'
+          - '7.4'
     env:
-      working-directory: ./src/DevShop/Component/DevShopControlTemplate
+      working-directory: ./src/DevShop/Component/ControlProject
     steps:
       - uses: actions/checkout@v1
 
@@ -279,6 +299,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.INPUT_GITHUB_TOKEN }}
         working-directory: ./src/DevShop/Component/
         run: |
-          composer create-project devshop/control-template:@dev temp --repository='{"type":"path","url":"DevShopControlTemplate"}'
+          composer create-project devshop/control-project:@dev temp --repository='{"type":"path","url":"ControlProject"}'
 
         # @TODO: Launch a devshop test container around this devshop-control code.

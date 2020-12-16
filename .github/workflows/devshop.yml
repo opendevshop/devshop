@@ -36,6 +36,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        vars:
+          # @TODO: Open a PR with the failing PHP versions to fix support.
+          # - 'php_version=7.1'
+          - 'php_version=7.2'
+          - 'php_version=7.3'
+          # - 'php_version=7.4'
         os:
           - 'ubuntu1804'
           # Sorry, centos. You must wait until the next PR.
@@ -43,6 +49,7 @@ jobs:
     env:
       OS: "${{ matrix.os }}"
       HOSTNAME: "devshop.${{ github.event.pull_request.number }}.${{ matrix.os }}.actions.github.com"
+      ANSIBLE_EXTRA_VARS: "${{ matrix.vars }}"
 
     runs-on: ubuntu-18.04
     steps:
@@ -62,12 +69,13 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
 
-      - name: Set Pull Request-only environment variables
+      - name: Prepare Pull Request-only environment
         if: github.event_name=='pull_request'
         run: |
           echo "ANSIBLE_PLAYBOOK_COMMAND_OPTIONS=--extra-vars=devshop_version=${{ github.head_ref }}" >> $GITHUB_ENV
           echo "GIT_REF=${{ github.head_ref }}" >> $GITHUB_ENV
           echo "ANSIBLE_VERBOSITY=2" >> $GITHUB_ENV
+          git switch --create ${{ github.head_ref }}
 
       # Launch DevShop Server Container
       - name: "Launch & Prepare a pre-built 'devshop/server:${{ matrix.os }}' container"
@@ -147,6 +155,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        vars:
+          # @TODO: Open a PR with the failing PHP versions to fix support.
+          # - 'php_version=7.1'
+          - 'php_version=7.2'
+          - 'php_version=7.3'
+          # - 'php_version=7.4'
         os:
           - 'ubuntu1804'
           # Sorry, centos. You must wait until the next PR.
@@ -154,6 +168,7 @@ jobs:
     env:
       OS: "${{ matrix.os }}"
       HOSTNAME: "devshop.${{ github.event.pull_request.number }}.${{ matrix.os }}.actions.github.com"
+      ANSIBLE_EXTRA_VARS: "${{ matrix.vars }}"
 
     runs-on: ubuntu-18.04
     steps:
@@ -173,12 +188,14 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
 
-      - name: Set Pull Request-only environment variables
+      - name: Prepare Pull Request-only environment
         if: github.event_name=='pull_request'
         run: |
           echo "ANSIBLE_PLAYBOOK_COMMAND_OPTIONS=--extra-vars=devshop_version=${{ github.head_ref }}" >> $GITHUB_ENV
+          echo "ANSIBLE_PLAYBOOK_COMMAND_OPTIONS_ARG=--extra-vars=devshop_version=${{ github.head_ref }}" >> $GITHUB_ENV
           echo "GIT_REF=${{ github.head_ref }}" >> $GITHUB_ENV
           echo "ANSIBLE_VERBOSITY=2" >> $GITHUB_ENV
+          git switch --create ${{ github.head_ref }}
 
       # Build "base"
       - name: "Build devshop/base:${{ matrix.os }} Container"

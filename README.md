@@ -37,7 +37,7 @@ These tools are designed to be useful regardless of the hosting or DevOps system
 
 ### Composer Packages
 
-#### [DevShop Control](./src/DevShop/Component/DevShopControlTemplate)
+#### [DevShop Control](src/DevShop/Component/ControlProject)
 
 > Drupal CI/CD Dashboard and Ansible Server Manager in a Box
 
