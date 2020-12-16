@@ -33,6 +33,7 @@ class RoboFile extends \Robo\Tasks {
   const DEVSHOP_LOCAL_URI = 'devshop.local.computer';
 
   use \Robo\Common\IO;
+  use \DevShop\Component\Common\GitRepositoryAwareTrait;
 
   /**
    * @var The path to devshop root. Used for upgrades.
@@ -222,14 +223,23 @@ class RoboFile extends \Robo\Tasks {
 
     // Set git remote urls
     if ($opts['no-dev'] == FALSE) {
-      // @TODO: Set git url for others like provision
-      $devshop_ssh_git_url = "git@github.com:opendevshop/devshop.git";
-
-      if ($this->taskExec("git remote set-url origin $devshop_ssh_git_url")->run()->wasSuccessful()) {
-        $this->yell("Set devshop git remote 'origin' to $devshop_ssh_git_url!");
+      // Get git remote origin fetch url from present working directory.
+      $devshop_ssh_git_url = $this->getRepository()->getCurrentRemote()['origin']['fetch'];
+      // If git remote origin fetch url is http.
+      if (substr( $devshop_ssh_git_url, 0, 4 ) === "http") {
+        // Set git remote origin to primary repo only if http clone.
+        // @TODO: Set git url for others like provision
+        $devshop_ssh_git_url = "git@github.com:opendevshop/devshop.git";
+        if ($this->taskExec("git remote set-url origin $devshop_ssh_git_url")->run()->wasSuccessful()) {
+          $this->yell("Set devshop git remote 'origin' to $devshop_ssh_git_url!");
+        }
+        else {
+          $this->say("<comment>Unable to set devshop git remote 'origin' to $devshop_ssh_git_url!</comment>");
+        }
       }
+      // If git remote origin fetch url is already SSH.
       else {
-        $this->say("<comment>Unable to set devshop git remote to $devshop_ssh_git_url !</comment>");
+        $this->yell("Devshop git remote 'origin' is $devshop_ssh_git_url!");
       }
     }
   }
