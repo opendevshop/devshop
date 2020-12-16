@@ -21,7 +21,7 @@ jobs:
   yaml-tasks:
     name: YamlTasks
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
 
     # Set working directory for entire file. https://github.community/t5/GitHub-Actions/use-working-directory-for-entire-job/td-p/36759
     env:
@@ -70,7 +70,7 @@ jobs:
   power-process:
     name: PowerProcess
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     strategy:
       matrix:
         php-versions:
@@ -123,7 +123,7 @@ jobs:
   github-api-cli:
     name: GitHubApiCli
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     strategy:
       matrix:
         php-versions:
@@ -177,7 +177,7 @@ jobs:
   ComposerCommon:
     name: ComposerCommon
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     strategy:
       matrix:
         php-versions:
@@ -231,7 +231,7 @@ jobs:
   DevShopControlTemplate:
     name: DevShopControlTemplate
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     strategy:
       matrix:
         php-versions:
