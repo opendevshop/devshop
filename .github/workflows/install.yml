@@ -16,7 +16,7 @@ jobs:
     steps:
     - name: Install PR version of DevShop
       if: github.event_name=='pull_request'
-      run: echo "DEVSHOP_VERSION=${{ github.event.after }}" >> $GITHUB_ENV
+      run: echo "DEVSHOP_VERSION=${{ github.event.head.ref }}" >> $GITHUB_ENV
     - uses: actions/checkout@v2
       with:
         ref: ${{ github.event.pull_request.head.sha }}
