@@ -12,7 +12,6 @@ on:
     - cron: "0 12 * * *"
 
 env:
-  GITHUB_TOKEN: ${{ secrets.INPUT_GITHUB_TOKEN }}
   GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}
   GITHUB_PR_SHA: ${{ github.event.pull_request.head.sha  }}
   GITHUB_RUN_LOG_URL: https://github.com/opendevshop/devshop/actions/runs/${{ github.run_id }}
@@ -73,6 +72,7 @@ jobs:
       env:
         # @TODO: Get environment variable setting to work.
         # YAML_TASKS_STATUS_URL: https://github.com/${GITHUB_REPOSITORY}/runs/${GITHUB_RUN_ID}?check_suite_focus=true
+        GITHUB_TOKEN: ${{ secrets.INPUT_GITHUB_TOKEN }}
         PROVISION_PROCESS_OUTPUT: direct
       run: |
         chmod +x yaml-tasks
@@ -184,9 +184,9 @@ jobs:
         working-directory: ${{env.working-directory}}
 
       - name: Test GitHub Cli
+        working-directory: ${{env.working-directory}}
         env:
           GITHUB_TOKEN: ${{ secrets.INPUT_GITHUB_TOKEN }}
-        working-directory: ${{env.working-directory}}
         run: |
           ./github whoami
 
@@ -240,9 +240,9 @@ jobs:
         working-directory: ${{env.working-directory}}
 
       - name: Test
+        working-directory: ${{env.working-directory}}
         env:
           GITHUB_TOKEN: ${{ secrets.INPUT_GITHUB_TOKEN }}
-        working-directory: ${{env.working-directory}}
         run: |
           ./Tests/repo-info.php
 
@@ -295,8 +295,6 @@ jobs:
         working-directory: ${{env.working-directory}}
 
       - name: Test Project Creation
-        env:
-          GITHUB_TOKEN: ${{ secrets.INPUT_GITHUB_TOKEN }}
         working-directory: ./src/DevShop/Component/
         run: |
           composer create-project devshop/control-project:@dev temp --repository='{"type":"path","url":"ControlProject"}'
