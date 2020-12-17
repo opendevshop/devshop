@@ -2,6 +2,7 @@
 
 require_once 'vendor/autoload.php';
 
+use DevShop\Component\Common\GitRepository;
 use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Exception\RuntimeException;
@@ -33,6 +34,7 @@ class RoboFile extends \Robo\Tasks {
   const DEVSHOP_LOCAL_URI = 'devshop.local.computer';
 
   use \Robo\Common\IO;
+  use \DevShop\Component\Common\GitRepositoryAwareTrait;
 
   /**
    * @var The path to devshop root. Used for upgrades.
@@ -125,12 +127,6 @@ class RoboFile extends \Robo\Tasks {
 
   public function  __construct()
   {
-    $this->git_ref = trim(str_replace('refs/heads/', '', shell_exec("git describe --tags --exact-match 2> /dev/null || git symbolic-ref -q HEAD 2> /dev/null")));
-
-    if (empty($this->git_ref) && !empty($_SERVER['GITHUB_REF'])) {
-      $this->git_ref = $_SERVER['GITHUB_REF'];
-    }
-
     // Tell Provision power process to print output directly.
     putenv('PROVISION_PROCESS_OUTPUT=direct');
   }
@@ -174,6 +170,16 @@ class RoboFile extends \Robo\Tasks {
   ];
 
   /**
+   * A list of folders that developers might want to push commits to. Used to switch git URLs to SSH.
+   * @var string[]
+   */
+  private $writeRepos = [
+    '.',
+    'vendor/drupal/provision',
+    'src/DevShop/Control/web/sites/all/modules/contrib/hosting'
+  ];
+
+  /**
    * Clone all needed source code and build devmaster from the makefile.
    *
    * @option no-dev Skip setting git remotes to SSH URLs.
@@ -182,13 +188,6 @@ class RoboFile extends \Robo\Tasks {
     'no-dev' => FALSE,
     'test-upgrade' => FALSE,
   ]) {
-
-    if (empty($this->git_ref)) {
-      parent::yell("Preparing Sourcecode: Branch Unknown.");
-    }
-    else {
-      parent::yell("Preparing Sourcecode: Branch $this->git_ref");
-    }
 
     $this->devshop_root_path = __DIR__;
 
@@ -217,19 +216,6 @@ class RoboFile extends \Robo\Tasks {
         $this->taskGitStack()
           ->cloneRepo($url, $this->devshop_root_path . '/' . $path, $branch)
           ->run();
-      }
-    }
-
-    // Set git remote urls
-    if ($opts['no-dev'] == FALSE) {
-      // @TODO: Set git url for others like provision
-      $devshop_ssh_git_url = "git@github.com:opendevshop/devshop.git";
-
-      if ($this->taskExec("git remote set-url origin $devshop_ssh_git_url")->run()->wasSuccessful()) {
-        $this->yell("Set devshop git remote 'origin' to $devshop_ssh_git_url!");
-      }
-      else {
-        $this->say("<comment>Unable to set devshop git remote to $devshop_ssh_git_url !</comment>");
       }
     }
   }
@@ -417,6 +403,39 @@ class RoboFile extends \Robo\Tasks {
     'build-service' => 'devshop.server',
   ]) {
 
+    $this->yell("Welcome to your DevShop Development environment!");
+    $this->io()->title("Branch {$this->getRepository()->getCurrentBranch()} Remote {$this->getRepository()->getCurrentRemoteUrl()}");
+
+    // Offer to set git URLs to SSH so developers can push.
+    if ($opts['no-dev'] == FALSE) {
+      foreach ($this->writeRepos as $path) {
+        $path = realpath($path);
+        if (file_exists($path . '/.git')) {
+          $repo = GitRepository::open($path);
+          if ($this->io()->isVerbose()){
+            $this->say($repo->getRepositoryPath());
+          }
+          if ($repo->isDetached()) {
+            $this->io()->text("<comment>$path</comment> is detached at <comment>{$repo->getLocalSha()}</comment>");
+          }
+          elseif ($repo->isCurrentRemoteHttp()){
+            #TODO: Create GitHubRepositry so we can get owner/name.
+            [$pre, $slug] = explode('.com/', $repo->getCurrentRemoteUrl());
+            $push_url = "git@github.com:$slug";
+            if ($this->io()->confirm("<comment>$path</comment> is using an HTTP remote. Would you like to change it to use $push_url?")) {
+              $repo->callGit('remote', ['set-url', $repo->getCurrentRemoteName(), $push_url]);
+            }
+          }
+          else {
+            $this->io()->text("<comment>$path</comment> remote is SSH: <comment>{$repo->getCurrentRemoteUrl()}</comment>");
+          }
+        }
+        else {
+          $this->io()->text("Path $path is not a git repository.");
+        }
+      }
+    }
+
     // Override the DEVSHOP_DOCKER_COMMAND_RUN if specified.
     if (!empty($docker_command)) {
       # Ensures argument is passed to DEVSHOP_DOCKER_COMMAND_RUN later.
@@ -443,13 +462,6 @@ class RoboFile extends \Robo\Tasks {
 
     if (empty($this->devshop_root_path)) {
       $this->devshop_root_path = __DIR__;
-    }
-
-    if (empty($this->git_ref)) {
-      parent::yell("Launching DevShop: Branch Unknown.");
-    }
-    else {
-      parent::yell("Launching DevShop: Branch $this->git_ref");
     }
 
     // Determine current UID.
