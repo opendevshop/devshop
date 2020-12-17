@@ -4,10 +4,10 @@
 LOAD_DEVSHOP_VERSION=${LOAD_DEVSHOP_VERSION:-1.x}
 DEVSHOP_SERVER_HOSTNAME="install-test.devshop.local.computer"
 
-echo "Running test of install.sh script version $DEVSHOP_VERSION..."
-echo "  To test a different version, specify the DEVSHOP_VERSION environment variable: "
+echo "Running test of install.sh script version $LOAD_DEVSHOP_VERSION..."
+echo "  To test a different version, specify the LOAD_DEVSHOP_VERSION environment variable: "
 echo ""
-echo "  DEVSHOP_VERSION=example/branch bash .github/workflows/install-sh-test.sh"
+echo "  LOAD_DEVSHOP_VERSION=example/branch bash .github/workflows/install-sh-test.sh"
 
 # Remove existing install server test containers.
 docker kill install-server-test > /dev/null 2>&1
