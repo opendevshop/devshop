@@ -12,7 +12,10 @@ set -e
 #
 #   $ sh get-devshop.sh --hostname=devshop.example.com
 #
-
+# To use an alternate git repository or version, set the LOAD_DEVSHOP_VERSION or LOAD_DEVSHOP_SOURCE environment variables:
+#
+#   $ LOAD_DEVSHOP_VERSION=patch-123 LOAD_DEVSHOP_SOURCE=https://github.com/jonpugh/devshop.git bash install.sh
+#
 # NOTE: Make sure to verify the contents of the script
 #       you downloaded matches the contents of install.sh
 #       located at https://github.com/opendevshop/devshop/blob/1.x/install/install.sh
@@ -34,17 +37,15 @@ SCRIPT_COMMIT_SHA="${LOAD_SCRIPT_COMMIT_SHA}"
 #     $ bash install.sh
 #
 # See the GitHub action ./.github/workflows/install.yml
-DEVSHOP_VERSION="${LOAD_DEVSHOP_VERSION}"
+#
+
+# The version and git repo to install.
+DEVSHOP_VERSION="${LOAD_DEVSHOP_VERSION:-1.x}"
+DEVSHOP_SOURCE="${LOAD_DEVSHOP_SOURCE:-http://github.com/opendevshop/devshop.git}"
 
 # Version of Ansible to install
 ANSIBLE_VERSION=${ANSIBLE_VERSION:-"2.9"}
 pip_packages="ansible==${ANSIBLE_VERSION}"
-
-# Git repo to install.
-DEFAULT_DOWNLOAD_URL="http://github.com/opendevshop/devshop.git"
-if [ -z "$DOWNLOAD_URL" ]; then
-    DOWNLOAD_URL=$DEFAULT_DOWNLOAD_URL
-fi
 
 # Environment Options:
 HOSTNAME_FQDN=${HOSTNAME_FQDN:-`hostname --fqdn`}
@@ -484,7 +485,7 @@ ANSIBLE_EXTRA_VARS+=("mysql_root_password: ${MYSQL_ROOT_PASSWORD}")
 
 # Clone the installer if $DEVSHOP_INSTALL_PATH does not exist yet.
 if [ ! -d "$DEVSHOP_INSTALL_PATH" ]; then
-    git clone $DOWNLOAD_URL $DEVSHOP_INSTALL_PATH
+    git clone $DEVSHOP_SOURCE $DEVSHOP_INSTALL_PATH
     cd $DEVSHOP_INSTALL_PATH
     git checkout $DEVSHOP_VERSION
 else

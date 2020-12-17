@@ -1,7 +1,7 @@
 # Build a core container and run the install script in it.
 # Run from repository root:
 # bash .github/scripts/install-container.sh
-DEVSHOP_VERSION=${DEVSHOP_VERSION:-1.x}
+LOAD_DEVSHOP_VERSION=${LOAD_DEVSHOP_VERSION:-1.x}
 
 echo "Running test of install.sh script version $DEVSHOP_VERSION..."
 echo "  To test a different version, specify the DEVSHOP_VERSION environment variable: "
@@ -31,6 +31,6 @@ docker run \
   devshop/base
 
 docker exec \
-  --env="LOAD_DEVSHOP_VERSION=${DEVSHOP_VERSION}" \
+  --env="LOAD_DEVSHOP_VERSION=${LOAD_DEVSHOP_VERSION}" \
   install-server-test \
   bash /tmp/devshop-install.sh \
