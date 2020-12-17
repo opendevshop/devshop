@@ -14,6 +14,14 @@ class GitRepository extends Repository
   const REMOTE_TRACKING_STATE_DIVERGED  = 2;
 
   /**
+   * @inheritdoc
+   * @return \DevShop\Component\Common\GitRepository
+   */
+  public static function open($repositoryPath, $git = null, $createIfNotExists = false, $initArguments = null, $findRepositoryRoot = true) {
+    return parent::open($repositoryPath, $git, $createIfNotExists, $initArguments, $findRepositoryRoot);
+  }
+
+  /**
    * Run a git command in the repository directory.
    *
    * @param string $method The VCS command, e.g. show, commit or add
@@ -213,5 +221,14 @@ class GitRepository extends Repository
       $result->assertSuccess('Call to "git config remote.{$branch}.url" failed.');
       return $result->getStdOut();
     }
+  }
+
+  /**
+   * Return true if the current remote is an HTTP url.
+   *
+   * @return bool
+   */
+  public function isCurrentRemoteHttp() {
+    return strpos($this->getCurrentRemoteUrl(), 'http') === 0;
   }
 }
