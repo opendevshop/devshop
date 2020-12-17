@@ -1,30 +1,49 @@
 ---
 
-# Server hostname will default to this unless overridden in your inventory or extra_vars.
-# It is overridden in devshop's install.sh file to match the server's current hostname.
-# server_hostname: devshop.local.computer
-
-server_hostname_ignore_errors: true
 devshop_devmaster_email: admin@devshop.local.computer
 
 # Get a GitHub Token from 'https://github.com/settings/tokens/new?scopes=repo,admin:public_key,admin:repo_hook&description=devshop-ansible-token
 devshop_github_token: ''
 
+# Server Customization Vars
+# These variables are provided by other roles. Changing them here will NOT override the defaults provided by geerlingguy roles.
+# Use these as examples: copy these variables into your ansible inventory at /etc/ansible/hosts or playbook yml files.
+
 # Set PHP Version:
 # DevShop uses geerlingguy.php-versions to handle PHP Version.
 # See README.md for variable details: https://github.com/geerlingguy/ansible-role-php-versions#role-variables
-php_version: '7.2'
+# php_version: '7.3'
+# php_default_version_debian: '7.3'
+
+# php_opcache_enabled_in_ini: true
+# php_apc_enabled_in_ini: true
+
+# You should specify your own random mysql_root_password in your own playbooks or inventory.
+# mysql_root_password: root
+
+# Set to TRUE if you need to change the root password.
+# mysql_root_password_update: false
+
+# Composer version 2 is the default. Set composer_self_update_args to --1 to downgrade.
+# composer_self_update_args: '--2'
+
+# Set to TRUE to always run composer self-update.
+# composer_keep_updated: true
+
+# Server hostname will default to this unless overridden in your inventory or extra_vars.
+# It is overridden in devshop's install.sh file to match the server's current hostname.
+# server_hostname: devshop.local.computer
+server_hostname_ignore_errors: true
 
 devshop_cli_repo: http://github.com/opendevshop/devshop.git
 devshop_cli_skip_update: false
 devshop_cli_path: /usr/share/devshop
 devshop_cli_bin_path: "{{ devshop_cli_path }}/bin"
-devshop_cli_composer_install_command: "install"
+devshop_cli_composer_install_command: "install --no-interaction"
 
 drush_bin_path: "{{ devshop_cli_bin_path }}/drush"
 
 aegir_server_webserver: apache
-mysql_root_password_update: false
 
 database_host: localhost
 database_host_port: 3306
@@ -47,47 +66,39 @@ devshop_drush_packages:
 
 php_date_timezone: "America/New_York"
 
-# You should specify your own random mysql_root_password in your own playbooks or inventory.
-# mysql_root_password: PleaseRandomizeOnPlaybookRun
-
 # The version of devshop & devmaster to install.
 # Overridden by install.sh
 devshop_version: 1.x
 devshop_cli_version: "{{ devshop_version }}"
 
+# DevShop uses a built in Drupal stack for devmaster now.
+# These are the provision properties for git_remote, git_root, git_reference, and git_docroot.
+devshop_control_git_remote: "https://github.com/opendevshop/devshop.git"
+devshop_control_git_root: "{{ devshop_cli_path }}"
+devshop_control_git_reference: "{{ devshop_version }}"
+
+# Relative path to docroot. This is usually just "web" but we want devshop-control and devshop to share source code, and aegir to know where the git repo is.
+devshop_control_git_docroot: "src/DevShop/Control/web"
+
+# Path to drupal's index.php
+devshop_control_publish_path: "{{ devshop_control_git_root }}/{{ devshop_control_git_docroot }}"
+
 # Set devshop_control_git_remote to deploy a devmaster instance from an existing git repo.
 # The devshop_control_git_reference will be checked out on provision verify. Leave blank to use default branch.
-devshop_control_git_remote: "https://github.com/devshop-packages/devshop-control-template"
-devshop_control_git_reference: ""
-devshop_control_git_docroot: "web"
-devshop_control_path: "{{ aegir_user_home }}/devshop-control"
+# If a custom devshop_control is needed, copy vars below with correct values into your ansible inventory.
+# devshop_control_git_remote: "https://github.com/devshop-packages/devshop-control-template"
+# devshop_control_git_root: "{{ aegir_user_home }}/devshop-control-custom"
+# devshop_control_git_reference: "master"
+# devshop_control_git_docroot: "web"
+# devshop_control_publish_path: "{{ devshop_control_git_root }}/{{ devshop_control_git_docroot }}"
+
 devshop_control_drush_alias: "@hostmaster"
 devshop_control_install_options: ""
 
-devshop_install_profile: devmaster
+# Composer recommends using "update" when a project has no composer.lock file.
+devshop_control_composer_prepare_command: "update --no-dev --no-progress --prefer-source"
 
-# The command used to install the control site.
-# @TODO: Ensure automatically detected server_hostname is properly propagated to the devmaster install command.
-devmaster_install_command: "{{ devshop_cli_bin_path }}/devshop devmaster:install -n \
-                                --site={{ server_hostname }} \
-                                --aegir_db_host={{ database_host }} \
-                                --aegir_db_pass={{ mysql_root_password }} \
-                                --aegir_db_user={{ mysql_root_username }} \
-                                --aegir_db_port={{ database_host_port }} \
-                                --aegir_host={{ server_hostname }} \
-                                --client_name={{ aegir_client_name }} \
-                                --client_email={{ devshop_devmaster_email }} \
-                                --http_service_type={{ aegir_server_webserver }} \
-                                --profile={{ devshop_install_profile }} \
-                                --root={{ devshop_control_path }}/{{ devshop_control_git_docroot }} \
-                                --devshop_version={{ devshop_version }} \
-                                --drush-path={{ devshop_cli_bin_path }}/drush \
-                                --git_root={{ devshop_control_path }} \
-                                --git_remote={{ devshop_control_git_remote }} \
-                                --git_reference={{ devshop_control_git_reference }}
-                                --git_docroot={{ devshop_control_git_docroot }}
-                                {{ devshop_control_install_options }}
-"
+devshop_install_profile: devmaster
 
 devmaster_upgrade_command: |
   {{ devshop_cli_bin_path }}/devshop devmaster:upgrade {{ devshop_version }} -n --run-from-playbooks
@@ -112,7 +123,7 @@ devshop_support_license_key: ""
 # The path to the script to use for the Hosting Task Queue Runner. See opendevshop/devshop/bin/hosting-queue-runner
 hosting_queue_runner_bin_path: "{{ devshop_cli_bin_path }}/hosting-queue-runner"
 
-# Triggers the removal of devshop_control_path: `rm -rf {{ devshop_control_path }}`
+# Triggers the removal of devshop_control_git_root: `rm -rf {{ devshop_control_git_root }}`
 devshop_danger_remove_devmaster: false
 
 # By default, devshop assumes it is being installed at "runtime" (like on a running server).

@@ -1,6 +1,6 @@
 {
-    "name": "devshop/control-template",
-    "description": "Project template for DevShop Devmaster. Use to create a custom devmaster front-end.",
+    "name": "devshop/control-project",
+    "description": "Composer project for DevShop Control: the Drupal based front-end for DevShop.",
     "type": "project",
     "license": "GPL-2.0-or-later",
     "authors": [
@@ -9,16 +9,20 @@
             "role": ""
         }
     ],
-    "repositories": [
-        {
-            "type": "composer",
-            "url": "https://packages.drupal.org/7"
-        },
-        {
-            "type": "composer",
-            "url": "https://asset-packagist.org"
-        }
-    ],
+    "repositories": {
+      "drupal": {
+        "type": "composer",
+        "url": "https://packages.drupal.org/7"
+      },
+      "npm": {
+        "type": "composer",
+        "url": "https://asset-packagist.org"
+      },
+      "devshop_devmaster": {
+        "type": "path",
+        "url": "../../../devmaster"
+      }
+    },
     "require": {
         "php": ">=5.3.3",
         "ext-curl": "*",
@@ -30,6 +34,7 @@
         "composer/installers": "^1.2",
         "composer/semver": "^1.4",
         "cweagans/composer-patches": "dev-master#a18d1ca",
+        "devshop/devmaster": "^1.7||1.x-dev@dev",
         "drupal-composer/preserve-paths": "^0.1.6",
         "drupal/admin_menu": "@rc",
         "drupal/adminrole": "^1.1",
@@ -47,7 +52,7 @@
         "drupal/drupal": "^7.62",
         "drupal/entity": "^1.9",
         "drupal/features": "^2.11",
-        "drupal/hosting": "4.x-dev",
+        "drupal/hosting": "^4",
         "drupal/hosting_filemanager": "dev-1.x",
         "drupal/hosting_git": "^3.181",
         "drupal/hosting_https": "^3.182",
@@ -76,8 +81,7 @@
         "oomphinc/composer-installers-extender": "^2.0",
         "symfony/filesystem": "~2.7|^3",
         "toin0u/digitalocean-v2": "~2.0",
-        "webflo/drupal-finder": "^1.0.0",
-        "devshop/devmaster": "^1.7||1.x-dev"
+        "webflo/drupal-finder": "^1.0.0"
     },
     "conflict": {
         "drupal/core": "8.*"
@@ -117,19 +121,21 @@
             "DrupalProject\\composer\\ScriptHandler::createRequiredFiles",
             "DrupalProject\\composer\\ScriptHandler::checkDevmasterPackage"
         ],
+        "post-root-package-install": [
+          "@composer config repositories.devshop_devmaster --unset"
+        ],
         "post-create-project-cmd": [
             "DrupalProject\\composer\\ScriptHandler::removeInternalFiles"
         ],
         "uninstall": [
           "echo 'Removing all Drupal and vendor code...'",
-          "rm -rf composer.lock",
-          "rm -rf vendor web/profiles web/includes web/misc web/modules web/scripts web/themes",
+          "rm -rf vendor web/profiles web/includes web/misc web/modules web/scripts web/themes web/sites/all/modules/contrib web/sites/all/modules/themes",
           "rm -f web/*; rm -f web/.* || true",
           "echo 'Done.'"
         ],
         "reinstall": [
           "@uninstall",
-          "@composer update --prefer-source --ansi"
+          "@composer update --no-dev --no-progress --prefer-source"
         ]
     },
     "extra": {
@@ -144,9 +150,10 @@
             "web/sites/all/themes/contrib/{$name}/": ["type:drupal-theme"]
       },
       "preserve-paths": [
-          "web/sites"
+          "web/sites/default",
+          "web/profiles/devmaster"
         ]
     },
-    "minimum-stability": "alpha",
+    "minimum-stability": "dev",
     "prefer-stable": true
 }

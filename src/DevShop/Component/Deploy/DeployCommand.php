@@ -39,6 +39,10 @@ class DeployCommand extends BaseCommand
      */
     private $io;
 
+    /**
+     * @var string Store the initial working directory at startup time
+     */
+    private $initialWorkingDirectory;
 
     /**
      * {@inheritdoc}
@@ -62,6 +66,13 @@ EOF
             'o',
             InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
             "Set deploy options in the format NAME=VALUE."
+          );
+        $this
+          ->addOption(
+            'working-dir',
+            'd',
+            InputOption::VALUE_REQUIRED,
+            'If specified, use the given directory as working directory.'
           );
 
         // Add CLI options for default stages.
@@ -94,7 +105,24 @@ EOF
         $this->io = new SymfonyStyle($input, $output);
         $this->setComposerConfig();
 
-        // Load the stages from the current composer project.
+      // switch working dir
+      if (empty($this->initialWorkingDirectory) && $newWorkDir = $this->getNewWorkingDir($input)) {
+        $oldWorkingDir = getcwd();
+        chdir($newWorkDir);
+        $this->initialWorkingDirectory = $newWorkDir;
+        $this->io->writeln('Changed CWD to ' . getcwd());
+      }
+
+      // Set repository from the current working directory.
+      try {
+        $this->setRepository(GitRepository::open(getcwd()));
+      }
+      catch (\InvalidArgumentException $e) {
+        $this->io->error("Unable to load git working copy. " . $e->getMessage());
+        exit(1);
+      }
+
+      // Load the stages from the current composer project.
         if ($this->io->isVerbose()) {
             $this->io->section('Initializing Deploy Command');
             $verbose_rows[] = ['PWD', getenv('PWD')];
@@ -110,6 +138,21 @@ EOF
         }
     }
 
+
+    /**
+     * @param  InputInterface    $input
+     * @throws \RuntimeException
+     * @return string
+     */
+    private function getNewWorkingDir(InputInterface $input)
+    {
+      $workingDir = $input->getParameterOption(array('--working-dir', '-d'));
+      if (false !== $workingDir && !is_dir($workingDir)) {
+        throw new \RuntimeException('Invalid working directory specified, '.$workingDir.' does not exist.');
+      }
+
+      return $workingDir;
+    }
     /**
      * {@inheritdoc}
      */

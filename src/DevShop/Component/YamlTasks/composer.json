@@ -18,6 +18,7 @@
     "require": {
         "ext-json": "*",
         "composer-plugin-api": "^2.0",
+        "consolidation/robo": "^1",
         "devshop/power-process": "^1.6",
         "knplabs/github-api": "^1.4",
         "php-http/guzzle6-adapter": "^1.1",
