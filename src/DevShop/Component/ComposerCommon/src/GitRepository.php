@@ -177,4 +177,41 @@ class GitRepository extends Repository
       throw $exception;
     }
   }
+
+  /**
+   * Returns the name of the remote for the currently checked out branch, Usually "origin".
+   * @return string
+   */
+  public function getCurrentRemoteName()
+  {
+    // Only branch checkouts can have a remote.
+    $branch = $this->getCurrentBranch();
+    if (empty($branch)) {
+      return;
+    }
+    else {
+      $result = $this->callGit("config", ["branch.{$branch}.remote"]);
+      $result->assertSuccess('Call to "git config branch.{$branch}.remote" failed.');
+
+      return $result->getStdOut();
+    }
+  }
+
+  /**
+   * Returns the remote name, usually "origin".
+   * @return  string
+   */
+  public function getCurrentRemoteUrl()
+  {
+    // Only branch checkouts can have a remote.
+    $remote = $this->getCurrentRemoteName();
+    if (empty($remote)) {
+      return;
+    }
+    else {
+      $result = $this->callGit("config", ["remote.{$remote}.url"]);
+      $result->assertSuccess('Call to "git config remote.{$branch}.url" failed.');
+      return $result->getStdOut();
+    }
+  }
 }
