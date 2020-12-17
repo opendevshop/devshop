@@ -126,12 +126,6 @@ class RoboFile extends \Robo\Tasks {
 
   public function  __construct()
   {
-    $this->git_ref = trim(str_replace('refs/heads/', '', shell_exec("git describe --tags --exact-match 2> /dev/null || git symbolic-ref -q HEAD 2> /dev/null")));
-
-    if (empty($this->git_ref) && !empty($_SERVER['GITHUB_REF'])) {
-      $this->git_ref = $_SERVER['GITHUB_REF'];
-    }
-
     // Tell Provision power process to print output directly.
     putenv('PROVISION_PROCESS_OUTPUT=direct');
   }
@@ -183,13 +177,6 @@ class RoboFile extends \Robo\Tasks {
     'no-dev' => FALSE,
     'test-upgrade' => FALSE,
   ]) {
-
-    if (empty($this->git_ref)) {
-      parent::yell("Preparing Sourcecode: Branch Unknown.");
-    }
-    else {
-      parent::yell("Preparing Sourcecode: Branch $this->git_ref");
-    }
 
     $this->devshop_root_path = __DIR__;
 
@@ -426,6 +413,9 @@ class RoboFile extends \Robo\Tasks {
     'build-folder' => 'roles',
     'build-service' => 'devshop.server',
   ]) {
+
+    $this->yell("Welcome to your DevShop Development environment!");
+    $this->io()->title("Branch {$this->getRepository()->getCurrentBranch()} Remote {$this->getRepository()->getCurrentRemoteUrl()}");
 
     // Override the DEVSHOP_DOCKER_COMMAND_RUN if specified.
     if (!empty($docker_command)) {
