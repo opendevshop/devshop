@@ -70,7 +70,7 @@ jobs:
         if: github.event_name=='pull_request'
         run: |
           echo "devshop_version: ${{ github.head_ref }}" >> vars.ci.yml
-          echo "devshop_cli_repo: ${{ github.pr.head.repo.clone_url }}" >> vars.ci.yml
+          echo "devshop_cli_repo: ${{ github.event.pull_request.head.repo.clone_url }}" >> vars.ci.yml
           echo "GIT_REF=${{ github.head_ref }}" >> $GITHUB_ENV
           echo "ANSIBLE_VERBOSITY=2" >> $GITHUB_ENV
           git switch --create ${{ github.head_ref }}
@@ -190,7 +190,7 @@ jobs:
         if: github.event_name=='pull_request'
         run: |
           echo "devshop_version: ${{ github.head_ref }}" >> vars.ci.yml
-          echo "devshop_cli_repo: ${{ github.pr.head.repo.clone_url }}" >> vars.ci.yml
+          echo "devshop_cli_repo: ${{ github.event.pull_request.head.repo.clone_url }}" >> vars.ci.yml
           echo "GIT_REF=${{ github.head_ref }}" >> $GITHUB_ENV
           echo "ANSIBLE_VERBOSITY=2" >> $GITHUB_ENV
           git switch --create ${{ github.head_ref }}
