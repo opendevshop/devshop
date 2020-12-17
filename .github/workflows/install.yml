@@ -8,15 +8,14 @@ jobs:
   install_script:
     name: Install Script
     runs-on: ubuntu-latest
-    env:
-      # The version of devshop to install with install.sh.
-      # This variable is overwritten to match the PR in the first step.
-      DEVSHOP_VERSION: 1.x
 
     steps:
-    - name: Install PR version of DevShop
+    - name: Prepare Pull Request-only environment
       if: github.event_name=='pull_request'
-      run: echo "DEVSHOP_VERSION=${{ github.event.head.ref }}" >> $GITHUB_ENV
+      run: |
+        echo "LOAD_DEVSHOP_VERSION=${{ github.head_ref }}" >> $GITHUB_ENV
+        echo "LOAD_DEVSHOP_SOURCE=${{ github.event.pull_request.head.repo.clone_url }}" >> $GITHUB_ENV
+
     - uses: actions/checkout@v2
       with:
         ref: ${{ github.event.pull_request.head.sha }}
