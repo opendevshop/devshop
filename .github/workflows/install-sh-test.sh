@@ -2,6 +2,7 @@
 # Run from repository root:
 # bash .github/scripts/install-container.sh
 LOAD_DEVSHOP_VERSION=${LOAD_DEVSHOP_VERSION:-1.x}
+DEVSHOP_SERVER_HOSTNAME="install-test.devshop.local.computer"
 
 echo "Running test of install.sh script version $DEVSHOP_VERSION..."
 echo "  To test a different version, specify the DEVSHOP_VERSION environment variable: "
@@ -24,7 +25,7 @@ make build
 docker run \
   --name install-server-test \
   --detach --privileged --rm \
-  --hostname devshop.local.computer \
+  --hostname $DEVSHOP_SERVER_HOSTNAME \
   --publish 80:80 \
   --volume $PWD/index.html:/tmp/devshop-install.sh \
   --volume /sys/fs/cgroup:/sys/fs/cgroup:ro \
@@ -32,5 +33,6 @@ docker run \
 
 docker exec \
   --env="LOAD_DEVSHOP_VERSION=${LOAD_DEVSHOP_VERSION}" \
+  --env="LOAD_DEVSHOP_SOURCE=${LOAD_DEVSHOP_SOURCE}" \
   install-server-test \
-  bash /tmp/devshop-install.sh \
+  bash /tmp/devshop-install.sh --hostname=$DEVSHOP_SERVER_HOSTNAME \
