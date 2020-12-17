@@ -2,6 +2,7 @@
 
 require_once 'vendor/autoload.php';
 
+use DevShop\Component\Common\GitRepository;
 use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Exception\RuntimeException;
@@ -169,6 +170,16 @@ class RoboFile extends \Robo\Tasks {
   ];
 
   /**
+   * A list of folders that developers might want to push commits to. Used to switch git URLs to SSH.
+   * @var string[]
+   */
+  private $writeRepos = [
+    '.',
+    'vendor/drupal/provision',
+    'src/DevShop/Control/web/sites/all/modules/contrib/hosting'
+  ];
+
+  /**
    * Clone all needed source code and build devmaster from the makefile.
    *
    * @option no-dev Skip setting git remotes to SSH URLs.
@@ -205,28 +216,6 @@ class RoboFile extends \Robo\Tasks {
         $this->taskGitStack()
           ->cloneRepo($url, $this->devshop_root_path . '/' . $path, $branch)
           ->run();
-      }
-    }
-
-    // Set git remote urls
-    if ($opts['no-dev'] == FALSE) {
-      // Get git remote origin fetch url from present working directory.
-      $devshop_ssh_git_url = $this->getRepository()->getCurrentRemote()['origin']['fetch'];
-      // If git remote origin fetch url is http.
-      if (substr( $devshop_ssh_git_url, 0, 4 ) === "http") {
-        // Set git remote origin to primary repo only if http clone.
-        // @TODO: Set git url for others like provision
-        $devshop_ssh_git_url = "git@github.com:opendevshop/devshop.git";
-        if ($this->taskExec("git remote set-url origin $devshop_ssh_git_url")->run()->wasSuccessful()) {
-          $this->yell("Set devshop git remote 'origin' to $devshop_ssh_git_url!");
-        }
-        else {
-          $this->say("<comment>Unable to set devshop git remote 'origin' to $devshop_ssh_git_url!</comment>");
-        }
-      }
-      // If git remote origin fetch url is already SSH.
-      else {
-        $this->yell("Devshop git remote 'origin' is $devshop_ssh_git_url!");
       }
     }
   }
@@ -417,6 +406,36 @@ class RoboFile extends \Robo\Tasks {
     $this->yell("Welcome to your DevShop Development environment!");
     $this->io()->title("Branch {$this->getRepository()->getCurrentBranch()} Remote {$this->getRepository()->getCurrentRemoteUrl()}");
 
+    // Offer to set git URLs to SSH so developers can push.
+    if ($opts['no-dev'] == FALSE) {
+      foreach ($this->writeRepos as $path) {
+        $path = realpath($path);
+        if (file_exists($path . '/.git')) {
+          $repo = GitRepository::open($path);
+          if ($this->io()->isVerbose()){
+            $this->say($repo->getRepositoryPath());
+          }
+          if ($repo->isDetached()) {
+            $this->io()->text("<comment>$path</comment> is detached at <comment>{$repo->getLocalSha()}</comment>");
+          }
+          elseif ($repo->isCurrentRemoteHttp()){
+            #TODO: Create GitHubRepositry so we can get owner/name.
+            [$pre, $slug] = explode('.com/', $repo->getCurrentRemoteUrl());
+            $push_url = "git@github.com:$slug";
+            if ($this->io()->confirm("<comment>$path</comment> is using an HTTP remote. Would you like to change it to use $push_url?")) {
+              $repo->callGit('remote', ['set-url', $repo->getCurrentRemoteName(), $push_url]);
+            }
+          }
+          else {
+            $this->io()->text("<comment>$path</comment> remote is SSH: <comment>{$repo->getCurrentRemoteUrl()}</comment>");
+          }
+        }
+        else {
+          $this->io()->text("Path $path is not a git repository.");
+        }
+      }
+    }
+
     // Override the DEVSHOP_DOCKER_COMMAND_RUN if specified.
     if (!empty($docker_command)) {
       # Ensures argument is passed to DEVSHOP_DOCKER_COMMAND_RUN later.
@@ -443,13 +462,6 @@ class RoboFile extends \Robo\Tasks {
 
     if (empty($this->devshop_root_path)) {
       $this->devshop_root_path = __DIR__;
-    }
-
-    if (empty($this->git_ref)) {
-      parent::yell("Launching DevShop: Branch Unknown.");
-    }
-    else {
-      parent::yell("Launching DevShop: Branch $this->git_ref");
     }
 
     // Determine current UID.
