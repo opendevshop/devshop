@@ -22,5 +22,11 @@ jobs:
     - uses: actions/checkout@v2
       with:
         ref: ${{ github.event.pull_request.head.sha }}
+
     - name: Run Install Script
       run: bash .github/workflows/install-sh-test.sh
+
+    - name: Confirm DevShop Installation
+      run: |
+        docker exec install-server-test devshop login
+        wget http://install-test.devshop.local.computer
