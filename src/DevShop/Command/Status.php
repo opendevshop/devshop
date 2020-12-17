@@ -50,7 +50,7 @@ class Status extends Command
     // Check for Drush
     $output->write("<comment>Checking for Drush...  </comment>");
 
-    $process = new Process('drush --version');
+    $process = new Process('bin/drush --version');
     $process->run();
     if (!$process->isSuccessful()) {
       $output->writeln("<question>Drush not detected.</question>");
