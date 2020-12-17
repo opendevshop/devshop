@@ -400,8 +400,8 @@ export ANSIBLE_FORCE_COLOR=true
 
 echo "============================================="
 echo " Welcome to the DevShop Standalone Installer "
-echo " Version $DEVSHOP_VERSION                    "
-echo " Source $DEVSHOP_SOURCE
+echo " Version $DEVSHOP_VERSION"
+echo " Source $DEVSHOP_SOURCE"
 echo "============================================="
 
 # Fail if not running as root (sudo)
