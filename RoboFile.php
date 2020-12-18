@@ -404,7 +404,15 @@ class RoboFile extends \Robo\Tasks {
   ]) {
 
     $this->yell("Welcome to your DevShop Development environment!");
-    $this->io()->title("Branch {$this->getRepository()->getCurrentBranch()} Remote {$this->getRepository()->getCurrentRemoteUrl()}");
+    $branch = $this->getRepository()->getCurrentBranch();
+    $remote = $this->getRepository()->getCurrentRemoteUrl();
+
+    if (empty($remote)) {
+      $this->io()->warning('Local branch is not tracking a remote. Do not forget to push your branch.');
+      $remote = "None";
+    }
+
+    $this->io()->title("Branch {$branch} Remote {$remote}");
 
     // Offer to set git URLs to SSH so developers can push.
     if ($opts['no-dev'] == FALSE) {
