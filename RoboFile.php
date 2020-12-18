@@ -428,8 +428,17 @@ class RoboFile extends \Robo\Tasks {
           }
           elseif ($repo->isCurrentRemoteHttp()){
             #TODO: Create GitHubRepositry so we can get owner/name.
-            [$pre, $slug] = explode('.com/', $repo->getCurrentRemoteUrl());
-            $push_url = "git@github.com:$slug";
+            $url = $repo->getCurrentRemoteUrl();
+            if (strpos($url, 'drupal') !== FALSE) {
+              $parts = explode('/', $repo->getCurrentRemoteUrl());
+              $project = array_pop($parts);
+              $push_url = "git@git.drupal.org:project/$project.git";
+            }
+            else {
+              [$pre, $slug] = explode('.com/', $repo->getCurrentRemoteUrl());
+              $push_url = "git@github.com:$slug.git";
+            }
+
             if ($this->io()->confirm("<comment>$path</comment> is using an HTTP remote. Would you like to change it to use $push_url?")) {
               $repo->callGit('remote', ['set-url', $repo->getCurrentRemoteName(), $push_url]);
             }
