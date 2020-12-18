@@ -32,36 +32,36 @@ function drush_devshop_provision_provision_devshop_deploy($git_ref = '')
   if (empty($git_ref)) {
     $git_ref = d()->platform->git_ref;
   }
-
-    // Stash any changes? Not sure if we should do this anymore...
-    // $git->command('stash');
-
-    // Fetch
-    drush_log('[Current Working Directory]' . d()->platform->repo_path, 'p_log');
-
-    provision_process("git fetch origin", d()->platform->repo_path, dt('DevShop Deploy: Fetch Changes'));
-    provision_process("git status", d()->platform->repo_path, dt('DevShop Deploy: Git Status'));
-
-    // Checkout the chosen ref
-    $git_checkout_output = provision_process("git checkout {$git_ref}", d()->platform->repo_path, dt('DevShop Deploy: Checkout Code'));
-    $git_checkout_output_lines = explode("\n", $git_checkout_output);
-
-    // @TODO: Get the correct git ref type.
-    $git_ref_type = devshop_environment_get_git_ref_type(d()->platform->repo_path);
-
-    drush_log("[Git $git_ref_type to Deploy] $git_ref", 'p_log');
-
-    // If the current working copy was detected to be a branch, update the code
-    // to the exact reference of the current remote.
-    // This is the better than using git pull because it can handle force pushed branches.
-    if ($git_ref_type == 'branch') {
-      provision_process("git reset --hard origin/{$git_ref}", d()->platform->repo_path, dt('DevShop Deploy: Update code to match upstream branch.'));
-    }
-
-    // Run a submodule update and init.
-    provision_process("git submodule update --init --recursive --force ", d()->platform->repo_path, dt('DevShop Deploy: Init Submodules'));
-
-    provision_process("git status", d()->platform->repo_path, dt('DevShop Deploy: Git Status'));
+//
+//    // Stash any changes? Not sure if we should do this anymore...
+//    // $git->command('stash');
+//
+//    // Fetch
+//    drush_log('[Current Working Directory]' . d()->platform->repo_path, 'p_log');
+//
+//    provision_process("git fetch origin", d()->platform->repo_path, dt('DevShop Deploy: Fetch Changes'));
+//    provision_process("git status", d()->platform->repo_path, dt('DevShop Deploy: Git Status'));
+//
+//    // Checkout the chosen ref
+//    $git_checkout_output = provision_process("git checkout {$git_ref}", d()->platform->repo_path, dt('DevShop Deploy: Checkout Code'));
+//    $git_checkout_output_lines = explode("\n", $git_checkout_output);
+//
+//    // @TODO: Get the correct git ref type.
+//    $git_ref_type = devshop_environment_get_git_ref_type(d()->platform->repo_path);
+//
+//    drush_log("[Git $git_ref_type to Deploy] $git_ref", 'p_log');
+//
+//    // If the current working copy was detected to be a branch, update the code
+//    // to the exact reference of the current remote.
+//    // This is the better than using git pull because it can handle force pushed branches.
+//    if ($git_ref_type == 'branch') {
+//      provision_process("git reset --hard origin/{$git_ref}", d()->platform->repo_path, dt('DevShop Deploy: Update code to match upstream branch.'));
+//    }
+//
+//    // Run a submodule update and init.
+//    provision_process("git submodule update --init --recursive --force ", d()->platform->repo_path, dt('DevShop Deploy: Init Submodules'));
+//
+//    provision_process("git status", d()->platform->repo_path, dt('DevShop Deploy: Git Status'));
 }
 
 /**

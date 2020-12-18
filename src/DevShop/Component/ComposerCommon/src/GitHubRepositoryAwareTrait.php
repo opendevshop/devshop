@@ -44,6 +44,9 @@ trait GitHubRepositoryAwareTrait
 
         // Extract github repo owner and name
         $parts = explode('/', parse_url($this->githubRepoUrlNormalized, PHP_URL_PATH));
+         if (!isset($parts[1])) {
+          throw new \Exception("Unable to parse GitHub Repo URL: {$this->githubRepoUrlNormalized}");
+        }
         $this->githubRepoOwner = $parts[1];
         $this->githubRepoName = $parts[2];
 
@@ -64,4 +67,11 @@ trait GitHubRepositoryAwareTrait
         return $this->githubRepoName;
     }
 
+    /**
+     * Return the repo "slug", in the format owner/name.
+     * @return string
+     */
+    public function getRepoSlug() {
+      return "{$this->githubRepoOwner}/{$this->githubRepoName}";
+    }
 }

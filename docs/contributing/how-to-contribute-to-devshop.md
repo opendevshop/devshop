@@ -29,17 +29,6 @@ The only tools you need on your host machine to develop devshop are:
    cd devshop
   ```
 
-* If working on a Mac \(or a linux machine with a user other than uid 1000\), you need to regenerate your containers so the Aegir user UID matches your local user UID:
-
-  ```text
-  robo prepare:containers
-  ```
-
-  The command will attempt to automatically detect your UID. If you need to set it manually, you can pass the UID as an argument
-
-  ```text
-  robo prepare:containers 1001
-  ```
 
 1. Run `robo up` script to clone the rest of the source code and launch the docker containers.
 2. That's it! Look for a one-time login link that looks like:
@@ -68,8 +57,8 @@ Available commands:
   stop                Stop devshop containers using docker-compose stop
   test                Run all devshop tests on the containers.
   up                  Launch devshop containers using docker-compose up and follow logs.
+  build               Build devshop containers from the Dockerfiles. 
  prepare
-  prepare:containers  Build aegir and devshop containers from the Dockerfiles. Detects your UID or you can pass as an argument.
   prepare:host        Check for docker, docker-compose and drush. Install them if they are missing.
   prepare:sourcecode  Clone all needed source code and build devmaster from the makefile.
 ```

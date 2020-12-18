@@ -1,7 +1,6 @@
  # @TODO: Remove or re-implement. This is no longer being used.
 ## Use this file to alter variables in the devshop container.
 #server_hostname: devshop.local.computer
-#devshop_control_path: /usr/share/devshop/src/DevShop/Component/DevShopControlTemplate
 #
 ## Uncomment to reinstall hostmaster instance on every robo up.
 ## I'm leaving this commented because otherwise it would reinstall every time.

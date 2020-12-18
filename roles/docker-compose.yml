@@ -13,7 +13,8 @@ services:
       context: ".."
       dockerfile: "roles/devshop.server/Dockerfile.${OS:-ubuntu1804}"
       args:
-        OS: "${OS:-ubuntu1804}"
+        - DEVSHOP_DOCKER_COMMAND_BUILD_ARG
+        - ANSIBLE_PLAYBOOK_COMMAND_OPTIONS_ARG
     command: "${COMMAND:-'echo DevShop Server Online'}"
     entrypoint: "/usr/share/devshop/docker/bin/docker-systemd-entrypoint"
     extra_hosts:
@@ -29,7 +30,7 @@ services:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
       - /var/lib/mysql
       - /var/logs/aegir
-      - ./.github/test-artifacts:${DEVSHOP_TESTS_ARTIFACTS_PATH:-/usr/share/devshop/.github/test-artifacts}
+      - ../.github/test-artifacts:${DEVSHOP_TESTS_ARTIFACTS_PATH:-/var/aegir/test-artifacts}
     environment:
       # @TODO: Change back to devshop.local.computer
       # DEVSHOP_DOCKER_COMMAND_RUN: ansible-playbook /etc/ansible/play.yml -vv --tags runtime --extra-vars server_hostname=localhost
