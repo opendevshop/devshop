@@ -432,11 +432,11 @@ class RoboFile extends \Robo\Tasks {
             if (strpos($url, 'drupal') !== FALSE) {
               $parts = explode('/', $repo->getCurrentRemoteUrl());
               $project = array_pop($parts);
-              $push_url = "git@git.drupal.org:project/$project.git";
+              $push_url = "git@git.drupal.org:project/$project";
             }
             else {
               [$pre, $slug] = explode('.com/', $repo->getCurrentRemoteUrl());
-              $push_url = "git@github.com:$slug.git";
+              $push_url = "git@github.com:$slug";
             }
 
             if ($this->io()->confirm("<comment>$path</comment> is using an HTTP remote. Would you like to change it to use $push_url?")) {
