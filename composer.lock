@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "14358100f6826d790cc4208e5e6530d3",
+    "content-hash": "b8c040338eeb990379acea9718e3d934",
     "packages": [
         {
             "name": "consolidation/annotated-command",
@@ -1052,17 +1052,11 @@
         },
         {
             "name": "drupal/provision",
-            "version": "4.0.0-alpha3",
+            "version": "dev-4.x",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/provision.git",
-                "reference": "7.x-4.0-alpha3"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/provision-7.x-4.0-alpha3.zip",
-                "reference": "7.x-4.0-alpha3",
-                "shasum": "7b0065b708439ef8fb94f01c4896a8c4b302b799"
+                "reference": "4642ea423591173d4b6c8ccb55af4679ec53af46"
             },
             "require": {
                 "drupal/drupal": "~7.0",
@@ -1073,12 +1067,15 @@
             },
             "type": "drupal-drush",
             "extra": {
+                "branch-alias": {
+                    "dev-4.x": "4.x-dev"
+                },
                 "drupal": {
-                    "version": "7.x-4.0-alpha3",
-                    "datestamp": "1608035956",
+                    "version": "7.x-4.x-dev",
+                    "datestamp": "1608312608",
                     "security-coverage": {
                         "status": "not-covered",
-                        "message": "Alpha releases are not covered by Drupal security advisories."
+                        "message": "Dev releases are not covered by Drupal security advisories."
                     }
                 }
             },
