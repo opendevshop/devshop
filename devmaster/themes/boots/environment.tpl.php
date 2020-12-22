@@ -236,8 +236,8 @@
         <?php endif; ?>
 
         <?php if (isset($environment->settings->locked) && $environment->settings->locked): ?>
-            <a class="environment-meta-data btn btn-text" title="<?php print t('This database is locked.'); ?>">
-          <i class="fa fa-lock"></i><?php print t('Locked') ?>
+            <a class="environment-meta-data btn btn-text" title="<?php print t('This site is protected.'); ?>">
+          <i class="fa fa-lock"></i><?php print t('Protected') ?>
         </a>
         <?php endif; ?>
 

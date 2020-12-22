@@ -129,6 +129,9 @@ function devshop_projects_node_load($nodes, $types) {
       if (empty($node->profile) && !empty($node->environment->settings->install_method['profile'])) {
         $node->profile_name = $node->environment->settings->install_method['profile'];
       }
+
+      // @TODO: Move "protected" property to hosting_site.
+      $node->protected = (bool) $node->environment->settings->locked?: false;
     }
   }
 }

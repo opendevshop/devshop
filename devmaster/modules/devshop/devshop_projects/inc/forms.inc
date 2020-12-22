@@ -878,9 +878,9 @@ function devshop_projects_form_site_node_form_alter(&$form, &$form_state, $form_
   );
   $form['environment']['settings']['locked'] = array(
       '#type' => 'checkbox',
-      '#title' => t('Lock Database'),
+      '#title' => t('Protect Site'),
       '#default_value' => isset($environment->settings->locked) ? $environment->settings->locked : FALSE,
-      '#description' => t('Prevent devshop users from destroying the database.') . '<p class="text-danger">Drush users may still overwrite the database.</p>',
+      '#description' => t('Prevent devshop users from destroying the site.') . '<p class="text-danger">'. t('Users with server access can still destroy sites and data.') . '</p>',
   );
 
   $form['environment']['settings']['pull_disabled'] = array(
