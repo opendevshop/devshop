@@ -4373,15 +4373,15 @@
         },
         {
             "name": "npm-asset/modernizr",
-            "version": "3.11.3",
+             "version": "3.11.4",
             "dist": {
                 "type": "tar",
-                "url": "https://registry.npmjs.org/modernizr/-/modernizr-3.11.3.tgz"
+                "url": "https://registry.npmjs.org/modernizr/-/modernizr-3.11.4.tgz"
             },
             "require": {
                 "npm-asset/doctrine": ">=3.0.0,<4.0.0",
                 "npm-asset/file": ">=0.2.2,<0.3.0",
-                "npm-asset/lodash": ">=4.17.15,<5.0.0",
+                "npm-asset/lodash": ">=4.17.20,<5.0.0",
                 "npm-asset/markdown-it": ">=10.0.0,<11.0.0",
                 "npm-asset/mkdirp": "0.5.5",
                 "npm-asset/requirejs": ">=2.3.6,<3.0.0",
