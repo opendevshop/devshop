@@ -32,7 +32,5 @@ docker run \
   devshop/base
 
 docker exec \
-  --env="LOAD_DEVSHOP_VERSION=${LOAD_DEVSHOP_VERSION}" \
-  --env="LOAD_DEVSHOP_SOURCE=${LOAD_DEVSHOP_SOURCE}" \
   install-server-test \
   bash /tmp/devshop-install.sh --hostname=$DEVSHOP_SERVER_HOSTNAME \
