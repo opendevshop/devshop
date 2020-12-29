@@ -13,4 +13,5 @@
   for = "/"
   [headers.values]
     Content-Type = "text/plain"
-    Content-Disposition = "attachment; filename='install-devshop.sh'"
+    # @TODO: Determine if this is why the file downloads instead of displays.
+    # Content-Disposition = "attachment; filename=install-devshop.sh"
