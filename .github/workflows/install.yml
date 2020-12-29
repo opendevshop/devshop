@@ -19,9 +19,17 @@ jobs:
         echo "LOAD_DEVSHOP_VERSION=${{ github.head_ref }}" >> $GITHUB_ENV
         echo "LOAD_DEVSHOP_SOURCE=${{ github.event.pull_request.head.repo.clone_url }}" >> $GITHUB_ENV
 
-    - uses: actions/checkout@v2
+    - name: Check Out Sourcecode
+      uses: actions/checkout@v2
+      if: github.event_name!='pull_request'
+
+    # Fetch all branches and tags so composer can resolve the version.
+    - name: Check Out Pull Request Sourcecode
+      uses: actions/checkout@v2
+      if: github.event_name=='pull_request'
       with:
         ref: ${{ github.event.pull_request.head.sha }}
+        fetch-depth: 0
 
     - name: Run Install Script
       run: bash .github/workflows/install-sh-test.sh
