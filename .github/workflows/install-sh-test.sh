@@ -27,7 +27,7 @@ docker run \
   --detach --privileged --rm \
   --hostname $DEVSHOP_SERVER_HOSTNAME \
   --publish 80:80 \
-  --volume $PWD/index.html:/tmp/devshop-install.sh \
+  --volume $PWD/build/install.sh:/tmp/devshop-install.sh \
   --volume /sys/fs/cgroup:/sys/fs/cgroup:ro \
   devshop/base
 
