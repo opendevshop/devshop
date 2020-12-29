@@ -10,7 +10,7 @@ on:
 jobs:
   install_script:
     name: Install Script
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
 
     steps:
     - name: Prepare Pull Request-only environment
