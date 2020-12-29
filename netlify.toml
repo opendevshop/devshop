@@ -7,7 +7,7 @@
   command = "make build"
 
 [[redirects]]
-  from = "/build/install.sh"
-  to = "/"
+  from = "/"
+  to = "/install/build/install.sh"
   status = 200
   headers = {Content-Type = "text/plain"}
