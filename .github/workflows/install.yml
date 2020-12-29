@@ -7,6 +7,10 @@ on:
   schedule:
     - cron: "0 0 * * *"
     - cron: "0 12 * * *"
+
+env:
+  BRANCH: 1.x
+
 jobs:
   install_script:
     name: Install Script
@@ -17,6 +21,7 @@ jobs:
       if: github.event_name=='pull_request'
       run: |
         echo "LOAD_DEVSHOP_VERSION=${{ github.head_ref }}" >> $GITHUB_ENV
+        echo "BRANCH=${{ github.head_ref }}" >> $GITHUB_ENV
         echo "LOAD_DEVSHOP_SOURCE=${{ github.event.pull_request.head.repo.clone_url }}" >> $GITHUB_ENV
 
     - name: Check Out Sourcecode
