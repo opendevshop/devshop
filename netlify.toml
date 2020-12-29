@@ -2,6 +2,7 @@
 # Netlify Settings
 # See https://docs.netlify.com/configure-builds/file-based-configuration/#sample-file
 [build]
+  base = "install/"
   # See Makefile.
   command = "make build"
 
