@@ -19,7 +19,7 @@ set -ex
 docker-compose --file docker/docker-compose.yml build base
 
 cd install
-make build
+cat build/install.sh | grep $LOAD_DEVSHOP_VERSION
 
 # Launch a devshop/base container with this PR's install.sh script inside.
 docker run \
