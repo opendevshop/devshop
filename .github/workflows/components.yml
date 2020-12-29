@@ -293,7 +293,7 @@ jobs:
         # Match the command in ./roles/opendevshop.devshop/tasks/main.yml
         run: |
           composer require devshop/devmaster:dev-${{ github.event.pull_request.head.ref }}
-          composer update --no-dev --no-progress --prefer-source
+          composer install --no-dev --no-progress --prefer-source
         working-directory: ${{env.working-directory}}
 
       - name: Test Project Creation
