@@ -2,16 +2,11 @@
 # Netlify Settings
 # See https://docs.netlify.com/configure-builds/file-based-configuration/#sample-file
 [build]
-
-  # @TODO: inject SHA into index.html so the script has the version in it. 
-  # Use docker as example: https://github.com/docker/docker-install/blob/master/Makefile#L16 
-  # They use envsubst
+  # See Makefile.
   command = "make build"
 
-
-[[headers]]
-  for = "/"
-  [headers.values]
-    Content-Type = "text/plain"
-    # @TODO: Determine if this is why the file downloads instead of displays.
-    # Content-Disposition = "attachment; filename=install-devshop.sh"
+[[redirects]]
+  from = "/build/install.sh"
+  to = "/"
+  status = 200
+  headers = {Content-Type = "text/plain"}
