@@ -27,7 +27,8 @@ set -e
 # Git commit from https://github.com/opendevshop/devshop/blob/1.x/install/install.sh when
 # the script was uploaded (Should only be modified by upload job):
 # Will be the SHA used to publish the install.sh file to get.devshop.tech.
-SCRIPT_COMMIT_SHA="${LOAD_SCRIPT_COMMIT_SHA}"
+SCRIPT_DEVSHOP_VERSION_SHA="${LOAD_SCRIPT_DEVSHOP_VERSION_SHA}"
+SCRIPT_DEVSHOP_VERSION_REF="${LOAD_SCRIPT_DEVSHOP_VERSION_REF}"
 
 # Version to install (branch or tag).
 # If testing a branch is needed, set the DEVSHOP_VERSION environment variable in
@@ -40,7 +41,9 @@ SCRIPT_COMMIT_SHA="${LOAD_SCRIPT_COMMIT_SHA}"
 #
 
 # The version and git repo to install.
-DEVSHOP_VERSION="${LOAD_DEVSHOP_VERSION:-1.x}"
+# Default to 1.x if $SCRIPT_DEVSHOP_VERSION is empty.
+# Used as the `devshop_version` ansible variable, which will change the checked out version.
+DEVSHOP_VERSION="${SCRIPT_DEVSHOP_VERSION_REF:-1.x}"
 DEVSHOP_SOURCE="${LOAD_DEVSHOP_SOURCE:-http://github.com/opendevshop/devshop.git}"
 
 # Version of Ansible to install
@@ -402,6 +405,8 @@ echo "============================================="
 echo " Welcome to the DevShop Standalone Installer "
 echo " Version $DEVSHOP_VERSION"
 echo " Source $DEVSHOP_SOURCE"
+echo " Script Git Reference $SCRIPT_DEVSHOP_VERSION_REF"
+echo " Script Git SHA $SCRIPT_DEVSHOP_VERSION_SHA"
 echo "============================================="
 
 # Fail if not running as root (sudo)

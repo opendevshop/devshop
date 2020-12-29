@@ -7,6 +7,10 @@ on:
   schedule:
     - cron: "0 0 * * *"
     - cron: "0 12 * * *"
+
+env:
+  BRANCH: 1.x
+
 jobs:
   install_script:
     name: Install Script
@@ -17,11 +21,24 @@ jobs:
       if: github.event_name=='pull_request'
       run: |
         echo "LOAD_DEVSHOP_VERSION=${{ github.head_ref }}" >> $GITHUB_ENV
+        echo "BRANCH=${{ github.head_ref }}" >> $GITHUB_ENV
         echo "LOAD_DEVSHOP_SOURCE=${{ github.event.pull_request.head.repo.clone_url }}" >> $GITHUB_ENV
 
-    - uses: actions/checkout@v2
+    - name: Check Out Sourcecode
+      uses: actions/checkout@v2
+      if: github.event_name!='pull_request'
+
+    # Fetch all branches and tags so composer can resolve the version.
+    - name: Check Out Pull Request Sourcecode
+      uses: actions/checkout@v2
+      if: github.event_name=='pull_request'
       with:
         ref: ${{ github.event.pull_request.head.sha }}
+        fetch-depth: 0
+
+    - name: Build Install Script
+      run: make build
+      working-directory: install
 
     - name: Run Install Script
       run: bash .github/workflows/install-sh-test.sh

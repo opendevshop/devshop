@@ -1,0 +1,13 @@
+
+# Netlify Settings
+# See https://docs.netlify.com/configure-builds/file-based-configuration/#sample-file
+[build]
+  base = "install/"
+  # See Makefile.
+  command = "make build"
+
+[[redirects]]
+  from = "/"
+  to = "/install/build/install.sh"
+  status = 200
+  headers = {Content-Type = "text/plain"}

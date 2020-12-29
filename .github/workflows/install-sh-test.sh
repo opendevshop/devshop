@@ -19,7 +19,7 @@ set -ex
 docker-compose --file docker/docker-compose.yml build base
 
 cd install
-make build
+cat build/install.sh | grep $LOAD_DEVSHOP_VERSION
 
 # Launch a devshop/base container with this PR's install.sh script inside.
 docker run \
@@ -27,12 +27,10 @@ docker run \
   --detach --privileged --rm \
   --hostname $DEVSHOP_SERVER_HOSTNAME \
   --publish 80:80 \
-  --volume $PWD/index.html:/tmp/devshop-install.sh \
+  --volume $PWD/build/install.sh:/tmp/devshop-install.sh \
   --volume /sys/fs/cgroup:/sys/fs/cgroup:ro \
   devshop/base
 
 docker exec \
-  --env="LOAD_DEVSHOP_VERSION=${LOAD_DEVSHOP_VERSION}" \
-  --env="LOAD_DEVSHOP_SOURCE=${LOAD_DEVSHOP_SOURCE}" \
   install-server-test \
   bash /tmp/devshop-install.sh --hostname=$DEVSHOP_SERVER_HOSTNAME \
