@@ -22,7 +22,7 @@
   ],
   "require": {
     "cpliakas/git-wrapper": "~1.0",
-    "knplabs/github-api": "^2.11",
+    "knplabs/github-api": "^1.4",
     "php-http/guzzle6-adapter": "^1.1",
     "sensiolabs/ansi-to-html": "^1.1",
     "symfony/process": "^3.4",

@@ -22,7 +22,7 @@
   become_method: "{{ ansible_become_method_aegir }}"
   ignore_errors: true
   register: devmaster_site_root
-  changed_when: "devmaster_site_root.stdout | length > 0"
+  changed_when: devmaster_site_root.stdout | length > 0
   tags: [runtime]
 
 - name: Get DevShop Control URI
@@ -32,7 +32,7 @@
   become_method: "{{ ansible_become_method_aegir }}"
   ignore_errors: true
   register: devmaster_site_uri
-  changed_when: "devmaster_site_uri.stdout | length > 0"
+  changed_when: devmaster_site_uri.stdout | length > 0
   tags: [runtime]
 
 - name: Set devmaster_site_root and devmaster_site_uri variables
@@ -135,7 +135,7 @@
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
   register: drush_cache_clear
-  changed_when: "drush_cache_clear.stdout | length > 0"
+  changed_when: drush_cache_clear.stdout | length > 0
   tags: [runtime]
 
 - name: Clear all DevShop Control Caches.
@@ -144,5 +144,5 @@
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
   register: devshop_cache_clear
-  changed_when: "devshop_cache_clear.stdout | length > 0"
+  changed_when: devshop_cache_clear.stdout | length > 0
   tags: [runtime]
