@@ -515,8 +515,9 @@ if [[ `ansible-config dump | grep ${ANSIBLE_DEFAULT_HOST_LIST}` ]]; then
   echo " Ansible Inventory: $ANSIBLE_DEFAULT_HOST_LIST"
 else
   echo "[ERROR] The system's ansible configuration option DEFAULT_HOST_LIST does not match the install.sh option --ansible-default-host-list ($ANSIBLE_DEFAULT_HOST_LIST)"
-  echo "Result from ansible-config dump | grep $ANSIBLE_DEFAULT_HOST_LIST:"
-  ansible-config dump | grep $ANSIBLE_DEFAULT_HOST_LIST
+  echo "Result from ansible-config dump:"
+  ansible-config dump
+  echo "Exiting devshop install.sh. Ensure this system's ansible configuration for [defaults]inventory matches the install.sh option --ansible-default-host-list."
   exit 1
 fi
 
