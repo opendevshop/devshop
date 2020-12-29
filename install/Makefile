@@ -1,4 +1,5 @@
 
+ENVSUBST_VARS=LOAD_SCRIPT_COMMIT_SHA
 
 .PHONY: build
 build: build/install.sh
