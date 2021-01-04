@@ -404,13 +404,13 @@ class RoboFile extends \Robo\Tasks {
   ]) {
 
     $this->yell("Welcome to your DevShop Development environment!");
-    $branch = $this->getRepository()->getCurrentBranch();
-    $this->io()->note("Branch {$branch}");
 
     // Remote may be unknown.
     try {
+      $branch = $this->getRepository()->getCurrentBranch();
       $remote = $this->getRepository()->getCurrentRemoteName();
-      $this->io()->note("Remote URL {$remote}");
+      $remote_url = $this->getRepository()->getCurrentRemoteUrl();
+      $this->say("Current code branch <comment>{$branch}</comment> remote {$remote_url}");
     } catch (\Exception $e) {
       $this->io()->error("No upstream configured for branch '$branch'. Please set one with the command 'git branch --track $branch' or 'git push -u origin $branch'");
       exit(1);
@@ -567,12 +567,10 @@ class RoboFile extends \Robo\Tasks {
       // Runtime Environment for the $cmd list.
       $env_run = $this->generateEnvironmentArgs($opts);
       $extra_vars = array();
-      $extra_vars['devshop_version'] = $this->git_ref;
 
-      # @TODO: Move all static vars into vars.development.yml.
-      # Don't upgrade every time we robo up.
-      $extra_vars['devshop_cli_skip_update'] = true;
-      $extra_vars['devmaster_skip_upgrade'] = true;
+      // Set devshop_version and cli_repo here because every local dev environment is different.
+      $extra_vars['devshop_version'] = $branch;
+      $extra_vars['devshop_cli_repo'] = $remote_url;
 
       // Set extra ansible vars when not in CI.
       if (empty($_SERVER['CI'])) {
@@ -600,15 +598,18 @@ class RoboFile extends \Robo\Tasks {
       // Process $extra vars into JSON for ENV var.
       $env_run['ANSIBLE_EXTRA_VARS'] = json_encode($extra_vars);
 
+      // Add vars.development.yml as final command line option.
+      $env_run['ANSIBLE_PLAYBOOK_COMMAND_OPTIONS'] = '--extra-vars=@/usr/share/devshop/vars.development.yml';
+
       // Override the DEVSHOP_DOCKER_COMMAND_RUN if specified.
       if (!empty($docker_command)) {
         $env_run['DEVSHOP_DOCKER_COMMAND_RUN'] = $docker_command;
       }
 
       if ($this->output->isVerbose()) {
-        $this->say('Ansible Extra Vars:');
+        $this->io()->section('Ansible Extra Vars:');
         print_r($extra_vars);
-        $this->say('Execution environment:');
+        $this->io()->section('Execution environment:');
         print_r($env_run);
       }
 
