@@ -87,6 +87,11 @@ class ScriptHandler {
       }
     }
 
+    // @TODO: Detect non-provision composer installs and continue through the "standard" settings.php file setup.
+    // This will probably have to be done to allow alternative hosts for "devshop control" sites.
+    $event->getIO()->warning("Skipping settings.php setup. Provision will configure the files.");
+    return;
+
     // Prepare the settings file for installation
     if (!$fs->exists($drupalRoot . '/sites/default/settings.php') && $fs->exists($drupalRoot . '/sites/default/default.settings.php')) {
       $fs->copy($drupalRoot . '/sites/default/default.settings.php', $drupalRoot . '/sites/default/settings.php');
