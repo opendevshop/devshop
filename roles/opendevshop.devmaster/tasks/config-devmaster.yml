@@ -79,15 +79,6 @@
   changed_when: devshop_ansible_command_output.stdout | length > 0
   tags: [runtime]
 
-- name: Clear the drush cache.
-  command: "{{ drush_bin_path }} cc drush"
-  become: true
-  become_user: "{{ aegir_user_name }}"
-  become_method: "{{ ansible_become_method_aegir }}"
-  register: devshop_ansible_command_output
-  changed_when: devshop_ansible_command_output.stdout | length > 0
-  tags: [runtime]
-
 - name: Set git user name
   git_config:
     name: user.name
@@ -113,6 +104,13 @@
     name: push.default
     scope: global
     value: simple
+  become: true
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
+  tags: [runtime]
+
+- name: Verify DevShop Control site
+  command: "{{ drush_bin_path }} {{ devshop_control_drush_alias }} provision-verify"
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
