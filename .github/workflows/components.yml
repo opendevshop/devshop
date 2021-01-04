@@ -291,7 +291,9 @@ jobs:
       # If installing without a lockfile, composer suggests using "update" command instead.
       - name: Install dependencies
         # Match the command in ./roles/opendevshop.devshop/tasks/main.yml
-        run: composer update --no-dev --no-progress --prefer-source
+        run: |
+          composer require devshop/devmaster:dev-${{ github.event.pull_request.head.ref }}
+          composer install --no-dev --no-progress --prefer-source
         working-directory: ${{env.working-directory}}
 
       - name: Test Project Creation
