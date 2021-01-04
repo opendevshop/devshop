@@ -14,6 +14,14 @@ class GitRepository extends Repository
   const REMOTE_TRACKING_STATE_DIVERGED  = 2;
 
   /**
+   * @inheritdoc
+   * @return \DevShop\Component\Common\GitRepository
+   */
+  public static function open($repositoryPath, $git = null, $createIfNotExists = false, $initArguments = null, $findRepositoryRoot = true) {
+    return parent::open($repositoryPath, $git, $createIfNotExists, $initArguments, $findRepositoryRoot);
+  }
+
+  /**
    * Run a git command in the repository directory.
    *
    * @param string $method The VCS command, e.g. show, commit or add
@@ -176,5 +184,51 @@ class GitRepository extends Repository
     catch (CallException $exception) {
       throw $exception;
     }
+  }
+
+  /**
+   * Returns the name of the remote for the currently checked out branch, Usually "origin".
+   * @return string
+   */
+  public function getCurrentRemoteName()
+  {
+    // Only branch checkouts can have a remote.
+    $branch = $this->getCurrentBranch();
+    if (empty($branch)) {
+      return;
+    }
+    else {
+      $result = $this->callGit("config", ["branch.{$branch}.remote"]);
+      $result->assertSuccess('Call to "git config branch.{$branch}.remote" failed.');
+
+      return $result->getStdOut();
+    }
+  }
+
+  /**
+   * Returns the remote name, usually "origin".
+   * @return  string
+   */
+  public function getCurrentRemoteUrl()
+  {
+    // Only branch checkouts can have a remote.
+    $remote = $this->getCurrentRemoteName();
+    if (empty($remote)) {
+      return;
+    }
+    else {
+      $result = $this->callGit("config", ["remote.{$remote}.url"]);
+      $result->assertSuccess('Call to "git config remote.{$branch}.url" failed.');
+      return $result->getStdOut();
+    }
+  }
+
+  /**
+   * Return true if the current remote is an HTTP url.
+   *
+   * @return bool
+   */
+  public function isCurrentRemoteHttp() {
+    return strpos($this->getCurrentRemoteUrl(), 'http') === 0;
   }
 }

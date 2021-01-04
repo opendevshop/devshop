@@ -27,7 +27,7 @@
         "devshop/bin-tools": "@dev",
         "devshop/yaml-tasks": "@dev",
         "devshop/power-process": "@dev",
-        "drupal/provision": "^4.0||4.x-dev"
+        "drupal/provision": "4.x-dev"
     },
     "replace": {
         "drupal/drupal": "*"
@@ -103,8 +103,7 @@
                 "src/DevShop/Component/GitSplit": "https://github.com/devshop-packages/git-split.git",
                 "src/DevShop/Component/PowerProcess": "https://github.com/devshop-packages/power-process.git",
                 "src/DevShop/Component/YamlTasks": "https://github.com/devshop-packages/yaml-tasks.git",
-                "src/DevShop/Component/ControlProject": "https://github.com/devshop-packages/devshop-control-project.git",
-                "install": "https://github.com/opendevshop/devshop-install.git"
+                "src/DevShop/Component/ControlProject": "https://github.com/devshop-packages/devshop-control-project.git"
             }
         }
     },
