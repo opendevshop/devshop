@@ -21,7 +21,7 @@
           - "  Path: {{ devshop_cli_path }}"
           - "  Version: {{ devshop_version }}"
           - "  CLI Version: {{ devshop_cli_version }}"
-      tags: [ always ]
+      tags: [always]
 
     - name: Set all Debian systems to use python3 as the interpretor, and python3-mysqldb for mysql_python_package_debian.
       when:
