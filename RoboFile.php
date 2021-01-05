@@ -658,11 +658,12 @@ class RoboFile extends \Robo\Tasks {
   /**
    * Run a command in the devshop container.
    */
-  public function exec($cmd = '') {
+  public function exec($cmd = '', $opts = ['user' => 'aegir']) {
     return $this->_exec("docker-compose exec -T \
       --env ANSIBLE_TAGS=runtime \
       --env ANSIBLE_SKIP_TAGS \
       --env ANSIBLE_VARS \
+      --user {$opts['user']} \
       devshop $cmd")->getExitCode();
   }
 
