@@ -15,11 +15,25 @@ class Composer {
   static function updateRoles() {
     $ansible_playbook_installed = `command -v ansible`;
     if ($ansible_playbook_installed) {
+      putenv('ANSIBLE_FORCE_COLOR=1');
+      echo "> \n";
+      echo "> Updating Ansible roles ...\n";
+      echo "> \n";
       self::exec('ansible-galaxy install -r roles/roles.yml -p roles --force');
     }
     else {
       echo "Ansible not found. Skipping Ansible Galaxy Role update. \n";
     }
+  }
+
+  /**
+   * Run composer update on the DevShop Control sub-project.
+   */
+  static function updateControl() {
+    echo "> \n";
+    echo "> Updating src/DevShop/Control ...\n";
+    echo "> \n";
+    self::exec('composer update --working-dir=src/DevShop/Control --ansi');
   }
 
   /**

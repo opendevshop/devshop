@@ -123,6 +123,9 @@
             "@uninstall",
             "@composer install --prefer-source --ansi"
         ],
+        "post-update-cmd": [
+            "DevShop\\Composer::updateControl"
+        ],
         "roles:update": [
             "DevShop\\Composer::updateRoles"
         ]
