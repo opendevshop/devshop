@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b8c040338eeb990379acea9718e3d934",
+    "content-hash": "4fb2c35291169b4d9ebf1e2a39226e94",
     "packages": [
         {
             "name": "consolidation/annotated-command",
@@ -1056,7 +1056,7 @@
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/provision.git",
-                "reference": "4642ea423591173d4b6c8ccb55af4679ec53af46"
+                "reference": "031eadc02c7aeac1cf4c4f055ae25e3e58e1d1df"
             },
             "require": {
                 "drupal/drupal": "~7.0",
@@ -1072,7 +1072,7 @@
                 },
                 "drupal": {
                     "version": "7.x-4.x-dev",
-                    "datestamp": "1608312608",
+                    "datestamp": "1608322947",
                     "security-coverage": {
                         "status": "not-covered",
                         "message": "Dev releases are not covered by Drupal security advisories."
