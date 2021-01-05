@@ -37,6 +37,18 @@ class Composer {
   }
 
   /**
+   * Prepare the codebase for development.
+   *
+   * 1. Checkout 7.x-4.x branches of provision and hosting.
+   * 2. Enable devel and dblog.
+   */
+  static function prepareDevelopmentEnvironment() {
+    self::exec('cd src/DevShop/Control/web/sites/all/modules/contrib/hosting && git checkout 7.x-4.x && git remote set-url origin git@git.drupal.org:project/hosting.git');
+    self::exec('cd vendor/drupal/provision && git checkout 7.x-4.x && git remote set-url origin git@git.drupal.org:project/provision.git');
+    self::exec('bin/robo exec "drush @hm en devel dblog -y"');
+  }
+
+  /**
    * Print the command then run it.
    * @param $command
    *
