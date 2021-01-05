@@ -36,6 +36,11 @@ class Composer {
     self::exec('composer update --working-dir=src/DevShop/Control --ansi');
   }
 
+  static $drupalDevelopmentPaths = [
+    'provision' => 'vendor/drupal/provision',
+    'hosting' => 'src/DevShop/Control/web/sites/all/modules/contrib/hosting',
+  ];
+
   /**
    * Prepare the codebase for development.
    *
@@ -43,9 +48,20 @@ class Composer {
    * 2. Enable devel and dblog.
    */
   static function prepareDevelopmentEnvironment() {
-    self::exec('cd src/DevShop/Control/web/sites/all/modules/contrib/hosting && git checkout 7.x-4.x && git remote set-url origin git@git.drupal.org:project/hosting.git');
-    self::exec('cd vendor/drupal/provision && git checkout 7.x-4.x && git remote set-url origin git@git.drupal.org:project/provision.git');
+    foreach (self::$drupalDevelopmentPaths as $package => $path) {
+      self::exec("cd {$path} && git checkout 7.x-4.x && git remote set-url origin git@git.drupal.org:project/{$package}.git");
+    }
+
     self::exec('bin/robo exec "drush @hm en devel dblog -y"');
+  }
+
+  /**
+   * Show git status in important folders.
+   */
+  static function gitStatus() {
+    foreach (self::$drupalDevelopmentPaths as $package => $path) {
+      self::exec("cd {$path} && git status --ahead-behind");
+    }
   }
 
   /**

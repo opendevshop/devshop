@@ -123,8 +123,11 @@
             "@uninstall",
             "@composer install --prefer-source --ansi"
         ],
-        "develop": [
+        "develop:prepare": [
             "DevShop\\Composer::prepareDevelopmentEnvironment"
+        ],
+        "develop:status": [
+            "DevShop\\Composer::gitStatus"
         ],
         "post-update-cmd": [
             "DevShop\\Composer::updateControl"
