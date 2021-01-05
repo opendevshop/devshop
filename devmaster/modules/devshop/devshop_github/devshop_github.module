@@ -163,8 +163,8 @@ function devshop_github_form_project_node_form_alter(&$form, &$form_state, $form
     '#suffix' => '</div>',
     '#weight' => -1000,
     '#markup' => implode(' ', array(
-      format_plural($pr_count, t('There is 1 open Pull Request in your project'), t('There are @number open Pull Requests in your project', array('@number' => $pr_count))),
-      t('Confirm your desired behavior in the "GitHub Integration" section.'),
+      format_plural($pr_count, t('There is 1 open Pull Request in your project.'), t('There are @number open Pull Requests in your project', array('@number' => $pr_count))),
+      t('Check pull request environment settings in the "GitHub Integration" section.'),
       l(t('View Pull Requests on GitHub.com'), $node->project->git_repo_url . '/pulls', array(
         'attributes' => array(
           'target' => '_blank',
