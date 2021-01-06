@@ -159,8 +159,7 @@ function devshop_project_load($node) {
           sn.created as created,
           s.vid,
           sn.title as system_domain,
-          a.redirection as redirect_domain,
-          e.last_task as last_task_nid
+          a.redirection as redirect_domain
         FROM {hosting_devshop_project_environment} e
         LEFT JOIN {hosting_site} s ON e.site = s.nid
         LEFT JOIN {hosting_context} cs ON s.nid = cs.nid
@@ -203,7 +202,8 @@ function devshop_project_load($node) {
     $environment->settings = (object) unserialize($environment->settings);
 
     // Get last task
-    $environment->last_task_node = node_load($environment->last_task_nid);
+    $environment->last_task_node = hosting_get_most_recent_task($environment->site);
+    $environment->last_task_nid = $environment->last_task_node->nid;
 
     // Get all tasks, keyed by type.
     $environment->tasks = devshop_get_tasks($environment);

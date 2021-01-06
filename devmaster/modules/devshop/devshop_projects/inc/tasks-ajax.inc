@@ -9,30 +9,11 @@ function devshop_projects_tasks_status_json() {
 
   $output = array();
 
-  $sql = '
-        SELECT
-            last_task
-        FROM {hosting_devshop_project_environment} e
-        LEFT JOIN {node} n ON e.project_nid = n.nid
-        LEFT JOIN {hosting_site} s ON e.site = s.nid
-          WHERE n.status = 1
-          AND s.status != -2
-        ';
-
-  $results = db_query($sql);
-
   $nids = array();
 
   // Ensure we always load our task
   if (isset($_GET['task'])) {
     $nids[] = $_GET['task'];
-  }
-
-  // Get all environments and their status.
-  foreach ($results as $result) {
-
-    // Save NIDs for later
-    $nids[] = $result->last_task;
   }
 
   // Look up any remaining queued or processing tasks.
