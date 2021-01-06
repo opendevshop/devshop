@@ -254,7 +254,7 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
     // if verify task hasn't even run yet (and has never run) we can just delete
     // the platform node.
     if (empty($platform_node->verified)) {
-      node_delete($platform_node);
+      node_delete($platform_node->nid);
     }
     // Create 'delete' task for the removed platform
     else if ($platform_nid) {
