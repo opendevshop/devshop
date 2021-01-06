@@ -170,6 +170,9 @@ HTML;
     $form['help'] = array(
       '#markup' => $note,
     );
+
+    // Add code to reload the page when complete.
+    devshop_form_reloader($form, 'platform');
   }
   elseif ($task_failed) {
     $project->no_finish = TRUE;
@@ -236,9 +239,6 @@ HTML;
       '#default_value' => $default_profile,
     );
   }
-
-  // Add code to reload the page when complete.
-  devshop_form_reloader($form, 'platform');
 
   if (variable_get('hosting_queued_paused')) {
     $form['messages'] = array(

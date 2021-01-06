@@ -251,10 +251,10 @@ function devshop_projects_add_status($type = 'platform') {
   ctools_include('object-cache');
   $project = ctools_object_cache_get('project', 'devshop_project');
 
-
   $project_node = node_load($project->nid);
 
   $all_tasks_completed = TRUE;
+  $all_tasks_successful = TRUE;
   $nids = array();
 
   // When checking project...
@@ -318,6 +318,9 @@ function devshop_projects_add_status($type = 'platform') {
         $all_tasks_successful = FALSE;
         $all_tasks_completed = FALSE;
       }
+    }
+    if ($all_tasks_completed) {
+      $message = t('Codebase preparation complete!');
     }
     $return['message'] = $message;
     $return['button'] = $button;
