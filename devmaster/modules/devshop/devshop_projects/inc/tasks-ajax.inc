@@ -25,11 +25,6 @@ function devshop_projects_tasks_status_json() {
     ->orderBy('n.vid', 'DESC')
     ->addTag('node_access');
 
-  $or = db_or();
-  $or->condition('task_status', HOSTING_TASK_PROCESSING);
-  $or->condition('task_status', HOSTING_TASK_QUEUED);
-  $query->condition($or);
-
   if (!empty($nids)) {
     $query->condition('n.nid', $nids, 'NOT IN');
   }
