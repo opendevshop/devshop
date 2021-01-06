@@ -174,7 +174,7 @@ HTML;
   elseif ($task_failed) {
     $project->no_finish = TRUE;
 
-    $message = t('Something went wrong when trying to clone your codebase.');
+    $message = t('Something went wrong when trying to clone your codebases.');
 
     if (strpos($errors_rendered, 'Check the Publish Path of the platform') !== FALSE) {
       if (empty($project->drupal_path)) {
