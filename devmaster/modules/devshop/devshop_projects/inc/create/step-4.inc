@@ -68,7 +68,7 @@ function devshop_project_create_step_sites($form, &$form_state) {
         $row['profiles'] = '';
       }
       else {
-        $row['version'] = $platform->release->version;
+        $row['version'] = "<label id='version-{$name}'>" . $platform->release->version;
         $row['profiles'] = '';
       }
 
@@ -127,7 +127,7 @@ function devshop_project_create_step_sites($form, &$form_state) {
       </div>
     </div>
 HTML;
-      $row['version'] = "<span id='version-$name'>" . (!empty($platform->release->version)? $platform->release->version: $task->status_name) . "</span>";
+      $row['version'] = "<label id='version-$name'>" . (!empty($platform->release->version)? $platform->release->version: $task->status_name) . "</label>";
     }
     // If platform is still processing:
     elseif ($task->task_status == HOSTING_TASK_PROCESSING || $task->task_status == HOSTING_TASK_QUEUED) {
