@@ -227,6 +227,7 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
             'settings' => serialize($environment->settings),
           ))
           ->execute();
+        hosting_add_task($environment->platform, 'verify');
       }
       else {
         // CREATE the environment OBJECT, including a new platform and DB record.
