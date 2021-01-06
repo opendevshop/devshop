@@ -2053,9 +2053,6 @@ function devshop_github_create_all_pr_environments($project_node) {
   drush_log( format_plural($deleted_environments,  "1 Environment Deleted.", t("!count Environments Deleted.", array(
     "!count" => $deleted_environments,
   ))), "ok");
-
-  // Fix missing last_task entries.
-  devshop_reset_last_tasks();
 }
 
 /**
