@@ -414,6 +414,19 @@ function devshop_task_status_class($status) {
 }
 
 /**
+ * Get the bootstrap class from hosting task status.
+ */
+function devshop_task_status_bootstrap_class($status) {
+  $codes = array(
+    HOSTING_TASK_SUCCESS => 'success',
+    HOSTING_TASK_QUEUED => 'text',
+    HOSTING_TASK_ERROR => 'danger',
+    HOSTING_TASK_PROCESSING => 'default',
+    HOSTING_TASK_WARNING => 'warning',
+  );
+  return $codes[$status];
+}
+/**
  * Get the fontawesome icon from hosting task status.
  */
 function devshop_task_status_icon($status) {

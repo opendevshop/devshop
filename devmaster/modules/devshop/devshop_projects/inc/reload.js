@@ -5,27 +5,32 @@
         },
         checkProject: function() {
             var url = '/projects/add/status/' + Drupal.settings.devshopReload.type;
-            console.log('Checking Project Status...');
             $.getJSON(url, function (data) {
-                $.each(data, function (i, platform) {
+                $.each(data.tasks, function (i, platform) {
+                    console.log(platform.version, "Updating " + i);
                     if (platform.version) {
                         jQuery('#version-' + i).html(platform.version);
                     }
                     if (platform.profiles) {
                         jQuery('#profiles-' + i).html(platform.profiles);
                     }
-                    if (platform.status) {
-                        if (platform.status == 'Processing') {
-                            platform.status += ' <i class="fa fa-gear fa-spin"></i>';
-                        }
-                        jQuery('#status-' + i).html(platform.status);
+                    if (platform.link) {
+                        jQuery('#status-' + i).replaceWith(platform.link);
                     }
                 });
-                if (data.tasks_complete){
-                    document.location.reload();
-                } else {
-                    setTimeout("Drupal.behaviors.devshopReload.checkProject()", Drupal.settings.devshopReload.delay);
+
+                if (data.message) {
+                    jQuery('#message').html(data.message).attr('class', 'alert alert-' + data.message_class);
                 }
+
+                if (data.tasks_complete){
+                    jQuery('#progress-indicator').hide();
+                } else {
+                    jQuery('#progress-indicator').show();
+                }
+
+                setTimeout("Drupal.behaviors.devshopReload.checkProject()", Drupal.settings.devshopReload.delay);
+
             });
         }
     };

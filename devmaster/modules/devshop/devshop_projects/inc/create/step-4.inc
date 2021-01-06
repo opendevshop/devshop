@@ -37,9 +37,7 @@ function devshop_project_create_step_sites($form, &$form_state) {
     // Get platform and latest verify task.
     $platform_nid = $environment->platform;
     $platform = node_load($platform_nid);
-    $tasks = devshop_get_tasks($environment, 'verify');
-    $task = array_shift($tasks['verify']);
-
+    $task = hosting_get_most_recent_task($platform_nid, 'verify');
     if (empty($task)) {
       $row = array(
         $environment->name,
@@ -50,12 +48,15 @@ function devshop_project_create_step_sites($form, &$form_state) {
       $rows[] = $row;
       continue;
     }
+    $status_link = devshop_get_logs_and_permalink($task);
 
     // Build a table.
     $row = array();
     $row['name'] = $name;
     $row['branch'] = $environment->git_ref;
     $row['version'] = t('...');
+    $row['profiles'] = '';
+    $row['status'] = $status_link;
 
     // If platform verified successfully:
     if ($task->task_status == HOSTING_TASK_SUCCESS || $task->task_status == HOSTING_TASK_WARNING) {
@@ -64,10 +65,11 @@ function devshop_project_create_step_sites($form, &$form_state) {
       if (empty($platform->release->version)) {
         $completed = FALSE;
         $row['version'] = '...';
-        $row['profiles'] = '...';
+        $row['profiles'] = '';
       }
       else {
         $row['version'] = $platform->release->version;
+        $row['profiles'] = '';
       }
 
       // Collect install profiles
@@ -97,60 +99,41 @@ function devshop_project_create_step_sites($form, &$form_state) {
       $all_tasks_succeeded = FALSE;
       $available_profiles = array();
 
-      $errors = db_query("SELECT * FROM {hosting_task_log} WHERE vid = :vid AND (type LIKE :type OR type = :error) ORDER BY vid, lid", array(':vid' => $task->vid, ':type' => 'p_error', ':error' => 'error'));
-
-      foreach ($errors as $error) {
-        if ($error->type == 'p_command' || $error->type == 'error') {
-          $messages_to_user[] = $error->message;
-        }
-        $messages[] = $error;
-      }
-      $errors_rendered = theme('devshop_ascii', array('output' => implode('\n', $messages_to_user)));
-
+      $messages = devshop_task_get_messages($task);
+      $errors_rendered = implode("\n", $messages);
       $codebase_verification_failed = t('Codebase Verification Failed');
+      $summary = t('in %path', array(
+        '%path' => $environment->root,
+      ));
       $close = t('Close');
-      $view_logs = t('View Logs');
-      $logs_url = url("node/{$task->nid}");
-
-      $button = <<<HTML
-<button type="button" class="btn btn-xs btn-danger text-muted" data-toggle="modal" data-target="#errors-modal-$name" title="View detailed errors">
-        <i class="fa fa-exclamation-circle"></i>
-        $codebase_verification_failed
-      </button>
-HTML;
-
       $modals .= <<<HTML
 
       <!-- Modal -->
-      <div class="modal modal-lg fade" id="errors-modal-$name" tabindex="-1" role="dialog" aria-labelledby="errors-modal" aria-hidden="true">
+      <div class="modal fade" id="errors-modal-{$name}" tabindex="-1" role="dialog" aria-labelledby="errors-modal" aria-hidden="true">
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-              <h4 class="modal-title" id="errors-modal">$codebase_verification_failed</h4>
+              <h4 class="modal-title" id="errors-modal">$codebase_verification_failed <small>$summary</small></h4>
             </div>
             <div class="modal-body">
             $errors_rendered
             </div>
             <div class="modal-footer">
-              <a href="$logs_url" class="btn btn-link pull-left">$view_logs</a>
               <button type="button" class="btn btn-default" data-dismiss="modal">$close</button>
             </div>
           </div>
         </div>
       </div>
+    </div>
 HTML;
-
-      $row['version'] = array(
-        'data' => $button,
-        'colspan' => 2,
-      );
+      $row['version'] = "<span id='version-$name'>" . (!empty($platform->release->version)? $platform->release->version: $task->status_name) . "</span>";
     }
     // If platform is still processing:
     elseif ($task->task_status == HOSTING_TASK_PROCESSING || $task->task_status == HOSTING_TASK_QUEUED) {
       $completed = FALSE;
-      $row['version'] = "<span id='version-{$platform->nid}'>...</span>";
-      $row['profiles'] = "<span id='profiles-{$platform->nid}'>...</span>";
+      $row['version'] = "<label id='version-{$name}'>{$task->status_name}</label>";
+      $row['profiles'] = "<span id='profiles-{$name}'></span>";
     }
 
     // If a single task is not queued, $all_tasks_queued == FALSE
@@ -162,10 +145,6 @@ HTML;
     if ($task->task_status == HOSTING_TASK_ERROR) {
       $task_failed = TRUE;
     }
-
-    // Add hosting task status.
-    $link_text = t('View Logs');
-    $row['status'] = l("<span id='status-{$platform->nid}'>{$link_text}</span>", "node/{$task->nid}", array('html' => TRUE, 'attributes' => array('target' => '_blank')));
 
     // Store rows for display
     $rows[] = $row;
@@ -184,16 +163,12 @@ HTML;
   // Not completed means show all tasks are not completed (or errored)
   if (!$completed) {
     $form['#no_finish'] = TRUE;
-    $note = '<p class="wait">' . t('Please wait while we clone your repo and install your Drupal code. This may take a while depending on the size of your repo and the number of Composer dependencies.') . '</p>';
-    $note .= '<p class="wait"><i class="fa fa-spinner fa-spin fa-4x text-primary"></i></p>';
+    $note = '<div id="message" class="alert alert-info">' . t('Please wait while we clone your repo and install your Drupal code. This may take a while depending on the size of your repo and the number of Composer dependencies.') . '</div>';
+    $note .= '<div id="progress-indicator"><p class="wait"><i class="fa fa-spinner fa-spin fa-4x text-primary"></i></p></div>';
 
     $form['help'] = array(
       '#markup' => $note,
     );
-
-    // Add code to reload the page when complete.
-    devshop_form_reloader($form, 'platform');
-    return $form;
   }
   elseif ($task_failed) {
     $project->no_finish = TRUE;
@@ -215,16 +190,14 @@ HTML;
     }
 
     $form['error'] = array(
-      '#prefix' => '<div class="alert alert-danger">',
+      '#prefix' => '<div id="message" class="alert alert-danger">',
       '#markup' => $message,
       '#suffix' => '</div>',
     );
-    $form['errors'] = array(
-      '#markup' => $errors_rendered,
-    );
     $form['retry'] = array(
       '#type' => 'submit',
-      '#value' => t('Retry'),
+      '#action' => 'retry',
+      '#value' => t('Pull code and try again'),
       '#prefix' => '<div class="text-center">',
       '#suffix' => '</div>',
     );
@@ -263,6 +236,19 @@ HTML;
     );
   }
 
+  // Add code to reload the page when complete.
+  devshop_form_reloader($form, 'platform');
+
+  if (variable_get('hosting_queued_paused')) {
+    $form['messages'] = array(
+      '#type' => 'container',
+      '#children' => t('The task queue is paused. Visit !link to unpause.', array('!link' => l(t('Hosting Queue Daemon Settings'), 'admin/hosting/queued', array('query' => drupal_get_destination())))),
+      '#attributes' => array(
+        'class' => array('alert alert-warning'),
+      ),
+    );
+  }
+
   $form['#suffix'] = $modals;
   return $form;
 }
@@ -271,14 +257,12 @@ HTML;
  * STEP 4: Validate
  */
 function devshop_project_create_step_sites_validate(&$from, &$form_state) {
-  if ($form_state['triggering_element']['#value'] == t('Retry')) {
+  if ($form_state['triggering_element']['#action'] == 'retry') {
     foreach ($form_state['project']->environments as $name => $environment) {
-      $task = current($environment->tasks['verify']);
-      if (isset($task->nid)) {
-        hosting_task_retry($task->nid);
-        drupal_goto(current_path());
-      }
+      hosting_add_task($environment->platform, 'verify');
     }
+    // Reload project and environnt data so latest tasks are present.
+    $form_state['redirect'] = 'projects/add/sites';
   }
   elseif (empty($form_state['values']['install_profile'])) {
     form_set_error('install_profile', t('You must choose an install profile. Please wait for all environments to verify.'));
