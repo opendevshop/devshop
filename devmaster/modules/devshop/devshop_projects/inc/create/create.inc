@@ -274,7 +274,7 @@ function devshop_projects_add_status($type = 'platform') {
 
   // When checking platforms...
   if ($type == 'platform') {
-    $message = '';
+     $message = t('Preparing codebases...');
     $message_class = 'default';
     foreach ($project_node->project->environments as $name => $environment) {
       $platform = node_load($environment->platform);
