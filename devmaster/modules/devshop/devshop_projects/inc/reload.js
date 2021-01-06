@@ -32,6 +32,10 @@
                     jQuery('#progress-indicator').show();
                 }
 
+                if (data.tasks_success){
+                  document.location.reload();
+                }
+
                 setTimeout("Drupal.behaviors.devshopReload.checkProject()", Drupal.settings.devshopReload.delay);
 
             });

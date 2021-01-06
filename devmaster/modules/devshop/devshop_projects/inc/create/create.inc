@@ -268,6 +268,7 @@ function devshop_projects_add_status($type = 'platform') {
     );
 
     $return['tasks_complete'] = $last_task->task_status == HOSTING_TASK_SUCCESS || $last_task->task_status == HOSTING_TASK_ERROR || $last_task->task_status == HOSTING_TASK_WARNING;
+    $return['tasks_success'] = $last_task->task_status == HOSTING_TASK_SUCCESS;
     drupal_json_output($return);
     exit;
   }
@@ -306,11 +307,15 @@ function devshop_projects_add_status($type = 'platform') {
         $message = t('Something went wrong when trying to clone your codebases.');
         $message_class = 'danger';
       }
-      if ($last_task->task_status == HOSTING_TASK_SUCCESS || $last_task->task_status == HOSTING_TASK_ERROR || $last_task->task_status == HOSTING_TASK_WARNING) {
+      if ($last_task->task_status == HOSTING_TASK_SUCCESS || $last_task->task_status == HOSTING_TASK_WARNING) {
         //@TODO: Figure out how to reload the full form so the user can continue.
         continue;
       }
+      elseif ($last_task->task_status == HOSTING_TASK_ERROR) {
+        $all_tasks_successful = FALSE;
+      }
       else {
+        $all_tasks_successful = FALSE;
         $all_tasks_completed = FALSE;
       }
     }
@@ -320,6 +325,7 @@ function devshop_projects_add_status($type = 'platform') {
   }
 
   $return['tasks_complete'] = $all_tasks_completed;
+  $return['tasks_success'] = $all_tasks_successful;
   drupal_json_output($return);
   exit;
 }
