@@ -22,6 +22,9 @@
                 if (data.message) {
                     jQuery('#message').html(data.message).attr('class', 'alert alert-' + data.message_class);
                 }
+                if (data.button) {
+                    jQuery('#button').replaceWith(data.button);
+                }
 
                 if (data.tasks_complete){
                     jQuery('#progress-indicator').hide();

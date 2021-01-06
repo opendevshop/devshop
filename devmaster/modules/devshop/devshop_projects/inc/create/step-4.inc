@@ -165,6 +165,7 @@ HTML;
     $form['#no_finish'] = TRUE;
     $note = '<div id="message" class="alert alert-info">' . t('Please wait while we clone your repo and install your Drupal code. This may take a while depending on the size of your repo and the number of Composer dependencies.') . '</div>';
     $note .= '<div id="progress-indicator"><p class="wait"><i class="fa fa-spinner fa-spin fa-4x text-primary"></i></p></div>';
+    $note .= '<div id="button"></div>';
 
     $form['help'] = array(
       '#markup' => $note,
@@ -198,7 +199,7 @@ HTML;
       '#type' => 'submit',
       '#action' => 'retry',
       '#value' => t('Pull code and try again'),
-      '#prefix' => '<div class="text-center">',
+      '#prefix' => '<div id="button" class="text-center">',
       '#suffix' => '</div>',
     );
     $form['#no_finish'] = TRUE;

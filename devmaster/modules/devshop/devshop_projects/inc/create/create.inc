@@ -274,8 +274,9 @@ function devshop_projects_add_status($type = 'platform') {
 
   // When checking platforms...
   if ($type == 'platform') {
-     $message = t('Preparing codebases...');
-    $message_class = 'default';
+    $message = t('Preparing codebases...');
+    $message_class = 'info';
+    $button = '';
     foreach ($project_node->project->environments as $name => $environment) {
       $platform = node_load($environment->platform);
       $profiles_shortnames = hosting_get_profiles($platform->nid, 'short_name');
@@ -289,7 +290,7 @@ function devshop_projects_add_status($type = 'platform') {
       $last_task = hosting_get_most_recent_task($platform->nid, 'verify');
       $return['tasks'][$name] = array(
         'link' => devshop_get_logs_and_permalink($last_task),
-        'version' => !empty($platform->release->version)? $platform->release->version: $last_task->status_name,
+        'version' => !empty($platform->release->version) && $last_task->task_status == HOSTING_TASK_SUCCESS || $last_task->task_status == HOSTING_TASK_WARNING? $platform->release->version: $last_task->status_name,
         'profiles' => implode(', ', $install_profiles),
       );
       // If task is not completed, mark all tasks not complete.
@@ -302,7 +303,7 @@ function devshop_projects_add_status($type = 'platform') {
           '#suffix' => '</div>',
         );
         $button = drupal_render($retry_button);
-        $message = t('Something went wrong when trying to clone your codebase.');
+        $message = t('Something went wrong when trying to clone your codebases.');
         $message_class = 'danger';
       }
       if ($last_task->task_status == HOSTING_TASK_SUCCESS || $last_task->task_status == HOSTING_TASK_ERROR || $last_task->task_status == HOSTING_TASK_WARNING) {
