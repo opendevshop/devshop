@@ -124,13 +124,12 @@ function devshop_projects_schema() {
         'size' => 'big',
         'description' => 'A serialized array of settings for this environment.',
       ),
-# @TODO: Add update hook to remove this schema.
-#       'last_task' => array(
-#         'type' => 'text',
-#         'not null' => FALSE,
-#         'size' => 'big',
-#         'description' => 'The NID of the last task that should be displayed on an environment.',
-#       ),
+      'last_task' => array(
+        'type' => 'text',
+        'not null' => FALSE,
+        'size' => 'big',
+        'description' => 'The NID of the last task that should be displayed on an environment.',
+      ),
     ),
     'unique keys' => array(
       'project_nid_name' => array(

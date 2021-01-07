@@ -858,6 +858,10 @@ function devshop_projects_form_site_node_form_alter(&$form, &$form_state, $form_
       '#type' => 'value',
     );
 
+    $form['environment']['last_task'] = array(
+      '#type' => 'value',
+      '#value' => $environment->last_task,
+    );
     $form['form_title'] = array(
       '#markup' => t('Environment Settings'),
       '#prefix' => '<h3>',
@@ -1706,6 +1710,10 @@ function devshop_projects_environment_settings_submit($form, &$form_state) {
   $form_state['values']['environment']['settings']['install_method'] = $form_state['values']['install_method'];
 
   $environment->settings = serialize($form_state['values']['environment']['settings']);
+
+  // Get platform verify task
+  $tasks = hosting_get_tasks('rid', $site->nid);
+  $environment->last_task = current($tasks)->nid;
 
   // Save environment record.
   // If environment already exists, set primary keys.

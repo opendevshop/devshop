@@ -707,6 +707,20 @@ function devshop_projects_create_site($project, $platform_node, $environment_nam
       '%message' => $e->getMessage(),
     )));
   }
+
+  // Lookup install task to use it for last task.
+  $tasks = hosting_get_tasks('rid', $node->nid);
+  
+  // Update environment with our site
+  db_update('hosting_devshop_project_environment')
+    ->fields(array(
+      'site' => $node->nid,
+      'last_task' =>  current($tasks)->nid,
+    ))
+    ->condition('project_nid', $project->nid)
+    ->condition('name', $environment_name)
+    ->execute();
+
   return $node;
 }
 
@@ -771,6 +785,26 @@ function _devshop_projects_project_has_module($node, $module) {
 
   if (isset($node->project->environments[$environment]->site)) {
     return _devshop_projects_site_has_module($node->project->environments[$environment]->site, $module);
+  }
+}
+
+/**
+ * Reset all environment's "last task" to the NID.
+ */
+function devshop_reset_last_tasks () {
+
+  // Lookup all environments
+  $results = db_query('SELECT * FROM {hosting_devshop_project_environment}')->fetchAllAssoc('site');
+  foreach ($results as $result) {
+    $nid = db_query("SELECT t.nid FROM hosting_task t WHERE rid = :platform OR rid = :site ORDER BY t.vid DESC", array(
+      ':site' => $result->site,
+      ':platform' => $result->platform,
+    ))->fetchField();
+
+    if (!empty($result->name)) {
+      $result->last_task = $nid;
+      devshop_environment_save_last_task($result);
+    }
   }
 }
 

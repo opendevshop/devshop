@@ -100,7 +100,7 @@ HTML;
     // Links to all environments
     $items = '';
     foreach ($project->environments as $env => $environment) {
-      if (empty($environment->last_task_node)) {
+      if (empty($environment->last_task)) {
         $icon = 'cube';
         $class = 'status';
       }

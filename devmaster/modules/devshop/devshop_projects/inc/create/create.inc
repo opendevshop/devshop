@@ -259,7 +259,8 @@ function devshop_projects_add_status($type = 'platform') {
 
   // When checking project...
   if ($type == 'project') {
-    $last_task = hosting_get_most_recent_task($project_node->nid);
+    $tasks = hosting_get_tasks('rid', $project_node->nid);
+    $last_task = array_shift($tasks);
     $status = _hosting_parse_error_code($last_task->task_status);
 
     $return['tasks'][$last_task->nid] = array(

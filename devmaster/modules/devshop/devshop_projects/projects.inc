@@ -159,7 +159,8 @@ function devshop_project_load($node) {
           sn.created as created,
           s.vid,
           sn.title as system_domain,
-          a.redirection as redirect_domain
+          a.redirection as redirect_domain,
+          e.last_task as last_task_nid
         FROM {hosting_devshop_project_environment} e
         LEFT JOIN {hosting_site} s ON e.site = s.nid
         LEFT JOIN {hosting_context} cs ON s.nid = cs.nid
@@ -201,6 +202,9 @@ function devshop_project_load($node) {
     // Unserialize environment settings.
     $environment->settings = (object) unserialize($environment->settings);
 
+    // Get last task
+    $environment->last_task_node = node_load($environment->last_task_nid);
+
     // Get all tasks, keyed by type.
     $environment->tasks = devshop_get_tasks($environment);
 
@@ -212,13 +216,6 @@ function devshop_project_load($node) {
       }
     }
     krsort($environment->tasks_list);
-
-    $environment->task_count = count($environment->tasks_list);
-    $environment->active_tasks = 0;
-    $environment->processing = FALSE;
-
-    $environment->last_task_node = current($environment->tasks_list);
-    $environment->last_task_nid = $environment->last_task_node->nid;
 
     // The URL that the branch or tag links to.
     if ($project->git_provider == 'github') {
