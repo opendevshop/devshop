@@ -251,7 +251,6 @@ HTML;
   }
 
   $form['#suffix'] = $modals;
-  dsm($form);
   return $form;
 }
 
