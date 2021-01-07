@@ -251,6 +251,7 @@ HTML;
   }
 
   $form['#suffix'] = $modals;
+  dsm($form);
   return $form;
 }
 
@@ -258,7 +259,7 @@ HTML;
  * STEP 4: Validate
  */
 function devshop_project_create_step_sites_validate(&$from, &$form_state) {
-  if ($form_state['triggering_element']['#action'] == 'retry') {
+  if (isset($form_state['triggering_element']['#action']) && $form_state['triggering_element']['#action'] == 'retry') {
     foreach ($form_state['project']->environments as $name => $environment) {
       hosting_add_task($environment->platform, 'verify');
     }
