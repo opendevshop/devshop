@@ -27,13 +27,27 @@ class Composer {
   }
 
   /**
+   * Run composer install on the DevShop Control sub-project.
+   */
+  static function installControl() {
+    echo "> \n";
+    echo "> Installing src/DevShop/Control ...\n";
+    echo "> \n";
+    $_SERVER['argv'][] = '--working-dir=src/DevShop/Control';
+    $command = implode(' ', $_SERVER['argv']);
+    return self::exec($command);
+  }
+
+  /**
    * Run composer update on the DevShop Control sub-project.
    */
   static function updateControl() {
     echo "> \n";
     echo "> Updating src/DevShop/Control ...\n";
     echo "> \n";
-    self::exec('composer update --working-dir=src/DevShop/Control --ansi');
+    $_SERVER['argv'][] = '--working-dir=src/DevShop/Control';
+    $command = implode(' ', $_SERVER['argv']);
+    return self::exec($command);
   }
 
   static $drupalDevelopmentPaths = [
