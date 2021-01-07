@@ -23,11 +23,6 @@ function boots_preprocess_environment(&$vars) {
   $environment = &$vars['environment'];
   $project = &$vars['project'];
 
-  // Load last task node.
-  if (isset($environment->last_task_nid)) {
-    $environment->last_task_node = node_load($environment->last_task_nid);
-  }
-
   // Available deploy data targets.
   $vars['target_environments'] = $project->environments;
 
@@ -120,23 +115,8 @@ function boots_preprocess_environment(&$vars) {
   );
 
   // Task Logs
-  $environment->task_count = count($environment->tasks);
-  $environment->active_tasks = 0;
-
   $items = array();
-
-  $environment->processing = FALSE;
-
   foreach ($environment->tasks_list as $task) {
-
-    if ($task->task_status == HOSTING_TASK_QUEUED || $task->task_status == HOSTING_TASK_PROCESSING) {
-      $environment->active_tasks++;
-
-      if ($task->task_status == HOSTING_TASK_PROCESSING) {
-        $environment->processing = TRUE;
-      }
-    }
-
 //    $text = "<i class='fa fa-{$task->icon}'></i> {$task->type_name} <span class='small'>{$task->status_name}</span> <em class='small pull-right'><i class='fa fa-calendar'></i> {$task->ago}</em>";
     $items[] = theme('devshop_task', array('task' => $task));
   }
