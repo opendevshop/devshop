@@ -46,12 +46,28 @@ class Composer {
    *
    * 1. Checkout 7.x-4.x branches of provision and hosting.
    * 2. Enable devel and dblog.
+   * 3. Add "refs/pull" to fetched objects.
    */
   static function prepareDevelopmentEnvironment() {
+
+    // Add pull requests to tracked remote references to make it easy to checkout.
+    $output = shell_exec('git config --get-all remote.origin.fetch');
+    if (strpos($output, 'pulls') !== FALSE) {
+      echo "> Pull Requests are being fetched. \n";
+    }
+    else {
+      echo "> Pull Requests are not being fetched. Adding to git config... \n";
+      self::exec('git config --add remote.origin.fetch +refs/pull/*/head:refs/remotes/origin/pr/*');
+      self::exec('git fetch');
+    }
+
+    // Checkout branches for provision and hosting.
+    echo "> Checking out branches for drupal projects... \n";
     foreach (self::$drupalDevelopmentPaths as $package => $path) {
       self::exec("cd {$path} && git checkout 7.x-4.x && git remote set-url origin git@git.drupal.org:project/{$package}.git");
     }
 
+    // Enable devel module and dblog.
     self::exec('bin/robo exec "drush @hm en devel dblog -y"');
   }
 
@@ -73,6 +89,8 @@ class Composer {
   static function exec($command) {
     echo "> $command \n";
     passthru($command, $exit);
-    return $exit;
+    if ($exit != 0) {
+      throw new \Exception('Command failed: ' . $command);
+    }
   }
 }
