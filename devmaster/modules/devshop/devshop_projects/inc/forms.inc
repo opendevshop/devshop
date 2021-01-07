@@ -38,7 +38,7 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
   $form['project']['codebase'] = array(
     '#type' => 'fieldset',
     '#title' => t('General Settings'),
-    '#group' => 'site_settings',
+    '#group' => 'project_settings',
     '#tree' => FALSE,
     '#weight' => -11,
   );
@@ -167,7 +167,7 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
     '#collapsible' => TRUE,
     '#collapsed' => arg(1) != $project->nid,
     '#title' => t('Domain Name Settings'),
-    '#group' => 'site_settings',
+    '#group' => 'project_settings',
   );
 
   // Live Environment
