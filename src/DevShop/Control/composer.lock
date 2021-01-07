@@ -2206,7 +2206,7 @@
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/hosting.git",
-                "reference": "e4823f720149d60147c09f9eaf56190687a23278"
+                "reference": "9fa1ed4442818093a668bd9cdb4b9a22e7c64b4e"
             },
             "require": {
                 "devshop/composer-common": "^1@dev",
@@ -2232,7 +2232,7 @@
                 },
                 "drupal": {
                     "version": "7.x-4.x-dev",
-                    "datestamp": "1609949491",
+                    "datestamp": "1609997246",
                     "security-coverage": {
                         "status": "not-covered",
                         "message": "Dev releases are not covered by Drupal security advisories."
