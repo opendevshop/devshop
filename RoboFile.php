@@ -404,7 +404,17 @@ class RoboFile extends \Robo\Tasks {
   ]) {
 
     $this->yell("Welcome to your DevShop Development environment!");
-    $this->io()->title("Branch {$this->getRepository()->getCurrentBranch()} Remote {$this->getRepository()->getCurrentRemoteUrl()}");
+    $branch = $this->getRepository()->getCurrentBranch();
+    $this->io()->note("Branch {$branch}");
+
+    // Remote may be unknown.
+    try {
+      $remote = $this->getRepository()->getCurrentRemoteName();
+      $this->io()->note("Remote URL {$remote}");
+    } catch (\Exception $e) {
+      $this->io()->error("No upstream configured for branch '$branch'. Please set one with the command 'git branch --track $branch' or 'git push -u origin $branch'");
+      exit(1);
+    }
 
     // Offer to set git URLs to SSH so developers can push.
     if ($opts['no-dev'] == FALSE) {
