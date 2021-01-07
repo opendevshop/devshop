@@ -298,7 +298,7 @@ jobs:
       # This code sets ref to the PR head SHA instead, so it matches what developers see.
       - name: Set Secure Default Umask
         run: echo 'umask 077' | sudo tee -a /etc/profile > /dev/null
-        run: source /etc/profile
+          source /etc/profile
 
       - name: Check Out Sourcecode
         uses: actions/checkout@v2
