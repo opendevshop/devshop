@@ -15,8 +15,8 @@
  * to fire off anything you want, post deploy.
  *
  */
-function drush_devshop_post_provision_deploy($branch = '') {
-  
+function drush_devshop_post_provision_deployEXAMPLE($branch = '') {
+
   drush_log('Hello, devshop', 'ok');
 
   if (empty($branch)) {
