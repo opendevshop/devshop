@@ -7,11 +7,11 @@
 
 /**
  * Implements drush_HOOK_post_COMMAND()
- * for provision_devshop_deploy.
+ * for provision_deploy.
  *
  * Checks for Acquia cloud hooks and runs them.
  */
-function drush_acquia_post_provision_devshop_deploy($branch = '') {
+function drush_acquia_post_provision_deploy($branch = '') {
 
   if (d()->type == 'site'){
 
