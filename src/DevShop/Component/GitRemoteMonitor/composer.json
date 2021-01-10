@@ -12,6 +12,7 @@
     "git-remote-monitor"
   ],
   "require": {
+    "wrep/daemonizable-command": "^3.0"
   },
   "autoload": {
     "psr-4": {
