@@ -198,10 +198,12 @@ class GitRepository extends Repository
       return;
     }
     else {
-      $result = $this->callGit("config", ["branch.{$branch}.remote"]);
-      $result->assertSuccess('Call to "git config branch.{$branch}.remote" failed.');
-
-      return $result->getStdOut();
+      try {
+        $result = $this->callGit("config", ["branch.{$branch}.remote"]);
+        return $result->getStdOut();
+      } catch (CallException $e) {
+        return '';
+      }
     }
   }
 
@@ -217,9 +219,12 @@ class GitRepository extends Repository
       return;
     }
     else {
-      $result = $this->callGit("config", ["remote.{$remote}.url"]);
-      $result->assertSuccess('Call to "git config remote.{$branch}.url" failed.');
-      return $result->getStdOut();
+      try {
+        $result = $this->callGit("config", ["remote.{$remote}.url"]);
+        return $result->getStdOut();
+      } catch (CallException $e) {
+        return '';
+      }
     }
   }
 

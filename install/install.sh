@@ -14,7 +14,7 @@ set -e
 #
 # To use an alternate git repository or version, set the LOAD_DEVSHOP_VERSION or LOAD_DEVSHOP_SOURCE environment variables:
 #
-#   $ LOAD_DEVSHOP_VERSION=patch-123 LOAD_DEVSHOP_SOURCE=https://github.com/jonpugh/devshop.git bash install.sh
+#   $ LOAD_SCRIPT_DEVSHOP_VERSION_REF=patch-123 LOAD_DEVSHOP_SOURCE=https://github.com/jonpugh/devshop.git bash install.sh
 #
 # NOTE: Make sure to verify the contents of the script
 #       you downloaded matches the contents of install.sh

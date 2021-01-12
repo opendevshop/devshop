@@ -1120,6 +1120,13 @@ a.logo img {
     float: right;
 }
 
+#devshop-project-create-step-sites table td {
+    width: 15%;
+}
+#devshop-project-create-step-sites table tr td:last-child {
+    width: 40%;
+}
+
 li.text.code {
     white-space: nowrap;
 }

@@ -18,7 +18,7 @@ function devshop_dothooks_post_hosting_verify_task($task, $data) {
  *
  * Runs the "deploy" dotHook
  */
-function devshop_dothooks_post_hosting_devshop_deploy_task($task, $data) {
+function devshop_dothooks_post_hosting_deploy_task($task, $data) {
   devshop_dothooks_run_hook('deploy', $task->ref, $task);
 }
 
