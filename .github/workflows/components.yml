@@ -189,6 +189,15 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.INPUT_GITHUB_TOKEN }}
         run: |
           ./github whoami
+        if: github.event.pull_request.head.repo.fork==false
+
+      - name: Test GitHub Cli on Forks
+        working-directory: ${{env.working-directory}}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ./github whoami
+        if: github.event.pull_request.head.repo.fork
 
   ComposerCommon:
     name: ComposerCommon
