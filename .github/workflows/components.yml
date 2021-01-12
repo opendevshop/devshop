@@ -191,13 +191,16 @@ jobs:
           ./github whoami
         if: github.event.pull_request.head.repo.fork==false
 
-      - name: Test GitHub Cli on Forks
-        working-directory: ${{env.working-directory}}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          ./github whoami
-        if: github.event.pull_request.head.repo.fork
+# @TODO: This is not currently possible because the GITHUB_TOKEN provided by github actions runs from forked repos does not have access to the user API. The error:
+#    Error: ]  Resource not accessible by integration
+#
+#      - name: Test GitHub Cli on Forks
+#        working-directory: ${{env.working-directory}}
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#        run: |
+#          ./github whoami
+#        if: github.event.pull_request.head.repo.fork
 
   ComposerCommon:
     name: ComposerCommon
