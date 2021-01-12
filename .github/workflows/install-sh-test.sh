@@ -18,7 +18,8 @@ set -ex
 docker-compose --file docker/docker-compose.yml build base
 
 cd install
-cat build/install.sh | grep $LOAD_DEVSHOP_REF | grep $LOAD_DEVSHOP_REMOTE
+cat build/install.sh | grep $LOAD_DEVSHOP_REF
+cat build/install.sh | grep $LOAD_DEVSHOP_REMOTE
 
 # Launch a devshop/base container with this PR's install.sh script inside.
 docker run \
