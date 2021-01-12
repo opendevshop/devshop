@@ -260,6 +260,7 @@ jobs:
           - '7.4'
     env:
       working-directory: ./src/DevShop/Component/ControlProject
+      devmaster-directory: ./devmaster
     steps:
       - uses: actions/checkout@v1
 
@@ -299,7 +300,7 @@ jobs:
       - name: Install dependencies
         # Match the command in ./roles/opendevshop.devshop/tasks/main.yml
         run: |
-          composer config repositories.devmaster path ${GITHUB_WORKSPACE}
+          composer config repositories.devmaster path ${{env.devmaster-directory}}
           composer require devshop/devmaster:dev-${GIT_REF}
           composer install --no-dev --no-progress --prefer-source
         working-directory: ${{env.working-directory}}
