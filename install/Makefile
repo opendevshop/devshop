@@ -6,7 +6,7 @@ build: build/install.sh
 
 build/install.sh: install.sh
 	mkdir -p $(@D)
-	LOAD_DEVSHOP_SHA='$(value GH_SHA)' LOAD_DEVSHOP_REF='$(value GH_REF)' LOAD_DEVSHOP_REMOTE='$(value GH_REMOTE)' envsubst '$(addprefix $$,$(ENVSUBST_VARS))' < $< > $@
+	LOAD_DEVSHOP_SHA='$(value COMMIT_REF)' LOAD_DEVSHOP_REF='$(value BRANCH)' LOAD_DEVSHOP_REMOTE='$(value REPOSITORY_URL)' envsubst '$(addprefix $$,$(ENVSUBST_VARS))' < $< > $@
 
 
 .PHONY: clean

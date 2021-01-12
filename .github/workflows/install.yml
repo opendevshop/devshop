@@ -9,8 +9,9 @@ on:
     - cron: "0 12 * * *"
 
 env:
-  GH_REF: 1.x
-  GH_REMOTE: "https://github.com/opendevshop/devshop.git"
+  # These must match netlify's environment, to ensure proper testing.
+  BRANCH: 1.x
+  REPOSITORY_URL: "https://github.com/opendevshop/devshop.git"
   GH_SHA: ""
 
 jobs:
@@ -21,10 +22,11 @@ jobs:
     steps:
     - name: Prepare Pull Request-only environment
       if: github.event_name=='pull_request'
+      # These must match netlify's environment, to ensure proper testing.
       run: |
-        echo "GH_REF=${{ github.head_ref }}" >> $GITHUB_ENV
-        echo "GH_REMOTE=${{ github.event.pull_request.head.repo.clone_url }}" >> $GITHUB_ENV
-        echo "GH_SHA=${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV
+        echo "BRANCH=${{ github.head_ref }}" >> $GITHUB_ENV
+        echo "REPOSITORY_URL=${{ github.event.pull_request.head.repo.clone_url }}" >> $GITHUB_ENV
+        echo "COMMIT_REF=${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV
 
     - name: Check Out Sourcecode
       uses: actions/checkout@v2
