@@ -15,6 +15,7 @@ env:
   GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}
   GITHUB_PR_SHA: ${{ github.event.pull_request.head.sha  }}
   GITHUB_RUN_LOG_URL: https://github.com/opendevshop/devshop/actions/runs/${{ github.run_id }}
+  GIT_REF: 1.x
 
 jobs:
   yaml-tasks:
@@ -259,8 +260,15 @@ jobs:
           - '7.4'
     env:
       working-directory: ./src/DevShop/Component/ControlProject
+      devmaster-directory: ../../../devmaster
     steps:
       - uses: actions/checkout@v1
+
+      - name: Prepare Pull Request-only environment
+        if: github.event_name=='pull_request'
+        run: |
+          echo "GIT_REF=${{ github.head_ref }}" >> $GITHUB_ENV
+          git switch --create ${{ github.head_ref }}
 
       - name: Install PHP
         uses: shivammathur/setup-php@v2
@@ -292,7 +300,8 @@ jobs:
       - name: Install dependencies
         # Match the command in ./roles/opendevshop.devshop/tasks/main.yml
         run: |
-          composer require devshop/devmaster:dev-${{ github.event.pull_request.head.ref }}
+          composer config repositories.devmaster path ${GITHUB_WORKSPACE}/devmaster
+          composer require devshop/devmaster:dev-${GIT_REF}
           composer install --no-dev --no-progress --prefer-source
         working-directory: ${{env.working-directory}}
 
