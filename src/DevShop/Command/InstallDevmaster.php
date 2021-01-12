@@ -248,23 +248,38 @@ class InstallDevmaster extends Command
     $output->writeln(' 3. Setup a cron job to run `drush @hostmaster hosting-tasks.`');
     $output->writeln('');
 
-    // devshop_version
+    // Check options.
     $version = $input->getOption('devshop_version');
-    if (empty($version)) {
-      $output->writeln('Checking for latest version...');
-      $input->setOption('devshop_version', $this->getLatestVersion());
+    $source_url = $input->getOption('git_remote');
+
+    // If no alternative source specified...
+    if (!empty($source_url)) {
+      // Change the "active repo" for this class, ie what is available in getRepository() and getRepoOwner() and getRepoName().
+      $this->setGitHubRepo($source_url);
+      $output->writeln('Alternate source specified: ' . $source_url);
     }
     else {
-      // Validate chosen version
-      $output->writeln('Validating version...');
-      try {
-        $this->checkVersion($version);
-      }
-      catch (\Exception $e) {
-        $output->writeln('<error>' . $e->getMessage() . '</error>');
-        exit(1);
-      }
+      $output->writeln('Current git remote: ' . $this->getRepoSlug());
     }
+
+    // If version was not specified, lookup the latest.
+    if (empty($version)) {
+      $version = $this->getLatestVersion();
+      $output->writeln("Checking for latest version... $version");
+    }
+
+    // Validate chosen version
+    $output->writeln("Validating version $version...");
+    try {
+      $this->checkVersion($version);
+      $output->writeln("Version $version exists in git repository {$this->getRepoSlug()}.");
+      $input->setOption('git_reference', $version);
+    }
+    catch (\Exception $e) {
+      $output->writeln('<error>' . $e->getMessage() . '</error>');
+      exit(1);
+    }
+
 
     // site
     if (!$input->getOption('site')) {

@@ -187,7 +187,7 @@ function devshop_projects_preprocess_node(&$vars) {
           $vars['retry']['#children'] .= ' ' . l(t('Environment Settings'), $settings_link);
         }
       }
-      elseif ($vars['node']->task_type != 'install' && $vars['node']->task_type != 'delete') {
+      elseif ($vars['node']->task_type != 'install' && $vars['node']->task_type != 'delete' || ($vars['node']->task_type != 'delete' && $vars['node']->task_status == HOSTING_TASK_ERROR)) {
         $vars['retry'] = $form;
       }
 

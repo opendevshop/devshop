@@ -73,7 +73,7 @@ devshop_cli_version: "{{ devshop_version }}"
 
 # DevShop uses a built in Drupal stack for devmaster now.
 # These are the provision properties for git_remote, git_root, git_reference, and git_docroot.
-devshop_control_git_remote: "https://github.com/opendevshop/devshop.git"
+devshop_control_git_remote: "{{ devshop_cli_repo }}"
 devshop_control_git_root: "{{ devshop_cli_path }}"
 devshop_control_git_reference: "{{ devshop_version }}"
 
