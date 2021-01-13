@@ -45,9 +45,24 @@ In Hosting.module's case, this can be `drush @hostmaster hosting-task deploy $AL
 In addition, this tool is a great way to retrieve the list of available branches, which is a requirement in a DevOps system that provides users the ability to create environments from a list of branches.
 
 
-- `GRM_REMOTES_CALLBACK`
+### Configuration
 
-  `find . -path '*/.git/config' -execdir git remote get-url origin`
+To configure the `git-remote-monitor` command, you can use environment variables or the `~/.grm.yml` file.
+
+  ```yaml
+  # .grm.yml
+  # Set 'remotes' to use a static list of repos. Can be string or array.
+  # Environment Variable: GRM_REMOTES 
+  remotes: git@git.example.com:org/project.git
+  remotes: 
+    - git@git.example.com:org/project.git
+    - git@git.example.com:org/project-2.git
+  
+  # Specify the command to retrieve a list of remotes. 
+  # Environment Variable: GRM_REMOTES_CALLBACK
+  # This is ignored if 'remotes' is not empty.  
+  remotes_callback: find /var/aegir/projects -path '*/.git/config' -execdir git remote get-url origin \;  2> /dev/null
+  ```
 
 Resources
 ---------
