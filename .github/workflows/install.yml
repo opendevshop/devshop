@@ -54,3 +54,56 @@ jobs:
       with:
         name: FrontPage
         path: artifact-*
+
+  secure_site_install_script:
+    name: Secure Site Install Script
+    runs-on: ubuntu-18.04
+
+    steps:
+    - name: Set Secure Default Umask
+      run: |
+        echo 'umask 077' | sudo tee -a /etc/profile > /dev/null
+        source /etc/profile
+    - name: Prepare Pull Request-only environment
+      if: github.event_name=='pull_request'
+      run: |
+        source /etc/profile
+        echo "LOAD_DEVSHOP_VERSION=${{ github.head_ref }}" >> $GITHUB_ENV
+        echo "BRANCH=${{ github.head_ref }}" >> $GITHUB_ENV
+        echo "LOAD_DEVSHOP_SOURCE=${{ github.event.pull_request.head.repo.clone_url }}" >> $GITHUB_ENV
+
+    - name: Check Out Sourcecode
+      uses: actions/checkout@v2
+      if: github.event_name!='pull_request'
+
+    # Fetch all branches and tags so composer can resolve the version.
+    - name: Check Out Pull Request Sourcecode
+      uses: actions/checkout@v2
+      if: github.event_name=='pull_request'
+      with:
+        ref: ${{ github.event.pull_request.head.sha }}
+        fetch-depth: 0
+
+    - name: Build Install Script
+      run: |
+        source /etc/profile
+        make build
+      working-directory: install
+
+    - name: Run Install Script
+      run: |
+        source /etc/profile
+        bash .github/workflows/install-sh-test.sh
+
+    - name: Confirm DevShop Installation
+      run: |
+        source /etc/profile
+        docker exec install-server-test devshop login
+        wget --output-file=artifact-install-script-frontpage.html http://install-test.devshop.local.computer
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v2
+      if: always()
+      with:
+        name: FrontPage
+        path: artifact-*
