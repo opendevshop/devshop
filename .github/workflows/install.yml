@@ -70,9 +70,9 @@ jobs:
       if: github.event_name=='pull_request'
       run: |
         source /etc/profile
-        echo "LOAD_DEVSHOP_VERSION=${{ github.head_ref }}" >> $GITHUB_ENV
-        echo "BRANCH=${{ github.head_ref }}" >> $GITHUB_ENV
-        echo "LOAD_DEVSHOP_SOURCE=${{ github.event.pull_request.head.repo.clone_url }}" >> $GITHUB_ENV
+        echo "GH_REF=${{ github.head_ref }}" >> $GITHUB_ENV
+        echo "GH_REMOTE=${{ github.event.pull_request.head.repo.clone_url }}" >> $GITHUB_ENV
+        echo "GH_SHA=${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV
 
     - name: Check Out Sourcecode
       uses: actions/checkout@v2
