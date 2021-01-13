@@ -304,11 +304,19 @@ jobs:
           umask
 
       - name: Check Out Sourcecode
+        run: |
+          source /etc/profile
+          whoami
+          umask
         uses: actions/checkout@v2
         if: github.event_name!='pull_request'
 
       # Fetch all branches and tags so composer can resolve the version.
       - name: Check Out Pull Request Sourcecode
+        run: |
+          source /etc/profile
+          whoami
+          umask
         uses: actions/checkout@v2
         if: github.event_name=='pull_request'
         with:
@@ -318,6 +326,7 @@ jobs:
       - name: Prepare Pull Request-only environment
         if: github.event_name=='pull_request'
         run: |
+          source /etc/profile
           whoami
           umask
           echo "devshop_version: ${{ github.head_ref }}" >> vars.ci.yml
@@ -331,6 +340,9 @@ jobs:
         # "docker-compose pull" is needed because the if the image does not exist locally, "docker-compose" will try to build.
         # "--no-build" is needed because docker-compose will build the image by default.
         run: |
+          source /etc/profile
+          whoami
+          umask
           set -x
           docker-compose pull --quiet devshop.server
           docker-compose up --no-build --detach devshop.server
@@ -353,6 +365,9 @@ jobs:
       - name: "Review Container Environment"
         working-directory: roles
         run: |
+          source /etc/profile
+          whoami
+          umask
           git status
           git log -1
           docker-compose exec -T devshop.server env
@@ -364,15 +379,25 @@ jobs:
 
         # Since the container is launched with a new DEVSHOP_DOCKER_COMMAND_RUN, run the default.
         run: |
+          source /etc/profile
+          whoami
+          umask
           docker-compose exec -T devshop.server bash -c '${DEFAULT_DEVSHOP_DOCKER_COMMAND_RUN}'
       - name: "Test DevShop"
         working-directory: roles
-        run: docker-compose exec -T --user aegir devshop.server /usr/share/devshop/tests/devshop-tests.sh
+        run: |
+          source /etc/profile
+          whoami
+          umask
+          docker-compose exec -T --user aegir devshop.server /usr/share/devshop/tests/devshop-tests.sh
 
       - name: Save Docker Logs as Artifacts
         working-directory: roles
         if: always()
         run: |
+          source /etc/profile
+          whoami
+          umask
           docker ps -a >        ../artifact-docker-ps.log && \
           $DEBUG_COMMAND >      ../artifact-debug-command-output.log && \
           docker-compose logs > ../artifact-docker-compose.log
