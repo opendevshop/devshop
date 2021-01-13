@@ -11,51 +11,48 @@
  */
 
 /**
- * Runs the github command.
+ * Runs the git-remote-monitor command.
  *
  * @author Jon Pugh <jon@thinkdrop.net
  */
+global $classLoader;
 
-// If we're running from phar load the phar autoload file.
-$pharPath = \Phar::running(true);
-if ($pharPath) {
-  $autoloaderPath = "$pharPath/vendor/autoload.php";
-} else {
-  if (file_exists(__DIR__.'/vendor/autoload.php')) {
-    $autoloaderPath = __DIR__.'/vendor/autoload.php';
-  } elseif (file_exists(__DIR__.'/../../autoload.php')) {
-    $autoloaderPath = __DIR__ . '/../../autoload.php';
-
-    // The path to autoloader when used in side the main devshop repo.
-  } elseif (file_exists(__DIR__.'/../../../../vendor/autoload.php')) {
-    $autoloaderPath = __DIR__ . '/../../../../vendor/autoload.php';
-  } else {
-    echo ("Could not find autoloader. Run 'composer install'.");
-    exit(1);
-  }
-}
-$classLoader = require $autoloaderPath;
-
-// Customization variables
-$argv = $_SERVER['argv'];
 $appName = "Git Remote Monitor";
 $appVersion = trim(file_get_contents(__DIR__ . '/VERSION'));
 
-$commandClasses[] = \DevShop\Component\GitRemoteMonitor\Commands::class;
+require 'bootstrap.php';
 
-$selfUpdateRepository = 'devshop-packages/git-remote-monitor';
-$configPrefix = 'GRM';
-$configFilePath = getenv($configPrefix . '_CONFIG') ?: getenv('HOME') . '/.grm.yml';
+// Two paths for the `git-remote-monitor` command:
+// Path #1: Daemon mode. Called via "git-remote-monitor daemon".
+if (in_array('daemon', $argv)) {
+  \DevShop\Component\GitRemoteMonitor\RemoteMonitorDaemon::setFilename(__FILE__);
+  \DevShop\Component\GitRemoteMonitor\RemoteMonitorDaemon::getInstance()->run();
+}
+// Path #2: Command line mode. Normal Console application run.
+else {
 
-// Define our Runner, and pass it the command classes we provide.
-$runner = new \Robo\Runner($commandClasses);
-$runner
-  ->setSelfUpdateRepository($selfUpdateRepository)
-  ->setConfigurationFilename($configFilePath)
-  ->setEnvConfigPrefix($configPrefix)
-  ->setClassLoader($classLoader);
+  // Customization variables
+  $argv = $_SERVER['argv'];
 
-// Execute the command and return the result.
-$output = new \Symfony\Component\Console\Output\ConsoleOutput();
-$statusCode = $runner->execute($argv, $appName, $appVersion, $output);
-exit($statusCode);
+  $commandClasses = [];
+  $commandClasses[] = \DevShop\Component\GitRemoteMonitor\Commands::class;
+
+  $selfUpdateRepository = 'devshop-packages/git-remote-monitor';
+  $configPrefix = 'GRM';
+  $configFilePath = getenv($configPrefix.'_CONFIG') ?: getenv(
+      'HOME'
+    ).'/.grm.yml';
+
+  // Define our Runner, and pass it the command classes we provide.
+  $runner = new \Robo\Runner($commandClasses);
+  $runner
+    ->setSelfUpdateRepository($selfUpdateRepository)
+    ->setConfigurationFilename($configFilePath)
+    ->setEnvConfigPrefix($configPrefix)
+    ->setClassLoader($classLoader);
+
+  // Execute the command and return the result.
+  $output = new \Symfony\Component\Console\Output\ConsoleOutput();
+  $statusCode = $runner->execute($argv, $appName, $appVersion, $output);
+  exit($statusCode);
+}

@@ -12,7 +12,8 @@
     "git-remote-monitor"
   ],
   "require": {
-    "consolidation/robo": "^2.2"
+    "consolidation/robo": "^2.2",
+    "shaneharter/php-daemon": "^2.0"
   },
   "autoload": {
     "psr-4": {

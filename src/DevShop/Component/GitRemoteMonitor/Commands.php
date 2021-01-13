@@ -23,6 +23,14 @@ class Commands extends Tasks
   }
 
   /**
+   * Run the git-remote-monitor as a daemon.
+   */
+  public function daemon() {
+    $this->say('<error>The daemon command must be run with the full "daemon" command name, not a shortcut.</error>');
+    return 1;
+  }
+
+  /**
    * Run the git-ls command and print out the results.
    *
    * @arg $git_remote The URL of the remote repository.
