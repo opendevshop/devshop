@@ -2,7 +2,6 @@
 
 namespace DevShop\Component\GitRemoteMonitor;
 
-use Robo\Common\IO;
 
 class RemoteMonitorDaemon extends \Core_Daemon
 {
@@ -46,7 +45,7 @@ class RemoteMonitorDaemon extends \Core_Daemon
    */
   protected function setup()
   {
-    $this->log('Setup');
+    $this->log('GitRemoteMonitor Setup');
   }
 
   /**
@@ -57,8 +56,19 @@ class RemoteMonitorDaemon extends \Core_Daemon
    */
   protected function execute()
   {
-    $this->log('Git Remote Monitor Daemon: Kicking off to git-remote-monitor watch command...');
-    passthru('./git-remote-monitor watch');
+
+    $output = [];
+    exec('./git-remote-monitor remotes', $output, $exit);
+    if ($exit != 0) {
+      $this->fatal_error('git-remote-monitor remotes command failed: ' . $output);
+    }
+
+    $count = count($output);
+    $this->log("Monitoring $count Remotes...");
+
+    foreach ($output as $url) {
+      $this->task(new GitRemote($url));
+    }
   }
 
   /**
