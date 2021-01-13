@@ -317,6 +317,7 @@ jobs:
       - name: Prepare Pull Request-only environment
         if: github.event_name=='pull_request'
         run: |
+          umask
           echo "devshop_version: ${{ github.head_ref }}" >> vars.ci.yml
           echo "devshop_cli_repo: ${{ github.event.pull_request.head.repo.clone_url }}" >> vars.ci.yml
           echo "GIT_REF=${{ github.head_ref }}" >> $GITHUB_ENV
