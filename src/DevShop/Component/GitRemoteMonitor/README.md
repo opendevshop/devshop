@@ -44,6 +44,11 @@ In Hosting.module's case, this can be `drush @hostmaster hosting-task deploy $AL
 
 In addition, this tool is a great way to retrieve the list of available branches, which is a requirement in a DevOps system that provides users the ability to create environments from a list of branches.
 
+
+- `GRM_REMOTES_CALLBACK`
+
+  `find . -path '*/.git/config' -execdir git remote get-url origin`
+
 Resources
 ---------
 

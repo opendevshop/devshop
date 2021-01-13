@@ -57,18 +57,9 @@ class RemoteMonitorDaemon extends \Core_Daemon
    */
   protected function execute()
   {
-    $this->log('Git Remote Monitor Daemon');
-    $this->task([$this, 'executeTask']);
+    $this->log('Git Remote Monitor Daemon: Kicking off to git-remote-monitor watch command...');
+    passthru('./git-remote-monitor watch');
   }
-
-  protected function executeTask()
-  {
-    $this->log('Execute task then sleep for 20...');
-    $this->log('Execute task then sleep for 20...');
-
-    sleep(20);
-  }
-
 
   /**
    * Dynamically build the file name for the log file. This simple algorithm

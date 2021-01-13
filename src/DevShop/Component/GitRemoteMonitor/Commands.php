@@ -11,6 +11,26 @@ use Symfony\Component\Yaml\Yaml;
 
 class Commands extends Tasks
 {
+
+  public function watch() {
+    /** @var Robo\Config\Config $config */
+    $config = $this->getContainer()->get('config');
+    $callback = $config->get('remotes.callback');
+
+    // Execute remotes.callback to return list of remotes.
+    $remotes_string = shell_exec($callback);
+    $remotes = explode(PHP_EOL, $remotes_string);
+
+    if (count($remotes)) {
+      $this->io()->section('Found numerous remotes!');
+      print_r($remotes);
+    }
+    else {
+      throw new \Exception("No remotes found. Set the remotes.callback or GRM_REMOTES_CALLBACK environment variable to a command that will return a list of git remotes, one per line.");
+    }
+  }
+
+
   /**
    * Display the current state of the GitRemoteMonitor command, such as configuration.
    * @command status
