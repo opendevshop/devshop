@@ -61,7 +61,7 @@ To configure the `git-remote-monitor` command, you can use environment variables
   # Specify the command to retrieve a list of remotes. 
   # Environment Variable: GRM_REMOTES_CALLBACK
   # This is ignored if 'remotes' is not empty.  
-  remotes_callback: find /var/aegir/projects -path '*/.git/config' -execdir git remote get-url origin \;  2> /dev/null
+  remotes_callback: find /var/aegir/projects -maxdepth 5 -path '*/.git/config' -execdir git remote get-url origin \;  2> /dev/null
   ```
 
 Resources
