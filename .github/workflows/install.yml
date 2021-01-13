@@ -9,27 +9,26 @@ on:
     - cron: "0 12 * * *"
 
 env:
-  GH_REF: 1.x
-  GH_REMOTE: "https://github.com/opendevshop/devshop.git"
+  # These must match netlify's environment, to ensure proper testing.
+  BRANCH: 1.x
+  REPOSITORY_URL: "https://github.com/opendevshop/devshop.git"
   GH_SHA: ""
 
 jobs:
   install_script:
     name: Install Script
     runs-on: ubuntu-18.04
-
     steps:
     - name: Prepare Pull Request-only environment
       if: github.event_name=='pull_request'
+      # These must match netlify's environment, to ensure proper testing.
       run: |
-        echo "GH_REF=${{ github.head_ref }}" >> $GITHUB_ENV
-        echo "GH_REMOTE=${{ github.event.pull_request.head.repo.clone_url }}" >> $GITHUB_ENV
-        echo "GH_SHA=${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV
-
+        echo "BRANCH=${{ github.head_ref }}" >> $GITHUB_ENV
+        echo "REPOSITORY_URL=${{ github.event.pull_request.head.repo.clone_url }}" >> $GITHUB_ENV
+        echo "COMMIT_REF=${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV
     - name: Check Out Sourcecode
       uses: actions/checkout@v2
       if: github.event_name!='pull_request'
-
     # Fetch all branches and tags so composer can resolve the version.
     - name: Check Out Pull Request Sourcecode
       uses: actions/checkout@v2
@@ -37,19 +36,15 @@ jobs:
       with:
         ref: ${{ github.event.pull_request.head.sha }}
         fetch-depth: 0
-
     - name: Build Install Script
       run: make build
       working-directory: install
-
     - name: Run Install Script
       run: bash .github/workflows/install-sh-test.sh
-
     - name: Confirm DevShop Installation
       run: |
         docker exec install-server-test devshop login
         wget --output-file=artifact-install-script-frontpage.html http://install-test.devshop.local.computer
-
     - name: Upload Artifacts
       uses: actions/upload-artifact@v2
       if: always()
@@ -70,9 +65,9 @@ jobs:
       if: github.event_name=='pull_request'
       run: |
         source /etc/profile
-        echo "GH_REF=${{ github.head_ref }}" >> $GITHUB_ENV
-        echo "GH_REMOTE=${{ github.event.pull_request.head.repo.clone_url }}" >> $GITHUB_ENV
-        echo "GH_SHA=${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV
+        echo "BRANCH=${{ github.head_ref }}" >> $GITHUB_ENV
+        echo "REPOSITORY_URL=${{ github.event.pull_request.head.repo.clone_url }}" >> $GITHUB_ENV
+        echo "COMMIT_REF=${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV
 
     - name: Check Out Sourcecode
       uses: actions/checkout@v2
