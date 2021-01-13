@@ -9,7 +9,9 @@ on:
     - cron: "0 12 * * *"
 
 env:
-  BRANCH: 1.x
+  GH_REF: 1.x
+  GH_REMOTE: "https://github.com/opendevshop/devshop.git"
+  GH_SHA: ""
 
 jobs:
   install_script:
@@ -20,9 +22,9 @@ jobs:
     - name: Prepare Pull Request-only environment
       if: github.event_name=='pull_request'
       run: |
-        echo "LOAD_DEVSHOP_VERSION=${{ github.head_ref }}" >> $GITHUB_ENV
-        echo "BRANCH=${{ github.head_ref }}" >> $GITHUB_ENV
-        echo "LOAD_DEVSHOP_SOURCE=${{ github.event.pull_request.head.repo.clone_url }}" >> $GITHUB_ENV
+        echo "GH_REF=${{ github.head_ref }}" >> $GITHUB_ENV
+        echo "GH_REMOTE=${{ github.event.pull_request.head.repo.clone_url }}" >> $GITHUB_ENV
+        echo "GH_SHA=${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV
 
     - name: Check Out Sourcecode
       uses: actions/checkout@v2
