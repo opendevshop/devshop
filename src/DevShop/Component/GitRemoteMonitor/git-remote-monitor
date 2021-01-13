@@ -15,44 +15,34 @@
  *
  * @author Jon Pugh <jon@thinkdrop.net
  */
-global $classLoader;
 
 $appName = "Git Remote Monitor";
 $appVersion = trim(file_get_contents(__DIR__ . '/VERSION'));
 
+global $classLoader;
 require 'bootstrap.php';
 
-// Two paths for the `git-remote-monitor` command:
-// Path #1: Daemon mode. Called via "git-remote-monitor daemon".
-if (in_array('daemon', $argv)) {
-  \DevShop\Component\GitRemoteMonitor\RemoteMonitorDaemon::setFilename(__FILE__);
-  \DevShop\Component\GitRemoteMonitor\RemoteMonitorDaemon::getInstance()->run();
-}
-// Path #2: Command line mode. Normal Console application run.
-else {
+// Customization variables
+$argv = $_SERVER['argv'];
 
-  // Customization variables
-  $argv = $_SERVER['argv'];
+$commandClasses = [];
+$commandClasses[] = \DevShop\Component\GitRemoteMonitor\Commands::class;
 
-  $commandClasses = [];
-  $commandClasses[] = \DevShop\Component\GitRemoteMonitor\Commands::class;
+$selfUpdateRepository = 'devshop-packages/git-remote-monitor';
+$configPrefix = 'GRM';
+$configFilePath = getenv($configPrefix.'_CONFIG') ?: getenv(
+  'HOME'
+).'/.grm.yml';
 
-  $selfUpdateRepository = 'devshop-packages/git-remote-monitor';
-  $configPrefix = 'GRM';
-  $configFilePath = getenv($configPrefix.'_CONFIG') ?: getenv(
-      'HOME'
-    ).'/.grm.yml';
+// Define our Runner, and pass it the command classes we provide.
+$runner = new \Robo\Runner($commandClasses);
+$runner
+->setSelfUpdateRepository($selfUpdateRepository)
+->setConfigurationFilename($configFilePath)
+->setEnvConfigPrefix($configPrefix)
+->setClassLoader($classLoader);
 
-  // Define our Runner, and pass it the command classes we provide.
-  $runner = new \Robo\Runner($commandClasses);
-  $runner
-    ->setSelfUpdateRepository($selfUpdateRepository)
-    ->setConfigurationFilename($configFilePath)
-    ->setEnvConfigPrefix($configPrefix)
-    ->setClassLoader($classLoader);
-
-  // Execute the command and return the result.
-  $output = new \Symfony\Component\Console\Output\ConsoleOutput();
-  $statusCode = $runner->execute($argv, $appName, $appVersion, $output);
-  exit($statusCode);
-}
+// Execute the command and return the result.
+$output = new \Symfony\Component\Console\Output\ConsoleOutput();
+$statusCode = $runner->execute($argv, $appName, $appVersion, $output);
+exit($statusCode);
