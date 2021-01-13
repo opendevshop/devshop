@@ -18,7 +18,7 @@ class RemoteMonitorDaemon extends \Core_Daemon
   protected $loop_interval = 1;
 
   /**
-   * The list of git remoteremotes and their ls-remote output.
+   * The list of git remotes and their ls-remote output.
    * @var array
    */
   protected $remotes = array();
@@ -56,24 +56,25 @@ class RemoteMonitorDaemon extends \Core_Daemon
    */
   protected function execute()
   {
-    $output = [];
-    exec('./git-remote-monitor remotes', $output, $exit);
+    // Call git-remote-monitor remotes via shell, so that all of the Robo config is loaded and we don't have to integrate the remote daemon classes with robo classes.
+    $remotes = [];
+    exec('./git-remote-monitor remotes', $remotes, $exit);
     if ($exit != 0) {
-      $this->fatal_error('git-remote-monitor remotes command failed: ' . implode(PHP_EOL, $output));
+      $this->fatal_error('git-remote-monitor remotes command failed: ' . implode(PHP_EOL, $remotes));
     }
-    $count = count($output);
+    $count = count($remotes);
 
     if ($count) {
-      $this->log("==================");
-      $this->log("Git Remote Monitor ");
-      $this->log("Remotes: $count ");
-      $this->log("==================");
+      $this->log("=========================");
+      $this->log("Git Remote Monitor Daemon");
+      $this->log("Remotes from 'git-remote-monitor remotes' command: $count ");
     }
     else {
       $this->error("No remotes output from 'git-remote-monitor remotes' command.");
     }
+    $this->log("-------------------------");
 
-    foreach ($output as $url) {
+    foreach ($remotes as $url) {
       $this->task(new GitRemote($url));
     }
   }
