@@ -52,7 +52,7 @@ class Commands extends Tasks
     if (is_string($remotes)) {
       $remotes = explode(PHP_EOL, $remotes);
     }
-    return $remotes;
+    return array_unique($remotes);
   }
 
   /**
