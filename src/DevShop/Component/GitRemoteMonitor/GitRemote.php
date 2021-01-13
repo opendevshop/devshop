@@ -40,8 +40,6 @@ class GitRemote implements \Core_ITask
    */
   public function start()
   {
-    $this->daemon->log("Starting GitRemote Task... for $this->url" );
-
     $references_string = $this->poll();
     $refs = explode(PHP_EOL, $references_string);
     $this->setReferences($refs);

@@ -56,6 +56,7 @@ class RemoteMonitorDaemon extends \Core_Daemon
    */
   protected function execute()
   {
+    static $lastCount = 0;
 
     $output = [];
     exec('./git-remote-monitor remotes', $output, $exit);
@@ -64,11 +65,15 @@ class RemoteMonitorDaemon extends \Core_Daemon
     }
 
     $count = count($output);
-    $this->log("Monitoring $count Remotes...");
+    if ($count != $lastCount) {
+      $this->log("Now monitoring $count remotes...");
+    }
 
     foreach ($output as $url) {
       $this->task(new GitRemote($url));
     }
+
+    $lastCount = $count;
   }
 
   /**
