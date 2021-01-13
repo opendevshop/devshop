@@ -300,6 +300,7 @@ jobs:
         run: |
           echo 'umask 077' | sudo tee -a /etc/profile > /dev/null
           source /etc/profile
+          whoami
           umask
 
       - name: Check Out Sourcecode
@@ -317,6 +318,7 @@ jobs:
       - name: Prepare Pull Request-only environment
         if: github.event_name=='pull_request'
         run: |
+          whoami
           umask
           echo "devshop_version: ${{ github.head_ref }}" >> vars.ci.yml
           echo "devshop_cli_repo: ${{ github.event.pull_request.head.repo.clone_url }}" >> vars.ci.yml
