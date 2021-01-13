@@ -304,19 +304,11 @@ jobs:
           umask
 
       - name: Check Out Sourcecode
-        run: |
-          source /etc/profile
-          whoami
-          umask
         uses: actions/checkout@v2
         if: github.event_name!='pull_request'
 
       # Fetch all branches and tags so composer can resolve the version.
       - name: Check Out Pull Request Sourcecode
-        run: |
-          source /etc/profile
-          whoami
-          umask
         uses: actions/checkout@v2
         if: github.event_name=='pull_request'
         with:
