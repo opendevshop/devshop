@@ -41,12 +41,15 @@ class GitRemote implements \Core_ITask
   public function start()
   {
     $references_string = $this->poll();
-    $refs = explode(PHP_EOL, $references_string);
+    $refs = array_filter(explode(PHP_EOL, $references_string));
     $this->setReferences($refs);
 
     $count = count($refs);
-    $message = "Found $count references in $this->url";
-    $this->daemon->log($message);
+
+    if ($count) {
+      $message = "Found $count references in $this->url";
+      $this->daemon->log($message);
+    }
   }
 
   /**

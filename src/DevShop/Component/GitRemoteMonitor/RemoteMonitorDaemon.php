@@ -56,24 +56,26 @@ class RemoteMonitorDaemon extends \Core_Daemon
    */
   protected function execute()
   {
-    static $lastCount = 0;
-
     $output = [];
     exec('./git-remote-monitor remotes', $output, $exit);
     if ($exit != 0) {
-      $this->fatal_error('git-remote-monitor remotes command failed: ' . $output);
+      $this->fatal_error('git-remote-monitor remotes command failed: ' . implode(PHP_EOL, $output));
     }
-
     $count = count($output);
-    if ($count != $lastCount) {
-      $this->log("Now monitoring $count remotes...");
+
+    if ($count) {
+      $this->log("==================");
+      $this->log("Git Remote Monitor ");
+      $this->log("Remotes: $count ");
+      $this->log("==================");
+    }
+    else {
+      $this->error("No remotes output from 'git-remote-monitor remotes' command.");
     }
 
     foreach ($output as $url) {
       $this->task(new GitRemote($url));
     }
-
-    $lastCount = $count;
   }
 
   /**
