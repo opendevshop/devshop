@@ -3,6 +3,7 @@
 namespace DevShop\Component\GitRemoteMonitor;
 
 use Robo\Tasks;
+use Symfony\Component\Process\Exception\LogicException;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Exception\ProcessSignaledException;
 use Symfony\Component\Process\Exception\ProcessTimedOutException;
@@ -12,24 +13,47 @@ use Symfony\Component\Yaml\Yaml;
 class Commands extends Tasks
 {
 
-  public function watch() {
-    /** @var Robo\Config\Config $config */
-    $config = $this->getContainer()->get('config');
-    $callback = $config->get('remotes.callback');
-
-    // Execute remotes.callback to return list of remotes.
-    $remotes_string = shell_exec($callback);
-    $remotes = explode(PHP_EOL, $remotes_string);
-
-    if (count($remotes)) {
-      $this->io()->section('Found numerous remotes!');
-      print_r($remotes);
-    }
-    else {
-      throw new \Exception("No remotes found. Set the remotes.callback or GRM_REMOTES_CALLBACK environment variable to a command that will return a list of git remotes, one per line.");
-    }
+  /**
+   * Print the list of remotes to monitor, one per line. Derived from config "remotes" or "remotes_callback".
+   */
+  public function remotes() {
+    $remotes = $this->getRemotes();
+    echo implode(PHP_EOL, $remotes);
+    return 0;
   }
 
+  /**
+   * Get an array of remotes from grm config.
+   * @return string[]
+   */
+  public function getRemotes() {
+    /** @var Robo\Config\Config $config */
+    $config = $this->getContainer()->get('config');
+
+    // Look for remotes
+    // GRM_REMOTES
+    $remotes = $config->get('remotes');
+
+    // GRM_REMOTES_CALLBACK
+    if (empty($remotes)) {
+      // Execute remotes.callback to return list of remotes.
+      $callback = $config->get('remotes_callback');
+
+      if (empty($callback)) {
+        throw new LogicException('No "remotes" or "remotes_callback" configuration options found. At least one config value must be set.');
+      }
+      $remotes = trim(shell_exec($callback));
+      if (empty($remotes)) {
+        throw new LogicException("Remote callback ($callback) returned nothing.");
+      }
+    }
+
+    // Always return an array.
+    if (is_string($remotes)) {
+      $remotes = explode(PHP_EOL, $remotes);
+    }
+    return $remotes;
+  }
 
   /**
    * Display the current state of the GitRemoteMonitor command, such as configuration.
@@ -43,12 +67,12 @@ class Commands extends Tasks
   }
 
   /**
-   * Run the git-ls command and print out the results.
+   * This the current references for this remote.
    *
    * @arg $git_remote The URL of the remote repository.
    * @option timeout The length of time to let the process run until timeout.
    */
-  public function remoteList($git_remote, $opts = [
+  public function references($git_remote, $opts = [
     'timeout' => 60,
   ]) {
 
