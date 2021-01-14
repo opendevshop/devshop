@@ -11,10 +11,10 @@ global $classLoader;
 require 'bootstrap.php';
 
 // The following is modelled on the
-use DevShop\Component\GitRemoteMonitor\RemoteMonitorDaemon;
+use DevShop\Component\GitRemoteMonitor\Daemon;
 
 // The daemon needs to know from which file it was executed.
-RemoteMonitorDaemon::setFilename(__FILE__);
+Daemon::setFilename(__FILE__);
 
 // The run() method will start the daemon loop.
-RemoteMonitorDaemon::getInstance()->run();
+Daemon::getInstance()->run();

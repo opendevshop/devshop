@@ -2,7 +2,7 @@
 
 namespace DevShop\Component\GitRemoteMonitor;
 
-class RemoteMonitorDaemon extends \Core_Daemon
+class Daemon extends \Core_Daemon
 {
 
     protected $install_instructions = [

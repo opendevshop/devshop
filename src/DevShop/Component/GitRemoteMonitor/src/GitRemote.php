@@ -59,7 +59,7 @@ class GitRemote implements \Core_ITask
    */
     public function setup()
     {
-        $this->daemon = RemoteMonitorDaemon::getInstance();
+        $this->daemon = Daemon::getInstance();
     }
 
   /**
