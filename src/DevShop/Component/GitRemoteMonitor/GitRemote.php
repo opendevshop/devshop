@@ -93,11 +93,16 @@ class GitRemote implements \Core_ITask
     if (empty($this->url)) {
       throw new \Exception('Remote URL cannot be empty.');
     }
-    $output = [];
+    $references = [];
     $exit = 0;
-    exec("git ls-remote {$this->url}", $output, $exit);
+    exec("./git-remote-monitor references-new {$this->url}", $references, $exit);
 
-    return implode(PHP_EOL, $output);
+    // Only load refs if exit was successful.
+    if ($exit != 0) {
+      $references = [];
+    }
+
+    return implode(PHP_EOL, $references);
   }
 
   function setReferences(array $refs) {

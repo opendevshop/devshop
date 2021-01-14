@@ -72,7 +72,7 @@ class Commands extends Tasks
    * @arg $git_remote The URL of the remote repository.
    * @option timeout The length of time to let the process run until timeout.
    */
-  public function references($git_remote, $opts = [
+  public function referencesNew($git_remote, $opts = [
     'timeout' => 60,
   ]) {
 
@@ -99,12 +99,59 @@ class Commands extends Tasks
       return $process->getExitCode();
     }
 
-    $this->io()->success("Retrieved references for {$git_remote}.");
-    $this->io()->write($process->getOutput());
+    // Save to file.
+    $references = $process->getOutput();
+    $config = $this->getContainer()->get('config');
+    $yml_file_path = $_SERVER['HOME'] . '/.grm/remotes/' . $this->getDirectory($git_remote) . '.yml';
+    $yml_file_dir = dirname($yml_file_path);
 
-    // @TODO: Write to file.
+    if (!file_exists($yml_file_dir)) {
+      mkdir($yml_file_dir, 0744, TRUE);
+    }
 
-    return 1;
+    $file_path = $config->get('remotes_save_path', $_SERVER['HOME'] . '/.grm/remotes/' . $this->getDirectory($git_remote) . '.yml');
+
+    // Compare to existing file.
+    if (file_exists($file_path)) {
+      $existing_refs = file_get_contents($file_path);
+      if ($existing_refs == $references) {
+        $this->io()->warning('No new references detected.');
+        return 1;
+      }
+      else {
+        file_put_contents($file_path, $process->getOutput());
+        return 0;
+        // @TODO Trigger something.
+
+      }
+    }
+    else {
+      $this->io()->warning('First scan. No new references.');
+      file_put_contents($file_path, $process->getOutput());
+      return 1;
+    }
+  }
+
+  private function getDirectory($url) {
+    // everything to lower and no spaces begin or end
+    $url = strtolower(trim($url));
+
+    //replace accent characters, depends your language is needed
+    //$url=replace_accents($url);
+
+    // decode html maybe needed if there's html I normally don't use this
+    //$url = html_entity_decode($url,ENT_QUOTES,'UTF8');
+
+    // adding - for spaces and union characters
+    $find = array(' ', '&', '\r\n', '\n', '+',',');
+    $url = str_replace ($find, '-', $url);
+
+    //delete and replace rest of special chars
+    $find = array('/[^a-z0-9\-<>]/', '/[\-]+/', '/<[^>]*>/');
+    $repl = array('', '-', '');
+    $url = preg_replace ($find, $repl, $url);
+
+    //return the friendly url
+    return $url;
   }
 }
-
