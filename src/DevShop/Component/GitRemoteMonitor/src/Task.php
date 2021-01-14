@@ -9,7 +9,7 @@ class Task implements \Core_ITask
 {
 
   /**
-   * @var \Core_Daemon
+   * @var Daemon
    */
     public $daemon;
 
