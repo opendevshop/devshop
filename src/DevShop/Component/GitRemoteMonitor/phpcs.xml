@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ruleset name="drush">
+    <description>Default PHP CodeSniffer configuration for a DevShop component.</description>
+    <file>src</file>
+    <file>tests</file>
+    <rule ref="PSR2"/>
+
+    <arg name="warning-severity" value="0"/>
+</ruleset>
