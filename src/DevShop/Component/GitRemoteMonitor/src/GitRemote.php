@@ -2,12 +2,19 @@
 
 namespace DevShop\Component\GitRemoteMonitor;
 
+use Symfony\Component\String\Slugger\AsciiSlugger;
+
 /**
  *
  */
 class GitRemote
 {
-  /**
+    /**
+     * @var Task
+     */
+    public $task;
+
+    /**
    * Git remote URL
    * @var String
    */
@@ -44,10 +51,33 @@ class GitRemote
         $references = [];
         $exit = 0;
         exec("./git-remote-monitor references:diff {$this->url}", $references, $exit);
+        $output = implode(PHP_EOL, $references);
 
       // Only load refs if exit was successful.
         if ($exit == 0) {
-            return implode(PHP_EOL, $references);
+            return $output;
         }
+        // Exit 1 means no new references
+        elseif ($exit == 1) {
+            $this->task->daemon->log("No new references found for $this->url");
+            return NULL;
+        }
+        else {
+            $message = "git-remote-monitor references:diff exited with $exit. Output: 
+$output";
+            $this->task->daemon->fatal_error($message);
+            return NULL;
+        }
+    }
+
+    /**
+     * Remove characters and return a "slug" that can be used for a filename.
+     * @param $url
+     *
+     * @return string
+     */
+    static public function getSlug($url) {
+        $slugger = new AsciiSlugger();
+        return (string) $slugger->slug($url);
     }
 }

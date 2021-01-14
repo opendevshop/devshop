@@ -26,6 +26,7 @@ class Task implements \Core_ITask
     public function __construct($url)
     {
         $this->gitRemote = new GitRemote($url);
+        $this->gitRemote->task = $this;
     }
 
   /**
@@ -35,9 +36,9 @@ class Task implements \Core_ITask
     public function start()
     {
         $has_new_refs = $this->gitRemote->poll();
-        if (!$has_new_refs) {
-          // Don't clog up logs.
-          //      $this->daemon->log("No new references found for $this->url");
+        if (empty($has_new_refs)) {
+          // Don't clog up logs, until we have debug mode capabilities.
+            // $this->daemon->log("No new references found for {$this->gitRemote->url}");
             return;
         } else {
             $this->daemon->log('-------------------------');

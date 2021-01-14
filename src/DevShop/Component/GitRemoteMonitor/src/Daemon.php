@@ -73,13 +73,20 @@ class Daemon extends \Core_Daemon
             $this->log("================================");
             $this->log("Remotes list updated: Now watching $count git remotes.");
             $this->log("--------------------------------");
-            $this->log($remotes_list);
-            $this->log("--------------------------------");
+
+            // Log an entry for every remote being monitored.
+            // @TODO: Integrate config so we don't have this hard coded.
+            $remotes_path = $_SERVER['HOME'] . '/.grm/remotes/';
+            foreach ($remotes as $url) {
+                $file = $remotes_path . GitRemote::getSlug($url) . '.yml';
+                $this->log("$file | $url");
+            }
 
         } elseif (empty($count)) {
             $this->error("No remotes output from 'git-remote-monitor remotes' command.");
         }
 
+        // Queue tasks for every remote.
         foreach ($remotes as $url) {
             $this->task(new Task($url));
         }

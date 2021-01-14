@@ -14,7 +14,9 @@
   "require": {
     "consolidation/robo": "^2.2",
     "sebastian/diff": "^3.0",
-    "shaneharter/php-daemon": "^2.0"
+    "shaneharter/php-daemon": "^2.0",
+    "symfony/string": "^5.2",
+    "symfony/translation-contracts": "^2.3"
   },
   "autoload": {
     "psr-4": {
@@ -28,7 +30,7 @@
     "sort-packages": true,
     "process-timeout": 9600,
     "platform": {
-      "php": "7.1.3"
+      "php": "7.2.5"
     }
   },
   "scripts": {
