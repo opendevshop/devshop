@@ -58,13 +58,12 @@ class GitRemote
             return $output;
         } elseif ($exit == 1) {
             // Exit 1 means no new references
-            $this->task->daemon->log("No new references found for $this->url");
-            return null;
+             $this->task->daemon->log("No new references found for $this->url", 'debug');
+            return '';
         } else {
             $message = "git-remote-monitor references:diff exited with $exit. Output: 
 $output";
-            $this->task->daemon->fatal_error($message);
-            return null;
+            $this->task->daemon->fatal_error($message, 'error');
         }
     }
 

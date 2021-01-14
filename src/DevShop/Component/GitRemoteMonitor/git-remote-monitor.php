@@ -16,7 +16,6 @@ $appVersion = trim(file_get_contents(__DIR__ . '/VERSION'));
 // Customization variables
 $argv = $_SERVER['argv'];
 
-
 // Load Application
 $input = new \Symfony\Component\Console\Input\ArgvInput($argv);
 $output = new \Symfony\Component\Console\Output\ConsoleOutput();
