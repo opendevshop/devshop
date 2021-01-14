@@ -56,9 +56,8 @@ class GitRemote
       // Only load refs if exit was successful.
         if ($exit == 0) {
             return $output;
-        }
-        // Exit 1 means no new references
-        elseif ($exit == 1) {
+        } elseif ($exit == 1) {
+            // Exit 1 means no new references
             $this->task->daemon->log("No new references found for $this->url");
             return null;
         } else {
