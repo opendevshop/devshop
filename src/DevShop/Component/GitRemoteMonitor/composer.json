@@ -22,6 +22,7 @@
     }
   },
   "config": {
+    "bin-dir": "bin",
     "optimize-autoloader": true,
     "preferred-install": "dist",
     "sort-packages": true,
@@ -43,8 +44,11 @@
       "@phpunit",
       "@cs"
     ],
-    "phpunit": "php -d sendmail_path='true' vendor/bin/phpunit --colors=always --configuration tests"
+    "phpunit": "php -d sendmail_path='true' vendor/bin/phpunit --colors=always tests"
   },
   "extra": {
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^7.5"
   }
 }
