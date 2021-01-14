@@ -60,13 +60,12 @@ class GitRemote
         // Exit 1 means no new references
         elseif ($exit == 1) {
             $this->task->daemon->log("No new references found for $this->url");
-            return NULL;
-        }
-        else {
+            return null;
+        } else {
             $message = "git-remote-monitor references:diff exited with $exit. Output: 
 $output";
             $this->task->daemon->fatal_error($message);
-            return NULL;
+            return null;
         }
     }
 
@@ -76,7 +75,8 @@ $output";
      *
      * @return string
      */
-    static public function getSlug($url) {
+    public static function getSlug($url)
+    {
         $slugger = new AsciiSlugger();
         return (string) $slugger->slug($url);
     }

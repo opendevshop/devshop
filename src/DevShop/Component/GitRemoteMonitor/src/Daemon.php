@@ -81,7 +81,6 @@ class Daemon extends \Core_Daemon
                 $file = $remotes_path . GitRemote::getSlug($url) . '.yml';
                 $this->log("$file | $url");
             }
-
         } elseif (empty($count)) {
             $this->error("No remotes output from 'git-remote-monitor remotes' command.");
         }
