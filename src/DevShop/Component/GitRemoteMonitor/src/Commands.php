@@ -77,7 +77,7 @@ class Commands extends Tasks
    *
    * @return int Returns 0 and prints the diff if current refs is different from the stored refs.
    */
-    public function referencesDiff($git_remote, $opts = [
+    public function diff($git_remote, $opts = [
     'timeout' => 60,
     ])
     {

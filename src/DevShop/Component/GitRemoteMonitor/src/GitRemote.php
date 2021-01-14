@@ -50,7 +50,7 @@ class GitRemote
         }
         $references = [];
         $exit = 0;
-        exec("./git-remote-monitor references:diff {$this->url}", $references, $exit);
+        exec("./git-remote-monitor diff {$this->url}", $references, $exit);
         $output = implode(PHP_EOL, $references);
 
       // Only load refs if exit was successful.
@@ -62,7 +62,7 @@ class GitRemote
             // $this->task->daemon->log("No new references found for $this->url", 'debug');
             return '';
         } else {
-            $message = "git-remote-monitor references:diff exited with $exit. Output: 
+            $message = "git-remote-monitor diff exited with $exit. Output: 
 $output";
             $this->task->daemon->fatal_error($message, 'error');
         }
