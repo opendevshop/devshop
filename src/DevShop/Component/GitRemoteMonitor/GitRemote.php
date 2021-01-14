@@ -42,16 +42,16 @@ class GitRemote implements \Core_ITask
   {
     $references_string = $this->poll();
     if (empty($references_string)) {
-      $this->daemon->log("No new references found for $this->url");
+      // Don't clog up logs.
+      //      $this->daemon->log("No new references found for $this->url");
       return;
     }
     $refs = array_filter(explode(PHP_EOL, $references_string));
-    $this->setReferences($refs);
 
     $count = count($refs);
 
     if ($count) {
-      $message = "Found $count references in $this->url";
+      $message = "New! $count references in $this->url";
       $this->daemon->log($message);
     }
   }
@@ -107,9 +107,5 @@ class GitRemote implements \Core_ITask
     }
 
     return implode(PHP_EOL, $references);
-  }
-
-  function setReferences(array $refs) {
-    $this->references = $refs;
   }
 }
