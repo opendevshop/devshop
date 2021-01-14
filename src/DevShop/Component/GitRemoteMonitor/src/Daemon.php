@@ -45,7 +45,9 @@ class Daemon extends \Core_Daemon
    */
     protected function setup()
     {
-        $this->log('GitRemoteMonitor Setup');
+        $this->log("================================");
+        $this->log("Git Remote Monitor Daemon: setup");
+        $this->log("--------------------------------");
     }
 
   /**
@@ -68,9 +70,12 @@ class Daemon extends \Core_Daemon
         $remotes_list = implode(PHP_EOL, $remotes);
 
         if ($remotes_list != $remotes_list_last) {
-            $this->log("=========================");
-            $this->log("Git Remote Monitor Daemon");
-            $this->log("Currently Monitoring: $count ");
+            $this->log("================================");
+            $this->log("Remotes list updated: Now watching $count git remotes.");
+            $this->log("--------------------------------");
+            $this->log($remotes_list);
+            $this->log("--------------------------------");
+
         } elseif (empty($count)) {
             $this->error("No remotes output from 'git-remote-monitor remotes' command.");
         }
