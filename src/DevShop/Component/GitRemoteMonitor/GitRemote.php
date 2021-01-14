@@ -102,8 +102,11 @@ class GitRemote implements \Core_ITask
     exec("./git-remote-monitor references:new {$this->url}", $references, $exit);
 
     // Only load refs if exit was successful.
-    if ($exit != 0) {
+    if ($exit == 1) {
       $references = [];
+    }
+    elseif ($exit != 0) {
+      throw new \Exception('git-remote-monitor references:new failed: ' . implode(PHP_EOL, $references));
     }
 
     return implode(PHP_EOL, $references);
