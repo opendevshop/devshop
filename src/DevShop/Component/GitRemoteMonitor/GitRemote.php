@@ -41,6 +41,10 @@ class GitRemote implements \Core_ITask
   public function start()
   {
     $references_string = $this->poll();
+    if (empty($references_string)) {
+      $this->daemon->log("No new references found for $this->url");
+      return;
+    }
     $refs = array_filter(explode(PHP_EOL, $references_string));
     $this->setReferences($refs);
 
@@ -95,7 +99,7 @@ class GitRemote implements \Core_ITask
     }
     $references = [];
     $exit = 0;
-    exec("./git-remote-monitor references-new {$this->url}", $references, $exit);
+    exec("./git-remote-monitor references:new {$this->url}", $references, $exit);
 
     // Only load refs if exit was successful.
     if ($exit != 0) {
