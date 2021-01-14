@@ -76,7 +76,7 @@ class Daemon extends \Core_Daemon
         }
 
         foreach ($remotes as $url) {
-            $this->task(new GitRemote($url));
+            $this->task(new Task($url));
         }
 
         $remotes_list_last = $remotes_list;
