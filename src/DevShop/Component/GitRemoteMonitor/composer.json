@@ -32,8 +32,8 @@
     }
   },
   "scripts": {
-    "cs": "phpcs",
-    "cbf": "phpcbf",
+    "cs": "bin/phpcs src tests",
+    "cbf": "bin/phpcbf src tests",
     "lint": [
       "find includes -name '*.inc' -print0 | xargs -0 -n1 php -l",
       "find src -name '*.php' -print0 | xargs -0 -n1 php -l",
@@ -44,11 +44,12 @@
       "@phpunit",
       "@cs"
     ],
-    "phpunit": "php -d sendmail_path='true' vendor/bin/phpunit --colors=always tests"
+    "phpunit": "php -d sendmail_path='true' bin/phpunit --colors=always tests"
   },
   "extra": {
   },
   "require-dev": {
-    "phpunit/phpunit": "^7.5"
+    "phpunit/phpunit": "^7.5",
+    "squizlabs/php_codesniffer": "^3.5"
   }
 }
