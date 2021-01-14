@@ -25,3 +25,21 @@ supervisor_programs:
       killasgroup=true
       stopasgroup=true
       environment=PATH="$PATH:/usr/local/bin:/usr/bin:/bin:{{ devshop_cli_bin_path }}",HOME="{{ aegir_user_home }}",USER="{{ aegir_user_name }}"
+
+  - name: 'git-remote-monitor'
+    # The reason we source /etc/profile here is to ensure the environment in supervisor matches the environment when using a shell instance.
+    command: "/bin/bash -c 'source /etc/profile && {{ git_remote_monitord_path }}'"
+    state: present
+
+    # See https://github.com/Supervisor/supervisor/blob/master/supervisor/skel/sample.conf for options
+    configuration: |
+      user={{ aegir_user_name }}
+      numprocs=1
+      startretries=100
+      stdout_logfile={{ git_remote_monitord_logs }}
+      redirect_stderr=true
+      autostart=TRUE
+      autorestart=TRUE
+      killasgroup=true
+      stopasgroup=true
+      environment=PATH="$PATH:/usr/local/bin:/usr/bin:/bin:{{ devshop_cli_bin_path }}",HOME="{{ aegir_user_home }}",USER="{{ aegir_user_name }}"
