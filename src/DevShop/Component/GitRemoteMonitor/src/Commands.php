@@ -70,7 +70,10 @@ class Commands extends Tasks
     }
 
   /**
-   * Show differences between last stored list of refs and the current list.
+   * Show differences between last stored list of refs and the current list, if any.
+   * Also:
+   *   - Stores the git ls-remote output to a file.
+   *   - runs the post-ref-update hooks.
    *
    * @arg $git_remote The URL of the remote repository.
    * @option timeout The length of time to let the process run until timeout.
@@ -78,7 +81,8 @@ class Commands extends Tasks
    * @return int Returns 0 and prints the diff if current refs is different from the stored refs.
    */
     public function diff($git_remote, $opts = [
-    'timeout' => 60,
+        'timeout' => 60,
+        'skip-hooks' => FALSE,
     ])
     {
 
@@ -116,6 +120,10 @@ class Commands extends Tasks
         if (file_exists($yml_file_path)) {
             $existing_refs = trim(file_get_contents($yml_file_path));
             $new_refs = trim($references);
+
+            // Uncomment for randomly changing diffs
+            // $new_refs .= rand(0, 1) == 1? PHP_EOL . 'FAKE NEW REF': '';
+
             if (empty($existing_refs) || empty($new_refs)) {
                 $this->io()->error('New or old references were empty:');
                 $this->io()->write("Existing: $existing_refs");
@@ -133,6 +141,45 @@ class Commands extends Tasks
 
                 // Sleep to allow subsequent calls catch up with the filesystem.
                 sleep(2);
+
+                // Run post update hooks.
+                if (!$opts['skip-hooks']) {
+                    $post_update_command = $this->getContainer()->get('config')->get('remote_update_command');
+                    if (empty($post_update_command)) {
+                        $this->io()->warning('No post update command found. Set GRM_REMOTE_UPDATE_COMMAND or remote_update_command in ~/.grm.yml.');
+                        return 0;
+                    }
+
+                    // Bash replace $1 with our URL.
+                    $post_update_command = strtr($post_update_command, [
+                      '$1' => $git_remote
+                    ]);
+                    $command = explode(" ", $post_update_command);
+
+                    $this->io()->section("Running post update command:");
+                    $this->io()->writeln('> ' . $post_update_command);
+
+                    $process = new Process($command);
+                    $process->setTimeout($opts['timeout']);
+
+                    try {
+                        $process->mustRun(function ($type, $buffer) {
+                            echo $buffer;
+                        });
+                    } catch (ProcessSignaledException $e) {
+                        $this->io()->error("Command signalled.");
+                        $this->io()->write($e->getMessage());
+                        return $process->getExitCode();
+                    } catch (ProcessTimedOutException $e) {
+                        $this->io()->error("Command timed out.");
+                        $this->io()->write($e->getMessage());
+                        return $process->getExitCode();
+                    } catch (ProcessFailedException $e) {
+                        $this->io()->error("Command failed.");
+                        $this->io()->write($e->getMessage());
+                        return $process->getExitCode();
+                    }
+                }
                 return 0;
             }
         } else {
