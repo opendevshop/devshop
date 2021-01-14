@@ -3,6 +3,7 @@
 namespace DevShop\Component\GitRemoteMonitor;
 
 use Robo\Tasks;
+use SebastianBergmann\Diff\Differ;
 use Symfony\Component\Process\Exception\LogicException;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Exception\ProcessSignaledException;
@@ -67,12 +68,14 @@ class Commands extends Tasks
   }
 
   /**
-   * This the current references for this remote.
+   * Show differences between last stored list of refs and the current list.
    *
    * @arg $git_remote The URL of the remote repository.
    * @option timeout The length of time to let the process run until timeout.
+   *
+   * @return int Returns 0 and prints the diff if current refs is different from the stored refs.
    */
-  public function referencesNew($git_remote, $opts = [
+  public function referencesDiff($git_remote, $opts = [
     'timeout' => 60,
   ]) {
 
@@ -119,10 +122,11 @@ class Commands extends Tasks
         return 1;
       }
       else {
+
+        $differ = new Differ();
+        echo $differ->diff($existing_refs, $references);
         file_put_contents($file_path, $process->getOutput());
         return 0;
-        // @TODO Trigger something.
-
       }
     }
     else {

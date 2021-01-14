@@ -13,6 +13,7 @@
   ],
   "require": {
     "consolidation/robo": "^2.2",
+    "sebastian/diff": "^3.0",
     "shaneharter/php-daemon": "^2.0"
   },
   "autoload": {
