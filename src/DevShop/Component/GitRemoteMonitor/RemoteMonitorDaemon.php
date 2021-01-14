@@ -15,7 +15,7 @@ class RemoteMonitorDaemon extends \Core_Daemon
    * How many seconds to wait.
    * @var int
    */
-  protected $loop_interval = 1;
+  protected $loop_interval = 3;
 
   /**
    * The list of git remotes and their ls-remote output.
