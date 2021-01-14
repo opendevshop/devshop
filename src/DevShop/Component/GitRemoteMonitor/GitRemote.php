@@ -47,8 +47,9 @@ class GitRemote implements \Core_ITask
       return;
     }
     else {
-      $message = "New! references in $this->url";
-      $this->daemon->log($message);
+      $this->daemon->log('-------------------------');
+      $this->daemon->log("New references detected in $this->url: ");
+      $this->daemon->log($has_new_refs);
     }
   }
 
@@ -95,11 +96,11 @@ class GitRemote implements \Core_ITask
     }
     $references = [];
     $exit = 0;
-    exec("./git-remote-monitor references:new {$this->url}", $references, $exit);
+    exec("./git-remote-monitor references:diff {$this->url}", $references, $exit);
 
     // Only load refs if exit was successful.
     if ($exit == 0) {
-      return TRUE;
+      return implode(PHP_EOL, $references);
     }
   }
 }

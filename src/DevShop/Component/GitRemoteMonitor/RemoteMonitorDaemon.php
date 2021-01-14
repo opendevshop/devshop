@@ -71,7 +71,6 @@ class RemoteMonitorDaemon extends \Core_Daemon
       $this->log("=========================");
       $this->log("Git Remote Monitor Daemon");
       $this->log("Currently Monitoring: $count ");
-      $this->log("-------------------------");
     }
     elseif (empty($count)) {
       $this->error("No remotes output from 'git-remote-monitor remotes' command.");
