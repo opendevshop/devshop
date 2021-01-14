@@ -1,7 +1,16 @@
-#!/usr/bin/php
+#!/usr/bin/env php
 <?php
-include "bootstrap.php";
+/**
+ * @file git-remote-monitord
+ * Executable file for the git-remote-monitord service.
+ *
+ * Point your init script or systemd unit file to this file.
+ */
 
+global $classLoader;
+require 'bootstrap.php';
+
+// The following is modelled on the
 use DevShop\Component\GitRemoteMonitor\RemoteMonitorDaemon;
 
 // The daemon needs to know from which file it was executed.
