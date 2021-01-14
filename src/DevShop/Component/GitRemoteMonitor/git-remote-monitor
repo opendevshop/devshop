@@ -1,27 +1,4 @@
 #!/usr/bin/env php
 <?php
-/**
- * @file git-remote-monitor
- * Executable file for the git-remote-monitor cli.
- *
- * The git-remote-monitor CLI is used by the git-remote-monitord daemon service
- * so that the functionality is contained in simple Symfony Console & Robo commands.
- */
 
-global $classLoader;
-require 'bootstrap.php';
-
-$appName = "Git Remote Monitor";
-$appVersion = trim(file_get_contents(__DIR__ . '/VERSION'));
-
-// Customization variables
-$argv = $_SERVER['argv'];
-
-// Load Application
-$input = new \Symfony\Component\Console\Input\ArgvInput($argv);
-$output = new \Symfony\Component\Console\Output\ConsoleOutput();
-$app = new \DevShop\Component\GitRemoteMonitor\Application($input, $output, $classLoader);
-
-// Execute robo Runner.
-$status_code = $app->execute($argv, $output);
-exit($status_code);
+require __DIR__ . '/git-remote-monitor.php';

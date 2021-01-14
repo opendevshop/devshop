@@ -34,7 +34,7 @@ class Application {
         $configFilePath =  getenv(self::CONFIG_PREFIX . '_CONFIG') ?: getenv('HOME') . '/' . self::CONFIG_FILENAME;
         $config = \Robo\Robo::createConfiguration([$configFilePath]);
 
-        // Create applicaton.
+        // Create application.
         $this->setConfig($config);
         $application = new SymfonyApplication(self::APPLICATION_NAME, self::getVersion());
 
@@ -65,6 +65,11 @@ class Application {
      */
     public function execute($argv, OutputInterface $output) {
         return $this->runner->execute($argv, self::APPLICATION_NAME, self::getVersion(), $output);
+    }
+
+    public function run(InputInterface $input, OutputInterface $output) {
+        $status_code = $this->runner->run($input, $output);
+        return $status_code;
     }
 
     /**
