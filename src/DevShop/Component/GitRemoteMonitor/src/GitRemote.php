@@ -50,7 +50,11 @@ class GitRemote
         }
         $references = [];
         $exit = 0;
-        exec("./git-remote-monitor diff {$this->url}", $references, $exit);
+        $grm_root = dirname(dirname(__FILE__));
+        $command = "$grm_root/git-remote-monitor diff {$this->url}";
+        $this->log("> $command", 'command');
+        exec($command, $references, $exit);
+
         $output = implode(PHP_EOL, $references);
 
       // Only load refs if exit was successful.

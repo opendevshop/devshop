@@ -63,12 +63,16 @@ class Daemon extends \Core_Daemon
 
       // Call git-remote-monitor remotes via shell, so that all of the Robo config is loaded and we don't have to integrate the remote daemon classes with robo classes.
         $remotes = [];
-        exec('./git-remote-monitor remotes', $remotes, $exit);
+        $grm_root = dirname(dirname(__FILE__));
+        $command = "$grm_root/git-remote-monitor remotes";
+        $this->log("> $command", 'command');
+        exec($command, $remotes, $exit);
         if ($exit != 0) {
             $this->fatal_error('git-remote-monitor remotes command failed: ' . implode(PHP_EOL, $remotes));
         }
         $count = count($remotes);
         $remotes_list = implode(PHP_EOL, $remotes);
+        $this->log("Results of remotes call: $remotes_list", 'debug');
 
         if ($remotes_list != $remotes_list_last) {
             $this->log("================================");
