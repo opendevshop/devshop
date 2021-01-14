@@ -127,8 +127,12 @@ class Commands extends Tasks
                 return 1;
             } else {
                 $differ = new Differ();
-                echo $differ->diff($existing_refs, $new_refs);
+                $this->io()->section('+++ New changes loaded at ' . date('r'));
+                $this->io()->writeln($differ->diff($existing_refs, $new_refs));
                 file_put_contents($yml_file_path, $process->getOutput());
+
+                // Sleep to allow subsequent calls catch up with the filesystem.
+                sleep(2);
                 return 0;
             }
         } else {
