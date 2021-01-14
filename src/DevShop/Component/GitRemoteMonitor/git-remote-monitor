@@ -17,24 +17,11 @@ $appVersion = trim(file_get_contents(__DIR__ . '/VERSION'));
 // Customization variables
 $argv = $_SERVER['argv'];
 
-$commandClasses = [];
-$commandClasses[] = \DevShop\Component\GitRemoteMonitor\Commands::class;
-
-$selfUpdateRepository = 'devshop-packages/git-remote-monitor';
-$configPrefix = 'GRM';
-$configFilePath = getenv($configPrefix.'_CONFIG') ?: getenv(
-  'HOME'
-).'/.grm.yml';
-
-// Define our Runner, and pass it the command classes we provide.
-$runner = new \Robo\Runner($commandClasses);
-$runner
-->setSelfUpdateRepository($selfUpdateRepository)
-->setConfigurationFilename($configFilePath)
-->setEnvConfigPrefix($configPrefix)
-->setClassLoader($classLoader);
-
-// Execute the command and return the result.
+// Load Application
+$input = new \Symfony\Component\Console\Input\ArgvInput($argv);
 $output = new \Symfony\Component\Console\Output\ConsoleOutput();
-$statusCode = $runner->execute($argv, $appName, $appVersion, $output);
-exit($statusCode);
+$app = new \DevShop\Component\GitRemoteMonitor\Application($input, $output, $classLoader);
+
+// Execute robo Runner.
+$status_code = $app->execute($argv, $output);
+exit($status_code);
