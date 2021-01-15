@@ -44,7 +44,7 @@ class Daemon extends \Core_Daemon
     protected function setup_plugins()
     {
         $this->plugin('Lock_File');
-        $this->Lock_File->daemon_name = 'git-remote-monitor';
+        $this->Lock_File->daemon_name = '.git-remote-monitor';
     }
 
   /**
