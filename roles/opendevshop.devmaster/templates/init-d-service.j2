@@ -1,0 +1,51 @@
+#!/bin/bash
+#
+# {{ service_name }}
+#
+### BEGIN INIT INFO
+# Provides:          {{ service_name }}
+# Required-Start:    $network $local_fs
+# Required-Stop:
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: {{ service_description }}
+# Description:       {{ service_description }}
+### END INIT INFO
+
+#
+# chkconfig: - 85 15
+# description: start, stop, restart {{ service_name }}
+#
+SERVICE={{ service_name }}
+USER={{ service_user }}
+COMMAND="{{ service_command }}"
+PIDFILE=/var/run/{{ service }}.pid
+RETVAL=0
+
+case "$1" in
+    start)
+      printf "Starting $SERVICE... "
+      su - $USER -c "$COMMAND" > /dev/null
+      RETVAL=$?
+  ;;
+    stop)
+      printf "Stopping $SERVICE... "
+      kill `cat $PIDFILE`
+      RETVAL=$?
+  ;;
+    restart)
+      printf "Restarting $SERVICE... "
+      kill `cat $PIDFILE`
+      su - $USER -c "$COMMAND" > /dev/null
+      RETVAL=$?
+  ;;
+    status)
+      RETVAL=$?
+  ;;
+    *)
+      echo "Usage: git-remote-monitor {start|stop|restart}"
+      exit 1
+  ;;
+esac
+
+exit $RETVAL
