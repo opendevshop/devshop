@@ -199,12 +199,14 @@
     service_user: "{{ aegir_user_name }}"
     service_command: "php {{ devshop_cli_path }}/src/DevShop/Component/GitRemoteMonitor/grmd -d -p /var/run/{{ grm_service_name }}.pid"
     service_description: "Monitors a list of git remotes and their references, and runs commands when they change."
+  tags: [always]
 
 - name: Enable git-remote-monitor service
   service:
     name: "{{ grm_service_name }}"
     enabled: true
-    state: started
+    state: "{{ grm_service_state }}"
+  tags: [always]
 
 - name: Debug environment
   command: "env"

@@ -27,4 +27,5 @@ supervisor_programs:
       environment=PATH="$PATH:/usr/local/bin:/usr/bin:/bin:{{ devshop_cli_bin_path }}",HOME="{{ aegir_user_home }}",USER="{{ aegir_user_name }}"
 
 grm_service_name: grm
+grm_service_state: started
 grm_initd_path: /etc/init.d/{{ grm_service_name }}
