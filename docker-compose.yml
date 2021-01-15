@@ -72,7 +72,7 @@ services:
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
       - /var/lib/mysql
-      - /var/logs/aegir
+      - /var/log/aegir
 
     # Resource allocation.
     # 4GB, 2CPUs is a good minimum.
