@@ -52,7 +52,9 @@ class GitRemote
         $exit = 0;
         $grm_root = dirname(dirname(__FILE__));
         $command = "$grm_root/git-remote-monitor diff {$this->url}";
-        $this->log("> $command", 'command');
+
+        // @TODO: Detect debug mode.
+        // $this->task->daemon->log("> $command", 'command');
         exec($command, $references, $exit);
 
         $output = implode(PHP_EOL, $references);

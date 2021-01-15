@@ -83,7 +83,9 @@ class Daemon extends \Core_Daemon
         }
         $count = count($remotes);
         $remotes_list = implode(PHP_EOL, $remotes);
-        $this->log("Results of remotes call: $remotes_list", 'debug');
+
+        // @TODO: Log only if debug is enabled.
+        // $this->log("Results of remotes call: $remotes_list", 'debug');
 
         if ($remotes_list != $remotes_list_last) {
             $this->log("================================");
