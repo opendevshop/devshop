@@ -19,7 +19,6 @@
     "require": {
         "php": "^7.1",
         "knplabs/github-api": "^1.4",
-        "drush/drush": "^8",
         "ext-json": "*",
         "devshop/docker-bin-tools": "@dev",
         "devshop/git-split": "@dev",
