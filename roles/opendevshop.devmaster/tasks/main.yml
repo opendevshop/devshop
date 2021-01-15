@@ -188,6 +188,17 @@
     force: true
   tags: [always]
 
+- name: grm
+  debug:
+    msg: start
+
+- name: Save git-remote-monitor config
+  copy:
+    content: "{{ grm_config_file_content }}"
+    dest: "{{ grm_config_file_path }}"
+    group: "{{ aegir_user_name }}"
+    owner: "{{ aegir_user_name }}"
+
 - name: Install git-remote-monitor service
   template:
     src: init-d-service.j2

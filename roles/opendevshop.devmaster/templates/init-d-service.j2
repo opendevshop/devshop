@@ -16,7 +16,7 @@
 # chkconfig: - 85 15
 # description: start, stop, restart {{ service_name }}
 #
-SERVICE={{ service_name }}
+SERVICE="{{ service_name }}"
 USER={{ service_user }}
 COMMAND="{{ service_command }}"
 PIDFILE=/var/run/{{ service }}.pid

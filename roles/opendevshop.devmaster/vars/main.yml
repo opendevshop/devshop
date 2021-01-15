@@ -29,3 +29,8 @@ supervisor_programs:
 grm_service_name: grm
 grm_service_state: started
 grm_initd_path: /etc/init.d/{{ grm_service_name }}
+
+grm_config_file_path: "{{ aegir_user_home }}/.grm.yml"
+grm_config_file_content: |
+  remotes_callback: drush @hm hosting-git-remotes
+  log_file_directory: /var/log/aegir/git
