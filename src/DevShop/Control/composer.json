@@ -73,6 +73,7 @@
         "drupal/token": "^1.7",
         "drupal/views": "^3.24",
         "drupal/views_bulk_operations": "^3.5",
+        "drush/drush": "^8",
         "guzzle/guzzle": "^3.9",
         "npm-asset/backbone": "^1.4",
         "npm-asset/chosen-js": "^1.8",
