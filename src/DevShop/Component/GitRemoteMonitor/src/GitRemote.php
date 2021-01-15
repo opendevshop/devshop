@@ -68,7 +68,7 @@ class GitRemote
             // $this->task->daemon->log("No new references found for $this->url", 'debug');
             return '';
         } else {
-            $message = "git-remote-monitor diff exited with $exit. Output: 
+            $message = "$command exited with $exit. Output: 
 $output";
             $this->task->daemon->fatal_error($message, 'error');
         }
