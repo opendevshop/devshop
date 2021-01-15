@@ -111,7 +111,7 @@ class Daemon extends \Core_Daemon
 
         // Log every 10th call.
         if ($called % 10 == 0) {
-            $this->log("Loaded list $called times.");
+            $this->log("Remotes list loaded $called times.");
         }
 
         $remotes_list_last = $remotes_list;
