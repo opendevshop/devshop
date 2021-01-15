@@ -2,8 +2,11 @@
 
 namespace DevShop\Component\GitRemoteMonitor;
 
+use Robo\Common\ConfigAwareTrait;
+
 class Daemon extends \Core_Daemon
 {
+    use ConfigAwareTrait;
 
     protected $install_instructions = [
     'Run as the user that will be cloning code.',
@@ -15,6 +18,11 @@ class Daemon extends \Core_Daemon
    * @var int
    */
     protected $loop_interval = 3;
+
+    /**
+     * @var string
+     */
+    private static $logdir = '/var/log/git-remote-monitor';
 
   /**
    * The list of git remotes and their ls-remote output.
@@ -49,6 +57,7 @@ class Daemon extends \Core_Daemon
         $this->log("================================");
         $this->log("Git Remote Monitor Daemon: setup");
         $this->log("--------------------------------");
+        $this->log("Logging to: " . $this->log_file());
     }
 
   /**
@@ -65,7 +74,9 @@ class Daemon extends \Core_Daemon
         $remotes = [];
         $grm_root = dirname(dirname(__FILE__));
         $command = "$grm_root/git-remote-monitor remotes";
-        $this->log("> $command", 'command');
+
+        // @TODO: Log only if debug is enabled.
+        // $this->log("> $command", 'command');
         exec($command, $remotes, $exit);
         if ($exit != 0) {
             $this->fatal_error('git-remote-monitor remotes command failed: ' . implode(PHP_EOL, $remotes));
@@ -98,6 +109,17 @@ class Daemon extends \Core_Daemon
         $remotes_list_last = $remotes_list;
     }
 
+    /**
+     * @param string $dir the directory to store logfiles in.
+     * @return void
+     */
+    public static function setLogdir($dir)
+    {
+        if (!empty($dir)) {
+            self::$logdir = $dir;
+        }
+    }
+
   /**
    * Dynamically build the file name for the log file. This simple algorithm
    * will rotate the logs once per day and try to keep them in a central /var/log location.
@@ -105,7 +127,7 @@ class Daemon extends \Core_Daemon
    */
     protected function log_file()
     {
-        $dir = '/var/log/git-remote-monitor';
+        $dir = self::$logdir;
         if (@file_exists($dir) == false) {
             @mkdir($dir, 0777, true);
         }

@@ -24,6 +24,7 @@ $app = new \DevShop\Component\GitRemoteMonitor\Application($input, $output, $cla
 // If called via daemon script (grmd), run Daemon::getInstance()->run();
 $script_caller = realpath($_SERVER['SCRIPT_FILENAME']);
 if (basename($script_caller) == 'grmd') {
+    \DevShop\Component\GitRemoteMonitor\Daemon::setLogdir($app->getConfig()->get('log_file_directory'));
     \DevShop\Component\GitRemoteMonitor\Daemon::setFilename($script_caller);
     \DevShop\Component\GitRemoteMonitor\Daemon::getInstance()->run();
 }
