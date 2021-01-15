@@ -17,7 +17,7 @@
   ],
   "require": {
     "php": "^7.1",
-    "consolidation/robo": "^1.0",
+    "consolidation/robo": "^2.2",
     "knplabs/github-api": "^1.0",
     "devshop/composer-common": "1.x-dev"
   },
