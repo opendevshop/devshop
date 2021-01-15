@@ -2,9 +2,7 @@
 
 # Supervisor isn't always installed at this point in the play, so allow errors.
 - name: "User ID Change: Stop supervisord"
-  service:
-    name: supervisord
-    state: stopped
+  command: service supervisord stop
   ignore_errors: true
 
 - name: "User ID Change: Find all user processes"
