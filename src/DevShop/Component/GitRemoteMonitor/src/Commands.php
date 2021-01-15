@@ -134,6 +134,11 @@ class Commands extends Tasks
                 $this->io()->warning('No new references detected.');
                 return 1;
             } else {
+
+                // @TODO:
+                // Reload the remotes again after a 3 second delay.
+                // Very often, systems update their refs list immediately after receiving a push. By loading it again once more
+
                 $differ = new Differ();
                 $this->io()->section('+++ New changes loaded at ' . date('r'));
                 $this->io()->writeln($differ->diff($existing_refs, $new_refs));
