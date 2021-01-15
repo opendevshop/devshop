@@ -69,6 +69,7 @@ class Daemon extends \Core_Daemon
     protected function execute()
     {
         static $remotes_list_last = '';
+        static $called = 1;
 
       // Call git-remote-monitor remotes via shell, so that all of the Robo config is loaded and we don't have to integrate the remote daemon classes with robo classes.
         $remotes = [];
@@ -108,7 +109,13 @@ class Daemon extends \Core_Daemon
             $this->task(new Task($url));
         }
 
+        // Log every 10th call.
+        if ($called % 10 == 0) {
+            $this->log("Loaded list $called times.");
+        }
+
         $remotes_list_last = $remotes_list;
+        $called++;
     }
 
     /**
