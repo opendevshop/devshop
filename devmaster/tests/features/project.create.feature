@@ -140,7 +140,7 @@ Feature: Create a project and check settings
     Then I am at "project/composer"
     Then I should see the link "testenv"
     When I click "testenv"
-    Then I should see "Flush all caches Successful"
+    Then I should see the link "Flush all caches Successful"
 
     Given I am on the homepage
     Then I should see the link "composer"
