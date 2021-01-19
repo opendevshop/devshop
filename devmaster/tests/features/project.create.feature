@@ -130,6 +130,18 @@ Feature: Create a project and check settings
     Given I am on "http://testuser:testpassword@composer.testenv.devshop.local.computer"
     Then I should see "Welcome to composer.testenv"
 
+    # Test Clear Cache
+    Given I am on the homepage
+    Then I should see the link "testenv"
+    When I click "testenv"
+    Then I should see the link "Flush all caches"
+    When I click "Flush all caches"
+    Then I run drush "hosting-tasks --force --fork=0 --strict=0"
+    Then I am at "project/composer"
+    Then I should see the link "testenv"
+    When I click "testenv"
+    Then I should see "Flush all caches Successful"
+
     Given I am on the homepage
     Then I should see the link "composer"
     And I should see the link "testenv"
