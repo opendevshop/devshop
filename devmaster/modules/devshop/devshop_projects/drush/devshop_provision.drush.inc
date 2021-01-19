@@ -581,7 +581,7 @@ function drush_devshop_provision_post_provision_install() {
 function devshop_drush_process_cache_clear($alias) {
 
   // Clear all caches.
-  if (drush_drupal_major_version(d()->root) == 8) {
+  if (drush_drupal_major_version(d()->root) >= 8) {
     provision_process("drush {$alias} cache-rebuild", NULL, dt('Clear all Caches'));
   }
   else {
