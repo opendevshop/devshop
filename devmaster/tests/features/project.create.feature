@@ -140,7 +140,7 @@ Feature: Create a project and check settings
     Then I am at "project/composer"
     Then I should see the link "testenv"
     When I click "testenv"
-    Then I should see the link "Flush all caches Successful"
+    Then I should see the link "FLUSH ALL CACHES SUCCESSFUL"
 
     Given I am on the homepage
     Then I should see the link "composer"
@@ -156,3 +156,80 @@ Feature: Create a project and check settings
     And I should see "Disabled"
 
     # @TODO: Test setting for "allow sites to be destroyed"
+
+  Scenario: Create a new drupal 9 project
+    Given I am logged in as a user with the "administrator" role
+    And I am on the homepage
+    When I click "Projects"
+    And I click "Start a new Project"
+    Then I should see "Step 1"
+    Then I fill in "recommended-project" for "Project Code Name"
+    And I fill in "https://github.com/drupal/recommended-project.git" for "Git Repository URL"
+    When I press "Next"
+
+    # Step 2
+    Then I should see "recommended-project"
+    And I should see "https://github.com/drupal/recommended-project.git"
+    Then I should see "Please wait while we connect and analyze your repository."
+    When I run drush "hosting-tasks --force --fork=0 --strict=0"
+    # Then print last drush output
+    And I reload the page
+
+    Then I fill in "web" for "Document Root"
+    When I press "Next"
+    And I should see "DOCUMENT ROOT web"
+
+    When I run drush "hosting-tasks --force --fork=0 --strict=0"
+    And I reload the page
+    And I reload the page
+
+    Then I should see "Create as many new environments as you would like."
+    When I fill in "nine" for "project[environments][NEW][name]"
+    And I select "9.1.x" from "project[environments][NEW][git_ref]"
+    And I press "Add environment"
+    Then I press "Next"
+
+    # Step 4
+    And I should see "nine"
+    And I should see "9.1.x"
+
+    When I run drush "hosting-tasks --force --fork=0 --strict=0"
+    And I reload the page
+
+    Then I should see "nine"
+
+    And I reload the page
+    Then I should see "9.1.x"
+    Then I should not see "Platform verification failed"
+    When I select "standard" from "install_profile"
+
+#    Then I break
+
+    And I press "Create Project & Environments"
+
+    # FINISH!
+    Then I should see "Your project has been created. Your sites are being installed."
+    And I should see "Dashboard"
+    And I should see "Settings"
+    And I should see "Logs"
+    And I should see "standard"
+    And I should see the link "nine"
+    And I should see the link "http://recommended-project.nine.devshop.local.computer"
+
+    When I run drush "hosting-tasks --force --fork=0 --strict=0"
+    Then drush output should not contain "This task is already running, use --force"
+
+    And I reload the page
+    Then I should see the link "nine"
+
+    # Test Cache Rebuild
+    Given I am on the homepage
+    Then I should see the link "nine"
+    When I click "nine"
+    Then I should see the link "Flush all caches"
+    When I click "Flush all caches"
+    Then I run drush "hosting-tasks --force --fork=0 --strict=0"
+    Then I am at "project/recommended-project"
+    Then I should see the link "nine"
+    When I click "nine"
+    Then I should see the link "FLUSH ALL CACHES SUCCESSFUL"
