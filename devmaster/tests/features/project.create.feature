@@ -140,6 +140,7 @@ Feature: Create a project and check settings
     Then I am at "project/composer"
     Then I should see the link "testenv"
     When I click "testenv"
+    And I reload the page
     Then I should see the link "FLUSH ALL CACHES SUCCESSFUL"
 
     Given I am on the homepage
@@ -163,12 +164,12 @@ Feature: Create a project and check settings
     When I click "Projects"
     And I click "Start a new Project"
     Then I should see "Step 1"
-    Then I fill in "recommended-project" for "Project Code Name"
+    Then I fill in "recommendedproject" for "Project Code Name"
     And I fill in "https://github.com/drupal/recommended-project.git" for "Git Repository URL"
     When I press "Next"
 
     # Step 2
-    Then I should see "recommended-project"
+    Then I should see "recommendedproject"
     And I should see "https://github.com/drupal/recommended-project.git"
     Then I should see "Please wait while we connect and analyze your repository."
     When I run drush "hosting-tasks --force --fork=0 --strict=0"
@@ -214,7 +215,7 @@ Feature: Create a project and check settings
     And I should see "Logs"
     And I should see "standard"
     And I should see the link "nine"
-    And I should see the link "http://recommended-project.nine.devshop.local.computer"
+    And I should see the link "http://recommendedproject.nine.devshop.local.computer"
 
     When I run drush "hosting-tasks --force --fork=0 --strict=0"
     Then drush output should not contain "This task is already running, use --force"
@@ -229,7 +230,8 @@ Feature: Create a project and check settings
     Then I should see the link "Flush all caches"
     When I click "Flush all caches"
     Then I run drush "hosting-tasks --force --fork=0 --strict=0"
-    Then I am at "project/recommended-project"
+    Then I am at "project/recommendedproject"
     Then I should see the link "nine"
     When I click "nine"
+    And I reload the page
     Then I should see the link "FLUSH ALL CACHES SUCCESSFUL"
