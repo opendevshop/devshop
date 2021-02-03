@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "composer/installers",
-            "version": "v1.9.0",
+            "version": "v1.10.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/composer/installers.git",
-                "reference": "b93bcf0fa1fccb0b7d176b0967d969691cd74cca"
+                "reference": "1a0357fccad9d1cc1ea0c9a05b8847fbccccb78d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/composer/installers/zipball/b93bcf0fa1fccb0b7d176b0967d969691cd74cca",
-                "reference": "b93bcf0fa1fccb0b7d176b0967d969691cd74cca",
+                "url": "https://api.github.com/repos/composer/installers/zipball/1a0357fccad9d1cc1ea0c9a05b8847fbccccb78d",
+                "reference": "1a0357fccad9d1cc1ea0c9a05b8847fbccccb78d",
                 "shasum": ""
             },
             "require": {
@@ -28,17 +28,18 @@
                 "shama/baton": "*"
             },
             "require-dev": {
-                "composer/composer": "1.6.* || 2.0.*@dev",
-                "composer/semver": "1.0.* || 2.0.*@dev",
-                "phpunit/phpunit": "^4.8.36",
-                "sebastian/comparator": "^1.2.4",
+                "composer/composer": "1.6.* || ^2.0",
+                "composer/semver": "^1 || ^3",
+                "phpstan/phpstan": "^0.12.55",
+                "phpstan/phpstan-phpunit": "^0.12.16",
+                "symfony/phpunit-bridge": "^4.2 || ^5",
                 "symfony/process": "^2.3"
             },
             "type": "composer-plugin",
             "extra": {
                 "class": "Composer\\Installers\\Plugin",
                 "branch-alias": {
-                    "dev-master": "1.0-dev"
+                    "dev-main": "1.x-dev"
                 }
             },
             "autoload": {
@@ -76,6 +77,7 @@
                 "Porto",
                 "RadPHP",
                 "SMF",
+                "Starbug",
                 "Thelia",
                 "Whmcs",
                 "WolfCMS",
@@ -116,6 +118,7 @@
                 "phpbb",
                 "piwik",
                 "ppi",
+                "processwire",
                 "puppet",
                 "pxcms",
                 "reindex",
@@ -133,7 +136,7 @@
             ],
             "support": {
                 "issues": "https://github.com/composer/installers/issues",
-                "source": "https://github.com/composer/installers/tree/v1.9.0"
+                "source": "https://github.com/composer/installers/tree/v1.10.0"
             },
             "funding": [
                 {
@@ -141,11 +144,15 @@
                     "type": "custom"
                 },
                 {
+                    "url": "https://github.com/composer",
+                    "type": "github"
+                },
+                {
                     "url": "https://tidelift.com/funding/github/packagist/composer/composer",
                     "type": "tidelift"
                 }
             ],
-            "time": "2020-04-07T06:57:05+00:00"
+            "time": "2021-01-14T11:07:16+00:00"
         },
         {
             "name": "composer/semver",
@@ -955,21 +962,15 @@
                 "issues": "https://github.com/cweagans/composer-patches/issues",
                 "source": "https://github.com/cweagans/composer-patches/tree/master"
             },
-            "time": "2020-08-18T16:15:33+00:00"
+            "time": "2021-02-02T16:47:46+00:00"
         },
         {
             "name": "devshop/composer-common",
-            "version": "1.7.0-alpha4",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/devshop-packages/composer-common.git",
-                "reference": "37f21a4c892c68948085fd89733f2e16c2681dfb"
-            },
+            "version": "1.x-dev",
             "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/devshop-packages/composer-common/zipball/37f21a4c892c68948085fd89733f2e16c2681dfb",
-                "reference": "37f21a4c892c68948085fd89733f2e16c2681dfb",
-                "shasum": ""
+                "type": "path",
+                "url": "/home/jonpugh/Projects/devshop/src/DevShop/Component/ComposerCommon",
+                "reference": "c97e71a9f8bf7031beb2c05ee32d30e07593f57c"
             },
             "require": {
                 "consolidation/robo": "^1.0",
@@ -988,7 +989,6 @@
                     "DevShop\\Component\\Common\\": "src/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -1004,10 +1004,9 @@
             ],
             "description": "Tools useful for any composer-based project.",
             "homepage": "https://getdevshop.com",
-            "support": {
-                "source": "https://github.com/devshop-packages/composer-common/tree/1.7.0-alpha4"
-            },
-            "time": "2020-10-07T21:12:21+00:00"
+            "transport-options": {
+                "relative": false
+            }
         },
         {
             "name": "devshop/devmaster",
@@ -1764,17 +1763,17 @@
         },
         {
             "name": "drupal/ctools",
-            "version": "1.17.0",
+            "version": "1.19.0",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/ctools.git",
-                "reference": "7.x-1.17"
+                "reference": "7.x-1.19"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/ctools-7.x-1.17.zip",
-                "reference": "7.x-1.17",
-                "shasum": "faa737684252b9441a98e64b61b7233bb1351073"
+                "url": "https://ftp.drupal.org/files/projects/ctools-7.x-1.19.zip",
+                "reference": "7.x-1.19",
+                "shasum": "1e91ef66ab4b3e946fecead61d22416498de5c0f"
             },
             "require": {
                 "drupal/drupal": "~7.0"
@@ -1788,8 +1787,8 @@
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "7.x-1.17",
-                    "datestamp": "1603490547",
+                    "version": "7.x-1.19",
+                    "datestamp": "1611988841",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -1954,23 +1953,23 @@
         },
         {
             "name": "drupal/drupal",
-            "version": "7.77.0",
+            "version": "7.78.0",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/drupal.git",
-                "reference": "7.77"
+                "reference": "7.78"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/drupal-7.77.zip",
-                "reference": "7.77",
-                "shasum": "3a1bc25eb3577b2670bc35a821626a45b217eb58"
+                "url": "https://ftp.drupal.org/files/projects/drupal-7.78.zip",
+                "reference": "7.78",
+                "shasum": "1358a9b8022877fc692b62eb19d7efb0d3f85ee4"
             },
             "type": "drupal-core",
             "extra": {
                 "drupal": {
-                    "version": "7.77",
-                    "datestamp": "1607003422",
+                    "version": "7.78",
+                    "datestamp": "1611163112",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -4176,16 +4175,16 @@
         },
         {
             "name": "laravel-validation-rules/ip",
-            "version": "1.4.0",
+            "version": "1.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel-validation-rules/ip.git",
-                "reference": "d3cbfd3a77c5280ac5fee22ec6ea4f90f61f90c5"
+                "reference": "d8859e3152b873b8ce74fea70a7fd50f055ec964"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel-validation-rules/ip/zipball/d3cbfd3a77c5280ac5fee22ec6ea4f90f61f90c5",
-                "reference": "d3cbfd3a77c5280ac5fee22ec6ea4f90f61f90c5",
+                "url": "https://api.github.com/repos/laravel-validation-rules/ip/zipball/d8859e3152b873b8ce74fea70a7fd50f055ec964",
+                "reference": "d8859e3152b873b8ce74fea70a7fd50f055ec964",
                 "shasum": ""
             },
             "require": {
@@ -4220,9 +4219,9 @@
             ],
             "support": {
                 "issues": "https://github.com/laravel-validation-rules/ip/issues",
-                "source": "https://github.com/laravel-validation-rules/ip/tree/1.4.0"
+                "source": "https://github.com/laravel-validation-rules/ip/tree/1.5.0"
             },
-            "time": "2020-09-16T18:14:27+00:00"
+            "time": "2021-01-14T09:46:00+00:00"
         },
         {
             "name": "league/container",
@@ -5813,16 +5812,16 @@
         },
         {
             "name": "symfony/finder",
-            "version": "v4.4.18",
+            "version": "v4.4.19",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/finder.git",
-                "reference": "ebd0965f2dc2d4e0f11487c16fbb041e50b5c09b"
+                "reference": "25d79cfccfc12e84e7a63a248c3f0720fdd92db6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/finder/zipball/ebd0965f2dc2d4e0f11487c16fbb041e50b5c09b",
-                "reference": "ebd0965f2dc2d4e0f11487c16fbb041e50b5c09b",
+                "url": "https://api.github.com/repos/symfony/finder/zipball/25d79cfccfc12e84e7a63a248c3f0720fdd92db6",
+                "reference": "25d79cfccfc12e84e7a63a248c3f0720fdd92db6",
                 "shasum": ""
             },
             "require": {
@@ -5851,10 +5850,10 @@
                     "homepage": "https://symfony.com/contributors"
                 }
             ],
-            "description": "Symfony Finder Component",
+            "description": "Finds files and directories via an intuitive fluent interface",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/finder/tree/v4.4.18"
+                "source": "https://github.com/symfony/finder/tree/v4.4.19"
             },
             "funding": [
                 {
@@ -5870,7 +5869,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2020-12-08T16:59:59+00:00"
+            "time": "2021-01-27T09:09:26+00:00"
         },
         {
             "name": "symfony/http-foundation",
