@@ -156,22 +156,6 @@
     - "{{ devshop_control_git_root }}"
     - "{{ devshop_cli_path }}/devmaster"
 
-- name: "Detect DevShop Control composer.lock file."
-  stat:
-    path: "{{ devshop_control_git_docroot }}/../composer.lock"
-  register: devshop_control_lock
-
-- name: "Prepare DevShop Control Composer lock file"
-  command: "{{ php_executable }} {{ composer_path }} {{ devshop_control_composer_prepare_command }}"
-  changed_when: true
-  args:
-    chdir: "{{ devshop_control_publish_path }}/../"
-  become: true
-  become_user: "{{ aegir_user_name }}"
-  become_method: "{{ ansible_become_method_aegir }}"
-  when: not devshop_control_lock.stat.exists
-  tags: [always]
-
 - name: Add DevShop bin directory to Path
   copy:
     dest: /etc/profile.d/devshop-cli-path.sh
