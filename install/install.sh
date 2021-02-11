@@ -47,7 +47,7 @@ DEVSHOP_VERSION="${SCRIPT_DEVSHOP_VERSION_REF:-1.x}"
 DEVSHOP_SOURCE="${LOAD_DEVSHOP_SOURCE:-http://github.com/opendevshop/devshop.git}"
 
 # Version of Ansible to install
-ANSIBLE_VERSION=${ANSIBLE_VERSION:-"2.9.16"}
+ANSIBLE_VERSION=${ANSIBLE_VERSION:-"2.9"}
 pip_packages="ansible==${ANSIBLE_VERSION}"
 
 # Environment Options:
