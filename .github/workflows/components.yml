@@ -262,7 +262,21 @@ jobs:
       working-directory: ./src/DevShop/Component/ControlProject
       devmaster-directory: ../../../devmaster
     steps:
-      - uses: actions/checkout@v1
+      # By default, actions/checkout uses the current SHA for the branch it is testing. See on.push.branches: 1.x
+      # https://github.com/opendevshop/devshop/runs/1517209717?check_suite_focus=true#step:2:465
+      # For Pull Requests, actions/checkout will use a Merge SHA by default.
+      # This code sets ref to the PR head SHA instead, so it matches what developers see.
+      - name: Check Out Sourcecode
+        uses: actions/checkout@v2
+        if: github.event_name!='pull_request'
+
+      # Fetch all branches and tags so composer can resolve the version.
+      - name: Check Out Pull Request Sourcecode
+        uses: actions/checkout@v2
+        if: github.event_name=='pull_request'
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
 
       - name: Prepare Pull Request-only environment
         if: github.event_name=='pull_request'
