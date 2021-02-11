@@ -47,8 +47,9 @@ DEVSHOP_VERSION="${SCRIPT_DEVSHOP_VERSION_REF:-1.x}"
 DEVSHOP_SOURCE="${LOAD_DEVSHOP_SOURCE:-http://github.com/opendevshop/devshop.git}"
 
 # Version of Ansible to install
-ANSIBLE_VERSION=${ANSIBLE_VERSION:-"2.9.16"}
-pip_packages="ansible==${ANSIBLE_VERSION}"
+ANSIBLE_VERSION=${ANSIBLE_VERSION:-"2.9"}
+CRYPTOGRAPHY_VERSION=${CRYPTOGRAPHY_VERSION:-"3.3"}
+pip_packages="cryptography==${CRYPTOGRAPHY_VERSION} ansible==${ANSIBLE_VERSION}"
 
 # Environment Options:
 HOSTNAME_FQDN=${HOSTNAME_FQDN:-`hostname --fqdn`}
