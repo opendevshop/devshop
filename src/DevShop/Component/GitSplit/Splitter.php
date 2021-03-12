@@ -10,10 +10,10 @@ namespace DevShop\Component\GitSplit;
 class Splitter {
 
   const SPLITSH_NAME = 'splitsh-lite';
-  const SPLITSH_URL = 'https://github.com/splitsh/lite/releases/download/v1.0.1/lite_linux_amd64.tar.gz';
-  const BIN_FILES = array(
-    'splitsh-lite' => 'https://github.com/splitsh/lite/releases/download/v1.0.1/lite_linux_amd64.tar.gz',
-  );
+  const SPLITSH_URL = [
+    'Linux' => 'https://github.com/splitsh/lite/releases/download/v1.0.1/lite_linux_amd64.tar.gz',
+    'Darwin' => 'https://github.com/splitsh/lite/releases/download/v1.0.1/lite_darwin_amd64.tar.gz',
+  ];
 
   /**
    * Install splitsh-lite script.
@@ -21,7 +21,11 @@ class Splitter {
   static function install($bin_dir = 'bin') {
 
       $name = self::SPLITSH_NAME;
-      $url = self::SPLITSH_URL;
+      $os = php_uname('s');
+      if (!isset(self::SPLITSH_URL[$os])) {
+          throw new \LogicException("There's no splitsh-lite version for '{$os}' operating system.");
+      }
+      $url = self::SPLITSH_URL[$os];
 
       // @TODO: Load BIN path from composer project bin path.
       $bin_path = "{$bin_dir}/{$name}";
