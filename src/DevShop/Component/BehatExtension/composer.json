@@ -1,5 +1,5 @@
 {
-  "name": "devshop/behat-drupal-extension",
+  "name": "devshop/behat-extension",
   "type": "behat-extension",
   "description": "Extension for Behat empowering Drupal on DevShop",
   "keywords": ["drupal", "web", "test", "devshop", "hosting", "ci", "continuous integration", "ci", "continuous integration"],
