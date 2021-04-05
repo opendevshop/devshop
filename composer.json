@@ -98,6 +98,7 @@
                 "roles/opendevshop.devmaster": "https://github.com/opendevshop/ansible-role-devmaster.git",
                 "roles/opendevshop.users": "https://github.com/opendevshop/ansible-role-user.git",
                 "scripts": "https://github.com/devshop-packages/bin-tools.git",
+                "src/DevShop/Component/BehatExtension": "https://github.com/devshop-packages/behat-extension.git",
                 "src/DevShop/Component/ComposerCommon": "https://github.com/devshop-packages/composer-common.git",
                 "src/DevShop/Component/GitHubApiCli": "https://github.com/devshop-packages/github-api-cli.git",
                 "src/DevShop/Component/GitSplit": "https://github.com/devshop-packages/git-split.git",
