@@ -44,6 +44,27 @@ get_distribution() {
 	echo "$lsb_dist"
 }
 
+prepare_ubuntu2004() {
+  PYTHON_DEFAULT=/usr/bin/python3
+  DEBIAN_FRONTEND=noninteractive
+  apt-get update \
+      && apt-get install -y --no-install-recommends \
+         apt-utils \
+         locales \
+         python3-setuptools \
+         python3-pip \
+         software-properties-common \
+         git \
+      && rm -Rf /var/lib/apt/lists/* \
+      && rm -Rf /usr/share/doc && rm -Rf /usr/share/man \
+      && apt-get clean
+
+  # Set Python3 to be the default (allow users to call "python" and "pip" instead of "python3" "pip3"
+  update-alternatives --install /usr/bin/python python /usr/bin/python3 1
+
+  pip3 install $pip_packages
+}
+
 prepare_ubuntu1804() {
   PYTHON_DEFAULT=/usr/bin/python3
   DEBIAN_FRONTEND=noninteractive
