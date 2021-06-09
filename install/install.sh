@@ -226,6 +226,35 @@ get_distribution_version() {
   echo "$dist_version"
 }
 
+# From https://github.com/geerlingguy/docker-ubuntu2004-ansible/blob/master/Dockerfile
+prepare_ubuntu2004() {
+  PYTHON_DEFAULT=/usr/bin/python3
+  DEBIAN_FRONTEND=noninteractive
+  apt-get update \
+    && apt-get install -y --no-install-recommends \
+       apt-utils \
+       build-essential \
+       locales \
+       libffi-dev \
+       libssl-dev \
+       libyaml-dev \
+       python3-dev \
+       python3-setuptools \
+       python3-pip \
+       python3-yaml \
+       software-properties-common \
+       rsyslog systemd systemd-cron sudo iproute2 \
+    && apt-get clean \
+    && rm -Rf /var/lib/apt/lists/* \
+    && rm -Rf /usr/share/doc && rm -Rf /usr/share/man
+
+  # Set Python3 to be the default (allow users to call "python" and "pip" instead of "python3" "pip3"
+  update-alternatives --install /usr/bin/python python /usr/bin/python3 1
+
+  pip3 install $pip_packages
+}
+
+# From https://github.com/geerlingguy/docker-ubuntu1804-ansible/blob/master/Dockerfile
 prepare_ubuntu1804() {
   PYTHON_DEFAULT=/usr/bin/python3
   DEBIAN_FRONTEND=noninteractive
