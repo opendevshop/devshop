@@ -161,6 +161,7 @@ jobs:
           - 'php_version=7.3'
           # - 'php_version=7.4'
         os:
+          - 'ubuntu2004'
           - 'ubuntu1804'
           # Sorry, centos. You must wait until the next PR.
           # - 'centos7'
