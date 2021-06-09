@@ -1,5 +1,9 @@
 FROM ubuntu:20.04
 LABEL maintainer="Jon Pugh"
+
+# Prevent interactive questions during tzdata install: https://github.com/geerlingguy/docker-ubuntu2004-ansible/issues/13
+ARG DEBIAN_FRONTEND=noninteractive
+
 ENV bin_dir /usr/local/bin
 ENV INIT_COMMAND /lib/systemd/systemd
 ENV DOCKER_COMMAND_POST echo "Entrypoint Script Complete!"
