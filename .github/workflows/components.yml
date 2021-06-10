@@ -315,7 +315,7 @@ jobs:
         # Match the command in ./roles/opendevshop.devshop/tasks/main.yml
         run: |
           composer config repositories.devmaster path ${GITHUB_WORKSPACE}/devmaster
-          composer require devshop/devmaster:dev-${GIT_REF}
+          composer require devshop/devmaster:${GIT_REF}-dev
           composer install --no-dev --no-progress --prefer-source
         working-directory: ${{env.working-directory}}
 
