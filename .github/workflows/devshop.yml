@@ -47,9 +47,6 @@ jobs:
       OS: "${{ matrix.os }}"
       HOSTNAME: "devshop.${{ github.event.pull_request.number }}.${{ matrix.os }}.actions.github.com"
       ANSIBLE_EXTRA_VARS: "${{ matrix.vars }}"
-      
-      # The "Test DevShop" job should run as fast as possible. Use --no-build to prevent docker from building a new container on 'docker-compose up'.
-      DOCKER_UP_OPTIONS: "--no-build"
 
     runs-on: ubuntu-18.04
     steps:
@@ -81,18 +78,13 @@ jobs:
       # Launch DevShop Server Container
       - name: "Launch & Prepare a pre-built 'devshop/server:${{ matrix.os }}' container"
         working-directory: roles
-        env:
-        
-          # When testing a new OS, the Docker image won't exist yet. For this test to pass, the container must be built locally.
-          # Uncomment the DOCKER_UP_OPTIONS env var to remove the "--no-build" option.
-          DOCKER_UP_OPTIONS: ""
-          
+
         # "docker-compose pull" is needed because the if the image does not exist locally, "docker-compose" will try to build.
         # "--no-build" is needed because docker-compose will build the image by default.
         run: |
           set -x
           docker-compose pull --quiet devshop.server
-          docker-compose up ${DOCKER_UP_OPTIONS} --detach devshop.server
+          docker-compose up --no-build --detach devshop.server
           docker-compose exec -T devshop.server rm -rf \
             /usr/share/devshop \
             /etc/ansible/roles \
