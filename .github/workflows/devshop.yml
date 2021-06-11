@@ -30,8 +30,8 @@ env:
 jobs:
   test:
     # For new OS PRs, Test DevShop will fail because no upstream containers will exist with the OS tag.
-    # Uncomment for new OS PRs:
-    if: ${{ github.event.label.name != 'os-update' }}
+    # To skip this test, tag your PR with 'os-update'
+    if: ${{ github.event.pull_request.label.name != 'os-update' }}
     name: "Test DevShop"
     strategy:
       fail-fast: false
