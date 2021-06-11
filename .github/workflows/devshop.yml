@@ -29,20 +29,20 @@ env:
 
 jobs:
   test:
+    # For new OS PRs, Test DevShop will fail because no upstream containers will exist with the OS tag.
+    # To skip this test, tag your PR with 'os-update'
+    if: ${{!contains(github.event.issue.labels.*.name, 'os-update')}}
     name: "Test DevShop"
     strategy:
       fail-fast: false
       matrix:
-        vars:
-          # @TODO: Open a PR with the failing PHP versions to fix support.
-          # - 'php_version=7.1'
-          - 'php_version=7.2'
-          - 'php_version=7.3'
-          # - 'php_version=7.4'
         os:
+          - 'ubuntu2004'
           - 'ubuntu1804'
-          # Sorry, centos. You must wait until the next PR.
-          # - 'centos7'
+        vars:
+          - 'php_version=7.3'
+          - 'php_version=7.2'
+
     env:
       OS: "${{ matrix.os }}"
       HOSTNAME: "devshop.${{ github.event.pull_request.number }}.${{ matrix.os }}.actions.github.com"
@@ -78,6 +78,7 @@ jobs:
       # Launch DevShop Server Container
       - name: "Launch & Prepare a pre-built 'devshop/server:${{ matrix.os }}' container"
         working-directory: roles
+
         # "docker-compose pull" is needed because the if the image does not exist locally, "docker-compose" will try to build.
         # "--no-build" is needed because docker-compose will build the image by default.
         run: |
@@ -153,16 +154,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        vars:
-          # @TODO: Open a PR with the failing PHP versions to fix support.
-          # - 'php_version=7.1'
-          - 'php_version=7.2'
-          - 'php_version=7.3'
-          # - 'php_version=7.4'
         os:
+          - 'ubuntu2004'
           - 'ubuntu1804'
-          # Sorry, centos. You must wait until the next PR.
-          # - 'centos7'
+        vars:
+          - 'php_version=7.3'
+          - 'php_version=7.2'
     env:
       OS: "${{ matrix.os }}"
       HOSTNAME: "devshop.${{ github.event.pull_request.number }}.${{ matrix.os }}.actions.github.com"

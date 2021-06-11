@@ -106,8 +106,10 @@ jobs:
       #            extensions: intl #optional
       #            ini-values: "post_max_size=256M" #optional
 
-      - name: Check PHP Version
-        run: php -v
+      - name: Check PHP & Composer Version
+        run: |
+          php -v
+          composer --version
 
       - name: Get Composer Cache Directory
         id: composer-cache
