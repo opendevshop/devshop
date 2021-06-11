@@ -32,13 +32,13 @@ jobs:
     name: "Test DevShop"
     strategy:
       fail-fast: false
-    matrix:
-      os:
-        - 'ubuntu2004'
-        - 'ubuntu1804'
-      vars:
-        - 'php_version=7.3'
-        - 'php_version=7.2'
+      matrix:
+        os:
+          - 'ubuntu2004'
+          - 'ubuntu1804'
+        vars:
+          - 'php_version=7.3'
+          - 'php_version=7.2'
 
     env:
       OS: "${{ matrix.os }}"
