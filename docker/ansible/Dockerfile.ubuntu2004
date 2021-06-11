@@ -1,5 +1,6 @@
 FROM devshop/base:ubuntu2004
 LABEL maintainer="Jon Pugh"
+ARG DEBIAN_FRONTEND=noninteractive
 
 # Ansible configuration path
 ENV DEVSHOP_ANSIBLE_PATH /etc/ansible
