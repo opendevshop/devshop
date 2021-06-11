@@ -94,6 +94,7 @@ prepare_ubuntu1804() {
   pip3 install $pip_packages
 }
 
+# From https://github.com/geerlingguy/docker-centos7-ansible/blob/master/Dockerfile
 prepare_centos7() {
     system_packages_pre="\
         deltarpm \
