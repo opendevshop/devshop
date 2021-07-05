@@ -1,0 +1,29 @@
+{
+  "name": "devshop/behat-extension",
+  "type": "behat-extension",
+  "description": "Extension for Behat empowering Drupal on DevShop",
+  "keywords": ["drupal", "web", "test", "devshop", "hosting", "ci", "continuous integration", "ci", "continuous integration"],
+  "homepage": "https://getdevshop.com",
+  "license": "GPL-2.0-or-later",
+  "authors": [
+     {
+       "name": "Jon Pugh",
+       "email": "jon@thinkdrop.net"
+     },
+    {
+      "name": "DevShop Community",
+      "homepage": "https://github.com/opendevshop/devshop/graphs/contributors"
+    }
+  ],
+  "require": {
+      "drupal/drupal-extension": "^4.1"
+  },
+  "config": {
+    "bin-dir": "bin/"
+  },
+  "autoload": {
+    "psr-0": {
+      "DevShop\\Behat\\DrupalExtension\\Context": "src/"
+    }
+  }
+}
