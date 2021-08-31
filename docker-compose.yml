@@ -48,7 +48,9 @@ services:
       - ANSIBLE_CONFIG
       - FROM_IMAGE
       - OS_VERSION
-      - DEVSHOP_DOCKER_COMMAND_RUN
+
+      # Default to the same value so it does not get overridden if it is not in docker-compose exec environment.
+      - DEVSHOP_DOCKER_COMMAND_RUN=${DEVSHOP_DOCKER_COMMAND_RUN:-/usr/share/devshop/scripts/devshop-ansible-playbook   --tags runtime}
       - DOCKER_COMMAND_POST=${DOCKER_COMMAND_POST:-devshop login}
       - DOCKER_COMMAND_POST
 
