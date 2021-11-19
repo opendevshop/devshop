@@ -26,7 +26,7 @@ function devshop_pull_callback($project_hosting_context, $hash) {
     $message = "Project not configured to use webhook deployment.";
   }
   // Make sure the client's IP address is on the list
-  else if (!hosting_git_pull_webhook_ip_access()) {
+  else if (!devshop_pull_webhook_ip_access()) {
     $message = ip_address() . " is not authorized to invoke a webhook request.";
     $status = DEVSHOP_PULL_STATUS_ACCESS_DENIED;
   }
@@ -193,4 +193,13 @@ if (!function_exists('getallheaders')) {
     }
     return $headers;
   }
+}
+
+/**
+ * Determine if the requesting server is allowed to post.
+ */
+function devshop_pull_webhook_ip_access() {
+    $allowed_ips = explode("\n", trim(variable_get('devshop_pull_webhook_ip_acl', HOSTING_GIT_WEBHOOK_DEFAULT_ALLOWED_IPS)));
+    array_filter(array_map('trim', $allowed_ips));
+    return hosting_git_pull_ip_match(ip_address(), $allowed_ips);
 }
