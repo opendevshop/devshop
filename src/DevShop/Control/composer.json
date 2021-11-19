@@ -31,11 +31,16 @@
         "ext-openssl": "*",
         "ext-pdo": "*",
         "ext-xml": "*",
-        "composer/installers": "^1.2",
+        "composer/installers": "^1.9",
         "composer/semver": "^1.4",
-        "cweagans/composer-patches": "dev-master#a18d1ca",
-        "devshop/devmaster": "1.x-dev",
+        "cweagans/composer-patches": "^1.7",
         "drupal-composer/preserve-paths": "^0.1.6",
+        "drupal/composer_autoloader": "^1.0",
+        "drupal/drupal": "^7.62",
+        "drush/drush": "^8.0",
+        "symfony/filesystem": "~2.7 || ^3",
+        "webflo/drupal-finder": "^1.2.1",
+        "devshop/devmaster": "1.x-dev",
         "drupal/admin_menu": "@rc",
         "drupal/adminrole": "^1.1",
         "drupal/aegir_config": "@beta",
@@ -45,11 +50,9 @@
         "drupal/cas": "^1.7",
         "drupal/cas_attributes": "@rc",
         "drupal/chosen": "^2.1",
-        "drupal/composer_autoloader": "^1.0",
         "drupal/ctools": "^1.15",
         "drupal/devel": "^1.7",
         "drupal/devshop_stats": "@dev",
-        "drupal/drupal": "^7.62",
         "drupal/entity": "^1.9",
         "drupal/features": "^2.11",
         "drupal/hosting": "4.x-dev",
@@ -79,9 +82,7 @@
         "npm-asset/modernizr": "^3.11",
         "npm-asset/underscore": "^1.10",
         "oomphinc/composer-installers-extender": "^2.0",
-        "symfony/filesystem": "~2.7|^3",
-        "toin0u/digitalocean-v2": "~2.0",
-        "webflo/drupal-finder": "^1.0.0"
+        "toin0u/digitalocean-v2": "~2.0"
     },
     "conflict": {
         "drupal/core": "8.*"
@@ -150,8 +151,7 @@
             "web/sites/all/themes/contrib/{$name}/": ["type:drupal-theme"]
       },
       "preserve-paths": [
-          "web/sites/default",
-          "web/profiles/devmaster"
+          "web/sites/default"
         ]
     },
     "minimum-stability": "dev",
