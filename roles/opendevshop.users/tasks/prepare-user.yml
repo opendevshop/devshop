@@ -30,14 +30,15 @@
   when:
     - getent_passwd is defined
 
-- name: Include Reset Aegir User tasks
-  include_tasks: "reset-uid.yml"
-  when:
-    # Do not run if aegir_user_uid_current is blank (happens on first install).
-    - aegir_user_uid_current|string|length > 0
-    # Run if UID or GID needs to be changed.
-    - aegir_user_uid != aegir_user_uid_current or aegir_user_gid != aegir_user_gid_current
-  tags: [always]
+# @TODO: Warn and provide recourse if UIDs are different.
+#- name: Include Reset Aegir User tasks
+#  include_tasks: "reset-uid.yml"
+#  when:
+#    # Do not run if aegir_user_uid_current is blank (happens on first install).
+#    - aegir_user_uid_current|string|length > 0
+#    # Run if UID or GID needs to be changed.
+#    - aegir_user_uid != aegir_user_uid_current or aegir_user_gid != aegir_user_gid_current
+#  tags: [always]
 
 - name: Create Aegir Group (so we can set the GID)
   group:
