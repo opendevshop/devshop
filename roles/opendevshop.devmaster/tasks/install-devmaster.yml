@@ -1,10 +1,11 @@
 ---
 
-- name: Ensure Supervisor is stopped for install (if configured).
-  service:
-    name: supervisord
+- name: Stop the Hosting Queue Runner supervisor service.
+  supervisorctl:
+    name: "hosting-queue-runner"
     state: stopped
   when: supervisor_started
+  tags: [runtime]
 
 - name: Get Install DevShop Control Environment (DEBUG)
   become: true
