@@ -140,7 +140,7 @@ function devshop_projects_settings_form($form, &$form_state) {
   $form['pullhook']['devshop_pull_webhook_ip_acl'] = array(
     '#type' => 'textarea',
     '#title' => t('Control Access by IP'),
-    '#default_value' => variable_get('devshop_pull_webhook_ip_acl', HOSTING_GIT_WEBHOOK_DEFAULT_ALLOWED_IPS),
+    '#default_value' => variable_get('devshop_pull_webhook_ip_acl', DEVSHOP_WEBHOOK_DEFAULT_ALLOWED_IPS),
     '#rows' => 6,
   );
 

@@ -199,7 +199,7 @@ if (!function_exists('getallheaders')) {
  * Determine if the requesting server is allowed to post.
  */
 function devshop_pull_webhook_ip_access() {
-    $allowed_ips = explode("\n", trim(variable_get('devshop_pull_webhook_ip_acl', HOSTING_GIT_WEBHOOK_DEFAULT_ALLOWED_IPS)));
+    $allowed_ips = explode("\n", trim(variable_get('devshop_pull_webhook_ip_acl', DEVSHOP_WEBHOOK_DEFAULT_ALLOWED_IPS)));
     array_filter(array_map('trim', $allowed_ips));
     return hosting_git_pull_ip_match(ip_address(), $allowed_ips);
 }
