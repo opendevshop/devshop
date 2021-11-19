@@ -29,7 +29,7 @@ class ScriptHandler {
     }
 
     $devmaster_info_path = $devmaster_path  . '/devmaster.info';
-    $bug_warning_message = 'This is a known issue. Run "composer reinstall" to fully delete and rebuild your site code. See https://github.com/opendevshop/devshop/issues/649';
+    $bug_warning_message = 'This is a known issue. Run "composer reinstall *" to fully delete and rebuild your site code. See https://github.com/opendevshop/devshop/issues/649';
 
     // Both web/profiles/devmaster directory and devmaster.info file are found.
     if ($fs->exists($devmaster_path) && $fs->exists($devmaster_info_path)) {
