@@ -18,8 +18,8 @@ jobs:
           python-version: '3.x'
 
       - name: Install test dependencies.
-        run: pip3 install yamllint
+        run: pip3 install molecule
 
-      - name: Lint code.
-        run: |
-          yamllint .
+      - name: Test Ansible Code Quality
+        working-directory: ./roles
+        run: molecule lint
