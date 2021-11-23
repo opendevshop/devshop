@@ -6,31 +6,20 @@ on:
     types: [opened, synchronize]
 jobs:
   lint:
-    name: Ansible Lint
-    runs-on: ubuntu-18.04
-
+    name: Lint
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
-      - uses: actions/setup-python@v1
+      - name: Check out the codebase.
+        uses: actions/checkout@v2
 
-      # @TODO: Attempted to cache the pip packages, doesn't seem to work in subfolders.
-      #      - uses: actions/cache@v1
-      #        id: cache
-      #        with:
-      #          path: .cache/pip
-      #          key: ${{ runner.os }}-pip-${{ hashFiles('**/roles/opendevshop.devmaster/molecule/requirements.txt') }}
-      #          restore-keys: |
-      #                ${{ runner.os }}-test
+      - name: Set up Python 3.
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
 
-      - name: Install Ansible Molecule
-        if: steps.cache.outputs.cache-hit != 'true'
-        working-directory: ./roles/molecule
+      - name: Install test dependencies.
+        run: pip3 install yamllint
+
+      - name: Lint code.
         run: |
-          pwd
-          ls -la
-          python -m pip install --upgrade pip
-          pip install -r molecule-requirements.txt
-
-      - name: Test Ansible Code Quality
-        working-directory: ./roles
-        run: molecule lint
+          yamllint .
