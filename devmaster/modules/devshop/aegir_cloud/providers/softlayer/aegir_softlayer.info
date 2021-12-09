@@ -1,0 +1,6 @@
+name = Aegir Cloud: SoftLayer
+description = Launches servers in softlayer.
+core = 7.x
+package = Aegir Cloud
+
+dependencies[] = aegir_cloud

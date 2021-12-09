@@ -98,13 +98,15 @@ Feature: Create a project and check settings
     When I fill in "testuser" for "Username"
     And I fill in "testpassword" for "Password"
     And I fill in "What's the password?" for "Message"
+    # @TODO: "Domain Aliases" <label> tag is missing the "for" attribute, so we can't target the string "Domain Aliases"
+    And I fill in "test.mysite.com" for "aliases[0]"
 
     Then I press "Create New Environment"
+    Then I should see the link "http://test.mysite.com"
     Then I should see "Environment testenv created in project composer."
 
     When I run drush "hosting-tasks --force --fork=0 --strict=0"
 
-    When I click "testenv" in the "main" region
     Then I should see "Environment Dashboard"
     And I should see "Environment Settings"
 
@@ -127,3 +129,18 @@ Feature: Create a project and check settings
 
     Given I am on "http://testuser:testpassword@composer.testenv.devshop.local.computer"
     Then I should see "Welcome to composer.testenv"
+
+    Given I am on the homepage
+    Then I should see the link "composer"
+    And I should see the link "testenv"
+    When I click "testenv"
+    Then I should not see "Destroy Environment"
+    When I click "Disable Environment"
+    Then I should see "Are you sure you want to disable composer.testenv.devshop.local.computer?"
+    And I press "Disable"
+    When I run drush "hosting-tasks --force --fork=0 --strict=0"
+    Then I am at "project/composer"
+    Then I should see "testenv"
+    And I should see "Disabled"
+
+    # @TODO: Test setting for "allow sites to be destroyed"

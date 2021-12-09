@@ -1,0 +1,6 @@
+name = Aegir Cloud: DigitalOcean
+description = Launches servers on DigitalOcean.
+core = 7.x
+package = Aegir Cloud
+
+dependencies[] = aegir_cloud

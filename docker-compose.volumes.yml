@@ -14,11 +14,7 @@ services:
       # DevShop Core.
       - ./:/usr/share/devshop:delegated
       - ./aegir-home:/var/aegir:delegated
-
-      # Devmaster Drupal Install Profile
-      # This volume injects the folder `./devmaster` into the "hostmaster" platform in the container.
-      - ./devmaster:/usr/share/devshop/src/DevShop/Component/DevShopControlTemplate/web/profiles/devmaster
-      # - ./devmaster:/var/aegir/devmaster-1.x/profiles/devmaster
+      - ./roles/devshop.server/inventory:/etc/ansible/hosts
 
       - $HOME/.ssh:/var/aegir/.ssh
-      - ./.github/.test-artifacts:/var/aegir/test-artifacts
+      - ./.github/test-artifacts:/var/aegir/test-artifacts

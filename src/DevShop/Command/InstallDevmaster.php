@@ -248,23 +248,38 @@ class InstallDevmaster extends Command
     $output->writeln(' 3. Setup a cron job to run `drush @hostmaster hosting-tasks.`');
     $output->writeln('');
 
-    // devshop_version
+    // Check options.
     $version = $input->getOption('devshop_version');
-    if (empty($version)) {
-      $output->writeln('Checking for latest version...');
-      $input->setOption('devshop_version', $this->getLatestVersion());
+    $source_url = $input->getOption('git_remote');
+
+    // If no alternative source specified...
+    if (!empty($source_url)) {
+      // Change the "active repo" for this class, ie what is available in getRepository() and getRepoOwner() and getRepoName().
+      $this->setGitHubRepo($source_url);
+      $output->writeln('Alternate source specified: ' . $source_url);
     }
     else {
-      // Validate chosen version
-      $output->writeln('Validating version...');
-      try {
-        $this->checkVersion($version);
-      }
-      catch (\Exception $e) {
-        $output->writeln('<error>' . $e->getMessage() . '</error>');
-        exit(1);
-      }
+      $output->writeln('Current git remote: ' . $this->getRepoSlug());
     }
+
+    // If version was not specified, lookup the latest.
+    if (empty($version)) {
+      $version = $this->getLatestVersion();
+      $output->writeln("Checking for latest version... $version");
+    }
+
+    // Validate chosen version
+    $output->writeln("Validating version $version...");
+    try {
+      $this->checkVersion($version);
+      $output->writeln("Version $version exists in git repository {$this->getRepoSlug()}.");
+      $input->setOption('git_reference', $version);
+    }
+    catch (\Exception $e) {
+      $output->writeln('<error>' . $e->getMessage() . '</error>');
+      exit(1);
+    }
+
 
     // site
     if (!$input->getOption('site')) {
@@ -412,9 +427,10 @@ class InstallDevmaster extends Command
   /**
    * return the FQDN of the machine or provided host
    *
-   * this replicates hostname -f, which is not portable
+   * this replicates hostname -f, which is not portable across OS.
    *
    * Copy of provision_fqdn()
+   * @TODO: We rely on `hostname --fqdn` in other places. Shouldn't we use it consistently?
    */
   private function findFqdn($host = NULL) {
     if (is_null($host)) {
@@ -623,7 +639,10 @@ PHP;
     $drush_path = $this->input->getOption('drush-path');
     $this->output->writeln("");
     $this->output->writeln("Running <comment>drush @{$name} provision-verify</comment> ...");
-    $process = $this->getProcess("{$drush_path} @{$name} provision-verify");
+
+    // Set to --verbose or use other options to see provision-verify logs when running devmaster:install (for debugging).
+    $provision_verify_options = '--verbose';
+    $process = $this->getProcess("{$drush_path} @{$name} provision-verify $provision_verify_options");
     $process->setTimeout(NULL);
 
     if ($this->runProcess($process)) {

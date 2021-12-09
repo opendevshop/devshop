@@ -163,8 +163,8 @@ function devshop_github_form_project_node_form_alter(&$form, &$form_state, $form
     '#suffix' => '</div>',
     '#weight' => -1000,
     '#markup' => implode(' ', array(
-      format_plural($pr_count, t('There is 1 open Pull Request in your project'), t('There are @number open Pull Requests in your project', array('@number' => $pr_count))),
-      t('Confirm your desired behavior in the "GitHub Integration" section.'),
+      format_plural($pr_count, t('There is 1 open Pull Request in your project.'), t('There are @number open Pull Requests in your project', array('@number' => $pr_count))),
+      t('Check pull request environment settings in the "GitHub Integration" section.'),
       l(t('View Pull Requests on GitHub.com'), $node->project->git_repo_url . '/pulls', array(
         'attributes' => array(
           'target' => '_blank',
@@ -774,13 +774,21 @@ function devshop_github_form_devshop_project_create_step_environments_alter(&$fo
 
       foreach ($prs as $pr) {
         // Prepare environment objects
-        $environment = new stdClass();
-        $environment->name = "pr{$pr['number']}";
-        $environment->git_ref = $pr['head']['ref'];
-        $project->environments[$environment->name] = $environment;
+        $env_name = "pr{$pr['number']}";
+        // If PR environment already exists, load it.
+        if (isset($project->environments[$env_name])) {
+          $environment = $project->environments[$env_name];
+        }
+        else {
+          $environment = new stdClass();
+          $environment->name = "pr{$pr['number']}";
+          $environment->git_ref = $pr['head']['ref'];
+          $project->environments[$environment->name] = $environment;
+        }
 
         // Use NEW form elements as the template.
         $environment_forms[$environment->name] = $form['project']['environments']['NEW'];
+        $environment_forms[$environment->name]['platform']['#value'] = $environment->platform;
 
         // Create a disabled textfield for display to user, and convert original element to "value" type so the info is passed.
         $environment_forms[$environment->name]['name']['#default_value'] = $environment->name;
@@ -832,7 +840,7 @@ function devshop_github_form_devshop_project_create_step_environments_alter(&$fo
       }
 
       // Merge environments fields together to put PRs on top.
-      $form['project']['environments'] = array_merge($form['project']['environments'], $environment_forms);
+      $form['project']['environments'] = array_merge($environment_forms, $form['project']['environments']);
     }
 
     $settings_link = l(t('Change Project Settings'), 'projects/add/settings', array(

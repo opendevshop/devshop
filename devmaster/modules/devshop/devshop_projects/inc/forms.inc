@@ -893,32 +893,13 @@ function devshop_projects_form_site_node_form_alter(&$form, &$form_state, $form_
   // Load deploy hooks form element.
   $form['environment']['settings']['deploy'] = devshop_environment_deploy_hooks_form($project, $environment);
 
-  // UX Improvements
-  // Project Settings Vertical Tabs
-  $form['environment_settings'] = array(
-    '#type' => 'vertical_tabs',
-    '#weight' => -11,
-  );
-
   $form['environment']['settings']['#title'] = t('General Settings');
-  $form['environment']['settings']['#group'] = 'environment_settings';
+  $form['environment']['settings']['#group'] = 'site_settings';
   $form['environment']['settings']['#weight'] = -100;
-  $form['environment']['settings']['deploy']['#group'] = 'environment_settings';
-  $form['hosting_backup_queue']['#group'] = 'environment_settings';
-  $form['http_basic_auth']['#group'] = 'environment_settings';
-  $form['http_basic_auth']['#title'] = t('Password Protection');
-  $form['hosting_logs']['#group'] = 'environment_settings';
+
+   $form['environment']['settings']['deploy']['#group'] = 'site_settings';
 
   // Have to add new element for Domains because of the way drupal ajax callback works.
-  $form['domains'] = array(
-    '#title' => t('Domain Names'),
-    '#type' => 'fieldset',
-    '#group' => 'environment_settings',
-  );
-  $form['domains']['aliases_wrapper'] = $form['aliases_wrapper'];
-  $form['domains']['aliases_wrapper']['#type'] = 'container';
-  $form['domains']['aliases_wrapper']['add_alias']['#ajax']['callback'] = 'devshop_hosting_alias_add_alias_callback';
-  unset($form['aliases_wrapper']);
 
   $form['environment']['settings']['client'] = $form['client'];
   $form['environment']['settings']['client']['#tree'] = FALSE;
@@ -927,19 +908,6 @@ function devshop_projects_form_site_node_form_alter(&$form, &$form_state, $form_
   $form['environment']['settings']['site_language'] = $form['site_language'];
   $form['environment']['settings']['site_language']['#tree'] = FALSE;
   unset($form['site_language']);
-
-  if (isset($form['hosting_ssl_wrapper'])) {
-    $form['hosting_ssl_wrapper']['#group'] = 'environment_settings';
-    $form['hosting_ssl_wrapper']['#title'] = t('HTTPS');
-    $form['hosting_ssl_wrapper']['#prefix'] = '';
-    $form['hosting_ssl_wrapper']['#suffix'] = '';
-  }
-  if (isset($form['hosting_https_wrapper'])) {
-    $form['hosting_https_wrapper']['#group'] = 'environment_settings';
-    $form['hosting_https_wrapper']['#title'] = t('HTTPS');
-    $form['hosting_https_wrapper']['#prefix'] = '';
-    $form['hosting_https_wrapper']['#suffix'] = '';
-  }
 
   // Ensure values are saved.
   if (!isset($form['install_method'])) {
@@ -1750,7 +1718,7 @@ function devshop_projects_environment_settings_submit($form, &$form_state) {
     watchdog('error', 'Environment record not saved: ' . print_r($environment, 1));
   }
 
-  $form_state['redirect'] = 'node/' . $environment->project_nid;
+  $form_state['redirect'] = 'node/' . $environment->site;
 }
 
 
@@ -1759,34 +1727,9 @@ function devshop_projects_environment_settings_submit($form, &$form_state) {
  */
 function devshop_projects_form_server_node_form_alter(&$form, &$form_state, $form_id) {
 
-  $items = array();
-  $items[] = t('To create a new server, you must first connect it to this one via SSH.');
-  $items[] = t("You must grant %aegir access to your new server by adding it's SSH Key (below) to <code>~/.ssh/authorized_keys</code>.", array(
-    '%aegir' => "aegir@" . $_SERVER['HTTP_HOST'],
-  ));
-  $items[] = t('If you wish to provision a new server, add the key to the
-<code>root</code> user, then run the <code>devshop remote:install</code> command.');
-  $items[] = t('If you have already provisioned the server, add the key to the <code>aegir</code> user.');
+  $form['title']['#description'] = t('The hostname of the server. Using a fully-qualified domain name for the server hostname is recommended.');
+  $form['title']['#attributes']['placeholder'] = 'cloud1.example.com';
 
-  $form['note'] = array(
-    '#markup' => theme('item_list', array('items' => $items)),
-    '#weight' => -100,
-    '#prefix' => '<div class="alert alert-info">',
-    '#suffix' => '</div>',
-  );
-
-  $form['key'] = array(
-    '#type' => 'item',
-    '#title' => t(' SSH Public Key for %aegir', array(
-      '%aegir' => "aegir@" . $_SERVER['HTTP_HOST'],
-    )),
-    '#markup' => '<pre>' . variable_get('devshop_public_key', '') . '</pre>',
-    '#weight' => -99,
-  );
-}
-
-function devshop_projects_form_hosting_task_update_status_form_alter(&$form, &$form_state, $form_id){
-  $form['update-status']['#value'] = t('Cancel');
 }
 
 /**

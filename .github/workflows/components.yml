@@ -5,22 +5,30 @@ on:
     branches: 1.x
   pull_request:
     types: [opened, synchronize]
-
+  workflow_dispatch:
   schedule:
     # Once per day. https://crontab.guru/#*_0_*_*_*
     - cron: "* 0 * * *"
+    - cron: "0 12 * * *"
 
 env:
-  GITHUB_TOKEN: ${{ secrets.INPUT_GITHUB_TOKEN }}
   GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}
   GITHUB_PR_SHA: ${{ github.event.pull_request.head.sha  }}
   GITHUB_RUN_LOG_URL: https://github.com/opendevshop/devshop/actions/runs/${{ github.run_id }}
+  GIT_REF: 1.x
 
 jobs:
   yaml-tasks:
     name: YamlTasks
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
+    strategy:
+      matrix:
+        php-versions:
+          - '7.1'
+          - '7.2'
+          - '7.3'
+          - '7.4'
 
     # Set working directory for entire file. https://github.community/t5/GitHub-Actions/use-working-directory-for-entire-job/td-p/36759
     env:
@@ -30,6 +38,11 @@ jobs:
     - uses: actions/checkout@v2
       with:
         ref: ${{ github.event.pull_request.head.sha }}
+
+    - name: Install PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ matrix.php-versions }}
 
     - name: Get Composer Cache Directory
       working-directory: ${{env.working-directory}}
@@ -60,6 +73,7 @@ jobs:
       env:
         # @TODO: Get environment variable setting to work.
         # YAML_TASKS_STATUS_URL: https://github.com/${GITHUB_REPOSITORY}/runs/${GITHUB_RUN_ID}?check_suite_focus=true
+        GITHUB_TOKEN: ${{ secrets.INPUT_GITHUB_TOKEN }}
         PROVISION_PROCESS_OUTPUT: direct
       run: |
         chmod +x yaml-tasks
@@ -69,12 +83,14 @@ jobs:
   power-process:
     name: PowerProcess
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     strategy:
       matrix:
         php-versions:
-          # - '5.6'
           - '7.1'
+          - '7.2'
+          - '7.3'
+          - '7.4'
 
     # Set working directory for entire file. https://github.community/t5/GitHub-Actions/use-working-directory-for-entire-job/td-p/36759
     env:
@@ -122,12 +138,14 @@ jobs:
   github-api-cli:
     name: GitHubApiCli
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     strategy:
       matrix:
         php-versions:
-          # - '5.6'
           - '7.1'
+          - '7.2'
+          - '7.3'
+          - '7.4'
 
     # Set working directory for entire file. https://github.community/t5/GitHub-Actions/use-working-directory-for-entire-job/td-p/36759
     env:
@@ -167,21 +185,23 @@ jobs:
         working-directory: ${{env.working-directory}}
 
       - name: Test GitHub Cli
+        working-directory: ${{env.working-directory}}
         env:
           GITHUB_TOKEN: ${{ secrets.INPUT_GITHUB_TOKEN }}
-        working-directory: ${{env.working-directory}}
         run: |
           ./github whoami
 
   ComposerCommon:
     name: ComposerCommon
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     strategy:
       matrix:
         php-versions:
-          # - '5.6'
           - '7.1'
+          - '7.2'
+          - '7.3'
+          - '7.4'
 
     # Set working directory for entire file. https://github.community/t5/GitHub-Actions/use-working-directory-for-entire-job/td-p/36759
     env:
@@ -221,25 +241,48 @@ jobs:
         working-directory: ${{env.working-directory}}
 
       - name: Test
+        working-directory: ${{env.working-directory}}
         env:
           GITHUB_TOKEN: ${{ secrets.INPUT_GITHUB_TOKEN }}
-        working-directory: ${{env.working-directory}}
         run: |
           ./Tests/repo-info.php
 
-  DevShopControlTemplate:
-    name: DevShopControlTemplate
+  ControlProject:
+    name: ControlProject
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     strategy:
       matrix:
         php-versions:
-          # - '5.6'
+          - '7.1'
           - '7.2'
+          - '7.3'
+          - '7.4'
     env:
-      working-directory: ./src/DevShop/Component/DevShopControlTemplate
+      working-directory: ./src/DevShop/Component/ControlProject
+      devmaster-directory: ../../../devmaster
     steps:
-      - uses: actions/checkout@v1
+      # By default, actions/checkout uses the current SHA for the branch it is testing. See on.push.branches: 1.x
+      # https://github.com/opendevshop/devshop/runs/1517209717?check_suite_focus=true#step:2:465
+      # For Pull Requests, actions/checkout will use a Merge SHA by default.
+      # This code sets ref to the PR head SHA instead, so it matches what developers see.
+      - name: Check Out Sourcecode
+        uses: actions/checkout@v2
+        if: github.event_name!='pull_request'
+
+      # Fetch all branches and tags so composer can resolve the version.
+      - name: Check Out Pull Request Sourcecode
+        uses: actions/checkout@v2
+        if: github.event_name=='pull_request'
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - name: Prepare Pull Request-only environment
+        if: github.event_name=='pull_request'
+        run: |
+          echo "GIT_REF=${{ github.head_ref }}" >> $GITHUB_ENV
+          git switch --create ${{ github.head_ref }}
 
       - name: Install PHP
         uses: shivammathur/setup-php@v2
@@ -267,13 +310,18 @@ jobs:
         run: composer validate
         working-directory: ${{env.working-directory}}
 
+      # If installing without a lockfile, composer suggests using "update" command instead.
       - name: Install dependencies
-        run: composer install --prefer-dist --no-progress --no-suggest
+        # Match the command in ./roles/opendevshop.devshop/tasks/main.yml
+        run: |
+          composer config repositories.devmaster path ${GITHUB_WORKSPACE}/devmaster
+          composer require devshop/devmaster:${GIT_REF}-dev
+          composer install --no-dev --no-progress --prefer-source
         working-directory: ${{env.working-directory}}
 
       - name: Test Project Creation
-        env:
-          GITHUB_TOKEN: ${{ secrets.INPUT_GITHUB_TOKEN }}
         working-directory: ./src/DevShop/Component/
         run: |
-          composer create-project devshop/control-template:@dev temp --repository='{"type":"path","url":"DevShopControlTemplate"}'
+          composer create-project devshop/control-project:@dev temp --repository='{"type":"path","url":"ControlProject"}'
+
+        # @TODO: Launch a devshop test container around this devshop-control code.

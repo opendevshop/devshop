@@ -1,0 +1,9 @@
+# Use this file to alter variables in the devshop container.
+server_hostname: devshop.local.computer
+
+# Turn off supervisor and other back-end task runners to avoid flickers.
+supervisor_started: false
+supervisor_enabled: false
+
+# Don't try and checkout devshop_version in CI.
+devshop_cli_skip_update: true

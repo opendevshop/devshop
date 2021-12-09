@@ -22,19 +22,17 @@
         "drush/drush": "^8",
         "ext-json": "*",
         "devshop/docker-bin-tools": "@dev",
-        "devshop/git-split": "self.version",
-        "devshop/github-api-cli": "self.version",
+        "devshop/git-split": "@dev",
+        "devshop/github-api-cli": "@dev",
         "devshop/bin-tools": "@dev",
-        "devshop/yaml-tasks": "self.version",
-        "devshop/power-process": "self.version",
-        "drupal/provision": "^4.0@alpha"
+        "devshop/yaml-tasks": "@dev",
+        "devshop/power-process": "@dev",
+        "drupal/provision": "4.x-dev"
     },
     "replace": {
-        "devshop/yaml-tasks": "self.version",
         "drupal/drupal": "*"
     },
     "require-dev": {
-        "composer/composer": "^1.9"
     },
     "suggest": {
         "mouf/nodejs-installer": "Use to install nodejs into the devshop bin dir using composer."
@@ -105,17 +103,35 @@
                 "src/DevShop/Component/GitSplit": "https://github.com/devshop-packages/git-split.git",
                 "src/DevShop/Component/PowerProcess": "https://github.com/devshop-packages/power-process.git",
                 "src/DevShop/Component/YamlTasks": "https://github.com/devshop-packages/yaml-tasks.git",
-                "src/DevShop/Component/DevShopControlTemplate": "https://github.com/devshop-packages/devshop-control-template.git",
-                "install": "https://github.com/opendevshop/devshop-install.git"
+                "src/DevShop/Component/ControlProject": "https://github.com/devshop-packages/devshop-control-project.git"
             }
         }
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
     "scripts": {
-        "post-install-cmd": [
-        ],
         "pre-update-cmd": [
+        ],
+        "uninstall": [
+            "echo 'Removing all vendor code...'",
+            "rm -rf vendor bin/*",
+            "echo 'Done.'"
+        ],
+        "reinstall": [
+            "@uninstall",
+            "@composer install --prefer-source --ansi"
+        ],
+        "develop:prepare": [
+            "DevShop\\Composer::prepareDevelopmentEnvironment"
+        ],
+        "develop:status": [
+            "DevShop\\Composer::gitStatus"
+        ],
+        "post-install-cmd": [
+            "DevShop\\Composer::installControl"
+        ],
+        "post-update-cmd": [
+            "DevShop\\Composer::updateControl"
         ],
         "roles:update": [
             "DevShop\\Composer::updateRoles"

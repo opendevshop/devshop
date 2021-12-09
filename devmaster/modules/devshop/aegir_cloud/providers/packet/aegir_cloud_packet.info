@@ -1,0 +1,6 @@
+name = Aegir Cloud: Packet
+description = Launches servers in Packet.
+core = 7.x
+package = Aegir Cloud
+
+dependencies[] = aegir_cloud

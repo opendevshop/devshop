@@ -70,7 +70,9 @@ function devshop_projects_node_load($nodes, $types) {
       // To test out constantly changing tasks, uncomment this line.
       //        $node->task_status = rand(-1, 3);
       $node->status_class = devshop_task_status_class($node->task_status);
+      $node->status_bootstrap_class = devshop_task_status_bootstrap_class($node->task_status);
       $node->status_name = _hosting_parse_error_code($node->task_status);
+      $node->status_slug = strtolower($node->status_name);
 
       // Override "ago" text.
       $node->ago = format_interval(time() - $node->executed,

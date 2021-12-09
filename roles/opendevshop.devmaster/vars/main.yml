@@ -1,5 +1,9 @@
 ---
-empty_string: ""
+
+# Default server hostname. Will be set if `server_hostname` var is not set.
+# Used in Docker build or image build process
+default_server_hostname: devshop.local.computer
+
 
 # Add hosting-queue-runner to supervisor programs.
 supervisor_programs:
