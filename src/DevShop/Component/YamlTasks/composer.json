@@ -17,7 +17,7 @@
     ],
     "require": {
         "ext-json": "*",
-        "composer-plugin-api": "^2.0",
+        "composer-plugin-api": "^1.0 || ^2.0",
         "consolidation/robo": "^1",
         "devshop/power-process": "^1.6",
         "knplabs/github-api": "^1.4",
