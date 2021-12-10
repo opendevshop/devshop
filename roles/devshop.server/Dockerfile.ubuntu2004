@@ -20,7 +20,7 @@ ENV DEVSHOP_ANSIBLE_GROUP_NAME devshop_server
 COPY $DEVSHOP_ANSIBLE_INVENTORY $DEVSHOP_ANSIBLE_INVENTORY_DESTINATION
 
 # Copy this roles dependencies into the image. Each role can decide what to copy in.
-COPY ./roles ${DEVSHOP_ANSIBLE_PATH}/roles
+# COPY ./roles ${DEVSHOP_ANSIBLE_PATH}/roles
 
 # COPY files in. It is the fastest and most reliable way to install the exact source code we expect.
 RUN rm -rf $DEVSHOP_PATH
