@@ -71,8 +71,7 @@
       tags: [always]
 
     - role: geerlingguy.mysql
-# @TODO: Is this change what caused everything to start failing?  https://github.com/opendevshop/devshop/issues/673
-      tags: [runtime]
+      tags: [always]
 
     - role: geerlingguy.repo-remi
       when: ansible_os_family == 'RedHat'
