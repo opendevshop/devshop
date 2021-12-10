@@ -17,6 +17,8 @@ ENV DEVSHOP_PATH /usr/share/devshop
 COPY ./ $DEVSHOP_PATH
 RUN echo "Copied DevShop Source. \nVersion: `cd $DEVSHOP_PATH && git log -1`"
 
+RUN ln -sf $DEVSHOP_PATH/ansible.cfg /etc/ansible/ansible.cfg
+
 # The command to run on container build
 ENV DEVSHOP_DOCKER_COMMAND_BUILD 'echo "\n\n DevShop Core Docker Image build complete!"'
 
