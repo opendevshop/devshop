@@ -192,15 +192,15 @@ jobs:
           echo "ANSIBLE_VERBOSITY=2" >> $GITHUB_ENV
           git switch --create ${{ github.head_ref }}
 
-      # Build "base"
-      - name: "Build devshop/base:${{ matrix.os }} Container"
-        working-directory: docker
-        run: docker-compose build base
-
-      # Build "ansible"
-      - name: "Build devshop/ansible:${{ matrix.os }} Container"
-        working-directory: docker
-        run: docker-compose build ansible
+#      # Build "base"
+#      - name: "Build devshop/base:${{ matrix.os }} Container"
+#        working-directory: docker
+#        run: docker-compose build base
+#
+#      # Build "ansible"
+#      - name: "Build devshop/ansible:${{ matrix.os }} Container"
+#        working-directory: docker
+#        run: docker-compose build ansible
 
       # Build "core"
       - name: "Build devshop/core:${{ matrix.os }} Container"

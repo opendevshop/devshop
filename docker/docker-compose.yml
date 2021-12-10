@@ -7,31 +7,32 @@
 version: '2.2'
 services:
 
-  # DevShop Base Image
-  # FROM ubuntu or centos
-  # The OS and SystemD changes to allow it to run in containers.
-  base:
-    image: "devshop/base:${OS:-latest}"
-    build:
-      context: ".."
-      dockerfile: "docker/base/Dockerfile.${OS:-ubuntu1804}"
-
-  # DevShop Ansible Image
-  # devshop/base + ansible + python
-  ansible:
-    image: "devshop/ansible:${OS:-latest}"
-    depends_on:
-      - base
-    build:
-      context: ".."
-      dockerfile: "docker/ansible/Dockerfile.${OS:-ubuntu1804}"
+# @TODO: Remove these once using GG's images works.
+#  # DevShop Base Image
+#  # FROM ubuntu or centos
+#  # The OS and SystemD changes to allow it to run in containers.
+#  base:
+#    image: "devshop/base:${OS:-latest}"
+#    build:
+#      context: ".."
+#      dockerfile: "docker/base/Dockerfile.${OS:-ubuntu1804}"
+#
+#  # DevShop Ansible Image
+#  # devshop/base + ansible + python
+#  ansible:
+#    image: "devshop/ansible:${OS:-latest}"
+#    depends_on:
+#      - base
+#    build:
+#      context: ".."
+#      dockerfile: "docker/ansible/Dockerfile.${OS:-ubuntu1804}"
 
   # DevShop Core Image
   # devshop/ansible + php + composer + devshop/cli
   core:
     image: "devshop/core:${OS:-latest}"
-    depends_on:
-      - ansible
+#    depends_on:
+#      - ansible
     build:
       context: ".."
       dockerfile: "docker/core/Dockerfile.${OS:-ubuntu1804}"

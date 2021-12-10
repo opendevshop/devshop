@@ -17,7 +17,7 @@ COPY ./docker/bin/run-quiet $bin_dir
 COPY ./docker/bin/docker-systemd-prepare $bin_dir
 COPY ./docker/bin/docker-systemd-entrypoint $bin_dir
 RUN chmod +x $bin_dir/*
-RUN run-quiet docker-systemd-prepare
+RUN docker-systemd-prepare
 
 VOLUME ["/sys/fs/cgroup", "/tmp", "/run"]
 

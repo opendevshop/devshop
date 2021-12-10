@@ -7,7 +7,7 @@
 #
 # This image is used so that every DevShop container built from `devshop/core` will have the same version of DevShop source, including the Ansible roles.
 #
-FROM devshop/ansible:ubuntu1804
+FROM geerlingguy/docker-ubuntu1804-ansible
 LABEL maintainer="Jon Pugh"
 
 # Path to DevShop source
