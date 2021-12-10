@@ -13,6 +13,9 @@ LABEL maintainer="Jon Pugh"
 # Path to DevShop source
 ENV DEVSHOP_PATH /usr/share/devshop
 
+# Ansible configuration path
+ENV DEVSHOP_ANSIBLE_PATH /etc/ansible
+
 # COPY files in. It is the fastest and most reliable way to install the exact source code we expect.
 COPY ./ $DEVSHOP_PATH
 RUN echo "Copied DevShop Source. \nVersion: `cd $DEVSHOP_PATH && git log -1`"
