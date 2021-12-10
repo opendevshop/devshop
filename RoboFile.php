@@ -236,7 +236,7 @@ class RoboFile extends \Robo\Tasks {
    * @option install-at-runtime Launch bare containers and then install devshop.
    * @option $build-command The command to run at the end of the docker build process. (Defaults to scripts/devshop-ansible-playbook)
    */
-  public function build($folder = 'roles', $service = 'devshop.server', $opts = [
+  public function build($folder = 'all', $service = 'devshop.server', $opts = [
       'docker-image' => 'devshop/server:latest',
       'from' => NULL,
       'build-command' => NULL,
@@ -399,8 +399,8 @@ class RoboFile extends \Robo\Tasks {
     'build-command' => NULL,
     'compose-file' => NULL,
     'force-reinstall' => FALSE,
-    'build-folder' => 'roles',
-    'build-service' => 'devshop.server',
+    'build-folder' => 'all',
+    'build-service' => '',
   ]) {
 
     $this->yell("Welcome to your DevShop Development environment!");
