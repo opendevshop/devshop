@@ -22,16 +22,16 @@ function devshop_projects_form_hosting_task_confirm_form_alter(&$form, $form_sta
   if (empty($node->project)) {
     return;
   }
-
   $project = $node->project;
   $environment = $node->environment;
 
   $current_ref_type_class = $environment->git_ref_type == 'tag' ? 'tag' : 'code-fork';
 
-  $form_params['environment'] = array(
+  $form['parameters']['environment'] = array(
     '#type' => 'item',
+    '#weight' => -1,
     '#title' => t('Environment'),
-    '#markup' => l($environment->default_domain, 'http://' . $environment->default_domain, array('attributes' => array('target' => '_blank'))) . " &nbsp; <i class='fa fa-{$current_ref_type_class}'></i> " . $environment->git_ref,
+    '#markup' => l($environment->uri,  $environment->url, array('attributes' => array('target' => '_blank'))) . " &nbsp; <i class='fa fa-{$current_ref_type_class}'></i> " . $environment->git_ref,
     '#description' => t('The environment URL and current git reference.'),
   );
 
@@ -77,7 +77,12 @@ function devshop_projects_form_hosting_task_confirm_form_alter(&$form, $form_sta
   // Merge in the deploy hooks form.
   $deploy_hooks_form = devshop_environment_deploy_hooks_form($project, $environment, 'deploy');
   $form['parameters']  = array_merge($form_params, $deploy_hooks_form);
-//  $form = array_merge($form, $deploy_hooks_form);
 
+  // Merge in the deploy hooks form.
+  $deploy_hooks_form = devshop_environment_deploy_hooks_form($project, $environment, 'deploy');
+
+  foreach (element_children($deploy_hooks_form) as $i) {
+    $form['parameters'][$i] = $deploy_hooks_form[$i];
+  }
   return $form;
 }

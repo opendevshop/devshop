@@ -6,7 +6,7 @@ use Symfony\Component\Process\Exception\ProcessFailedException;
 /**
  * Implementation of hook_post_hosting_TASK_TYPE_task() for devshop deploy tasks.
  */
-function devshop_acquia_post_hosting_devshop_deploy_task($task, $data) {
+function devshop_acquia_post_hosting_deploy_task($task, $data) {
   drush_run_acquia_hook($task);
 }
 
@@ -52,7 +52,7 @@ function drush_run_acquia_hook($task) {
     $hooks[] = 'post-code-deploy';
   }
   // If it is automatic, it's a "post-code-update"
-  elseif ($task->task_type == 'devshop_deploy') {
+  elseif ($task->task_type == 'deploy') {
     $hooks[] = 'post-code-update';
   }
   // If task is sync...

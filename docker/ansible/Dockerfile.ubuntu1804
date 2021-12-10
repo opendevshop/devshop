@@ -7,7 +7,7 @@ ENV DEVSHOP_ANSIBLE_PATH /etc/ansible
 # Install Ansible
 # The script is put into /tmp because it is only needed once.
 COPY ./install/devshop-install-prerequisites.sh /tmp/devshop-install-prerequisites.sh
-RUN run-quiet bash /tmp/devshop-install-prerequisites.sh
+RUN bash /tmp/devshop-install-prerequisites.sh
 
 # Prepare Ansible folder, config & inventory
 RUN mkdir -p ${DEVSHOP_ANSIBLE_PATH}

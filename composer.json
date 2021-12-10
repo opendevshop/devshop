@@ -129,9 +129,6 @@
         "develop:status": [
             "DevShop\\Composer::gitStatus"
         ],
-        "post-update-cmd": [
-            "DevShop\\Composer::updateControl"
-        ],
         "roles:update": [
             "DevShop\\Composer::updateRoles"
         ]
