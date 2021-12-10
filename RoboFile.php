@@ -60,7 +60,7 @@ class RoboFile extends \Robo\Tasks {
 
     // Used in docker compose image.
     'from' => 'FROM_IMAGE',
-    'os' => 'OS_VERSION',
+    'os' => 'OS',
     'dockerfile' => 'DOCKERFILE',
     'compose-file' => 'COMPOSE_FILE',
   ];
