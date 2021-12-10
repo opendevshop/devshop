@@ -76,6 +76,12 @@ services:
       - /var/lib/mysql
       - /var/logs/aegir
 
+      - ./:/usr/share/devshop:delegated
+      - ./aegir-home:/var/aegir:delegated
+      - ./roles/devshop.server/inventory:/etc/ansible/hosts
+
+      - $HOME/.ssh:/var/aegir/.ssh
+
     # Resource allocation.
     # 4GB, 2CPUs is a good minimum.
 
