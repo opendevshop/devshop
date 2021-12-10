@@ -77,6 +77,26 @@ prepare_ubuntu1804() {
   echo exit 0 > /usr/sbin/policy-rc.d
 }
 
+prepare_ubuntu2004() {
+
+  sed -i 's/^\($ModLoad imklog\)/#\1/' /etc/rsyslog.conf
+  locale-gen en_US.UTF-8
+
+  # Install the initctl faker script from @geerlingguy
+  initctl_faker_url="https://raw.githubusercontent.com/geerlingguy/docker-ubuntu2004-ansible/master/initctl_faker"
+  initctl_faker_path="/sbin/initctl"
+
+  rm -fr $initctl_faker_path
+  curl -ksSL $initctl_faker_url -o $initctl_faker_path
+  chmod +x $initctl_faker_path
+
+  # Remove unnecessary getty and udev targets that result in high CPU usage when using
+  # multiple containers with Molecule (https://github.com/ansible/molecule/issues/1104)
+  rm -f /lib/systemd/system/systemd*udev* \
+    && rm -f /lib/systemd/system/getty.target
+
+}
+
 prepare_centos7() {
   # Install systemd -- See https://hub.docker.com/_/centos/
   yum -y update; yum clean all; \
