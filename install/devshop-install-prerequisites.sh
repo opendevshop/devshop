@@ -5,7 +5,7 @@ PATH="$DIR:$PATH"
 
 # Set to "ansible==2.10" test other versions.
 ANSIBLE_PACKAGE="ansible"
-CRYPTOGRAPHY_PACKAGE="cryptography"}
+CRYPTOGRAPHY_PACKAGE="cryptography"
 pip_packages="$ANSIBLE_PACKAGE $CRYPTOGRAPHY_PACKAGE"
 
 #
