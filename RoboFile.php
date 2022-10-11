@@ -529,7 +529,7 @@ class RoboFile extends \Robo\Tasks {
         $this->yell('Mounting Docker Volumes... Use --ci to disable volumes.', 40, 'blue');
 
         // Set COMPOSE_FILE to include volumes.
-        $opts['compose-file'] = 'docker-compose.yml:docker-compose.volumes.yml';
+        $opts['compose-file'] = 'roles/docker-compose.yml';
 
         if (!file_exists('aegir-home') && !$opts['skip-source-prep']) {
           $this->say('<warning>The aegir-home folder not present. Running prepare source code command.</warning>');
@@ -555,7 +555,7 @@ class RoboFile extends \Robo\Tasks {
         $test_command = "/usr/share/devshop/tests/devshop-tests-upgrade.sh";
       }
       else {
-        $cmd[] = "docker-compose up --detach --force-recreate devshop";
+        $cmd[] = "docker-compose up --detach --force-recreate devshop.server";
         if (!$opts['no-follow']) {
           $cmd[] = "docker-compose logs -f";
         }
@@ -614,6 +614,7 @@ class RoboFile extends \Robo\Tasks {
       }
 
       if (!empty($cmd)) {
+//        $workdir = 'roles';
         foreach ($cmd as $command) {
           $provision_io = new \DevShop\Component\PowerProcess\PowerProcessStyle($this->input, $this->output);
           $process = new \DevShop\Component\PowerProcess\PowerProcess($command, $provision_io);
@@ -687,9 +688,9 @@ class RoboFile extends \Robo\Tasks {
       // Remove devmaster site folder
       $version = self::DEVSHOP_LOCAL_VERSION;
       $uri = self::DEVSHOP_LOCAL_URI;
-      $this->_exec("docker-compose exec devshop rm -rf /usr/share/devshop/src/DevShop/Control/web/sites/{$uri}");
-      $this->_exec('docker-compose kill');
-      $this->_exec('docker-compose rm -fv');
+      $this->_exec("cd roles && docker-compose exec devshop rm -rf /usr/share/devshop/src/DevShop/Control/web/sites/{$uri}");
+      $this->_exec('cd roles && docker-compose kill');
+      $this->_exec('cd roles && docker-compose rm -fv');
     }
 
     // Don't run when -n is specified,
@@ -754,7 +755,7 @@ class RoboFile extends \Robo\Tasks {
    * Run all devshop tests on the containers.
    */
   public function test($user = 'aegir', $opts = array(
-    'compose-file' => 'docker-compose.yml:docker-compose.volumes.yml',
+    'compose-file' => 'roles/docker-compose.yml',
     'reinstall' => FALSE
   )) {
     $is_tty = !empty($_SERVER['XDG_SESSION_TYPE']) && $_SERVER['XDG_SESSION_TYPE'] == 'tty';
