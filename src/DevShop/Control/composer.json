@@ -80,7 +80,8 @@
         "npm-asset/modernizr": "^3.11",
         "npm-asset/underscore": "^1.10",
         "oomphinc/composer-installers-extender": "^2.0",
-        "toin0u/digitalocean-v2": "~2.0"
+        "toin0u/digitalocean-v2": "~2.0",
+        "sensiolabs/ansi-to-html": "^1.2"
     },
     "conflict": {
         "drupal/core": "8.*"
