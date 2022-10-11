@@ -95,7 +95,12 @@
         "platform": {
             "php": "7.1.3"
         },
-        "sort-packages": true
+        "sort-packages": false,
+        "allow-plugins": {
+          "composer/installers": true,
+          "cweagans/composer-patches": true,
+          "drupal-composer/preserve-paths": true
+        }
     },
     "autoload": {
         "classmap": [
