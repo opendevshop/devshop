@@ -15,6 +15,9 @@ devshop-log "Drush Version: $(drush --version)"
 #echo "Node Version:     " && node --version
 #echo "NPM Version:      " && npm --version
 
+devshop-log "Verifying Hostmaster Platform (includes composer install)..."
+drush @hostmaster provision-verify
+
 # Run remaining tasks from install process.
 # Pause the task queue.
 devshop-log "Disabling hosting queue..."
