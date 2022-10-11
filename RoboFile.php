@@ -740,13 +740,14 @@ class RoboFile extends \Robo\Tasks {
   public function shell($user = 'aegir') {
 
     if ($user) {
-        $process = new \Symfony\Component\Process\Process("docker-compose exec --user $user devshop bash");
+        $process = new \Symfony\Component\Process\Process("docker-compose exec --user $user devshop.server bash");
     }
     else {
-        $process = new \Symfony\Component\Process\Process("docker-compose exec devshop bash");
+        $process = new \Symfony\Component\Process\Process("docker-compose exec devshop.server bash");
     }
     $process->setTty(TRUE);
     $process->setTimeout(NULL);
+    $process->setEnv(['COMPOSE_FILE' => './roles/docker-compose.yml']);
     $process->run();
     return $process->getExitCode();
   }
