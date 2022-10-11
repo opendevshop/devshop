@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7c33d4149c4116c9acb13deb3e342b32",
+    "content-hash": "73e98db77c002f8719248bb5a489758a",
     "packages": [
         {
             "name": "composer/installers",
@@ -855,6 +855,7 @@
                 "issues": "https://github.com/cpliakas/git-wrapper/issues",
                 "source": "https://github.com/cpliakas/git-wrapper/tree/master"
             },
+            "abandoned": "symplify/git-wrapper",
             "time": "2016-04-19T16:12:33+00:00"
         },
         {
@@ -1554,12 +1555,12 @@
                     "homepage": "https://www.drupal.org/user/788032"
                 },
                 {
-                    "name": "metzlerd",
-                    "homepage": "https://www.drupal.org/user/32494"
+                    "name": "claudiu.cristea",
+                    "homepage": "https://www.drupal.org/user/56348"
                 },
                 {
-                    "name": "yalet",
-                    "homepage": "https://www.drupal.org/user/2413764"
+                    "name": "metzlerd",
+                    "homepage": "https://www.drupal.org/user/32494"
                 }
             ],
             "description": "Provides single sign-on Central Authentication Services (CAS)",
@@ -1691,16 +1692,16 @@
                     "homepage": "https://www.drupal.org/user/502018"
                 },
                 {
-                    "name": "arshadcn",
-                    "homepage": "https://www.drupal.org/user/571032"
-                },
-                {
                     "name": "kalman.hosszu",
                     "homepage": "https://www.drupal.org/user/267481"
                 },
                 {
                     "name": "nagy.balint",
                     "homepage": "https://www.drupal.org/user/1763952"
+                },
+                {
+                    "name": "shadcn",
+                    "homepage": "https://www.drupal.org/user/571032"
                 },
                 {
                     "name": "supercabbageuk",
@@ -1781,6 +1782,7 @@
             },
             "require-dev": {
                 "drupal/advanced_help": "*",
+                "drupal/color-color": "*",
                 "drupal/page_manager": "*",
                 "drupal/panels": "*",
                 "drupal/views": "*"
@@ -1802,16 +1804,16 @@
             ],
             "authors": [
                 {
-                    "name": "EclipseGc",
-                    "homepage": "https://www.drupal.org/user/61203"
-                },
-                {
                     "name": "damiankloip",
                     "homepage": "https://www.drupal.org/user/1037976"
                 },
                 {
                     "name": "dawehner",
                     "homepage": "https://www.drupal.org/user/99340"
+                },
+                {
+                    "name": "EclipseGc",
+                    "homepage": "https://www.drupal.org/user/61203"
                 },
                 {
                     "name": "esmerel",
@@ -1966,11 +1968,15 @@
                 "reference": "7.77",
                 "shasum": "3a1bc25eb3577b2670bc35a821626a45b217eb58"
             },
+            "require-dev": {
+                "drupal/color-color": "*",
+                "drupal/rdf": "*"
+            },
             "type": "drupal-core",
             "extra": {
                 "drupal": {
                     "version": "7.77",
-                    "datestamp": "1607003422",
+                    "datestamp": "1611163112",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -1983,6 +1989,22 @@
             ],
             "authors": [
                 {
+                    "name": "alexpott",
+                    "homepage": "https://www.drupal.org/user/157725"
+                },
+                {
+                    "name": "bnjmnm",
+                    "homepage": "https://www.drupal.org/user/2369194"
+                },
+                {
+                    "name": "catch",
+                    "homepage": "https://www.drupal.org/user/35733"
+                },
+                {
+                    "name": "ckrina",
+                    "homepage": "https://www.drupal.org/user/1206650"
+                },
+                {
                     "name": "Dries",
                     "homepage": "https://www.drupal.org/user/1"
                 },
@@ -1991,32 +2013,16 @@
                     "homepage": "https://www.drupal.org/user/3"
                 },
                 {
+                    "name": "effulgentsia",
+                    "homepage": "https://www.drupal.org/user/78040"
+                },
+                {
                     "name": "Fabianx",
                     "homepage": "https://www.drupal.org/user/693738"
                 },
                 {
                     "name": "Gábor Hojtsy",
                     "homepage": "https://www.drupal.org/user/4166"
-                },
-                {
-                    "name": "alexpott",
-                    "homepage": "https://www.drupal.org/user/157725"
-                },
-                {
-                    "name": "catch",
-                    "homepage": "https://www.drupal.org/user/35733"
-                },
-                {
-                    "name": "cilefen",
-                    "homepage": "https://www.drupal.org/user/1850070"
-                },
-                {
-                    "name": "drumm",
-                    "homepage": "https://www.drupal.org/user/3064"
-                },
-                {
-                    "name": "effulgentsia",
-                    "homepage": "https://www.drupal.org/user/78040"
                 },
                 {
                     "name": "larowlan",
@@ -2031,8 +2037,12 @@
                     "homepage": "https://www.drupal.org/user/255969"
                 },
                 {
-                    "name": "plach",
-                    "homepage": "https://www.drupal.org/user/183211"
+                    "name": "poker10",
+                    "homepage": "https://www.drupal.org/user/272316"
+                },
+                {
+                    "name": "quietone",
+                    "homepage": "https://www.drupal.org/user/2572884"
                 },
                 {
                     "name": "webchick",
@@ -2108,6 +2118,10 @@
                 {
                     "name": "mglaman",
                     "homepage": "https://www.drupal.org/user/2416470"
+                },
+                {
+                    "name": "TR",
+                    "homepage": "https://www.drupal.org/user/202830"
                 }
             ],
             "description": "Enables modules to work with any entity type and to provide entities.",
@@ -2188,10 +2202,6 @@
                 {
                     "name": "nedjo",
                     "homepage": "https://www.drupal.org/user/4481"
-                },
-                {
-                    "name": "tim.plunkett",
-                    "homepage": "https://www.drupal.org/user/241634"
                 }
             ],
             "description": "Provides feature management for Drupal.",
@@ -2232,7 +2242,7 @@
                 },
                 "drupal": {
                     "version": "7.x-4.x-dev",
-                    "datestamp": "1610052735",
+                    "datestamp": "1629902387",
                     "security-coverage": {
                         "status": "not-covered",
                         "message": "Dev releases are not covered by Drupal security advisories."
@@ -2894,14 +2904,6 @@
             ],
             "authors": [
                 {
-                    "name": "RobLoach",
-                    "homepage": "https://www.drupal.org/user/61114"
-                },
-                {
-                    "name": "Victor Safronov",
-                    "homepage": "https://www.drupal.org/user/632950"
-                },
-                {
                     "name": "ericduran",
                     "homepage": "https://www.drupal.org/user/244460"
                 },
@@ -2910,12 +2912,20 @@
                     "homepage": "https://www.drupal.org/user/17190"
                 },
                 {
-                    "name": "markcarver",
-                    "homepage": "https://www.drupal.org/user/501638"
+                    "name": "mcdruid",
+                    "homepage": "https://www.drupal.org/user/255969"
+                },
+                {
+                    "name": "RobLoach",
+                    "homepage": "https://www.drupal.org/user/61114"
                 },
                 {
                     "name": "sun",
                     "homepage": "https://www.drupal.org/user/54136"
+                },
+                {
+                    "name": "Victor Safronov",
+                    "homepage": "https://www.drupal.org/user/632950"
                 },
                 {
                     "name": "webchick",
@@ -3058,7 +3068,7 @@
             "extra": {
                 "drupal": {
                     "version": "7.x-1.7",
-                    "datestamp": "1449520439",
+                    "datestamp": "1643223773",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -3083,6 +3093,10 @@
                     "homepage": "https://www.drupal.org/user/902554"
                 },
                 {
+                    "name": "dsnopek",
+                    "homepage": "https://www.drupal.org/user/266527"
+                },
+                {
                     "name": "eatings",
                     "homepage": "https://www.drupal.org/user/105524"
                 },
@@ -3093,10 +3107,6 @@
                 {
                     "name": "meridiandigital",
                     "homepage": "https://www.drupal.org/user/763362"
-                },
-                {
-                    "name": "rsmylski",
-                    "homepage": "https://www.drupal.org/user/1324348"
                 },
                 {
                     "name": "tkoleary",
@@ -3544,18 +3554,6 @@
             ],
             "authors": [
                 {
-                    "name": "DamienMcKenna",
-                    "homepage": "https://www.drupal.org/user/108450"
-                },
-                {
-                    "name": "Lendude",
-                    "homepage": "https://www.drupal.org/user/690914"
-                },
-                {
-                    "name": "RenatoG",
-                    "homepage": "https://www.drupal.org/user/3326031"
-                },
-                {
                     "name": "bojanz",
                     "homepage": "https://www.drupal.org/user/86106"
                 },
@@ -3566,6 +3564,10 @@
                 {
                     "name": "damiankloip",
                     "homepage": "https://www.drupal.org/user/1037976"
+                },
+                {
+                    "name": "DamienMcKenna",
+                    "homepage": "https://www.drupal.org/user/108450"
                 },
                 {
                     "name": "dawehner",
@@ -3580,8 +3582,16 @@
                     "homepage": "https://www.drupal.org/user/164022"
                 },
                 {
+                    "name": "Lendude",
+                    "homepage": "https://www.drupal.org/user/690914"
+                },
+                {
                     "name": "merlinofchaos",
                     "homepage": "https://www.drupal.org/user/26979"
+                },
+                {
+                    "name": "RenatoG",
+                    "homepage": "https://www.drupal.org/user/3326031"
                 },
                 {
                     "name": "tim.plunkett",
@@ -3630,16 +3640,12 @@
             ],
             "authors": [
                 {
-                    "name": "Graber",
-                    "homepage": "https://www.drupal.org/user/1599440"
-                },
-                {
-                    "name": "Jon Pugh",
-                    "homepage": "https://www.drupal.org/user/17028"
-                },
-                {
                     "name": "bojanz",
                     "homepage": "https://www.drupal.org/user/86106"
+                },
+                {
+                    "name": "Graber",
+                    "homepage": "https://www.drupal.org/user/1599440"
                 },
                 {
                     "name": "infojunkie",
@@ -3648,6 +3654,10 @@
                 {
                     "name": "joelpittet",
                     "homepage": "https://www.drupal.org/user/160302"
+                },
+                {
+                    "name": "Jon Pugh",
+                    "homepage": "https://www.drupal.org/user/17028"
                 }
             ],
             "description": "Provides a way of selecting multiple rows and applying operations to them.",
@@ -3895,12 +3905,12 @@
                 }
             },
             "autoload": {
-                "psr-4": {
-                    "GuzzleHttp\\": "src/"
-                },
                 "files": [
                     "src/functions_include.php"
-                ]
+                ],
+                "psr-4": {
+                    "GuzzleHttp\\": "src/"
+                }
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -3957,12 +3967,12 @@
                 }
             },
             "autoload": {
-                "psr-4": {
-                    "GuzzleHttp\\Promise\\": "src/"
-                },
                 "files": [
                     "src/functions_include.php"
-                ]
+                ],
+                "psr-4": {
+                    "GuzzleHttp\\Promise\\": "src/"
+                }
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -4021,12 +4031,12 @@
                 }
             },
             "autoload": {
-                "psr-4": {
-                    "GuzzleHttp\\Psr7\\": "src/"
-                },
                 "files": [
                     "src/functions_include.php"
-                ]
+                ],
+                "psr-4": {
+                    "GuzzleHttp\\Psr7\\": "src/"
+                }
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -5969,12 +5979,12 @@
                 }
             },
             "autoload": {
-                "psr-4": {
-                    "Symfony\\Polyfill\\Ctype\\": ""
-                },
                 "files": [
                     "bootstrap.php"
-                ]
+                ],
+                "psr-4": {
+                    "Symfony\\Polyfill\\Ctype\\": ""
+                }
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -6050,12 +6060,12 @@
                 }
             },
             "autoload": {
-                "psr-4": {
-                    "Symfony\\Polyfill\\Intl\\Idn\\": ""
-                },
                 "files": [
                     "bootstrap.php"
-                ]
+                ],
+                "psr-4": {
+                    "Symfony\\Polyfill\\Intl\\Idn\\": ""
+                }
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -6135,12 +6145,12 @@
                 }
             },
             "autoload": {
-                "psr-4": {
-                    "Symfony\\Polyfill\\Intl\\Normalizer\\": ""
-                },
                 "files": [
                     "bootstrap.php"
                 ],
+                "psr-4": {
+                    "Symfony\\Polyfill\\Intl\\Normalizer\\": ""
+                },
                 "classmap": [
                     "Resources/stubs"
                 ]
@@ -6219,12 +6229,12 @@
                 }
             },
             "autoload": {
-                "psr-4": {
-                    "Symfony\\Polyfill\\Mbstring\\": ""
-                },
                 "files": [
                     "bootstrap.php"
-                ]
+                ],
+                "psr-4": {
+                    "Symfony\\Polyfill\\Mbstring\\": ""
+                }
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -6364,12 +6374,12 @@
                 }
             },
             "autoload": {
-                "psr-4": {
-                    "Symfony\\Polyfill\\Php72\\": ""
-                },
                 "files": [
                     "bootstrap.php"
-                ]
+                ],
+                "psr-4": {
+                    "Symfony\\Polyfill\\Php72\\": ""
+                }
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -6731,8 +6741,6 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "cweagans/composer-patches": 20,
-        "devshop/devmaster": 20,
         "drupal/admin_menu": 5,
         "drupal/aegir_config": 10,
         "drupal/cas_attributes": 5,
