@@ -39,6 +39,7 @@
         "drupal/drupal": "^7.62",
         "symfony/filesystem": "~2.7 || ^3",
         "webflo/drupal-finder": "^1.2.1",
+        "devshop/devmaster": "1.x-dev",
         "drupal/admin_menu": "@rc",
         "drupal/adminrole": "^1.1",
         "drupal/aegir_config": "@beta",
