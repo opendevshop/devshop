@@ -117,10 +117,6 @@
             "rm -rf vendor bin/*",
             "echo 'Done.'"
         ],
-        "reinstall": [
-            "@uninstall",
-            "@composer install --prefer-source --ansi"
-        ],
         "develop:prepare": [
             "DevShop\\Composer::prepareDevelopmentEnvironment"
         ],
