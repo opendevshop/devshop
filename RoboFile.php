@@ -529,7 +529,7 @@ class RoboFile extends \Robo\Tasks {
         $this->yell('Mounting Docker Volumes... Use --ci to disable volumes.', 40, 'blue');
 
         // Set COMPOSE_FILE to include volumes.
-        $opts['compose-file'] = 'roles/docker-compose.yml';
+        $opts['compose-file'] = 'roles/docker-compose.yml:roles/docker-compose.local.yml';
 
         if (!file_exists('aegir-home') && !$opts['skip-source-prep']) {
           $this->say('<warning>The aegir-home folder not present. Running prepare source code command.</warning>');
@@ -543,7 +543,7 @@ class RoboFile extends \Robo\Tasks {
       $test_command = '';
       if ($opts['test']) {
         // Do not run a playbook on docker-compose up, because it will launch as a separate process and we won't know when it ends.
-        $cmd[] = "docker-compose run devshop {$docker_command}";
+        $cmd[] = "docker-compose run devshop.server {$docker_command}";
         $env_run['DEVSHOP_DOCKER_COMMAND_RUN'] = $docker_command;
 
         $test_command = "su aegir --command /usr/share/devshop/tests/devshop-tests.sh";
@@ -551,7 +551,7 @@ class RoboFile extends \Robo\Tasks {
       // @TODO: The `--test-upgrade` command is NOT YET run in GitHub Actions.
       // The PR with the update hook can be used to finalize upgrade tests: https://github.com/opendevshop/devshop/pull/426
       elseif ($opts['test-upgrade']) {
-        $cmd[] = "docker-compose run --rm devshop {$docker_command}";
+        $cmd[] = "docker-compose run --rm devshop.server {$docker_command}";
         $test_command = "/usr/share/devshop/tests/devshop-tests-upgrade.sh";
       }
       else {
@@ -756,7 +756,7 @@ class RoboFile extends \Robo\Tasks {
    * Run all devshop tests on the containers.
    */
   public function test($user = 'aegir', $opts = array(
-    'compose-file' => 'roles/docker-compose.yml',
+    'compose-file' => 'roles/docker-compose.yml:roles/docker-compose.local.yml',
     'reinstall' => FALSE
   )) {
     $is_tty = !empty($_SERVER['XDG_SESSION_TYPE']) && $_SERVER['XDG_SESSION_TYPE'] == 'tty';
@@ -765,16 +765,16 @@ class RoboFile extends \Robo\Tasks {
     // If running in CI, create the test-artifacts directory and ensure ownership first.
     // @TODO: Move logic to a special CI container.
     if (!empty($_SERVER['CI'])) {
-      $commands[] = "docker-compose exec $no_tty devshop mkdir -p /var/aegir/test-artifacts";
-      $commands[] = "docker-compose exec $no_tty devshop chown aegir:aegir /var/aegir/test-artifacts -R";
-      $commands[] = "docker-compose exec $no_tty devshop chmod 777 /var/aegir/test-artifacts -R";
+      $commands[] = "docker-compose exec $no_tty devshop.server mkdir -p /var/aegir/test-artifacts";
+      $commands[] = "docker-compose exec $no_tty devshop.server chown aegir:aegir /var/aegir/test-artifacts -R";
+      $commands[] = "docker-compose exec $no_tty devshop.server chmod 777 /var/aegir/test-artifacts -R";
     }
 
     if ($opts['reinstall']) {
-      $commands[] = "docker-compose exec $no_tty --user $user devshop drush @hostmaster provision-install --force-reinstall";
+      $commands[] = "docker-compose exec $no_tty --user $user devshop.server drush @hostmaster provision-install --force-reinstall";
     }
 
-    $commands[] = "docker-compose exec $no_tty --user $user devshop /usr/share/devshop/tests/devshop-tests.sh";
+    $commands[] = "docker-compose exec $no_tty --user $user devshop.server /usr/share/devshop/tests/devshop-tests.sh";
     $provision_io = new \DevShop\Component\PowerProcess\PowerProcessStyle($this->input, $this->output);
     foreach ($commands as $command) {
       $process = new \DevShop\Component\PowerProcess\PowerProcess($command, $provision_io);
@@ -801,7 +801,7 @@ class RoboFile extends \Robo\Tasks {
    */
   public function login($user = 'aegir') {
       // @TODO: Figure out why PATH is gone.
-    $this->_exec("docker-compose exec --user $user -T devshop /usr/share/devshop/bin/drush @hostmaster uli");
+    $this->_exec("docker-compose exec --user $user -T devshop.server /usr/share/devshop/bin/drush @hostmaster uli");
   }
 
   /**
