@@ -137,10 +137,6 @@
           "rm -rf vendor web/profiles web/includes web/misc web/modules web/scripts web/themes web/sites/all/modules/contrib web/sites/all/modules/themes",
           "rm -f web/*; rm -f web/.* || true",
           "echo 'Done.'"
-        ],
-        "reinstall": [
-          "@uninstall",
-          "@composer update --no-dev --no-progress --prefer-source"
         ]
     },
     "extra": {
