@@ -756,10 +756,10 @@
             "dist": {
                 "type": "path",
                 "url": "src/DevShop/Component/GitSplit",
-                "reference": "ba83e24dd9b30065327d35b025284e5756dec913"
+                "reference": "c6e506499103d6dcf8bc64eb43d2021365a5ac5c"
             },
             "require": {
-                "composer-plugin-api": "^2.0",
+                "composer-plugin-api": "^1.0 || ^2.0",
                 "php": "^7.1"
             },
             "require-dev": {
@@ -902,10 +902,10 @@
             "dist": {
                 "type": "path",
                 "url": "src/DevShop/Component/YamlTasks",
-                "reference": "633e37453011ba9ec3aa0f9dbb4c116aa3e489e4"
+                "reference": "c99379353613765db9cce56f462c751edd0fd505"
             },
             "require": {
-                "composer-plugin-api": "^2.0",
+                "composer-plugin-api": "^1.0 || ^2.0",
                 "consolidation/robo": "^1",
                 "devshop/power-process": "^1.6",
                 "ext-json": "*",
@@ -3673,5 +3673,5 @@
     "platform-overrides": {
         "php": "7.1.3"
     },
-    "plugin-api-version": "2.0.0"
+    "plugin-api-version": "2.1.0"
 }
