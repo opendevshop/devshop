@@ -32,6 +32,11 @@ services:
     #
     image: ${DEVSHOP_DOCKER_IMAGE:-devshop/server:latest}
     command: ${DOCKER_COMMAND:-env}
+
+    # Uncomment to launch a plain systemd docker command.
+    # entrypoint: ""
+    # command: /lib/systemd/systemd
+
     ports:
       - "80:80"
       - "2222:22"
