@@ -30,8 +30,6 @@ services:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
       - /var/lib/mysql
       - /var/logs/aegir
-      - ../.github/test-artifacts:${DEVSHOP_TESTS_ARTIFACTS_PATH:-/var/aegir/test-artifacts}
-      - $HOME/.ssh:/var/aegir/.ssh
 
     environment:
       # @TODO: Change back to devshop.local.computer
