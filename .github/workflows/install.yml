@@ -45,7 +45,7 @@ jobs:
 
     - name: Confirm DevShop Installation
       run: |
-        docker exec install-server-test devshop login
+        docker exec -u aegir install-server-test devshop login
         wget --output-file=artifact-install-script-frontpage.html http://install-test.devshop.local.computer
 
     - name: Upload Artifacts
