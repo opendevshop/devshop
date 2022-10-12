@@ -16,13 +16,18 @@
     }
   ],
   "require": {
-    "php": "^7.1",
+    "php": "^8.0",
     "consolidation/robo": "^1.0",
-    "knplabs/github-api": "^1.0",
-    "devshop/composer-common": "1.x-dev"
+    "knplabs/github-api": "*",
+    "devshop/composer-common": "1.x-dev",
+    "guzzlehttp/guzzle": "*"
   },
-  "require-dev": {
-  },
+  "repositories": [
+    {
+      "type": "path",
+      "url": "../ComposerCommon"
+    }
+  ],
   "extra": {
     "branch-alias": {
       "dev-master": "1.x-dev"

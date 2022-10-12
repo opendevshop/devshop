@@ -16,7 +16,7 @@
     }
   ],
   "require": {
-    "php": "^7.1",
+    "php": "^8.0",
     "consolidation/robo": "^1.0",
     "devshop/composer-common": "1.x-dev",
     "eloquent/composer-config-reader": "^2.1"

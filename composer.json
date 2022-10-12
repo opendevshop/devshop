@@ -17,7 +17,7 @@
         }
     ],
     "require": {
-        "php": "^7.1",
+        "php": "^8.0",
         "knplabs/github-api": "^1.4",
         "drush/drush": "^8",
         "ext-json": "*",
@@ -83,7 +83,7 @@
     "config": {
         "bin-dir": "bin",
         "platform": {
-            "php": "7.1.3"
+            "php": "8.0.24"
         },
         "sort-packages:": "true",
         "allow-plugins": {
