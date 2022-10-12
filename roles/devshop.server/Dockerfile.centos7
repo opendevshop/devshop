@@ -37,7 +37,7 @@ RUN \
   echo "Roles Directory: `ls -la ${DEVSHOP_ANSIBLE_PATH}/roles`" &&\
   echo "Ansible Inventory: `cat ${DEVSHOP_ANSIBLE_PATH}/hosts`" &&\
   echo "Ansible Inventory: `ansible-inventory --yaml --list`" &&\
-  echo "Ansible Playbook: `cat ${DEVSHOP_ANSIBLE_PATH}/play.yml`"
+  echo "Ansible Playbook: `cat ${ANSIBLE_PLAYBOOK}`"
 
 # Run ansible-playbook again with build-time options.
 RUN echo "Running $DEVSHOP_DOCKER_COMMAND_BUILD ...\n" && \
