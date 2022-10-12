@@ -12,4 +12,3 @@ services:
       - ../.github/test-artifacts:${DEVSHOP_TESTS_ARTIFACTS_PATH:-/var/aegir/test-artifacts}
       - $HOME/.ssh:/var/aegir/.ssh
       - ../:/usr/share/devshop
-      - ../.github/test-artifacts:${DEVSHOP_TESTS_ARTIFACTS_PATH:-/var/aegir/test-artifacts}
