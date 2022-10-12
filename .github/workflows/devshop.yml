@@ -45,7 +45,7 @@ jobs:
       OS: "${{ matrix.os }}"
       HOSTNAME: "devshop.${{ github.event.pull_request.number }}.${{ matrix.os }}.actions.github.com"
       ANSIBLE_EXTRA_VARS: "${{ matrix.vars }}"
-      COMPOSE_FILE: "docker-compose.yml:docker-compose.local.yml"
+#      COMPOSE_FILE: "docker-compose.yml:docker-compose.local.yml"
 
     runs-on: ubuntu-18.04
     steps:
