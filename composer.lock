@@ -821,13 +821,12 @@
             "dist": {
                 "type": "path",
                 "url": "src/DevShop/Component/ComposerCommon",
-                "reference": "09864eb1570ece2db282e30c83ce0301352af87d"
+                "reference": "bc4157992673aa3132002c174b276c3b10160b53"
             },
             "require": {
                 "consolidation/robo": "^1.0",
                 "guzzlehttp/guzzle": "7.5.x-dev",
                 "knplabs/github-api": "3.9.x-dev",
-                "php": "^8.0",
                 "teqneers/php-stream-wrapper-for-git": "^2.0@dev"
             },
             "type": "library",
@@ -905,11 +904,10 @@
             "dist": {
                 "type": "path",
                 "url": "src/DevShop/Component/GitSplit",
-                "reference": "83fe281ca6b344198aa7a734f4654d0748e68811"
+                "reference": "98329bd13d637c3d873fece434c4fbe1ca49918a"
             },
             "require": {
-                "composer-plugin-api": "^1.0 || ^2.0",
-                "php": "^8.0"
+                "composer-plugin-api": "^1.0 || ^2.0"
             },
             "require-dev": {
                 "symfony/console": "^4.4|^5.0"
@@ -954,14 +952,13 @@
             "dist": {
                 "type": "path",
                 "url": "src/DevShop/Component/GitHubApiCli",
-                "reference": "a4dd565400e04fd4fff68cd8cfe61dc7d1ce769b"
+                "reference": "a63d6495066b41f63d50299c4732edb115bc5523"
             },
             "require": {
                 "consolidation/robo": "^1.0",
                 "devshop/composer-common": "1.x-dev",
                 "guzzlehttp/guzzle": "*",
-                "knplabs/github-api": "*",
-                "php": "^8.0"
+                "knplabs/github-api": "*"
             },
             "bin": [
                 "github"

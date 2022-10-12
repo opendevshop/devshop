@@ -16,7 +16,6 @@
     }
   ],
   "require": {
-    "php": "^8.0",
     "consolidation/robo": "^1.0",
     "knplabs/github-api": "*",
     "devshop/composer-common": "1.x-dev",
