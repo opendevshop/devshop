@@ -17,8 +17,7 @@
         }
     ],
     "require": {
-        "php": "^8.0",
-        "knplabs/github-api": "^1.4",
+        "knplabs/github-api": "*",
         "drush/drush": "^8",
         "ext-json": "*",
         "devshop/docker-bin-tools": "@dev",
