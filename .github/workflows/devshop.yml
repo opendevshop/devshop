@@ -11,7 +11,6 @@ on:
 env:
   # Set ANSIBLE_VERBOSITY to 1,2 or 3 when needed for development.
   ANSIBLE_VERBOSITY: 0
-  COMPOSE_FILE: "docker-compose.yml:docker-compose.local.yml"
   DEBUG_COMMAND: "docker-compose exec -T devshop.server systemctl status --no-pager"
   GITHUB_TOKEN: ${{ secrets.INPUT_GITHUB_TOKEN }}
   GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}
@@ -46,6 +45,7 @@ jobs:
       OS: "${{ matrix.os }}"
       HOSTNAME: "devshop.${{ github.event.pull_request.number }}.${{ matrix.os }}.actions.github.com"
       ANSIBLE_EXTRA_VARS: "${{ matrix.vars }}"
+      COMPOSE_FILE: "docker-compose.yml:docker-compose.local.yml"
 
     runs-on: ubuntu-18.04
     steps:
