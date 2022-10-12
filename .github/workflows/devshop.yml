@@ -34,9 +34,10 @@ jobs:
       matrix:
         vars:
           # - 'php_version=7.1'
-          - 'php_version=7.2'
+          #- 'php_version=7.2'
           - 'php_version=7.3'
           - 'php_version=7.4'
+          - 'php_version=8.0'
         os:
           - 'ubuntu1804'
           # Sorry, centos. You must wait until the next PR.
@@ -155,9 +156,11 @@ jobs:
         vars:
           # @TODO: Open a PR with the failing PHP versions to fix support.
           # - 'php_version=7.1'
-          - 'php_version=7.2'
+          # - 'php_version=7.2'
           - 'php_version=7.3'
           - 'php_version=7.4'
+          - 'php_version=8.0'
+
         os:
           - 'ubuntu1804'
           # Sorry, centos. You must wait until the next PR.
