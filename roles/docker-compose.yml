@@ -24,7 +24,9 @@ services:
     hostname: devshop.local.computer
     ports:
       - "80:80"
-      - "2222:22"
+      
+      # Uncomment if you wish to test SSH access.
+      # - "2222:22"
     privileged: true
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
