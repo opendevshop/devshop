@@ -44,7 +44,7 @@ class GitHubApiCli
     // @TODO: Allow password auth?
     // Only attempt authentication if there is a token.
     if (!empty($this->getToken())) {
-      $this->apiClient->authenticate($this->getToken(), null, GitHubApiClient::AUTH_HTTP_TOKEN);
+      $this->apiClient->authenticate($this->getToken(), null, \Github\AuthMethod::ACCESS_TOKEN);
     }
 
     // Skip SSL verification if ENV var is found.
