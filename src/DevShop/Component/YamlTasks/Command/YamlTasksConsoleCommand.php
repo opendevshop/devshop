@@ -273,7 +273,7 @@ class YamlTasksConsoleCommand extends BaseCommand
                 $this->githubClient->getHttpClient()->client->setDefaultOption('verify', false);
             }
 
-            $this->githubClient->authenticate($token, \Github\Client::AUTH_HTTP_TOKEN);
+            $this->githubClient->authenticate($token, \Github\AuthMethod::ACCESS_TOKEN);
 
             // Load the commit object. Catch an exception, and change the message. Our users will wonder, "but there is a commit!"
             try {
@@ -379,7 +379,8 @@ class YamlTasksConsoleCommand extends BaseCommand
                         /**
                          * @var Response $response
                          */
-                        $response = $client->getHttpClient()->post("/repos/{$this->repoOwner}/{$this->repoName}/statuses/$this->repoSha", json_encode($params));
+                        $headers = (array) $params;
+                        $response = $client->getHttpClient()->post("/repos/{$this->repoOwner}/{$this->repoName}/statuses/$this->repoSha", $headers);
                         $this->commitStatusMessage($response, $task_name, $task, $params->state);
                     } catch (\Exception $e) {
                         if ($e->getCode() == 404) {
@@ -581,7 +582,8 @@ BODY;
 
                 if (!$input->getOption('dry-run')) {
                     $params->description = substr($params->description, 0, self::GITHUB_STATUS_DESCRIPTION_MAX_SIZE);
-                    $response = $client->getHttpClient()->post("/repos/$this->repoOwner/$this->repoName/statuses/$this->repoSha", json_encode($params));
+                    $headers = (array) $params;
+                    $response = $client->getHttpClient()->post("/repos/$this->repoOwner/$this->repoName/statuses/$this->repoSha", $headers);
                     $this->commitStatusMessage($response, $task_name, $task, $params->state);
                 }
 
