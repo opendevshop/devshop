@@ -79,8 +79,8 @@ jobs:
         PROVISION_PROCESS_OUTPUT: direct
       run: |
         chmod +x yaml-tasks
-        ./yaml-tasks  --ansi -v --hostname=github.com --status-url=${GITHUB_RUN_LOG_URL}#step:7:1
-        ./yaml-tasks --tasks-file tests.yml --ansi -v --hostname=github.com --status-url=${GITHUB_RUN_LOG_URL}#step:7:1
+        ./yaml-tasks --dry-run --ansi -v --hostname=github.com --status-url=${GITHUB_RUN_LOG_URL}#step:7:1
+        ./yaml-tasks --dry-run --tasks-file tests.yml --ansi -v --hostname=github.com --status-url=${GITHUB_RUN_LOG_URL}#step:7:1
 
   power-process:
     name: PowerProcess
