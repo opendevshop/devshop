@@ -359,7 +359,7 @@ class YamlTasksConsoleCommand extends BaseCommand
 
                     // Reserve "Pending" for the earliest possible commit status update (a curl request at the beginning.)
                     // Use "queued" once it is in the task system.
-                    $params->state = 'queued';
+                    $params->state = 'pending';
                     $params->target_url = $this->getTargetUrl($task_name);
                     $params->description = implode(
                         ' — ',
@@ -599,8 +599,9 @@ BODY;
             } else {
                 throw new \Exception("Bad token. Set with --github-token option or GITHUB_TOKEN environment variable. Create a new token at {$this->addTokenUrl} Message: " . $e->getMessage());
             }
+        } catch (\Github\Exception\ValidationFailedException $e) {
+            throw new \Exception("Something went wrong: (CODE {$e->getCode()} MESSAGE: {$e->getMessage()}");
         }
-
 
         $this->io->title("Executed all tasks");
         $this->io->table(array('Task Results'), $rows);
