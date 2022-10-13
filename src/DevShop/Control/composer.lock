@@ -4893,10 +4893,10 @@
         },
         {
             "name": "npm-asset/underscore",
-            "version": "1.13.4",
+            "version": "1.13.6",
             "dist": {
                 "type": "tar",
-                "url": "https://registry.npmjs.org/underscore/-/underscore-1.13.4.tgz"
+                "url": "https://registry.npmjs.org/underscore/-/underscore-1.13.6.tgz"
             },
             "type": "npm-asset",
             "license": [
@@ -6905,5 +6905,5 @@
     "platform-overrides": {
         "php": "7.1.3"
     },
-    "plugin-api-version": "2.1.0"
+    "plugin-api-version": "2.3.0"
 }
