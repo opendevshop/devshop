@@ -26,12 +26,13 @@
         "devshop/bin-tools": "@dev",
         "devshop/yaml-tasks": "@dev",
         "devshop/power-process": "@dev",
-        "drupal/provision": "4.x-dev"
+        "drupal/provision": "4.x-dev",
+        "psr/cache": "^1.0",
+        "symfony/deprecation-contracts": "^2.5",
+        "symfony/options-resolver": "^4.4"
     },
     "replace": {
         "drupal/drupal": "*"
-    },
-    "require-dev": {
     },
     "suggest": {
         "mouf/nodejs-installer": "Use to install nodejs into the devshop bin dir using composer."

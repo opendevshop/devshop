@@ -82,7 +82,10 @@
         "npm-asset/underscore": "^1.10",
         "oomphinc/composer-installers-extender": "^2.0",
         "toin0u/digitalocean-v2": "~2.0",
-        "sensiolabs/ansi-to-html": "^1.2"
+        "sensiolabs/ansi-to-html": "^1.2",
+        "symfony/deprecation-contracts": "^2.5",
+        "psr/cache": "^1.0",
+        "symfony/options-resolver": "^4.4"
     },
     "conflict": {
         "drupal/core": "8.*"
