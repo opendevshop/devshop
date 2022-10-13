@@ -24,9 +24,7 @@ services:
     hostname: devshop.local.computer
     ports:
       - "80:80"
-      
-      # Uncomment if you wish to test SSH access.
-      # - "2222:22"
+      - "2222:22"
     privileged: true
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
@@ -40,10 +38,7 @@ services:
       - DEVSHOP_DOCKER_COMMAND_RUN=${DEVSHOP_DOCKER_COMMAND_RUN:-devshop-ansible-playbook}
       # This container should always run the devshop.server/play.role when run using this docker-compose.yml.
       - ANSIBLE_PLAYBOOK=/usr/share/devshop/roles/devshop.server/play.yml
-      
-      # Enter additional ansible vars for testing here.
-      - ANSIBLE_EXTRA_VARS=${ANSIBLE_EXTRA_VARS:-php_version='8.0'}
-
+      - ANSIBLE_EXTRA_VARS
       - ANSIBLE_PLAYBOOK_COMMAND_OPTIONS
       - ANSIBLE_VERBOSITY
       - DOCKER_COMMAND_POST

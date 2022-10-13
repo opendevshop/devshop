@@ -1,0 +1,14 @@
+# DevShop Roles
+# Build Tool
+#
+# This docker-compose file is only for building containers.
+#
+---
+version: '3'
+services:
+
+  devshop.server:
+    volumes:
+      - ../.github/test-artifacts:${DEVSHOP_TESTS_ARTIFACTS_PATH:-/var/aegir/test-artifacts}
+      - $HOME/.ssh:/var/aegir/.ssh
+      - ../:/usr/share/devshop
