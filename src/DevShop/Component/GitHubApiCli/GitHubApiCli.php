@@ -52,12 +52,13 @@ class GitHubApiCli
       $this->apiClient->getHttpClient()->client->setDefaultOption('verify', false);
     }
 
+    // @TODO: Rebuild this feature with a HTTPlug plugin? https://github.com/KnpLabs/php-github-api/blob/master/doc/customize.md#configure-the-http-client
     // Set options or headers from CLI or config options.
     // @see Client::options
     // Using pattern from HttpClient::clearHeaders()
-    $this->apiClient->setHeaders([
-      'Accept' => sprintf('application/vnd.github.%s+json', $this->apiVersion),
-    ]);
+    // $this->apiClient->httpClientBuilder->addHeaders([
+    //   'Accept' => sprintf('application/vnd.github.%s+json', $this->apiVersion),
+    // ]);
 
   }
 
