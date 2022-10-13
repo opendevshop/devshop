@@ -89,10 +89,9 @@ jobs:
     strategy:
       matrix:
         php-versions:
-          - '7.1'
-          - '7.2'
-          - '7.3'
           - '7.4'
+          - '8.0'
+          - '8.1'
 
     # Set working directory for entire file. https://github.community/t5/GitHub-Actions/use-working-directory-for-entire-job/td-p/36759
     env:
@@ -144,10 +143,9 @@ jobs:
     strategy:
       matrix:
         php-versions:
-          - '7.1'
-          - '7.2'
-          - '7.3'
           - '7.4'
+          - '8.0'
+          - '8.1'
 
     # Set working directory for entire file. https://github.community/t5/GitHub-Actions/use-working-directory-for-entire-job/td-p/36759
     env:
@@ -200,10 +198,9 @@ jobs:
     strategy:
       matrix:
         php-versions:
-          - '7.1'
-          - '7.2'
-          - '7.3'
           - '7.4'
+          - '8.0'
+          - '8.1'
 
     # Set working directory for entire file. https://github.community/t5/GitHub-Actions/use-working-directory-for-entire-job/td-p/36759
     env:
@@ -256,10 +253,9 @@ jobs:
     strategy:
       matrix:
         php-versions:
-          - '7.1'
-          - '7.2'
-          - '7.3'
           - '7.4'
+          - '8.0'
+          - '8.1'
     env:
       working-directory: ./src/DevShop/Component/ControlProject
       devmaster-directory: ../../../devmaster
