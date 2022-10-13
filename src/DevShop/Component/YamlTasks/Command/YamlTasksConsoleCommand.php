@@ -600,7 +600,7 @@ BODY;
                 throw new \Exception("Bad token. Set with --github-token option or GITHUB_TOKEN environment variable. Create a new token at {$this->addTokenUrl} Message: " . $e->getMessage());
             }
         } catch (\Github\Exception\ValidationFailedException $e) {
-            throw new \Exception("Something went wrong: (CODE {$e->getCode()} MESSAGE: {$e->getMessage()}");
+            throw new \Exception("Something went wrong: (CODE {$e->getCode()} MESSAGE: {$e->getMessage()} STATE: {$params->state}");
         }
 
         $this->io->title("Executed all tasks");
