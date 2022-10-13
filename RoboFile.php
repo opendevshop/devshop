@@ -529,7 +529,7 @@ class RoboFile extends \Robo\Tasks {
         $this->yell('Mounting Docker Volumes... Use --ci to disable volumes.', 40, 'blue');
 
         // Set COMPOSE_FILE to include volumes.
-        $opts['compose-file'] = 'roles/docker-compose.yml:roles/docker-compose.local.yml';
+        $opts['compose-file'] = 'roles/docker-compose.yml:roles/docker-compose.override.yml';
 
         if (!file_exists('aegir-home') && !$opts['skip-source-prep']) {
           $this->say('<warning>The aegir-home folder not present. Running prepare source code command.</warning>');
@@ -756,7 +756,7 @@ class RoboFile extends \Robo\Tasks {
    * Run all devshop tests on the containers.
    */
   public function test($user = 'aegir', $opts = array(
-    'compose-file' => 'roles/docker-compose.yml:roles/docker-compose.local.yml',
+    'compose-file' => 'roles/docker-compose.yml:roles/docker-compose.override.yml',
     'reinstall' => FALSE
   )) {
     $is_tty = !empty($_SERVER['XDG_SESSION_TYPE']) && $_SERVER['XDG_SESSION_TYPE'] == 'tty';
