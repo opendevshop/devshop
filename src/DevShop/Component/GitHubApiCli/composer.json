@@ -16,12 +16,17 @@
     }
   ],
   "require": {
-    "php": "^7.1",
+    "php": "^7.1||^8.0",
     "consolidation/robo": "^1.0",
-    "knplabs/github-api": "^1.0",
-    "devshop/composer-common": "1.x-dev"
+    "knplabs/github-api": "3.9.x-dev",
+    "devshop/composer-common": "1.x-dev",
+    "guzzlehttp/guzzle": "7.5.x-dev"
   },
-  "require-dev": {
+  "repositories": {
+    "devshop/composer-common": {
+      "type": "path",
+      "url": "../ComposerCommon"
+    }
   },
   "extra": {
     "branch-alias": {
