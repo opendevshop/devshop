@@ -85,7 +85,7 @@ jobs:
         run: |
           set -x
           docker-compose pull --quiet devshop.server
-          docker-compose up --no-build --detach devshop.server --file=docker-compose.yml
+          docker-compose --file=docker-compose.yml up --no-build --detach devshop.server
           docker-compose exec -T devshop.server rm -rf \
             /usr/share/devshop \
             /etc/ansible/roles \
