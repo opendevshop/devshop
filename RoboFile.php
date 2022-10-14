@@ -759,7 +759,6 @@ class RoboFile extends \Robo\Tasks {
     else {
         $process = new \Symfony\Component\Process\Process("docker-compose exec devshop.server bash");
     }
-    $process->setWorkingDirectory('roles');
     $process->setTty(TRUE);
     $process->setTimeout(NULL);
     $process->setEnv(['COMPOSE_FILE' => './roles/docker-compose.yml']);
