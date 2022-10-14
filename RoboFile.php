@@ -732,7 +732,7 @@ class RoboFile extends \Robo\Tasks {
    */
   public function watchdog() {
     $user = 'aegir';
-    $this->taskExec("docker-compose exec --user $user -T devshop drush @hostmaster wd-show --tail --extended")
+    $this->taskExec("docker-compose exec --user $user -T devshop.server drush @hostmaster wd-show --tail --extended")
         ->dir("roles")
         ->run();
   }
