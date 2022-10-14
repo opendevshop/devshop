@@ -15,3 +15,5 @@ services:
 
     environment:
       - ANSIBLE_EXTRA_VARS=@/usr/share/devshop/vars.development.yml
+      - XDEBUG_CONFIG="remote_host=172.17.0.1 idekey=PHPSTORM"
+      - PHP_IDE_CONFIG="serverName=devshop.local.computer"
