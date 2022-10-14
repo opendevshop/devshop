@@ -23,7 +23,6 @@
         "devshop/docker-bin-tools": "@dev",
         "devshop/git-split": "@dev",
         "devshop/github-api-cli": "@dev",
-        "devshop/bin-tools": "@dev",
         "devshop/yaml-tasks": "@dev",
         "devshop/power-process": "@dev",
         "drupal/provision": "4.x-dev",
@@ -50,10 +49,6 @@
         {
             "type": "path",
             "url": "docker/bin"
-        },
-        {
-            "type": "path",
-            "url": "scripts"
         },
         {
             "type": "path",
