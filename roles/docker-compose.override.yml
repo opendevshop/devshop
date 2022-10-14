@@ -12,3 +12,6 @@ services:
       - ../.github/test-artifacts:${DEVSHOP_TESTS_ARTIFACTS_PATH:-/var/aegir/test-artifacts}
       - $HOME/.ssh:/var/aegir/.ssh
       - ../:/usr/share/devshop
+
+    environment:
+      - ANSIBLE_EXTRA_VARS=@/usr/share/devshop/vars.development.yml

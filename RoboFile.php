@@ -672,7 +672,9 @@ class RoboFile extends \Robo\Tasks {
    * Stop devshop containers using docker-compose stop
    */
   public function stop() {
-    $this->_exec('docker-compose stop');
+    $this->taskExec("docker-compose stop")
+        ->dir("roles")
+        ->run();
   }
 
   /**
@@ -729,7 +731,9 @@ class RoboFile extends \Robo\Tasks {
    * Stream logs from the containers using docker-compose logs -f
    */
   public function logs() {
-    $this->_exec('docker-compose logs -f');
+    $this->taskExec("docker-compose logs -f")
+        ->dir("roles")
+        ->run();
   }
 
   /**
@@ -737,14 +741,19 @@ class RoboFile extends \Robo\Tasks {
    */
   public function watchdog() {
     $user = 'aegir';
-    $this->_exec("docker-compose exec --user $user -T devshop drush @hostmaster wd-show --tail --extended");
+    $this->taskExec("docker-compose exec --user $user -T devshop drush @hostmaster wd-show --tail --extended")
+        ->dir("roles")
+        ->run();
   }
 
   /**
    * Restart the containers.
    */
   public function restart() {
-      $this->_exec('docker-compose restart');
+      $this->taskExec('docker-compose restart')
+          ->dir("roles")
+          ->run()
+      ;
       $this->logs();
   }
 
@@ -759,6 +768,7 @@ class RoboFile extends \Robo\Tasks {
     else {
         $process = new \Symfony\Component\Process\Process("docker-compose exec devshop.server bash");
     }
+    $process->setWorkingDirectory('roles');
     $process->setTty(TRUE);
     $process->setTimeout(NULL);
     $process->setEnv(['COMPOSE_FILE' => './roles/docker-compose.yml']);
@@ -792,6 +802,7 @@ class RoboFile extends \Robo\Tasks {
     $provision_io = new \DevShop\Component\PowerProcess\PowerProcessStyle($this->input, $this->output);
     foreach ($commands as $command) {
       $process = new \DevShop\Component\PowerProcess\PowerProcess($command, $provision_io);
+      $process->setWorkingDirectory('roles');
 
       $process->setTty(!empty($_SERVER['XDG_SESSION_TYPE']) && $_SERVER['XDG_SESSION_TYPE'] == 'tty');
 
@@ -814,8 +825,10 @@ class RoboFile extends \Robo\Tasks {
    * Get a one-time login link to Devamster.
    */
   public function login($user = 'aegir') {
-      // @TODO: Figure out why PATH is gone.
-    $this->_exec("docker-compose exec --user $user -T devshop.server /usr/share/devshop/bin/drush @hostmaster uli");
+    $this->taskExec("docker-compose exec --user $user -T devshop.server /usr/share/devshop/bin/drush @hostmaster uli")
+        ->dir("roles")
+        ->run();
+    ;
   }
 
   /**
