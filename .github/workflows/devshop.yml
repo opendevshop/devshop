@@ -81,10 +81,11 @@ jobs:
         working-directory: roles
         # "docker-compose pull" is needed because the if the image does not exist locally, "docker-compose" will try to build.
         # "--no-build" is needed because docker-compose will build the image by default.
+        # Set the --file to ignore the docker-compose.overrides.yml file (which has volumes. This code does not require mounted volumes, it copies into the container.
         run: |
           set -x
           docker-compose pull --quiet devshop.server
-          docker-compose up --no-build --detach devshop.server
+          docker-compose up --no-build --detach devshop.server --file=docker-compose.yml
           docker-compose exec -T devshop.server rm -rf \
             /usr/share/devshop \
             /etc/ansible/roles \
