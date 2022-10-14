@@ -488,23 +488,14 @@ class RoboFile extends \Robo\Tasks {
       $opts['user-uid'] = trim(shell_exec('id -u'));
     }
 
-    // Build the image if --build option specified, or if the image doesn't exist yet locally.
-    // If we don't, docker-compose up will automatically build it, but without these options.
-    // Run a "docker-compose pull" here confirms that the remote container by this name exists, and gets us a local copy.
-    $this->say("<comment>Getting latest devshop/server image...</comment>");
-    $docker_image_name_exists = $this->_exec("docker pull {$opts['docker-image']}")->wasSuccessful();
-
-    // The image was just pulled, so this should always be true if $docker_image_name_exists is true.
-    $docker_image_exists_locally = $this->_exec("docker inspect {$opts['docker-image']} > /dev/null")->wasSuccessful();
-
     // If --build option is used, or if docker image does not exist anywhere, build it with "local-$OS" tag
-    if ($opts['build'] || !$docker_image_name_exists && !$docker_image_exists_locally) {
+    if ($opts['build']) {
       $this->yell("Docker Image {$opts['docker-image']} was not found on this system or on docker hub.", 40, "blue");
       $this->say("Building it locally...");
       $this->build($opts['build-folder'], $opts['build-service'], $opts);
     }
     // Warn the user that this container is not being built.
-    elseif (!$opts['build'] && $docker_image_name_exists) {
+    elseif (!$opts['build']) {
       $this->yell("Launching {$opts['docker-image']}... Use --build to rebuild it.", 40, "blue");
     }
 
