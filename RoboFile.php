@@ -688,7 +688,7 @@ class RoboFile extends \Robo\Tasks {
       // Remove devmaster site folder
       $version = self::DEVSHOP_LOCAL_VERSION;
       $uri = self::DEVSHOP_LOCAL_URI;
-      $this->_exec("cd roles && docker-compose exec devshop rm -rf /usr/share/devshop/src/DevShop/Control/web/sites/{$uri}");
+      $this->_exec("cd roles && docker-compose exec devshop.server rm -rf /usr/share/devshop/src/DevShop/Control/web/sites/{$uri}");
       $this->_exec('cd roles && docker-compose kill');
       $this->_exec('cd roles && docker-compose rm -fv');
     }
@@ -697,6 +697,20 @@ class RoboFile extends \Robo\Tasks {
     if (!$this->input()->isInteractive() || $this->confirm("Destroy container home directory? (aegir-home)")) {
       if ($this->_exec("rm -rf aegir-home")->wasSuccessful()) {
         $this->say("Entire aegir-home folder deleted.");
+      }
+    }
+    else {
+      $this->say("The aegir-home directory was retained. It will be  present when 'robo up' is run again.");
+    }
+
+    // Don't run when -n is specified,
+    $rm_command = "rm -rf src/DevShop/Control/web/sites/devshop.local.computer";
+    if (!$this->input()->isInteractive() || $this->confirm("Destroy Control Site settings folder? ($rm_command)")) {
+      if ($this->_exec($rm_command)->wasSuccessful()) {
+        $this->say("Sites/devshop.local.computer folder deleted.");
+      }
+      else {
+        $this->say("Delete failed!.");
       }
     }
     else {
