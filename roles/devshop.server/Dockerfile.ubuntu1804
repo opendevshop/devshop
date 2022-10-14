@@ -3,7 +3,7 @@
 #
 # All-in-one devshop server.
 #
-FROM devshop/role:ubuntu1804
+FROM devshop/role:latest
 LABEL maintainer="Jon Pugh"
 
 # The last thing the user sees in the logs.

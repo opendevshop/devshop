@@ -236,7 +236,7 @@ class RoboFile extends \Robo\Tasks {
    * @option install-at-runtime Launch bare containers and then install devshop.
    * @option $build-command The command to run at the end of the docker build process. (Defaults to scripts/devshop-ansible-playbook)
    */
-  public function build($folder = 'roles', $service = 'devshop.server', $opts = [
+  public function build($folder = 'all', $service = 'all', $opts = [
       'docker-image' => 'devshop/server:latest',
       'from' => NULL,
       'build-command' => NULL,
@@ -399,8 +399,8 @@ class RoboFile extends \Robo\Tasks {
     'build-command' => NULL,
     'compose-file' => NULL,
     'force-reinstall' => FALSE,
-    'build-folder' => 'roles',
-    'build-service' => 'devshop.server',
+    'build-folder' => 'all',
+    'build-service' => 'all',
   ]) {
 
     $this->yell("Welcome to your DevShop Development environment!");
@@ -672,7 +672,9 @@ class RoboFile extends \Robo\Tasks {
    * Stop devshop containers using docker-compose stop
    */
   public function stop() {
-    $this->_exec('docker-compose stop');
+    $this->taskExec("docker-compose stop")
+        ->dir("roles")
+        ->run();
   }
 
   /**
@@ -688,7 +690,7 @@ class RoboFile extends \Robo\Tasks {
       // Remove devmaster site folder
       $version = self::DEVSHOP_LOCAL_VERSION;
       $uri = self::DEVSHOP_LOCAL_URI;
-      $this->_exec("cd roles && docker-compose exec devshop rm -rf /usr/share/devshop/src/DevShop/Control/web/sites/{$uri}");
+      $this->_exec("cd roles && docker-compose exec devshop.server rm -rf /usr/share/devshop/src/DevShop/Control/web/sites/{$uri}");
       $this->_exec('cd roles && docker-compose kill');
       $this->_exec('cd roles && docker-compose rm -fv');
     }
@@ -697,6 +699,20 @@ class RoboFile extends \Robo\Tasks {
     if (!$this->input()->isInteractive() || $this->confirm("Destroy container home directory? (aegir-home)")) {
       if ($this->_exec("rm -rf aegir-home")->wasSuccessful()) {
         $this->say("Entire aegir-home folder deleted.");
+      }
+    }
+    else {
+      $this->say("The aegir-home directory was retained. It will be  present when 'robo up' is run again.");
+    }
+
+    // Don't run when -n is specified,
+    $rm_command = "rm -rf src/DevShop/Control/web/sites/devshop.local.computer";
+    if (!$this->input()->isInteractive() || $this->confirm("Destroy Control Site settings folder? ($rm_command)")) {
+      if ($this->_exec($rm_command)->wasSuccessful()) {
+        $this->say("Sites/devshop.local.computer folder deleted.");
+      }
+      else {
+        $this->say("Delete failed!.");
       }
     }
     else {
@@ -715,7 +731,9 @@ class RoboFile extends \Robo\Tasks {
    * Stream logs from the containers using docker-compose logs -f
    */
   public function logs() {
-    $this->_exec('docker-compose logs -f');
+    $this->taskExec("docker-compose logs -f")
+        ->dir("roles")
+        ->run();
   }
 
   /**
@@ -723,14 +741,19 @@ class RoboFile extends \Robo\Tasks {
    */
   public function watchdog() {
     $user = 'aegir';
-    $this->_exec("docker-compose exec --user $user -T devshop drush @hostmaster wd-show --tail --extended");
+    $this->taskExec("docker-compose exec --user $user -T devshop drush @hostmaster wd-show --tail --extended")
+        ->dir("roles")
+        ->run();
   }
 
   /**
    * Restart the containers.
    */
   public function restart() {
-      $this->_exec('docker-compose restart');
+      $this->taskExec('docker-compose restart')
+          ->dir("roles")
+          ->run()
+      ;
       $this->logs();
   }
 
@@ -745,6 +768,7 @@ class RoboFile extends \Robo\Tasks {
     else {
         $process = new \Symfony\Component\Process\Process("docker-compose exec devshop.server bash");
     }
+    $process->setWorkingDirectory('roles');
     $process->setTty(TRUE);
     $process->setTimeout(NULL);
     $process->setEnv(['COMPOSE_FILE' => './roles/docker-compose.yml']);
@@ -778,6 +802,7 @@ class RoboFile extends \Robo\Tasks {
     $provision_io = new \DevShop\Component\PowerProcess\PowerProcessStyle($this->input, $this->output);
     foreach ($commands as $command) {
       $process = new \DevShop\Component\PowerProcess\PowerProcess($command, $provision_io);
+      $process->setWorkingDirectory('roles');
 
       $process->setTty(!empty($_SERVER['XDG_SESSION_TYPE']) && $_SERVER['XDG_SESSION_TYPE'] == 'tty');
 
@@ -800,8 +825,10 @@ class RoboFile extends \Robo\Tasks {
    * Get a one-time login link to Devamster.
    */
   public function login($user = 'aegir') {
-      // @TODO: Figure out why PATH is gone.
-    $this->_exec("docker-compose exec --user $user -T devshop.server /usr/share/devshop/bin/drush @hostmaster uli");
+    $this->taskExec("docker-compose exec --user $user -T devshop.server /usr/share/devshop/bin/drush @hostmaster uli")
+        ->dir("roles")
+        ->run();
+    ;
   }
 
   /**
