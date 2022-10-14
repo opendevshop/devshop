@@ -49,7 +49,7 @@ jobs:
       ANSIBLE_EXTRA_VARS: "${{ matrix.vars }}"
 #      COMPOSE_FILE: "docker-compose.yml:docker-compose.local.yml"
 
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     steps:
       # By default, actions/checkout uses the current SHA for the branch it is testing. See on.push.branches: 1.x
       # https://github.com/opendevshop/devshop/runs/1517209717?check_suite_focus=true#step:2:465
@@ -171,7 +171,7 @@ jobs:
       HOSTNAME: "devshop.${{ github.event.pull_request.number }}.${{ matrix.os }}.actions.github.com"
       ANSIBLE_EXTRA_VARS: "${{ matrix.vars }}"
 
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     steps:
       # By default, actions/checkout uses the current SHA for the branch it is testing. See on.push.branches: 1.x
       # https://github.com/opendevshop/devshop/runs/1517209717?check_suite_focus=true#step:2:465

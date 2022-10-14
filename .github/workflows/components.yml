@@ -21,7 +21,7 @@ jobs:
   yaml-tasks:
     name: YamlTasks
 
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         php-versions:
@@ -85,7 +85,7 @@ jobs:
   power-process:
     name: PowerProcess
 
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         php-versions:
@@ -139,7 +139,7 @@ jobs:
   github-api-cli:
     name: GitHubApiCli
 
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         php-versions:
@@ -194,7 +194,7 @@ jobs:
   ComposerCommon:
     name: ComposerCommon
 
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         php-versions:
@@ -249,7 +249,7 @@ jobs:
   ControlProject:
     name: ControlProject
 
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         php-versions:
