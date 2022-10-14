@@ -57,7 +57,7 @@ function devshop_projects_create_wizard($step = NULL) {
   else {
     // Load latest project object from database and use that for the ctools cache.
     $project_node = node_load($project->nid, NULL, TRUE);
-    $project = $project_node->project;
+    $project = (object) $project_node->project;
 
     // If we have a name but no code_path or base URL.
     if (!empty($project->name) && empty($project->code_path)) {
