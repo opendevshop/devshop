@@ -49,7 +49,7 @@ function devshop_github_token_is_valid($token = NULL) {
   }
     // Happens when user has no public keys.
   catch (Exception $e) {
-    return $e;
+    return false;
   }
 }
 
