@@ -21,6 +21,10 @@
       "devshop_devmaster": {
         "type": "path",
         "url": "../../../devmaster"
+      },
+      "composer_common": {
+        "type": "path",
+        "url": "../Component/ComposerCommon"
       }
     },
     "require": {
@@ -100,9 +104,6 @@
    },
     "config": {
         "bin-dir": "bin",
-        "platform": {
-            "php": "7.1.3"
-        },
         "sort-packages": false,
         "allow-plugins": {
           "composer/installers": true,
