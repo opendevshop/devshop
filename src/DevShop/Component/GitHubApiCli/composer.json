@@ -25,7 +25,8 @@
   "repositories": {
     "devshop/composer-common": {
       "type": "path",
-      "url": "../ComposerCommon"
+      "url": "../ComposerCommon",
+      "canonical": false
     }
   },
   "extra": {
