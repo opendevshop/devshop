@@ -3,6 +3,7 @@
 namespace DevShop\Component\GitHubApiCli\Commands;
 
 use DevShop\Component\GitHubApiCli\GitHubApiCli;
+use Robo\Symfony\ConsoleIO;
 use Symfony\Component\Console\Exception\InvalidOptionException;
 use Symfony\Component\Yaml\Yaml;
 
@@ -76,7 +77,7 @@ class GitHubCommands extends \Robo\Tasks
 
         try {
             $api = $this->cli->api($apiName);
-            $this->io()->listing($this->cli->getApiMethods($api));
+            $this->io()->listing($this->cli->getApiMethods($apiName));
         } catch (\Exception $e) {
             $this->io()->error('Unable to list methods: '.$e->getMessage());
         }
@@ -104,7 +105,7 @@ class GitHubCommands extends \Robo\Tasks
     public function api(
       $apiName = null,
       $apiMethod = null,
-      array $apiMethodArgs,
+      array $apiMethodArgs = null,
       $opts = [
         'param|p' => [],
       ]
@@ -124,6 +125,10 @@ class GitHubCommands extends \Robo\Tasks
               0
             );
         }
+
+      if (!$apiMethodArgs) {
+        $apiMethodArgs = [];
+      }
 
 
         // Validate the API request.
