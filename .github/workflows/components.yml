@@ -189,12 +189,12 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.INPUT_GITHUB_TOKEN }}
         run: |
-          ./github deploy:start --description="GitHub API CLI tests begun" --environment=github.com
+          ./github deploy:start -n --description="GitHub API CLI tests begun" --environment=github.com
           sleep 3
-          ./github deploy:update --state=in_progress
+          ./github deploy:update -n --state=in_progress
           sleep 3
           ./github whoami
-          ./github deploy:update --state=success
+          ./github deploy:update -n --state=success
 
   ComposerCommon:
     name: ComposerCommon
