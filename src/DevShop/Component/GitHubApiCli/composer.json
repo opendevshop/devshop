@@ -22,11 +22,7 @@
     "devshop/composer-common": "1.x-dev",
     "guzzlehttp/guzzle": "7.5.x-dev"
   },
-  "repositories": {
-    "devshop/composer-common": {
-      "type": "path",
-      "url": "../ComposerCommon"
-    }
+  "require-dev": {
   },
   "extra": {
     "branch-alias": {
