@@ -41,7 +41,7 @@ function devshop_github_token_is_valid($token = NULL) {
   }
 
   $client = new \Github\Client();
-  $client->authenticate($token, Github\Client::AUTH_HTTP_TOKEN);
+  $client->authenticate($token, \Github\AuthMethod::ACCESS_TOKEN);
 
   try {
     $show = $client->currentUser()->show();
@@ -49,7 +49,7 @@ function devshop_github_token_is_valid($token = NULL) {
   }
     // Happens when user has no public keys.
   catch (Exception $e) {
-    return $e;
+    return false;
   }
 }
 
@@ -79,7 +79,7 @@ function devshop_github_client($must_authenticate = FALSE) {
   if (!empty($github_token)) {
 
     // Set token in client.
-    $client->authenticate($github_token, Github\Client::AUTH_HTTP_TOKEN);
+    $client->authenticate($github_token, \Github\AuthMethod::ACCESS_TOKEN);
     try {
       // If currentUser()->show() worked, we know we are authenticated.
       $client->currentUser()->show();
@@ -454,6 +454,7 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
     $form['connect'] = array();
   }
 
+  $options = [];
   $repos = variable_get('devshop_github_available_repositories', array());
   foreach ($repos as $repo_name => $repo) {
     $options[$repo['org']][$repo['url']] = $repo_name;
@@ -1028,7 +1029,7 @@ function devshop_github_project_create_webhook($form, $form_state) {
   // Get GitHub client
   $client = new Github\Client();
   $github_token = variable_get('devshop_github_token', '');
-  $client->authenticate($github_token, Github\Client::AUTH_HTTP_TOKEN);
+  $client->authenticate($github_token, \Github\AuthMethod::ACCESS_TOKEN);
 
   // Create the webhook.
   try {
@@ -1124,7 +1125,7 @@ function devshop_github_node_update($node) {
   try {
     $token = variable_get('devshop_github_token', '');
     $client = new \Github\Client();
-    $client->authenticate($token, Github\Client::AUTH_HTTP_TOKEN);
+    $client->authenticate($token, \Github\AuthMethod::ACCESS_TOKEN);
 
     // Create a deployment status
     $project = $site->project;
@@ -1195,7 +1196,7 @@ function devshop_github_node_update($node) {
 //    try {
 //      $token = variable_get('devshop_github_token', '');
 //      $client = new \Github\Client();
-//      $client->authenticate($token, Github\Client::AUTH_HTTP_TOKEN);
+//      $client->authenticate($token, \Github\AuthMethod::ACCESS_TOKEN);
 //
 //      // Create a status
 //      $sha = $task->ref->environment->github_pull_request->pull_request_object->head->sha;
@@ -1420,7 +1421,7 @@ function devshop_github_webhook($project_node) {
 //            try {
 //              $token = variable_get('devshop_github_token', '');
 //              $client = new \Github\Client();
-//              $client->authenticate($token, Github\Client::AUTH_HTTP_TOKEN);
+//              $client->authenticate($token, \Github\AuthMethod::ACCESS_TOKEN);
 //
 //              $sha = $data->pull_request->head->sha;
 //
@@ -1579,7 +1580,7 @@ function devshop_github_webhook($project_node) {
             try {
               $token = variable_get('devshop_github_token', '');
               $client = new \Github\Client();
-              $client->authenticate($token, Github\Client::AUTH_HTTP_TOKEN);
+              $client->authenticate($token, \Github\AuthMethod::ACCESS_TOKEN);
 
               $sha = $data->pull_request->head->sha;
 
@@ -1741,7 +1742,7 @@ function devshop_github_check_key($silent = false) {
   }
 
   $client = new \Github\Client();
-  $client->authenticate($token, Github\Client::AUTH_HTTP_TOKEN);
+  $client->authenticate($token, \Github\AuthMethod::ACCESS_TOKEN);
 
   try {
     $keys = $client->currentUser()->keys()->all();

@@ -21,10 +21,14 @@
       "devshop_devmaster": {
         "type": "path",
         "url": "../../../devmaster"
+      },
+      "composer_common": {
+        "type": "path",
+        "url": "../Component/ComposerCommon"
       }
     },
     "require": {
-        "php": ">=5.3.3",
+        "php": "^7.1||^8.0",
         "ext-curl": "*",
         "ext-gd": "*",
         "ext-json": "*",
@@ -82,7 +86,10 @@
         "npm-asset/underscore": "^1.10",
         "oomphinc/composer-installers-extender": "^2.0",
         "toin0u/digitalocean-v2": "~2.0",
-        "sensiolabs/ansi-to-html": "^1.2"
+        "sensiolabs/ansi-to-html": "^1.2",
+        "symfony/deprecation-contracts": "^2.5",
+        "psr/cache": "^1.0",
+        "symfony/options-resolver": "^4.4"
     },
     "conflict": {
         "drupal/core": "8.*"
@@ -97,9 +104,6 @@
    },
     "config": {
         "bin-dir": "bin",
-        "platform": {
-            "php": "7.1.3"
-        },
         "sort-packages": false,
         "allow-plugins": {
           "composer/installers": true,
