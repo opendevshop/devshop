@@ -16,10 +16,11 @@
     }
   ],
   "require": {
-    "php": "^7.1",
-    "consolidation/robo": "^1.0",
-    "knplabs/github-api": "^1.0",
-    "devshop/composer-common": "1.x-dev"
+    "php": "^7.1||^8.0",
+    "consolidation/robo": "^2",
+    "knplabs/github-api": "3.9.x-dev",
+    "devshop/composer-common": "1.x-dev",
+    "guzzlehttp/guzzle": "7.5.x-dev"
   },
   "require-dev": {
   },
