@@ -68,8 +68,9 @@ jobs:
           echo "devshop_version: ${{ github.head_ref }}" >> vars.ci.yml
           echo "devshop_cli_repo: ${{ github.event.pull_request.head.repo.clone_url }}" >> vars.ci.yml
           echo "GIT_REF=${{ github.head_ref }}" >> $GITHUB_ENV
-          echo "ANSIBLE_VERBOSITY=2" >> $GITHUB_ENV
           git switch --create ${{ github.head_ref }}
+# If you need really big logs...
+#          echo "ANSIBLE_VERBOSITY=2" >> $GITHUB_ENV
 
       # Build "base"
       - name: "Build devshop/container"
