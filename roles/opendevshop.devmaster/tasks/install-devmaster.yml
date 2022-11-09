@@ -58,7 +58,7 @@
 
 - name: Define devmaster_install_command.
   set_fact:
-    devmaster_install_command: "{{ devshop_cli_bin_path }}/devshop devmaster:install -n \
+    devmaster_install_command: "{{ devshop_cli_path }}/bin/devshop devmaster:install -n \
                                 --site={{ server_hostname }} \
                                 --aegir_db_host={{ database_host }} \
                                 --aegir_db_pass={{ mysql_root_password }} \
