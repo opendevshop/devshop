@@ -25,8 +25,9 @@ docker run \
   --hostname $DEVSHOP_SERVER_HOSTNAME \
   --publish 80:80 \
   --volume $PWD/build/install.sh:/tmp/devshop-install.sh \
+  --volume ../docker/initctl-faker /sbin/initctl \
   --volume /sys/fs/cgroup:/sys/fs/cgroup:ro \
-  geerlingguy/docker-ubuntu1804-ansible:latest
+  ubuntu:18.04
 
 docker exec \
   install-server-test \
