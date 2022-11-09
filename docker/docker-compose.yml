@@ -21,3 +21,4 @@ services:
     environment:
       - ANSIBLE_EXTRA_VARS
       - ANSIBLE_VERBOSITY
+      - ANSIBLE_PLAYBOOK_COMMAND_OPTIONS
