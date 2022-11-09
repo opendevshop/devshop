@@ -200,13 +200,12 @@ jobs:
         run: |
           ./github whoami
 
-      - name: Test GitHub Deploy Success
-        when: false
-        working-directory: ${{env.working-directory}}
-        env:
-          GITHUB_TOKEN: ${{ secrets.INPUT_GITHUB_TOKEN }}
-        run: |
-          ./github deploy:update -n --state=success
+#      - name: Test GitHub Deploy Success
+#        working-directory: ${{env.working-directory}}
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.INPUT_GITHUB_TOKEN }}
+#        run: |
+#          ./github deploy:update -n --state=success
 
   ComposerCommon:
     name: ComposerCommon
