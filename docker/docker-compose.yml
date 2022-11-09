@@ -1,47 +1,23 @@
-# DevShop Docker Images
-# Build Tool
-#
-# This docker-compose file is only for building containers.
-#
+# New.
 ---
-version: '2.2'
+version: '3'
 services:
-
-  # DevShop Base Image
-  # FROM ubuntu or centos
-  # The OS and SystemD changes to allow it to run in containers.
-  base:
-    image: "devshop/base:${OS:-latest}"
+  # The container, ie just a shell.
+  container:
+    image: "devshop/container"
     build:
       context: ".."
-      dockerfile: "docker/base/Dockerfile.${OS:-ubuntu1804}"
+      dockerfile: "docker/Dockerfile.${OS:-ubuntu1804}"
+    hostname: devshop.local.computer
+    ports:
+      - "80:80"
+      - "2222:22"
+    privileged: true
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+      - /var/lib/mysql
+      - ../:/usr/share/devshop
 
-  # DevShop Ansible Image
-  # devshop/base + ansible + python
-  ansible:
-    image: "devshop/ansible:${OS:-latest}"
-    depends_on:
-      - base
-    build:
-      context: ".."
-      dockerfile: "docker/ansible/Dockerfile.${OS:-ubuntu1804}"
-
-  # DevShop Core Image
-  # devshop/ansible + php + composer + devshop/cli
-  core:
-    image: "devshop/core:${OS:-latest}"
-    depends_on:
-      - ansible
-    build:
-      context: ".."
-      dockerfile: "docker/core/Dockerfile.${OS:-ubuntu1804}"
-
-  # DevShop Role Image
-  # devshop/core + tools to use any Ansible role at runtime.
-  role:
-    image: "devshop/role:${OS:-latest}"
-    depends_on:
-      - core
-    build:
-      context: ".."
-      dockerfile: "docker/role/Dockerfile.${OS:-ubuntu1804}"
+    environment:
+      - ANSIBLE_EXTRA_VARS
+      - ANSIBLE_VERBOSITY

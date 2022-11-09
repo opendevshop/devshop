@@ -4,7 +4,7 @@
 # All-in-one DevShop. Includes all services required to run on one instance.
 #
 ---
-- hosts: devshop_server
+- hosts: localhost
   become: true
 
   # These vars override everything except command line variables. Set variables per host in the inventory or vars files in /etc/ansible.
