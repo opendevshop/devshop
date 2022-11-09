@@ -12,6 +12,7 @@ services:
     ports:
       - "80:80"
       - "2222:22"
+      - "33066:3306"
     privileged: true
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
