@@ -185,14 +185,13 @@ jobs:
         run: composer install --prefer-dist --no-progress --no-suggest
         working-directory: ${{env.working-directory}}
 
-      - name: Test GitHub Deploy Start
-        when: false
-        working-directory: ${{env.working-directory}}
-        env:
-          GITHUB_TOKEN: ${{ secrets.INPUT_GITHUB_TOKEN }}
-        run: |
-          ./github deploy:start -n --description="GitHub API CLI tests begun" --environment=${{ matrix.php-versions }}.github.com
-          ./github deploy:update -n --state=in_progress
+#      - name: Test GitHub Deploy Start
+#        working-directory: ${{env.working-directory}}
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.INPUT_GITHUB_TOKEN }}
+#        run: |
+#          ./github deploy:start -n --description="GitHub API CLI tests begun" --environment=${{ matrix.php-versions }}.github.com
+#          ./github deploy:update -n --state=in_progress
 
       - name: Test GitHub Cli
         working-directory: ${{env.working-directory}}
