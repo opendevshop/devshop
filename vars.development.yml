@@ -24,4 +24,4 @@
 devshop_cli_skip_update: true
 devmaster_skip_upgrade: true
 
-php_version: "8.0"
+php_version: "7.4"
