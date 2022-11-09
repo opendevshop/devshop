@@ -18,6 +18,9 @@ set -ex
 cd install
 cat build/install.sh | grep $LOAD_DEVSHOP_VERSION
 
+# Rebuild a base container to include this PR's systemd scripts.
+docker build . --file Dockerfile.ubuntu1804 --tag ubuntu/container
+
 # Launch a devshop base container with this PR's install.sh script inside.
 docker run \
   --name install-server-test \
@@ -27,7 +30,7 @@ docker run \
   --volume $PWD/build/install.sh:/tmp/devshop-install.sh \
   --volume ../docker/initctl-faker:/sbin/initctl \
   --volume /sys/fs/cgroup:/sys/fs/cgroup:ro \
-  ubuntu:18.04
+  ubuntu/container
 
 docker exec \
   install-server-test \
