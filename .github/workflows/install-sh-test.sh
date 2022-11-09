@@ -15,9 +15,6 @@ sleep 2
 
 set -ex
 
-# Rebuild a base container to include this PR's systemd scripts.
-docker-compose --file docker/docker-compose.yml build
-
 cd install
 cat build/install.sh | grep $LOAD_DEVSHOP_VERSION
 
@@ -29,7 +26,7 @@ docker run \
   --publish 80:80 \
   --volume $PWD/build/install.sh:/tmp/devshop-install.sh \
   --volume /sys/fs/cgroup:/sys/fs/cgroup:ro \
-  devshop/container
+  geerlingguy/docker-ubuntu1804-ansible:latest
 
 docker exec \
   install-server-test \
