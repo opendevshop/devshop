@@ -236,7 +236,7 @@ class RoboFile extends \Robo\Tasks {
    * @option install-at-runtime Launch bare containers and then install devshop.
    * @option $build-command The command to run at the end of the docker build process. (Defaults to scripts/devshop-ansible-playbook)
    */
-  public function build($folder = 'all', $service = 'all', $opts = [
+  public function build($folder = 'docker', $service = 'all', $opts = [
       'docker-image' => 'devshop/server:latest',
       'from' => NULL,
       'build-command' => NULL,
@@ -253,7 +253,7 @@ class RoboFile extends \Robo\Tasks {
       $service = '';
     }
     if ($folder == "all") {
-      $folders = ['docker', 'roles'];
+      $folders = ['docker'];
     } else {
       $folders = [$folder];
     }
@@ -520,7 +520,7 @@ class RoboFile extends \Robo\Tasks {
         $this->yell('Mounting Docker Volumes... Use --ci to disable volumes.', 40, 'blue');
 
         // Set COMPOSE_FILE to include volumes.
-        $opts['compose-file'] = 'roles/docker-compose.yml:roles/docker-compose.local.yml';
+        $opts['compose-file'] = 'docker/docker-compose.yml:docker/docker-compose.override.yml';
 
         if (!file_exists('aegir-home') && !$opts['skip-source-prep']) {
           $this->say('<warning>The aegir-home folder not present. Running prepare source code command.</warning>');
@@ -534,7 +534,7 @@ class RoboFile extends \Robo\Tasks {
       $test_command = '';
       if ($opts['test']) {
         // Do not run a playbook on docker-compose up, because it will launch as a separate process and we won't know when it ends.
-        $cmd[] = "docker-compose run devshop.server {$docker_command}";
+        $cmd[] = "docker-compose run container {$docker_command}";
         $env_run['DEVSHOP_DOCKER_COMMAND_RUN'] = $docker_command;
 
         $test_command = "su aegir --command /usr/share/devshop/tests/devshop-tests.sh";
@@ -542,11 +542,11 @@ class RoboFile extends \Robo\Tasks {
       // @TODO: The `--test-upgrade` command is NOT YET run in GitHub Actions.
       // The PR with the update hook can be used to finalize upgrade tests: https://github.com/opendevshop/devshop/pull/426
       elseif ($opts['test-upgrade']) {
-        $cmd[] = "docker-compose run --rm devshop.server {$docker_command}";
+        $cmd[] = "docker-compose run --rm container {$docker_command}";
         $test_command = "/usr/share/devshop/tests/devshop-tests-upgrade.sh";
       }
       else {
-        $cmd[] = "docker-compose up --detach --force-recreate devshop.server";
+        $cmd[] = "docker-compose up --detach --force-recreate container";
         if (!$opts['no-follow']) {
           $cmd[] = "docker-compose logs -f";
         }
@@ -664,7 +664,7 @@ class RoboFile extends \Robo\Tasks {
    */
   public function stop() {
     $this->taskExec("docker-compose stop")
-        ->dir("roles")
+        ->dir("docker")
         ->run();
   }
 
@@ -681,9 +681,9 @@ class RoboFile extends \Robo\Tasks {
       // Remove devmaster site folder
       $version = self::DEVSHOP_LOCAL_VERSION;
       $uri = self::DEVSHOP_LOCAL_URI;
-      $this->_exec("cd roles && docker-compose exec devshop.server rm -rf /usr/share/devshop/src/DevShop/Control/web/sites/{$uri}");
-      $this->_exec('cd roles && docker-compose kill');
-      $this->_exec('cd roles && docker-compose rm -fv');
+      $this->_exec("cd docker && docker-compose exec container rm -rf /usr/share/devshop/src/DevShop/Control/web/sites/{$uri}");
+      $this->_exec('cd docker && docker-compose kill');
+      $this->_exec('cd docker && docker-compose rm -fv');
     }
 
     // Don't run when -n is specified,
@@ -723,7 +723,7 @@ class RoboFile extends \Robo\Tasks {
    */
   public function logs() {
     $this->taskExec("docker-compose logs -f")
-        ->dir("roles")
+        ->dir("docker")
         ->run();
   }
 
@@ -732,8 +732,8 @@ class RoboFile extends \Robo\Tasks {
    */
   public function watchdog() {
     $user = 'aegir';
-    $this->taskExec("docker-compose exec --user $user -T devshop.server drush @hostmaster wd-show --tail --extended")
-        ->dir("roles")
+    $this->taskExec("docker-compose exec --user $user -T container drush @hostmaster wd-show --tail --extended")
+        ->dir("docker")
         ->run();
   }
 
@@ -742,7 +742,7 @@ class RoboFile extends \Robo\Tasks {
    */
   public function restart() {
       $this->taskExec('docker-compose restart')
-          ->dir("roles")
+          ->dir("docker")
           ->run()
       ;
       $this->logs();
@@ -754,14 +754,14 @@ class RoboFile extends \Robo\Tasks {
   public function shell($user = 'aegir') {
 
     if ($user) {
-        $process = new \Symfony\Component\Process\Process("docker-compose exec --user $user devshop.server bash");
+        $process = new \Symfony\Component\Process\Process("docker-compose exec --user $user container bash");
     }
     else {
-        $process = new \Symfony\Component\Process\Process("docker-compose exec devshop.server bash");
+        $process = new \Symfony\Component\Process\Process("docker-compose exec container bash");
     }
     $process->setTty(TRUE);
     $process->setTimeout(NULL);
-    $process->setEnv(['COMPOSE_FILE' => './roles/docker-compose.yml']);
+    $process->setEnv(['COMPOSE_FILE' => './docker/docker-compose.yml']);
     $process->run();
     return $process->getExitCode();
   }
@@ -770,7 +770,7 @@ class RoboFile extends \Robo\Tasks {
    * Run all devshop tests on the containers.
    */
   public function test($user = 'aegir', $opts = array(
-    'compose-file' => 'roles/docker-compose.yml:roles/docker-compose.local.yml',
+    'compose-file' => 'docker/docker-compose.yml:docker/docker-compose.override.yml',
     'reinstall' => FALSE
   )) {
     $is_tty = !empty($_SERVER['XDG_SESSION_TYPE']) && $_SERVER['XDG_SESSION_TYPE'] == 'tty';
@@ -779,20 +779,20 @@ class RoboFile extends \Robo\Tasks {
     // If running in CI, create the test-artifacts directory and ensure ownership first.
     // @TODO: Move logic to a special CI container.
     if (!empty($_SERVER['CI'])) {
-      $commands[] = "docker-compose exec $no_tty devshop.server mkdir -p /var/aegir/test-artifacts";
-      $commands[] = "docker-compose exec $no_tty devshop.server chown aegir:aegir /var/aegir/test-artifacts -R";
-      $commands[] = "docker-compose exec $no_tty devshop.server chmod 777 /var/aegir/test-artifacts -R";
+      $commands[] = "docker-compose exec $no_tty container mkdir -p /var/aegir/test-artifacts";
+      $commands[] = "docker-compose exec $no_tty container chown aegir:aegir /var/aegir/test-artifacts -R";
+      $commands[] = "docker-compose exec $no_tty container chmod 777 /var/aegir/test-artifacts -R";
     }
 
     if ($opts['reinstall']) {
-      $commands[] = "docker-compose exec $no_tty --user $user devshop.server drush @hostmaster provision-install --force-reinstall";
+      $commands[] = "docker-compose exec $no_tty --user $user container drush @hostmaster provision-install --force-reinstall";
     }
 
-    $commands[] = "docker-compose exec $no_tty --user $user devshop.server /usr/share/devshop/tests/devshop-tests.sh";
+    $commands[] = "docker-compose exec $no_tty --user $user container /usr/share/devshop/tests/devshop-tests.sh";
     $provision_io = new \DevShop\Component\PowerProcess\PowerProcessStyle($this->input, $this->output);
     foreach ($commands as $command) {
       $process = new \DevShop\Component\PowerProcess\PowerProcess($command, $provision_io);
-      $process->setWorkingDirectory('roles');
+      $process->setWorkingDirectory('docker');
 
       $process->setTty(!empty($_SERVER['XDG_SESSION_TYPE']) && $_SERVER['XDG_SESSION_TYPE'] == 'tty');
 
@@ -815,8 +815,8 @@ class RoboFile extends \Robo\Tasks {
    * Get a one-time login link to Devamster.
    */
   public function login($user = 'aegir') {
-    $this->taskExec("docker-compose exec --user $user -T devshop.server /usr/share/devshop/bin/drush @hostmaster uli")
-        ->dir("roles")
+    $this->taskExec("docker-compose exec --user $user -T container /usr/share/devshop/bin/drush @hostmaster uli")
+        ->dir("docker")
         ->run();
     ;
   }
