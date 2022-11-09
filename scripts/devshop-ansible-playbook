@@ -17,7 +17,7 @@ ANSIBLE_PLAYBOOK_COMMAND_OPTIONS=${ANSIBLE_PLAYBOOK_COMMAND_OPTIONS:-}
 ANSIBLE_VERBOSITY=${ANSIBLE_VERBOSITY:-"0"}
 
 # Used for validating inventory is setup correctly. Set to match the devshop role play.yml and inventory.
-DEVSHOP_ANSIBLE_GROUP_NAME=${DEVSHOP_ANSIBLE_GROUP_NAME:-"localhost"}
+DEVSHOP_ANSIBLE_GROUP_NAME=${DEVSHOP_ANSIBLE_GROUP_NAME:-"devshop_server"}
 
 # Build options string if ENV vars exist.
 if [[ -n "${ANSIBLE_TAGS}" ]]; then
