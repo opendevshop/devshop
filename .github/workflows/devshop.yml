@@ -11,7 +11,7 @@ on:
 env:
   # Set ANSIBLE_VERBOSITY to 1,2 or 3 when needed for development.
   ANSIBLE_VERBOSITY: 0
-  DEBUG_COMMAND: "docker-compose exec -T devshop.server systemctl status --no-pager"
+  DEBUG_COMMAND: "docker-compose exec -T container systemctl status --no-pager"
   GITHUB_TOKEN: ${{ secrets.INPUT_GITHUB_TOKEN }}
   GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}
   GITHUB_PR_SHA: ${{ github.event.pull_request.head.sha  }}
@@ -71,64 +71,45 @@ jobs:
           echo "devshop_version: ${{ github.head_ref }}" >> vars.ci.yml
           echo "devshop_cli_repo: ${{ github.event.pull_request.head.repo.clone_url }}" >> vars.ci.yml
           echo "GIT_REF=${{ github.head_ref }}" >> $GITHUB_ENV
-          echo "ANSIBLE_VERBOSITY=2" >> $GITHUB_ENV
           git switch --create ${{ github.head_ref }}
+# If you need really big logs...
+#          echo "ANSIBLE_VERBOSITY=2" >> $GITHUB_ENV
 
       # Build "base"
-      - name: "Build devshop/base:${{ matrix.os }} Container"
+      - name: "Build devshop/container"
         working-directory: docker
-        run: docker-compose build base
-
-      # Build "ansible"
-      - name: "Build devshop/ansible:${{ matrix.os }} Container"
-        working-directory: docker
-        run: docker-compose build ansible
-
-      # Build "core"
-      - name: "Build devshop/core:${{ matrix.os }} Container"
-        working-directory: docker
-        run: docker-compose build core
-
-      # Build "role"
-      - name: "Build devshop/role:${{ matrix.os }} Container"
-        working-directory: docker
-        run: docker-compose build role
-
-      # Build DevShop Role Images
-      - name: "Build devshop/server:${{ matrix.os }} Container"
-        working-directory: roles
-        run: docker-compose build devshop.server
+        run: docker-compose build
 
       # Launch Container
-      - name: "Launch a freshly built devshop/server:${{ matrix.os }} container"
-        working-directory: roles
+      - name: "Launch a freshly built devshop/container:${{ matrix.os }} container"
+        working-directory: docker
+        # -f is used to skip loading docker-compose.override.yml
         run: |
-          docker-compose up --detach devshop.server
+          docker-compose -f docker-compose.yml  up --detach
           sleep 3
           docker-compose logs
-          docker-compose exec -T devshop.server chown aegir:aegir /usr/share/devshop -R
-          docker-compose exec -T devshop.server /usr/share/devshop/scripts/devshop-logo "GitHub Actions Container populated with code. Running SHA ${GITHUB_PR_SHA}"
+          docker-compose exec -T container devshop-logo "GitHub Actions Container populated with code. Running SHA ${GITHUB_PR_SHA}"s
 
       - name: "Review Container Environment"
-        working-directory: roles
+        working-directory: docker
         run: |
-          docker-compose exec -T devshop.server env
-          docker-compose exec -T devshop.server systemctl status --no-pager
+          docker-compose exec -T container env
+          docker-compose exec -T container systemctl status --no-pager
           sleep 4
 
       - name: "Install DevShop (devshop.server/play.yml --tags=runtime)"
-        working-directory: roles
+        working-directory: docker
 
         # Since the container is launched with a new DEVSHOP_DOCKER_COMMAND_RUN, run the default.
         run: |
-          docker-compose exec -T devshop.server bash -c '${DEFAULT_DEVSHOP_DOCKER_COMMAND_RUN}'
+          docker-compose exec -T container devshop-ansible-playbook
 
       - name: "Test DevShop"
-        working-directory: roles
-        run: docker-compose exec -T --user aegir devshop.server /usr/share/devshop/tests/devshop-tests.sh
+        working-directory: docker
+        run: docker-compose exec -T --user aegir container /usr/share/devshop/tests/devshop-tests.sh
 
       - name: Save Docker Logs as Artifacts
-        working-directory: roles
+        working-directory: docker
         if: always()
         run: |
           docker ps -a >        ../artifact-docker-ps.log && \

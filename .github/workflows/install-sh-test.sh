@@ -15,13 +15,13 @@ sleep 2
 
 set -ex
 
-# Rebuild a base container to include this PR's systemd scripts.
-docker-compose --file docker/docker-compose.yml build base
-
 cd install
 cat build/install.sh | grep $LOAD_DEVSHOP_VERSION
 
-# Launch a devshop/base container with this PR's install.sh script inside.
+# Rebuild a base container to include this PR's systemd scripts.
+docker build . --file Dockerfile.ubuntu1804 --tag ubuntu/container
+
+# Launch a devshop base container with this PR's install.sh script inside.
 docker run \
   --name install-server-test \
   --detach --privileged --rm \
@@ -29,7 +29,7 @@ docker run \
   --publish 80:80 \
   --volume $PWD/build/install.sh:/tmp/devshop-install.sh \
   --volume /sys/fs/cgroup:/sys/fs/cgroup:ro \
-  devshop/base
+  ubuntu/container
 
 docker exec \
   install-server-test \

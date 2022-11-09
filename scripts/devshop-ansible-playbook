@@ -9,6 +9,7 @@ if [ -f "${DEVSHOP_PATH}/${ANSIBLE_PLAYBOOK}" ]; then
 fi
 
 ANSIBLE_PLAYBOOK=${ANSIBLE_PLAYBOOK:-"/etc/ansible/play.yml"}
+ANSIBLE_CONFIG=${ANSIBLE_CONFIG:-""}
 ANSIBLE_TAGS=${ANSIBLE_TAGS:-""}
 ANSIBLE_SKIP_TAGS=${ANSIBLE_SKIP_TAGS:-""}
 ANSIBLE_EXTRA_VARS=${ANSIBLE_EXTRA_VARS:-""}
@@ -40,6 +41,7 @@ echo "> Running ansible all --list-hosts --limit $DEVSHOP_ANSIBLE_GROUP_NAME:"
 ansible all --list-hosts --limit $DEVSHOP_ANSIBLE_GROUP_NAME
 
 devshop-logo "Running Ansible Playbook..."
+echo "ANSIBLE_CONFIG: $ANSIBLE_CONFIG"
 echo "ANSIBLE_PLAYBOOK: $ANSIBLE_PLAYBOOK"
 echo "ANSIBLE_TAGS: $ANSIBLE_TAGS"
 echo "ANSIBLE_SKIP_TAGS: $ANSIBLE_SKIP_TAGS"
