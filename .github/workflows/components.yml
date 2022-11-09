@@ -190,13 +190,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.INPUT_GITHUB_TOKEN }}
         run: |
-          ./github whoami
-
-      - name: Test GitHub Cli deployments
-        working-directory: ${{env.working-directory}}
-        env:
-          GITHUB_TOKEN: ${{ secrets.INPUT_GITHUB_TOKEN }}
-        run: |
           ./github deploy:start -n --description="GitHub API CLI tests begun" --environment=${{ matrix.php-versions }}.github.com
           sleep 3
           ./github deploy:update -n --state=in_progress
