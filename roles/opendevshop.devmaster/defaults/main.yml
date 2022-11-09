@@ -38,10 +38,10 @@ server_hostname_ignore_errors: true
 devshop_cli_repo: http://github.com/opendevshop/devshop.git
 devshop_cli_skip_update: false
 devshop_cli_path: /usr/share/devshop
-devshop_cli_bin_path: "{{ devshop_cli_path }}/bin"
+devshop_cli_bin_path: "{{ devshop_cli_path }}/scripts"
 devshop_cli_composer_install_command: "install --no-interaction"
 
-drush_bin_path: "{{ devshop_cli_bin_path }}/drush"
+drush_bin_path: "{{ devshop_cli_path }}/bin/drush"
 
 aegir_server_webserver: apache
 
