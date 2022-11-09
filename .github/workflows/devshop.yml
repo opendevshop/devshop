@@ -89,7 +89,6 @@ jobs:
         working-directory: roles
         run: |
           docker-compose exec -T container env
-          docker-compose exec -T container systemctl status --no-pager
           sleep 4
 
       - name: "Install DevShop (devshop.server/play.yml --tags=runtime)"
