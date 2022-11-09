@@ -1,6 +1,7 @@
 ---
+
 - name: DevShop Control | Clear drush caches
-  command: "{{ drush_bin_path }} cc drush"
+  command: "{{ drush_executable_path }} cc drush"
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
@@ -9,7 +10,7 @@
   tags: [runtime]
 
 - name: DevShop Control | Clear all caches
-  command: "{{ drush_bin_path }} {{ devshop_control_drush_alias }} cc all"
+  command: "{{ drush_executable_path }} {{ devshop_control_drush_alias }} cc all"
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
@@ -21,7 +22,7 @@
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
-  command: "{{ drush_bin_path }} {{ devshop_control_drush_alias }} vset devshop_github_token {{ devshop_github_token }}"
+  command: "{{ drush_executable_path }} {{ devshop_control_drush_alias }} vset devshop_github_token {{ devshop_github_token }}"
   when:
     - devshop_github_token is defined
     - devshop_github_token | length > 0
@@ -33,7 +34,7 @@
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
-  command: "{{ drush_bin_path }} {{ devshop_control_drush_alias }} hosting-tasks --force"
+  command: "{{ drush_executable_path }} {{ devshop_control_drush_alias }} hosting-tasks --force"
   register: devshop_ansible_command_output
   changed_when: devshop_ansible_command_output.stdout | length > 0
   tags: [runtime]
@@ -42,7 +43,7 @@
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
-  command: "{{ drush_bin_path }} {{ devshop_control_drush_alias }} hosting-setup -y"
+  command: "{{ drush_executable_path }} {{ devshop_control_drush_alias }} hosting-setup -y"
   register: devshop_ansible_command_output
   changed_when: devshop_ansible_command_output.stdout | length > 0
   tags: [runtime]
@@ -58,7 +59,7 @@
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
-  command: "{{ drush_bin_path }} {{ devshop_control_drush_alias }} vset devshop_support_license_key {{ devshop_support_license_key }}"
+  command: "{{ drush_executable_path }} {{ devshop_control_drush_alias }} vset devshop_support_license_key {{ devshop_support_license_key }}"
   when: devshop_support_license_key | length > 0
   tags: [runtime]
 
@@ -66,12 +67,12 @@
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
-  command: "{{ drush_bin_path }} {{ devshop_control_drush_alias }} hosting-devshop_support"
+  command: "{{ drush_executable_path }} {{ devshop_control_drush_alias }} hosting-devshop_support"
   when: devshop_support_license_key | length > 0
   tags: [runtime]
 
 - name: Save SSH key as variable
-  shell: "{{ drush_bin_path }} {{ devshop_control_drush_alias }} vset devshop_public_key \"$(cat ~/.ssh/id_rsa.pub)\" --yes"
+  shell: "{{ drush_executable_path }} {{ devshop_control_drush_alias }} vset devshop_public_key \"$(cat ~/.ssh/id_rsa.pub)\" --yes"
   become: true
   become_user: aegir
   become_method: "{{ ansible_become_method_aegir }}"
@@ -110,7 +111,7 @@
   tags: [runtime]
 
 - name: Verify DevShop Control site
-  command: "{{ drush_bin_path }} {{ devshop_control_drush_alias }} provision-verify"
+  command: "{{ drush_executable_path }} {{ devshop_control_drush_alias }} provision-verify"
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"

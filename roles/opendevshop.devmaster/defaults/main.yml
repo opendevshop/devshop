@@ -38,10 +38,14 @@ server_hostname_ignore_errors: true
 devshop_cli_repo: http://github.com/opendevshop/devshop.git
 devshop_cli_skip_update: false
 devshop_cli_path: /usr/share/devshop
-devshop_cli_bin_path: "{{ devshop_cli_path }}/bin"
-devshop_cli_composer_install_command: "install --no-interaction"
 
-drush_bin_path: "{{ devshop_cli_bin_path }}/drush"
+# Use real folder paths so not to depend on composer install
+devshop_cli_scripts_path: "{{ devshop_cli_path }}/scripts"
+devshop_cli_bin_path: "{{ devshop_cli_path }}/bin"
+devshop_cli_executable_path: "{{ devshop_cli_path }}/bin/devshop"
+drush_executable_path: "{{ devshop_cli_path }}/bin/drush"
+
+devshop_cli_composer_install_command: "install --no-interaction"
 
 aegir_server_webserver: apache
 
@@ -98,7 +102,7 @@ devshop_control_install_options: ""
 devshop_install_profile: devmaster
 
 devmaster_upgrade_command: |
-  {{ devshop_cli_bin_path }}/devshop devmaster:upgrade {{ devshop_version }} -n --run-from-playbooks
+  {{ devshop_cli_executable_path }} devmaster:upgrade {{ devshop_version }} -n --run-from-playbooks
 
 devmaster_test_command: "{{ devshop_cli_path }}/tests/devshop-tests.sh"
 

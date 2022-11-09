@@ -194,7 +194,7 @@
     mode: 0655
 
 - name: Check drush status
-  command: "{{ drush_bin_path }} status"
+  command: "{{ drush_executable_path }} status"
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
@@ -232,7 +232,7 @@
 
 - name: Install required drush packages.
   command: |
-    {{ drush_bin_path }} dl {{ item.key }}-{{ item.value }} --destination={{ aegir_user_home }}/.drush/commands --package-handler={{ drush_dl_method }}
+    {{ drush_executable_path }} dl {{ item.key }}-{{ item.value }} --destination={{ aegir_user_home }}/.drush/commands --package-handler={{ drush_dl_method }}
   with_dict: "{{ devshop_drush_packages }}"
   changed_when: true
   ignore_errors: true
@@ -242,7 +242,7 @@
   tags: [runtime]
 
 - name: Setup Drush Bash Enhancements
-  command: "{{ drush_bin_path }} init --yes"
+  command: "{{ drush_executable_path }} init --yes"
   changed_when: true
   become: true
   become_user: "{{ aegir_user_name }}"
@@ -257,7 +257,7 @@
   tags: [never, remove-devmaster, rebuild-devmaster]
 
 - name: Clear the drush cache.
-  command: "{{ drush_bin_path }} cc drush"
+  command: "{{ drush_executable_path }} cc drush"
   changed_when: true
   become: true
   become_user: "{{ aegir_user_name }}"
