@@ -72,6 +72,13 @@
     name: '{{ devshop_pip_packages }}'
     state: present
 
+# This happens when /usr/share/devshop is in a volume and the container user doesn't work yet.
+- name: Configure Git to set devshop as a safe directory to avoid "dubious ownership" claims.
+  git_config:
+    scope: global
+    name: safe.directory
+    value: "{{ devshop_cli_path }}"
+
 - name: Detect currently installed version of DevShop.
   command: "{{ devshop_cli_path }}/scripts/branch-or-tag"
   register: __devshop_version_installed
