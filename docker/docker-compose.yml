@@ -16,7 +16,6 @@ services:
     privileged: true
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
-      - /var/lib/mysql
 
     environment:
       - ANSIBLE_EXTRA_VARS
