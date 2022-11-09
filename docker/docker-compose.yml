@@ -17,7 +17,6 @@ services:
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
       - /var/lib/mysql
-      - ../:/usr/share/devshop
 
     environment:
       - ANSIBLE_EXTRA_VARS

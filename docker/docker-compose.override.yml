@@ -1,0 +1,8 @@
+# New.
+---
+version: '3'
+services:
+  # The container, ie just a shell.
+  container:
+    volumes:
+      - ../:/usr/share/devshop

@@ -79,8 +79,9 @@ jobs:
       # Launch Container
       - name: "Launch a freshly built devshop/container:${{ matrix.os }} container"
         working-directory: docker
+        # -f is used to skip loading docker-compose.override.yml
         run: |
-          docker-compose up --detach
+          docker-compose -f docker-compose.yml  up --detach
           sleep 3
           docker-compose logs
           docker-compose exec -T container devshop-logo "GitHub Actions Container populated with code. Running SHA ${GITHUB_PR_SHA}"s
