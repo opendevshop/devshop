@@ -12,12 +12,12 @@ Feature: Create a project and check settings
     And I click "Start a new Project"
     Then I should see "Step 1"
     Then I fill in "composer" for "Project Code Name"
-    And I fill in "https://github.com/drupal-composer/drupal-project.git" for "Git Repository URL"
+    And I fill in "https://github.com/opendevshop/drupal-project.git" for "Git Repository URL"
     When I press "Next"
 
     # Step 2
     Then I should see "composer"
-    And I should see "https://github.com/drupal-composer/drupal-project.git"
+    And I should see "https://github.com/opendevshop/drupal-project.git"
     Then I should see "Please wait while we connect and analyze your repository."
     When I run drush "hosting-tasks --force --fork=0 --strict=0"
     # Then print last drush output
