@@ -6,3 +6,4 @@ services:
   container:
     volumes:
       - ../:/usr/share/devshop
+      - $HOME/.ssh:/var/aegir/.ssh

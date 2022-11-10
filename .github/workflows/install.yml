@@ -14,7 +14,7 @@ env:
 jobs:
   install_script:
     name: Install Script
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
 
     steps:
     - name: Prepare Pull Request-only environment

@@ -13,6 +13,7 @@
 # The Robofile overrides the following variables dynamically to match your git clone and wworking environment.
 
 # Set these to your host UID so docker paths map correctly.
+# (The 'robo up' command does this automatically.)
 # aegir_user_uid: 1000
 # aegir_user_gid: 1000
 
@@ -22,3 +23,5 @@
 # This prevents updating your local copy of devshop to a different or running the upgrade command.
 devshop_cli_skip_update: true
 devmaster_skip_upgrade: true
+
+php_version: "7.4"
