@@ -17,7 +17,7 @@ Feature: Create a project and check settings
 
     # Step 2
     Then I should see "composer"
-    And I should see "http://github.com/opendevshop/devshop-composer-template.git"
+    And I should see "https://github.com/drupal-composer/drupal-project.git"
     Then I should see "Please wait while we connect and analyze your repository."
     When I run drush "hosting-tasks --force --fork=0 --strict=0"
     # Then print last drush output
