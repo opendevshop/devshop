@@ -19,7 +19,7 @@ cd install
 cat build/install.sh | grep $LOAD_DEVSHOP_VERSION
 
 # Rebuild a base container to include this PR's systemd scripts.
-docker build . --file Dockerfile.ubuntu1804 --tag ubuntu/container
+docker build . --file Dockerfile.${OS:-ubuntu1804} --tag ubuntu/container
 
 # Launch a devshop base container with this PR's install.sh script inside.
 docker run \
