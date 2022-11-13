@@ -40,8 +40,7 @@ jobs:
 
         os:
           - 'ubuntu1804'
-          # Sorry, centos. You must wait until the next PR.
-          # - 'centos7'
+          - 'ubuntu2004'
     env:
       OS: "${{ matrix.os }}"
       HOSTNAME: "devshop.${{ github.event.pull_request.number }}.${{ matrix.os }}.actions.github.com"

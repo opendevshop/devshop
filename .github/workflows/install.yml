@@ -16,6 +16,17 @@ jobs:
     name: Install Script
     runs-on: ubuntu-latest
 
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - 'ubuntu1804'
+          - 'ubuntu2004'
+
+    env:
+      OS: "${{ matrix.os }}"
+      ANSIBLE_EXTRA_VARS: "${{ matrix.vars }}"
+
     steps:
     - name: Prepare Pull Request-only environment
       if: github.event_name=='pull_request'
@@ -35,10 +46,6 @@ jobs:
       with:
         ref: ${{ github.event.pull_request.head.sha }}
         fetch-depth: 0
-
-    - name: Build Install Script
-      run: make build
-      working-directory: install
 
     - name: Run Install Script
       run: bash .github/workflows/install-sh-test.sh
