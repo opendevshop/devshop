@@ -54,6 +54,7 @@ prepare_ubuntu2004() {
     && apt-get install -y --no-install-recommends \
        apt-utils \
        build-essential \
+       git \
        locales \
        libffi-dev \
        libssl-dev \
