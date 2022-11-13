@@ -47,6 +47,9 @@ get_distribution() {
 prepare_ubuntu2004() {
   PYTHON_DEFAULT=/usr/bin/python3
   DEBIAN_FRONTEND=noninteractive
+
+  pip_packages="ansible"
+
   apt-get update \
     && apt-get install -y --no-install-recommends \
        apt-utils \
@@ -59,6 +62,7 @@ prepare_ubuntu2004() {
        python3-setuptools \
        python3-pip \
        python3-yaml \
+       python-is-python3 \
        software-properties-common \
        rsyslog systemd systemd-cron sudo iproute2 \
     && apt-get clean \
@@ -180,6 +184,9 @@ echo "OS Detected: $lsb_dist $dist_version ($dist_version_name)"
 
 # Break out preparation into separate functions.
 case "$lsb_dist $dist_version" in
+  "ubuntu 20.04")
+    prepare_ubuntu1804
+  ;;
   "ubuntu 18.04")
     prepare_ubuntu1804
   ;;

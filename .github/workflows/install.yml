@@ -47,10 +47,6 @@ jobs:
         ref: ${{ github.event.pull_request.head.sha }}
         fetch-depth: 0
 
-    - name: Build Install Script
-      run: make build
-      working-directory: install
-
     - name: Run Install Script
       run: bash .github/workflows/install-sh-test.sh
 

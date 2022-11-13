@@ -230,6 +230,8 @@ get_distribution_version() {
 prepare_ubuntu2004() {
   PYTHON_DEFAULT=/usr/bin/python3
   DEBIAN_FRONTEND=noninteractive
+  pip_packages="ansible"
+
   apt-get update \
     && apt-get install -y --no-install-recommends \
        apt-utils \
@@ -242,6 +244,7 @@ prepare_ubuntu2004() {
        python3-setuptools \
        python3-pip \
        python3-yaml \
+       python-is-python3 \
        software-properties-common \
        rsyslog systemd systemd-cron sudo iproute2 \
     && apt-get clean \
@@ -469,6 +472,9 @@ echo $LINE
 echo " Installing prerequisites (ansible, git etc)..."
 
 case "$lsb_dist $dist_version" in
+  "ubuntu 20.04")
+    prepare_ubuntu2004 > /dev/null
+  ;;
   "ubuntu 18.04")
     prepare_ubuntu1804 > /dev/null
   ;;
