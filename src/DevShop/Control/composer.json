@@ -22,9 +22,9 @@
         "type": "path",
         "url": "../../../devmaster"
       },
-      "composer_common": {
+      "git_traits": {
         "type": "path",
-        "url": "../Component/ComposerCommon"
+        "url": "../Component/GitTraits"
       }
     },
     "require": {

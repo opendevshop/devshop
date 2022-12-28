@@ -1,7 +1,7 @@
 {
-  "name": "devshop/composer-common",
+  "name": "devshop/git-traits",
   "type": "library",
-  "description": "Tools useful for any composer-based project.",
+  "description": "Traits to make classes git-aware.",
   "keywords": [],
   "homepage": "https://getdevshop.com",
   "license": "MIT",
