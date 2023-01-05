@@ -1571,7 +1571,9 @@ function devshop_github_webhook($project_node) {
             // Environment might have been deleted.
             if (empty($environment)) {
               $message .= "Environment $environment_name not found in project $project->name.";
-              continue;
+              break;
+              # @TODO: Confirm this works, then remove.
+              # continue;
             }
 
             $message .= "About to set deployment status for repo $owner/$repo using environment $environment_name  \n";
