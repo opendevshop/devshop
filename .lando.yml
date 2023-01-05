@@ -1,0 +1,4 @@
+name: devshop-control
+recipe: drupal7
+config:
+  webroot: src/DevShop/Control/web
