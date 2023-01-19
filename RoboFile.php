@@ -59,7 +59,7 @@ class RoboFile extends \Robo\Tasks {
     'run-command' => 'DEVSHOP_DOCKER_COMMAND_RUN',
 
     // Used in docker compose image.
-    'from' => 'FROM_IMAGE',
+    'from' => 'DEVSHOP_CONTAINER_FROM',
     'os' => 'OS_VERSION',
     'dockerfile' => 'DOCKERFILE',
     'compose-file' => 'COMPOSE_FILE',
@@ -288,6 +288,7 @@ class RoboFile extends \Robo\Tasks {
 
     // Runtime Environment for the docker-compose build command.
     $env_build = $this->generateEnvironmentArgs($opts);
+    print_r($env_build);
 
     $provision_io = new \DevShop\Component\PowerProcess\PowerProcessStyle($this->input(), $this->output());
     $process = new \DevShop\Component\PowerProcess\PowerProcess("docker-compose build --no-cache $service", $provision_io);
@@ -557,6 +558,8 @@ class RoboFile extends \Robo\Tasks {
 
       // Runtime Environment for the $cmd list.
       $env_run = $this->generateEnvironmentArgs($opts);
+      print_r($env_run);
+
       $extra_vars = array();
 
       // Set devshop_version and cli_repo here because every local dev environment is different.
