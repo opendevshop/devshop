@@ -30,9 +30,6 @@ ENV DEVSHOP_ANSIBLE_RUNTIME_OPTIONS "--tags runtime"
 ENV ANSIBLE_PLAYBOOK $DEVSHOP_PATH/roles/devshop.server/play.yml
 ENV ANSIBLE_CONFIG $DEVSHOP_PATH/ansible.cfg
 
-# Skip anything tagged "runtime" during this build phase.
-ENV ANSIBLE_SKIP_TAGS runtime
-
 # Define what is run in docker build and docker run.
 ENV DEVSHOP_DOCKER_COMMAND_BUILD $DEVSHOP_PATH/scripts/devshop-ansible-playbook $DEVSHOP_ANSIBLE_BUILDTIME_OPTIONS
 ENV DEVSHOP_DOCKER_COMMAND_RUN $DEVSHOP_PATH/scripts/devshop-ansible-playbook $DEVSHOP_ANSIBLE_RUNTIME_OPTIONS
