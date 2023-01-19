@@ -117,9 +117,6 @@
         "post-install-cmd": [
             "DevShop\\Composer::installControl"
         ],
-        "post-update-cmd": [
-            "DevShop\\Composer::updateControl"
-        ],
         "roles:update": [
             "DevShop\\Composer::updateRoles"
         ]
