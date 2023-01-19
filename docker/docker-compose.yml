@@ -2,12 +2,11 @@
 ---
 version: '3'
 services:
-  # The container, ie just a shell.
-  container:
-    image: "devshop/container"
+  server:
+    image: "devshop/server"
     build:
       context: ".."
-      dockerfile: "docker/Dockerfile.${OS:-ubuntu1804}"
+      dockerfile: "docker/Dockerfile.${OS:-ubuntu2004}"
     hostname: devshop.local.computer
     ports:
       - "80:80"
