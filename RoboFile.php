@@ -578,6 +578,7 @@ class RoboFile extends \Robo\Tasks {
 
       // Runtime Environment for the $cmd list.
       $env_run = $this->generateEnvironmentArgs($opts);
+      $env_run['ANSIBLE_PLAYBOOK_COMMAND_OPTIONS'] = '--extra-vars=@/usr/share/devshop/vars.development.yml';
       print_r($env_run);
 
       $extra_vars = array();
