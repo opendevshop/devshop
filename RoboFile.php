@@ -534,7 +534,7 @@ class RoboFile extends \Robo\Tasks {
       $test_command = '';
       if ($opts['test']) {
         // Do not run a playbook on docker-compose up, because it will launch as a separate process and we won't know when it ends.
-        $cmd[] = "docker-compose run container {$docker_command}";
+        $cmd[] = "docker-compose run devshop.server {$docker_command}";
         $env_run['DEVSHOP_DOCKER_COMMAND_RUN'] = $docker_command;
 
         $test_command = "su aegir --command /usr/share/devshop/tests/devshop-tests.sh";
@@ -546,7 +546,7 @@ class RoboFile extends \Robo\Tasks {
         $test_command = "/usr/share/devshop/tests/devshop-tests-upgrade.sh";
       }
       else {
-        $cmd[] = "docker-compose up --detach --force-recreate container";
+        $cmd[] = "docker-compose up --detach --force-recreate devshop.server";
         if (!$opts['no-follow']) {
           $cmd[] = "docker-compose logs -f";
         }
@@ -681,13 +681,13 @@ class RoboFile extends \Robo\Tasks {
       // Remove devmaster site folder
       $version = self::DEVSHOP_LOCAL_VERSION;
       $uri = self::DEVSHOP_LOCAL_URI;
-      $this->_exec("cd docker && docker-compose exec container rm -rf /usr/share/devshop/src/DevShop/Control/web/sites/{$uri}");
+      $this->_exec("cd docker && docker-compose exec devshop.server rm -rf /usr/share/devshop/src/DevShop/Control/web/sites/{$uri}");
       $this->_exec('cd docker && docker-compose kill');
       $this->_exec('cd docker && docker-compose rm -fv');
     }
 
     // Don't run when -n is specified,
-    if (!$this->input()->isInteractive() || $this->confirm("Destroy container home directory? (aegir-home)")) {
+    if (!$this->input()->isInteractive() || $this->confirm("Destroy devshop.server home directory? (aegir-home)")) {
       if ($this->_exec("rm -rf aegir-home")->wasSuccessful()) {
         $this->say("Entire aegir-home folder deleted.");
       }
@@ -732,7 +732,7 @@ class RoboFile extends \Robo\Tasks {
    */
   public function watchdog() {
     $user = 'aegir';
-    $this->taskExec("docker-compose exec --user $user -T container drush @hostmaster wd-show --tail --extended")
+    $this->taskExec("docker-compose exec --user $user -T devshop.server drush @hostmaster wd-show --tail --extended")
         ->dir("docker")
         ->run();
   }
@@ -754,10 +754,10 @@ class RoboFile extends \Robo\Tasks {
   public function shell($user = 'aegir') {
 
     if ($user) {
-        $process = new \Symfony\Component\Process\Process("docker-compose exec --user $user container bash");
+        $process = new \Symfony\Component\Process\Process("docker-compose exec --user $user devshop.server bash");
     }
     else {
-        $process = new \Symfony\Component\Process\Process("docker-compose exec container bash");
+        $process = new \Symfony\Component\Process\Process("docker-compose exec devshop.server bash");
     }
     $process->setTty(TRUE);
     $process->setTimeout(NULL);
@@ -779,16 +779,16 @@ class RoboFile extends \Robo\Tasks {
     // If running in CI, create the test-artifacts directory and ensure ownership first.
     // @TODO: Move logic to a special CI container.
     if (!empty($_SERVER['CI'])) {
-      $commands[] = "docker-compose exec $no_tty container mkdir -p /var/aegir/test-artifacts";
-      $commands[] = "docker-compose exec $no_tty container chown aegir:aegir /var/aegir/test-artifacts -R";
-      $commands[] = "docker-compose exec $no_tty container chmod 777 /var/aegir/test-artifacts -R";
+      $commands[] = "docker-compose exec $no_tty devshop.server mkdir -p /var/aegir/test-artifacts";
+      $commands[] = "docker-compose exec $no_tty devshop.server chown aegir:aegir /var/aegir/test-artifacts -R";
+      $commands[] = "docker-compose exec $no_tty devshop.server chmod 777 /var/aegir/test-artifacts -R";
     }
 
     if ($opts['reinstall']) {
-      $commands[] = "docker-compose exec $no_tty --user $user container drush @hostmaster provision-install --force-reinstall";
+      $commands[] = "docker-compose exec $no_tty --user $user devshop.server drush @hostmaster provision-install --force-reinstall";
     }
 
-    $commands[] = "docker-compose exec $no_tty --user $user container /usr/share/devshop/tests/devshop-tests.sh";
+    $commands[] = "docker-compose exec $no_tty --user $user devshop.server /usr/share/devshop/tests/devshop-tests.sh";
     $provision_io = new \DevShop\Component\PowerProcess\PowerProcessStyle($this->input, $this->output);
     foreach ($commands as $command) {
       $process = new \DevShop\Component\PowerProcess\PowerProcess($command, $provision_io);
@@ -815,7 +815,7 @@ class RoboFile extends \Robo\Tasks {
    * Get a one-time login link to Devamster.
    */
   public function login($user = 'aegir') {
-    $this->taskExec("docker-compose exec --user $user -T container /usr/share/devshop/bin/drush @hostmaster uli")
+    $this->taskExec("docker-compose exec --user $user -T devshop.server /usr/share/devshop/bin/drush @hostmaster uli")
         ->dir("docker")
         ->run();
     ;
