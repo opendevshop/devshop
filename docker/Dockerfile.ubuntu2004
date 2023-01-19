@@ -8,6 +8,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 # Copy devshop source to DEVSHOP_PATH.
 ENV DEVSHOP_PATH /usr/share/devshop
+RUN rm -rf $DEVSHOP_PATH
 COPY ./ $DEVSHOP_PATH
 ENV PATH="${DEVSHOP_PATH}/bin:${DEVSHOP_PATH}/scripts:${PATH}"
 RUN echo "Copied DevShop Source into container."
