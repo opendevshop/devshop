@@ -44,8 +44,6 @@ prepare_ubuntu2004() {
   PYTHON_DEFAULT=/usr/bin/python3
   DEBIAN_FRONTEND=noninteractive
 
-  pip_packages="ansible"
-
   apt-get update \
     && apt-get install -y --no-install-recommends \
        apt-utils \
@@ -77,22 +75,14 @@ prepare_ubuntu2004() {
   curl -ksSL $initctl_faker_url -o $initctl_faker_path
   chmod +x $initctl_faker_path
 
-  pip3 install $pip_packages
 }
 
 prepare_ubuntu1804() {
-  PYTHON_DEFAULT=/usr/bin/python3
-  DEBIAN_FRONTEND=noninteractive
-  pip_packages="ansible"
-
   apt-get update \
     && apt-get install -y --no-install-recommends \
        apt-utils \
        locales \
-       python3-setuptools \
-       python3-pip \
-       software-properties-common \
-       git \
+       rsyslog \
        systemd \
        systemd-cron \
        sudo \
@@ -122,11 +112,6 @@ prepare_ubuntu1804() {
   # Error: https://github.com/opendevshop/devshop/pull/586/checks?check_run_id=675721197#step:4:484
   # Proposed solution: https://stackoverflow.com/questions/24988947/install-mysql-in-docker-and-expose-mysql-service-to-outside
   echo exit 0 > /usr/sbin/policy-rc.d
-
-  # Set Python3 to be the default (allow users to call "python" and "pip" instead of "python3" "pip3"
-  update-alternatives --install /usr/bin/python python /usr/bin/python3 1
-
-  pip3 install $pip_packages
 }
 
 prepare_centos7() {
@@ -153,8 +138,6 @@ prepare_centos7() {
 
   # Disable requiretty.
   sed -i -e 's/^\(Defaults\s*requiretty\)/#--- \1/'  /etc/sudoers
-
-  pip install $pip_packages
 
 }
 
