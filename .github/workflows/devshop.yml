@@ -93,7 +93,7 @@ jobs:
       - name: "Review Container Environment"
         working-directory: docker
         run: |
-          docker-compose inspect devshop.server
+          docker inspect docker_devshop.server_1
           docker-compose exec -T devshop.server env
           docker-compose exec -T devshop.server systemctl status --no-pager
           sleep 4
