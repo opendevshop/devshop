@@ -20,3 +20,9 @@ services:
       - ANSIBLE_EXTRA_VARS
       - ANSIBLE_VERBOSITY
       - ANSIBLE_PLAYBOOK_COMMAND_OPTIONS
+      - ANSIBLE_PLAYBOOK=/usr/share/devshop/roles/devshop.server/play.yml
+      - DOCKER_COMMAND_POST
+      - GITHUB_HEAD_REF
+      - DEVSHOP_TESTS_ARTIFACTS_PATH
+      # Setting this ensures the docker containers have this value, regardless if the container is an older image.
+      - DEVSHOP_ANSIBLE_GROUP_NAME=devshop_server
