@@ -493,7 +493,7 @@ class RoboFile extends \Robo\Tasks {
       $opts['from'] = "geerlingguy/docker-{$opts['os']}-ansible";
       $opts['docker-image'] = 'devshop/server:' . $opts['os'];
     }
-    else {
+    elseif (empty($opts['from'])) {
       $opts['from'] = $opts['docker-image'];
     }
 
