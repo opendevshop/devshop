@@ -30,5 +30,4 @@ RUN chmod +x initctl_faker && rm -fr /sbin/initctl && ln -s /initctl_faker /sbin
 RUN rm -f /lib/systemd/system/systemd*udev* \
   && rm -f /lib/systemd/system/getty.target
 
-VOLUME ["/sys/fs/cgroup", "/tmp", "/run"]
 CMD ["/lib/systemd/systemd"]

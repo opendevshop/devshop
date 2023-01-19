@@ -44,7 +44,7 @@ RUN echo "Running $DEVSHOP_ANSIBLE_INVENTORY_INFO_COMMAND ...\n" && \
 RUN echo "Running $DEVSHOP_DOCKER_COMMAND_BUILD ...\n" && \
   $DEVSHOP_DOCKER_COMMAND_BUILD
 
-VOLUME ["/sys/fs/cgroup", "/tmp", "/run"]
+# VOLUME ["/sys/fs/cgroup", "/tmp", "/run"]
 
 ENV INIT_COMMAND /lib/systemd/systemd
 ENTRYPOINT ["/usr/share/devshop/docker/bin/docker-systemd-entrypoint"]
