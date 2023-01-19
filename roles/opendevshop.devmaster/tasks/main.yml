@@ -130,7 +130,7 @@
     force: "{{ not devshop_cli_skip_update }}"
   when: not devshop_cli_skip_update
 
-- name: "Configure Composer Globally"
+- name: "Composer Install DevShop Source"
   command: "{{ php_executable }} {{ composer_path }} {{ devshop_cli_composer_install_command }}"
   # Changed: true is so we don't fail ansible lint.
   changed_when: true
@@ -139,6 +139,9 @@
     chdir: "{{ item }}"
   with_items:
     - "{{ devshop_cli_path }}"
+  become: true
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
 
 - name: "Install DevShop dependencies with composer"
   command: "{{ php_executable }} {{ composer_path }} {{ devshop_cli_composer_install_command }}"
