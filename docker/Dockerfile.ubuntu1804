@@ -44,6 +44,6 @@ RUN echo "Running $DEVSHOP_DOCKER_COMMAND_BUILD ...\n" && \
   $DEVSHOP_DOCKER_COMMAND_BUILD
 
 VOLUME ["/sys/fs/cgroup", "/tmp", "/run"]
-ENTRYPOINT [/usr/share/devshop/docker/bin/docker-systemd-entrypoint]
+ENTRYPOINT ["${DEVSHOP_PATH}/docker/bin/docker-systemd-entrypoint"]
 
 RUN devshop-logo 'DevShop Server build finished.'
