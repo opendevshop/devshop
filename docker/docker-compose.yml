@@ -21,7 +21,9 @@ services:
     privileged: true
     entrypoint: /usr/share/devshop/docker/bin/docker-systemd-entrypoint
     volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+      # - /sys/fs/cgroup:/sys/fs/cgroup:ro
+      # Attempting tip from https://github.com/geerlingguy/docker-ubuntu2004-ansible/issues/18#issuecomment-1152157965
+      - /sys:/sys
     environment:
       - ANSIBLE_EXTRA_VARS
       - ANSIBLE_VERBOSITY
