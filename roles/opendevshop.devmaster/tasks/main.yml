@@ -155,16 +155,6 @@
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
 
-- name: "Install DevShop dependencies with composer"
-  command: "{{ php_executable }} {{ composer_path }} {{ devshop_cli_composer_install_command }}"
-  # Changed: true is so we don't fail ansible lint.
-  changed_when: true
-  tags: [always]
-  args:
-    chdir: "{{ item }}"
-  with_items:
-    - "{{ devshop_cli_path }}"
-
 - name: Ensure DevShop Control code is owned by aegir user.
   file:
     state: directory
@@ -176,7 +166,17 @@
   tags: [always]
   with_items:
     - "{{ devshop_control_git_root }}"
-    - "{{ devshop_cli_path }}/devmaster"
+    - "{{ devshop_cli_path }}"
+
+- name: "Install DevShop dependencies with composer"
+  command: "{{ php_executable }} {{ composer_path }} {{ devshop_cli_composer_install_command }}"
+  # Changed: true is so we don't fail ansible lint.
+  changed_when: true
+  tags: [always]
+  args:
+    chdir: "{{ item }}"
+  with_items:
+    - "{{ devshop_cli_path }}"
 
 - name: Add DevShop bin directory to Path
   copy:
