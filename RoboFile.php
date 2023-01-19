@@ -226,7 +226,8 @@ class RoboFile extends \Robo\Tasks {
    * @param folder The folder to run 'docker-compose build' in. Use "all" to build in folder 'docker', then 'roles'.
    * @param service The service to build. passed to 'docker-compose build $SERVICE'. Use "all" to build all services.
    *
-   * @option $tag The string to tag the resulting container with.
+   * @option $docker-image The label to use when building or running the container.
+   * @option $scratch Set --scratch to set docker-image=ubuntu2004
    * @option $from The image to use to build the docker image FROM. Ignored if "os" is set.
    * @option $os An OS "slug" for any of the geerlingguy/docker-*-ansible images: https://hub.docker.com/u/geerlingguy/
    * @option $vars Ansible vars to pass to --extra-vars option.
@@ -238,6 +239,7 @@ class RoboFile extends \Robo\Tasks {
    */
   public function build($folder = 'docker', $service = 'all', $opts = [
       'docker-image' => 'devshop/server:latest',
+      'scratch' => FALSE,
       'from' => NULL,
       'build-command' => NULL,
       'os' => NULL,
@@ -260,7 +262,9 @@ class RoboFile extends \Robo\Tasks {
 
     // Define docker-image (name for the "image" in docker-compose)
     // Set FROM_IMAGE and DEVSHOP_DOCKER_IMAGE if --os option is used. (and --from was not used)
-    if (empty($opts['from']) && $opts['os'] !== NULL) {
+    if ($opts['scratch']) {
+      $opts['from'] = "ubuntu:18.04";
+    } elseif (empty($opts['from']) && $opts['os'] !== NULL) {
       $opts['from'] = "geerlingguy/docker-{$opts['os']}-ansible";
       $opts['docker-image'] = 'devshop/server:' . $opts['os'];
     }
