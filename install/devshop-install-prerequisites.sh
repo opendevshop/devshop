@@ -186,7 +186,7 @@ echo "OS Detected: $lsb_dist $dist_version ($dist_version_name)"
 # Break out preparation into separate functions.
 case "$lsb_dist $dist_version" in
   "ubuntu 20.04")
-    prepare_ubuntu1804
+    prepare_ubuntu2004
   ;;
   "ubuntu 18.04")
     prepare_ubuntu1804
