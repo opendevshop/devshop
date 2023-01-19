@@ -43,6 +43,7 @@ get_distribution() {
 	# case statements don't act unless you provide an actual value
 	echo "$lsb_dist"
 }
+
 # From https://github.com/geerlingguy/docker-ubuntu2004-ansible/blob/master/Dockerfile
 prepare_ubuntu2004() {
   PYTHON_DEFAULT=/usr/bin/python3
@@ -54,7 +55,6 @@ prepare_ubuntu2004() {
     && apt-get install -y --no-install-recommends \
        apt-utils \
        build-essential \
-       git \
        locales \
        libffi-dev \
        libssl-dev \
@@ -63,9 +63,9 @@ prepare_ubuntu2004() {
        python3-setuptools \
        python3-pip \
        python3-yaml \
-       python-is-python3 \
        software-properties-common \
        rsyslog systemd systemd-cron sudo iproute2 \
+       curl git \
     && apt-get clean \
     && rm -Rf /var/lib/apt/lists/* \
     && rm -Rf /usr/share/doc && rm -Rf /usr/share/man
@@ -74,6 +74,8 @@ prepare_ubuntu2004() {
   update-alternatives --install /usr/bin/python python /usr/bin/python3 1
 
   pip3 install $pip_packages
+
+  mkdir -p /etc/ansible
 }
 
 prepare_ubuntu1804() {
