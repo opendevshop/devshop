@@ -4,13 +4,32 @@
 FROM geerlingguy/docker-ubuntu1804-ansible:latest
 LABEL maintainer="Jon Pugh"
 
+ARG DEBIAN_FRONTEND=noninteractive
+
 # Copy devshop source to DEVSHOP_PATH.
 ENV DEVSHOP_PATH /usr/share/devshop
 COPY ./ $DEVSHOP_PATH
-RUN ls -la $DEVSHOP_PATH
+ENV PATH="${DEVSHOP_PATH}/bin:${DEVSHOP_PATH}/scripts:${PATH}"
+RUN echo "Copied DevShop Source into container."
 
-# Set command to run on Docker build.
-ENV DEVSHOP_DOCKER_COMMAND_BUILD $DEVSHOP_PATH/scripts/devshop-ansible-playbook
+# Prepare server for services and ansible.
+RUN echo "Running docker-systemd-prepare to install ansible and prepare container for services ...\n"
+RUN ${DEVSHOP_PATH}/scripts/run-quiet ${DEVSHOP_PATH}/docker/bin/docker-systemd-prepare
+RUN mkdir -p /etc/ansible
+
+# Replace ansible inventory with symlink to devshop.server inventory.
+RUN rm -rf /etc/ansible/hosts && ln -s $DEVSHOP_PATH/roles/devshop.server/inventory /etc/ansible/hosts
+
+# Fix for https://github.com/pypa/pip/issues/10219
+ARG LANG="en_US.UTF-8"
+ARG LC_ALL="en_US.UTF-8"
+
+# Fix potential UTF-8 errors with ansible-test.
+RUN locale-gen en_US.UTF-8
+
+# Options passed to ansible-playbook during docker build and run.
+ENV DEVSHOP_ANSIBLE_BUILDTIME_OPTIONS "--skip-tags runtime"
+ENV DEVSHOP_ANSIBLE_RUNTIME_OPTIONS "--tags runtime"
 
 # Tell devshop-ansible-playbook what playbookfile to use.
 ENV ANSIBLE_PLAYBOOK $DEVSHOP_PATH/roles/devshop.server/play.yml
@@ -19,15 +38,20 @@ ENV ANSIBLE_CONFIG $DEVSHOP_PATH/ansible.cfg
 # Skip anything tagged "runtime" during this build phase.
 ENV ANSIBLE_SKIP_TAGS runtime
 
-# Set PATH
-ENV PATH="${DEVSHOP_PATH}/bin:${DEVSHOP_PATH}/scripts:${PATH}"
+# Define what is run in docker build and docker run.
+ENV DEVSHOP_DOCKER_COMMAND_BUILD $DEVSHOP_PATH/scripts/devshop-ansible-playbook $DEVSHOP_ANSIBLE_BUILDTIME_OPTIONS
+ENV DEVSHOP_DOCKER_COMMAND_RUN $DEVSHOP_PATH/scripts/devshop-ansible-playbook $DEVSHOP_ANSIBLE_RUNTIME_OPTIONS
+ENV DEVSHOP_ANSIBLE_INVENTORY_INFO_COMMAND "ansible-inventory --list --yaml"
+ENV DEVSHOP_ANSIBLE_GROUP_NAME devshop_server
 
-# Replace ansible inventory with symlink to devshop.server inventory.
-RUN rm -rf /etc/ansible/hosts && ln -s $DEVSHOP_PATH/roles/devshop.server/inventory /etc/ansible/hosts
+RUN echo "Running $DEVSHOP_ANSIBLE_INVENTORY_INFO_COMMAND ...\n" && \
+  $DEVSHOP_ANSIBLE_INVENTORY_INFO_COMMAND
 
 # Run the docker build command.
 RUN echo "Running $DEVSHOP_DOCKER_COMMAND_BUILD ...\n" && \
   $DEVSHOP_DOCKER_COMMAND_BUILD
 
-RUN devshop-logo 'DevShop Container build finished.'
+VOLUME ["/sys/fs/cgroup", "/tmp", "/run"]
+ENTRYPOINT ["${DEVSHOP_PATH}/docker/bin/docker-systemd-entrypoint"]
 
+RUN devshop-logo 'DevShop Server build finished.'
