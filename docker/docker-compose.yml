@@ -12,7 +12,6 @@ services:
         - DEVSHOP_CONTAINER_FROM
         - DEVSHOP_DOCKER_COMMAND_BUILD_ARG
         - ANSIBLE_PLAYBOOK_COMMAND_OPTIONS_ARG
-        - ANSIBLE_PLAYBOOK_COMMAND_OPTIONS
     hostname: devshop.local.computer
     ports:
       - "80:80"

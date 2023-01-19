@@ -23,6 +23,7 @@ env:
   DOCKER_COMMAND_POST: "echo 'GitHub Actions Container was launched.'"
 
   # Load vars from the vars.ci.yml file.
+  ANSIBLE_PLAYBOOK_COMMAND_OPTIONS_ARG: "--extra-vars=@/usr/share/devshop/vars.ci.yml"
   ANSIBLE_PLAYBOOK_COMMAND_OPTIONS: "--extra-vars=@/usr/share/devshop/vars.ci.yml"
   GIT_REF: 1.x
 
