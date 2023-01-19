@@ -20,7 +20,7 @@ services:
       - "33066:3306"
     privileged: true
     entrypoint: /usr/share/devshop/docker/bin/docker-systemd-entrypoint
-    volumes:
+#    volumes:
       # - /sys/fs/cgroup:/sys/fs/cgroup:ro
       # Attempting tip from https://github.com/geerlingguy/docker-ubuntu2004-ansible/issues/18#issuecomment-1152157965
       # - /sys/fs/cgroup:/sys/fs/cgroup:rw
