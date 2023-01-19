@@ -27,6 +27,9 @@ env:
   ANSIBLE_PLAYBOOK_COMMAND_OPTIONS: "--extra-vars=@/usr/share/devshop/vars.ci.yml"
   GIT_REF: 1.x
 
+  # Prevents including docker-compose.override, which is for local development.
+  COMPOSE_FILE: docker-compose.yml
+
 jobs:
   docker:
     name: "Build DevShop"
