@@ -27,7 +27,8 @@
         "drupal/provision": "4.x-dev",
         "psr/cache": "^1.0",
         "symfony/deprecation-contracts": "^2.5",
-        "symfony/options-resolver": "^4.4"
+        "symfony/options-resolver": "^4.4",
+        "devshop/bin-tools": "1.x-dev"
     },
     "replace": {
         "drupal/drupal": "*"
@@ -44,6 +45,10 @@
         {
             "type": "composer",
             "url": "https://packages.drupal.org/7"
+        },
+        {
+            "type": "path",
+            "url": "scripts"
         },
         {
             "type": "path",

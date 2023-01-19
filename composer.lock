@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "91debbb0f09a2c9fc3521e3055a4d019",
+    "content-hash": "fe63f5b7b0554b00a5341414636da131",
     "packages": [
         {
             "name": "clue/stream-filter",
@@ -661,6 +661,54 @@
             },
             "abandoned": "psr/container",
             "time": "2017-02-14T19:40:03+00:00"
+        },
+        {
+            "name": "devshop/bin-tools",
+            "version": "1.x-dev",
+            "dist": {
+                "type": "path",
+                "url": "scripts",
+                "reference": "e88ae94fbfb6d79b6a8f13b894e3d98bc0fbf5ce"
+            },
+            "bin": [
+                "branch-or-tag",
+                "devshop-ansible-playbook",
+                "devshop-chuid",
+                "devshop-line",
+                "devshop-log",
+                "devshop-logo",
+                "devshop-site-active",
+                "devshop-site-info",
+                "hosting-queue-runner",
+                "tail-file",
+                "wait-for",
+                "wait-mysql",
+                "wait-site"
+            ],
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.x-dev"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jon Pugh",
+                    "email": "jon@thinkdrop.net"
+                },
+                {
+                    "name": "DevShop Community",
+                    "homepage": "https://github.com/opendevshop/devshop/graphs/contributors"
+                }
+            ],
+            "description": "Useful shell scripts",
+            "homepage": "https://getdevshop.com",
+            "transport-options": {
+                "relative": true
+            }
         },
         {
             "name": "devshop/composer-common",
@@ -4265,7 +4313,8 @@
         "devshop/github-api-cli": 20,
         "devshop/yaml-tasks": 20,
         "devshop/power-process": 20,
-        "drupal/provision": 20
+        "drupal/provision": 20,
+        "devshop/bin-tools": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,
