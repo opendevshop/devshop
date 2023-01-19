@@ -251,6 +251,16 @@ class RoboFile extends \Robo\Tasks {
       'install-at-runtime' => FALSE,
   ]) {
 
+    try {
+      $branch = $this->getRepository()->getCurrentBranch();
+      $remote = $this->getRepository()->getCurrentRemoteName();
+      $remote_url = $this->getRepository()->getCurrentRemoteUrl();
+      $this->say("Current code branch <comment>{$branch}</comment> remote {$remote_url}");
+    } catch (\Exception $e) {
+      $this->io()->error("No upstream configured for branch '$branch'. Please set one with the command 'git branch --track $branch' or 'git push -u origin $branch'");
+      exit(1);
+    }
+
     if ($service == "all") {
       $service = '';
     }
@@ -294,6 +304,10 @@ class RoboFile extends \Robo\Tasks {
 
     // Runtime Environment for the docker-compose build command.
     $env_build = $this->generateEnvironmentArgs($opts);
+
+    $env_build['ANSIBLE_EXTRA_VARS'] = "devshop_version={$branch} devshop_cli_version={$branch}";
+    $env_build['ANSIBLE_PLAYBOOK_COMMAND_OPTIONS_ARG'] = '--extra-vars=@/usr/share/devshop/vars.development.yml';
+
     print_r($env_build);
 
     $provision_io = new \DevShop\Component\PowerProcess\PowerProcessStyle($this->input(), $this->output());
@@ -599,7 +613,6 @@ class RoboFile extends \Robo\Tasks {
       $env_run['ANSIBLE_EXTRA_VARS'] = json_encode($extra_vars);
 
       // Add vars.development.yml as final command line option.
-      $env_run['ANSIBLE_PLAYBOOK_COMMAND_OPTIONS_ARG'] = '--extra-vars=@/usr/share/devshop/vars.development.yml';
       $env_run['ANSIBLE_PLAYBOOK_COMMAND_OPTIONS'] = '--extra-vars=@/usr/share/devshop/vars.development.yml';
 
       // Override the DEVSHOP_DOCKER_COMMAND_RUN if specified.
