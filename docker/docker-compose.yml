@@ -30,6 +30,7 @@ services:
       - ANSIBLE_VERBOSITY
       - ANSIBLE_PLAYBOOK_COMMAND_OPTIONS
       - ANSIBLE_PLAYBOOK=/usr/share/devshop/roles/devshop.server/play.yml
+      - DEVSHOP_DOCKER_COMMAND_RUN
       - DOCKER_COMMAND_POST
       - GITHUB_HEAD_REF
       - DEVSHOP_TESTS_ARTIFACTS_PATH
