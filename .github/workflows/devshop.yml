@@ -51,7 +51,7 @@ jobs:
       HOSTNAME: "devshop.${{ github.event.pull_request.number }}.${{ matrix.os }}.actions.github.com"
       ANSIBLE_EXTRA_VARS: "${{ matrix.vars }}"
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       # By default, actions/checkout uses the current SHA for the branch it is testing. See on.push.branches: 1.x
       # https://github.com/opendevshop/devshop/runs/1517209717?check_suite_focus=true#step:2:465
