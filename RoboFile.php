@@ -240,7 +240,7 @@ class RoboFile extends \Robo\Tasks {
   public function build($folder = 'docker', $service = 'all', $opts = [
       'docker-image' => 'devshop/server:latest',
       'scratch' => FALSE,
-      'from' => NULL,
+      'from' => 'devshop/server:latest',
       'build-command' => NULL,
       'os' => NULL,
       'vars' => '',
@@ -264,7 +264,9 @@ class RoboFile extends \Robo\Tasks {
     // Set FROM_IMAGE and DEVSHOP_DOCKER_IMAGE if --os option is used. (and --from was not used)
     if ($opts['scratch']) {
       $opts['from'] = "ubuntu:18.04";
-    } elseif (empty($opts['from']) && $opts['os'] !== NULL) {
+    }
+
+    if ($opts['os'] !== NULL) {
       $opts['from'] = "geerlingguy/docker-{$opts['os']}-ansible";
       $opts['docker-image'] = 'devshop/server:' . $opts['os'];
     }
@@ -597,6 +599,7 @@ class RoboFile extends \Robo\Tasks {
       $env_run['ANSIBLE_EXTRA_VARS'] = json_encode($extra_vars);
 
       // Add vars.development.yml as final command line option.
+      $env_run['ANSIBLE_PLAYBOOK_COMMAND_OPTIONS_ARG'] = '--extra-vars=@/usr/share/devshop/vars.development.yml';
       $env_run['ANSIBLE_PLAYBOOK_COMMAND_OPTIONS'] = '--extra-vars=@/usr/share/devshop/vars.development.yml';
 
       // Override the DEVSHOP_DOCKER_COMMAND_RUN if specified.
