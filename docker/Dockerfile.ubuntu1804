@@ -23,8 +23,8 @@ ENV DEVSHOP_ANSIBLE_PATH /etc/ansible
 ENV OUTPUT err
 
 # Commented out while we use gg images.
-# RUN ${DEVSHOP_PATH}/scripts/run-quiet ${DEVSHOP_PATH}/docker/bin/docker-systemd-prepare
-# RUN ${DEVSHOP_PATH}/scripts/run-quiet ${DEVSHOP_PATH}/install/devshop-install-prerequisites.sh
+RUN ${DEVSHOP_PATH}/scripts/run-quiet ${DEVSHOP_PATH}/docker/bin/docker-systemd-prepare
+RUN ${DEVSHOP_PATH}/scripts/run-quiet ${DEVSHOP_PATH}/install/devshop-install-prerequisites.sh
 RUN mkdir -p ${DEVSHOP_ANSIBLE_PATH}
 
 # Replace ansible inventory with symlink to devshop.server inventory.
