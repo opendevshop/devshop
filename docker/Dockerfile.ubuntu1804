@@ -14,7 +14,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 ENV DEVSHOP_PATH /usr/share/devshop
 RUN rm -rf $DEVSHOP_PATH
 COPY ./ $DEVSHOP_PATH
-ENV PATH="${DEVSHOP_PATH}/scripts:${DEVSHOP_PATH}/bin:${PATH}"
+ENV PATH="${DEVSHOP_PATH}/bin:${DEVSHOP_PATH}/scripts:${PATH}"
 RUN echo "Copied DevShop Source into container."
 
 # Prepare server for services and ansible.
