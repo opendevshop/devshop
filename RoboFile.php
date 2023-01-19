@@ -567,7 +567,7 @@ class RoboFile extends \Robo\Tasks {
         $test_command = "/usr/share/devshop/tests/devshop-tests-upgrade.sh";
       }
       else {
-        $cmd[] = "docker-compose up --detach --force-recreate devshop.server";
+        $cmd[] = "docker compose up --detach --force-recreate devshop.server";
         if (!$opts['no-follow']) {
           $cmd[] = "docker-compose logs -f";
         }
