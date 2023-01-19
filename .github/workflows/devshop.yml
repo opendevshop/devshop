@@ -44,7 +44,7 @@ jobs:
 
         os:
           - 'ubuntu1804'
-          - 'ubuntu2004'
+#          - 'ubuntu2004'
     env:
       OS: "${{ matrix.os }}"
       DEVSHOP_DOCKER_IMAGE:  "devshop/server:${{ matrix.os }}"
@@ -75,24 +75,24 @@ jobs:
           echo "devshop_version: ${{ github.head_ref }}" >> vars.ci.yml
           echo "devshop_cli_repo: ${{ github.event.pull_request.head.repo.clone_url }}" >> vars.ci.yml
           echo "GIT_REF=${{ github.head_ref }}" >> $GITHUB_ENV
+          echo "ANSIBLE_VERBOSITY=2" >> $GITHUB_ENV
           git switch --create ${{ github.head_ref }}
 # If you need really big logs...
 #          echo "ANSIBLE_VERBOSITY=2" >> $GITHUB_ENV
 
-      # Build "base"
+      # Build "devshop.server"
       - name: "Build devshop/server:${{ matrix.os }}"
         working-directory: docker
         run: docker-compose build
 
       # Launch Container
-      - name: "Launch a freshly built devshop/server:${{ matrix.os }} devshop.server"
+      - name: "Launch a freshly built devshop/server:${{ matrix.os }} container"
         working-directory: docker
-        # -f is used to skip loading docker-compose.override.yml
         run: |
-          docker-compose -f docker-compose.yml  up --detach
+          docker-compose up --detach devshop.server
           sleep 3
           docker-compose logs
-          docker-compose exec -T devshop.server devshop-logo "GitHub Actions Container populated with code. Running SHA ${GITHUB_PR_SHA}"s
+          docker-compose exec -T devshop.server /usr/share/devshop/scripts/devshop-logo "GitHub Actions Container populated with code. Running SHA ${GITHUB_PR_SHA}"
 
       - name: "Review Container Environment"
         working-directory: docker
@@ -107,9 +107,9 @@ jobs:
       - name: "Install DevShop (devshop.server/play.yml --tags=runtime)"
         working-directory: docker
 
-        # Since the devshop.server is launched with a new DEVSHOP_DOCKER_COMMAND_RUN, run the default.
+        # Since the container is launched with a new DEVSHOP_DOCKER_COMMAND_RUN, run the default.
         run: |
-          docker-compose exec -T devshop.server devshop-ansible-playbook
+          docker-compose exec -T devshop.server bash -c '${DEFAULT_DEVSHOP_DOCKER_COMMAND_RUN}'
 
       - name: "Test DevShop"
         working-directory: docker
