@@ -44,6 +44,7 @@ jobs:
           - 'ubuntu2004'
     env:
       OS: "${{ matrix.os }}"
+      DEVSHOP_DOCKER_IMAGE:  "devshop/server:${{ matrix.os }}"
       HOSTNAME: "devshop.${{ github.event.pull_request.number }}.${{ matrix.os }}.actions.github.com"
       ANSIBLE_EXTRA_VARS: "${{ matrix.vars }}"
 
@@ -76,7 +77,7 @@ jobs:
 #          echo "ANSIBLE_VERBOSITY=2" >> $GITHUB_ENV
 
       # Build "base"
-      - name: "Build devshop/server"
+      - name: "Build devshop/server:${{ matrix.os }}"
         working-directory: docker
         run: docker-compose build
 
