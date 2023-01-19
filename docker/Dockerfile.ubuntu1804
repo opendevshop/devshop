@@ -1,7 +1,7 @@
 #
 # DevShop Role Container Dockerfile Template
 #
-ARG DEVSHOP_CONTAINER_FROM=ubuntu:18.04
+ARG DEVSHOP_CONTAINER_FROM=geerlingguy/docker-ubuntu1804-ansible
 FROM $DEVSHOP_CONTAINER_FROM
 ARG DEVSHOP_CONTAINER_FROM
 
