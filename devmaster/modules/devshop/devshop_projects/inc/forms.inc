@@ -1289,6 +1289,9 @@ function devshop_projects_create_environment_form(&$form, &$form_state, $form_id
   $form['platform']['#access'] = FALSE;
   $form['profile']['#access'] = FALSE;
   $form['git']['#access'] = FALSE;
+
+    dsm($form);
+
 }
 
 /**
@@ -1318,7 +1321,7 @@ function devshop_projects_create_environment_form_validate_name($element, &$form
     form_set_value($form['title'], devshop_environment_url($project, $element['#value']), $form_state);
 
     // Attach a new platform node.
-    $platform_node = devshop_prepare_platform_node($project, $element['#value'], $form_state['values']['git_ref'], $form_state['values']['web_server'], $form_state['values']['git']['repo_url']);
+    $platform_node = devshop_prepare_platform_node($project, $element['#value'], $form_state['values']['git_ref'], $form_state['values']['web_server']);
 
     // Set value in form_state.
     form_set_value($form['platform_node'], $platform_node, $form_state);
