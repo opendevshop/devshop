@@ -81,6 +81,9 @@
         "allow-plugins": {
             "devshop/git-split": true,
             "devshop/yaml-tasks": true
+        },
+        "platform": {
+            "php": "7.4.0"
         }
     },
     "extra": {
