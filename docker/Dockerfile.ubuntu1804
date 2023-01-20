@@ -9,9 +9,8 @@ LABEL maintainer="Jon Pugh"
 RUN echo "Building container from Dockerfile.ubuntu1804, from $DEVSHOP_CONTAINER_FROM ..."
 
 ARG DEBIAN_FRONTEND=noninteractive
-ENV OUTPUT err
 # For "run-quiet".
-ENV OUTPUT err
+ENV OUTPUT all
 
 # Copy devshop source to DEVSHOP_PATH.
 ENV DEVSHOP_PATH /usr/share/devshop
