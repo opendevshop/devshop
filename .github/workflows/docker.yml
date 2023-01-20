@@ -35,9 +35,6 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-20.04
-    defaults:
-      run:
-        working-directory: docker
 
 #    needs: test
     # @TODO: Uncomment once working, before merge.
@@ -68,8 +65,8 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v3
         with:
-          context: ../
-          file: Dockerfile.ubuntu1804
+          context: ./
+          file: ./docker/Dockerfile.ubuntu1804
           platforms: linux/amd64,linux/arm64
           push: true
           tags: devshop/server:latest
