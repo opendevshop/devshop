@@ -1,7 +1,21 @@
 #!/usr/bin/env bash
 set -e
-DEVSHOP_PATH="$( cd "$(dirname "$0")"/.. ; pwd -P )"
-PATH="$DEVSHOP_PATH/bin:$DEVSHOP_PATH/scripts:$PATH"
+
+# Thank you composer for figuring this out!
+selfArg="$BASH_SOURCE"
+if [ -z "$selfArg" ]; then
+    selfArg="$0"
+fi
+
+self=$(realpath $selfArg 2> /dev/null)
+if [ -z "$self" ]; then
+    self="$selfArg"
+fi
+
+dir=$(cd "${self%[/\\]*}" > /dev/null; cd '../scripts' && pwd)
+
+PATH="$dir:$PATH"
+DEVSHOP_PATH=$(realpath $dir/..)
 
 # If /path/to/devshop/ANSIBLE_PLAYBOOK exists, use that path. Otherwise pass it directly.
 if [ -f "${DEVSHOP_PATH}/${ANSIBLE_PLAYBOOK}" ]; then
