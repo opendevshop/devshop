@@ -28,6 +28,10 @@ function boots_preprocess_environment(&$vars) {
     $environment->last_task_node = node_load($environment->last_task_nid);
   }
 
+  if (!isset($environment->git_ref_type)) {
+    $environment->git_ref_type = '';
+  }
+
   // Available deploy data targets.
   $vars['target_environments'] = $project->environments;
 
@@ -366,7 +370,6 @@ function boots_preprocess_environment(&$vars) {
   
   //   Load git information
   if (isset($environment->repo_path) && file_exists($environment->repo_path . '/.git')) {
-    
     // Timestamp of last commit.
     $environment->git_last = shell_exec("cd {$environment->repo_path}; git log --pretty=format:'%ct' --max-count=1");
     $environment->git_last_timestamp = date('N');

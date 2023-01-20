@@ -1449,7 +1449,7 @@ function devshop_projects_create_environment_form_validate_import($element, &$fo
   if ($form_state['values']['install_method']['method'] == 'import' && empty($element['#value'])) {
     form_set_error('install_method][import', t('If using the "Import Database" Install Method, you must enter a MySQL connection URL or absolute path to an SQL file.'));
   }
-  elseif ($url_components['scheme'] == 'mysql') {
+  elseif (isset($url_components['scheme']) && $url_components['scheme'] == 'mysql') {
     $database = array(
       'database' => ltrim($url_components['path'], '/'),
       'username' => $url_components['user'],
