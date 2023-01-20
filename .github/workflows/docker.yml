@@ -44,6 +44,8 @@ jobs:
     # if: github.ref == 'refs/heads/1.x'
 
     steps:
+      - name: Checkout sourcecode.
+        uses: actions/checkout@v2
 
       - name: Save info to vars file.
         if: github.event_name=='pull_request'
