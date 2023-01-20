@@ -3,9 +3,12 @@ set -e
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 PATH="$DIR:$PATH"
 
-ANSIBLE_VERSION=${ANSIBLE_VERSION:-"2.9"}
-CRYPTOGRAPHY_VERSION=${CRYPTOGRAPHY_VERSION:-"3.3"}
-pip_packages="cryptography==${CRYPTOGRAPHY_VERSION} ansible==${ANSIBLE_VERSION}"
+# @TODO: Hopefully these aren't needed anymore?
+#ANSIBLE_VERSION=${ANSIBLE_VERSION:-"2.9"}
+#CRYPTOGRAPHY_VERSION=${CRYPTOGRAPHY_VERSION:-"3.3"}
+#pip_packages="cryptography==${CRYPTOGRAPHY_VERSION} ansible==${ANSIBLE_VERSION}"
+
+pip_packages="ansible"
 
 #
 # devshop-install-prerequisites.sh
