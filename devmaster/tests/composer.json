@@ -3,6 +3,9 @@
     "drupal/drupal-extension": "^4.2"
   },
   "config": {
-    "bin-dir": "bin/"
+    "bin-dir": "bin/",
+    "platform": {
+      "php": "7.4.0"
+    }
   }
 }
