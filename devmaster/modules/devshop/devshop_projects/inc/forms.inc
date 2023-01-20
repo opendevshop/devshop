@@ -805,6 +805,7 @@ HTML;
 function devshop_projects_form_site_node_form_alter(&$form, &$form_state, $form_id) {
 
   $node = $form['#node'];
+  $environment = NULL;
 
   $form['environment'] = array(
     '#weight' => -9,
@@ -1113,7 +1114,7 @@ function devshop_projects_create_environment_form(&$form, &$form_state, $form_id
       ),
     )) . '</small>';
     $git_ref = $environment->git_ref;
-    $icon = $environment->git_ref_type == 'tag'? 'tag': 'code-fork';
+    $icon = isset($environment->git_ref_type) && $environment->git_ref_type == 'tag'? 'tag': 'code-fork';
     $environment_options[$environment->system_alias] = "<span>{$environment->name}</span> <small class='git-ref text-muted'><i class='fa fa-$icon'></i> $git_ref</small> <small>$link</small>";
   }
 
@@ -1533,7 +1534,7 @@ function devshop_environment_add_form_profile_options($project) {
 function devshop_environment_deploy_hooks_form($project, $environment = NULL, $task_type = NULL) {
 
   // If environment not specified, just grab one.
-  if (!$environment) {
+  if (!$environment && isset($project->environments)) {
     $environment = current($project->environments);
     $is_environment_form = FALSE;
   }
@@ -1626,8 +1627,8 @@ function devshop_environment_deploy_hooks_form($project, $environment = NULL, $t
   // Disable deploy hooks on environment form, deploy task form ,and sync task form.
   if (
     // Environment form
-    ($is_environment_form && !$project->settings->deploy['allow_environment_deploy_config']) ||
-    ($task_type == 'deploy' && !$project->settings->deploy['allow_environment_deploy_hooks_override'])
+    ($is_environment_form && isset($project->settings) && !$project->settings->deploy['allow_environment_deploy_config']) ||
+    ($task_type == 'deploy' && isset($project->settings) && !$project->settings->deploy['allow_environment_deploy_hooks_override'])
   ) {
 
     foreach (element_children($return) as $i) {
