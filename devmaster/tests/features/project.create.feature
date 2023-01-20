@@ -12,12 +12,12 @@ Feature: Create a project and check settings
     And I click "Start a new Project"
     Then I should see "Step 1"
     Then I fill in "composer" for "Project Code Name"
-    And I fill in "https://github.com/devshop-packages/devshop-control-project.git" for "Git Repository URL"
+    And I fill in "https://github.com/opendevshop/drupal-project.git" for "Git Repository URL"
     When I press "Next"
 
     # Step 2
     Then I should see "composer"
-    And I should see "https://github.com/devshop-packages/devshop-control-project.git"
+    And I should see "https://github.com/opendevshop/drupal-project.git"
     Then I should see "Please wait while we connect and analyze your repository."
     When I run drush "hosting-tasks --force --fork=0 --strict=0"
     # Then print last drush output
@@ -33,18 +33,18 @@ Feature: Create a project and check settings
 
     Then I should see "Create as many new environments as you would like."
     When I fill in "dev" for "project[environments][NEW][name]"
-    And I select "1.x" from "project[environments][NEW][git_ref]"
+    And I select "9.x" from "project[environments][NEW][git_ref]"
 
     And I press "Add environment"
     And I fill in "live" for "project[environments][NEW][name]"
-    And I select "1.x" from "project[environments][NEW][git_ref]"
+    And I select "9.x" from "project[environments][NEW][git_ref]"
     And I press "Add environment"
     Then I press "Next"
 
     # Step 4
     And I should see "dev"
     And I should see "live"
-    And I should see "1.x"
+    And I should see "9.x"
 
     When I run drush "hosting-tasks --force --fork=0 --strict=0"
     # Then print last drush output
@@ -92,7 +92,7 @@ Feature: Create a project and check settings
     When I click "Create New Environment"
     And I fill in "testenv" for "Environment Name"
     And I select the radio button "Drupal Profile"
-    And I select "1.x" from "git_ref"
+    And I select "9.x" from "git_ref"
     Then I select the radio button "Standard Install with commonly used features pre-configured."
 
     #@TODO: Check lots of settings
