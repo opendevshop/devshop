@@ -60,8 +60,7 @@ function devshop_projects_node_load($nodes, $types) {
         $node->duration = format_interval(time() - $node->executed, 1);
       }
       elseif ($node->task_status == HOSTING_TASK_QUEUED) {
-        $node->duration = t('Queued for %time',
-          array('%time' => format_interval(time() - $node->changed), 1));
+        $node->duration = t('Queued for %time', array('%time' => format_interval(time() - $node->changed)));
       }
       else {
         $node->duration = format_interval($node->delta, 1);
