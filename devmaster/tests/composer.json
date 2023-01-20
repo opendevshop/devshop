@@ -1,10 +1,14 @@
 {
   "require": {
     "drupal/drupal-extension": "^4.2",
-    "behat/behat": "^3.12",
-    "symfony/console": "^5.4",
-    "symfony/yaml": "^5.4"
+    "drupal/drupal-driver":  "dev-patch-1 as v2.2.2"
   },
+  "repositories": [
+    {
+      "type": "vcs",
+      "url":  "https://github.com/jonpugh/DrupalDriver.git"
+    }
+  ],
   "config": {
     "bin-dir": "bin/",
     "platform": {
