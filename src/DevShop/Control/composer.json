@@ -110,6 +110,9 @@
           "cweagans/composer-patches": true,
           "drupal-composer/preserve-paths": true,
           "oomphinc/composer-installers-extender": true
+        },
+        "platform": {
+          "php": "7.4.0"
         }
     },
     "autoload": {
