@@ -152,6 +152,7 @@
                         drush @hm hosting-task <?php print $node->nid; ?>
                     </kbd>
                   <?php elseif ($node->task_status != HOSTING_TASK_QUEUED): ?>
+                    <?php $args = []; ?>
                     <?php foreach ($node->task_args as $i => $v){
                       $name = escapeshellarg($i);
                       $value = escapeshellarg($v);

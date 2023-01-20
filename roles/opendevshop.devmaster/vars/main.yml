@@ -4,7 +4,6 @@
 # Used in Docker build or image build process
 default_server_hostname: devshop.local.computer
 
-empty_string: ""
 
 # Add hosting-queue-runner to supervisor programs.
 supervisor_programs:
@@ -25,4 +24,4 @@ supervisor_programs:
       autorestart=TRUE
       killasgroup=true
       stopasgroup=true
-      environment=PATH="$PATH:/usr/local/bin:/usr/bin:/bin:{{ devshop_cli_bin_path }}",HOME="{{ aegir_user_home }}",USER="{{ aegir_user_name }}"
+      environment=PATH="$PATH:/usr/local/bin:/usr/bin:/bin:{{ devshop_cli_bin_path }}:{{ devshop_cli_scripts_path }}",HOME="{{ aegir_user_home }}",USER="{{ aegir_user_name }}"

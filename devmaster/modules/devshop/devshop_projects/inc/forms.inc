@@ -893,32 +893,13 @@ function devshop_projects_form_site_node_form_alter(&$form, &$form_state, $form_
   // Load deploy hooks form element.
   $form['environment']['settings']['deploy'] = devshop_environment_deploy_hooks_form($project, $environment);
 
-  // UX Improvements
-  // Project Settings Vertical Tabs
-  $form['environment_settings'] = array(
-    '#type' => 'vertical_tabs',
-    '#weight' => -11,
-  );
-
   $form['environment']['settings']['#title'] = t('General Settings');
-  $form['environment']['settings']['#group'] = 'environment_settings';
+  $form['environment']['settings']['#group'] = 'site_settings';
   $form['environment']['settings']['#weight'] = -100;
-  $form['environment']['settings']['deploy']['#group'] = 'environment_settings';
-  $form['hosting_backup_queue']['#group'] = 'environment_settings';
-  $form['http_basic_auth']['#group'] = 'environment_settings';
-  $form['http_basic_auth']['#title'] = t('Password Protection');
-  $form['hosting_logs']['#group'] = 'environment_settings';
+
+   $form['environment']['settings']['deploy']['#group'] = 'site_settings';
 
   // Have to add new element for Domains because of the way drupal ajax callback works.
-  $form['domains'] = array(
-    '#title' => t('Domain Names'),
-    '#type' => 'fieldset',
-    '#group' => 'environment_settings',
-  );
-  $form['domains']['aliases_wrapper'] = $form['aliases_wrapper'];
-  $form['domains']['aliases_wrapper']['#type'] = 'container';
-  $form['domains']['aliases_wrapper']['add_alias']['#ajax']['callback'] = 'devshop_hosting_alias_add_alias_callback';
-  unset($form['aliases_wrapper']);
 
   $form['environment']['settings']['client'] = $form['client'];
   $form['environment']['settings']['client']['#tree'] = FALSE;
@@ -927,19 +908,6 @@ function devshop_projects_form_site_node_form_alter(&$form, &$form_state, $form_
   $form['environment']['settings']['site_language'] = $form['site_language'];
   $form['environment']['settings']['site_language']['#tree'] = FALSE;
   unset($form['site_language']);
-
-  if (isset($form['hosting_ssl_wrapper'])) {
-    $form['hosting_ssl_wrapper']['#group'] = 'environment_settings';
-    $form['hosting_ssl_wrapper']['#title'] = t('HTTPS');
-    $form['hosting_ssl_wrapper']['#prefix'] = '';
-    $form['hosting_ssl_wrapper']['#suffix'] = '';
-  }
-  if (isset($form['hosting_https_wrapper'])) {
-    $form['hosting_https_wrapper']['#group'] = 'environment_settings';
-    $form['hosting_https_wrapper']['#title'] = t('HTTPS');
-    $form['hosting_https_wrapper']['#prefix'] = '';
-    $form['hosting_https_wrapper']['#suffix'] = '';
-  }
 
   // Ensure values are saved.
   if (!isset($form['install_method'])) {
@@ -1505,6 +1473,7 @@ function devshop_prepare_platform_node($project, $environment_name, $git_ref, $w
   }
 
   $platform_node->git_reference = $git_ref;
+  $platform_node->git_reset = $project->git_reset? $project->git_reset: 0;
 
 
   // Enable git pull queue for this platform if chosen.

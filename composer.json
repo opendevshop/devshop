@@ -17,23 +17,21 @@
         }
     ],
     "require": {
-        "php": "^7.1",
-        "knplabs/github-api": "^1.4",
+        "php": "^7.1||^8.0",
         "drush/drush": "^8",
         "ext-json": "*",
-        "devshop/docker-bin-tools": "@dev",
         "devshop/git-split": "@dev",
         "devshop/github-api-cli": "@dev",
-        "devshop/bin-tools": "@dev",
         "devshop/yaml-tasks": "@dev",
         "devshop/power-process": "@dev",
-        "drupal/provision": "4.x-dev@dev"
+        "drupal/provision": "4.x-dev",
+        "psr/cache": "^1.0",
+        "symfony/deprecation-contracts": "^2.5",
+        "symfony/options-resolver": "^4.4",
+        "devshop/bin-tools": "1.x-dev"
     },
     "replace": {
         "drupal/drupal": "*"
-    },
-    "require-dev": {
-        "composer/composer": "^1.9"
     },
     "suggest": {
         "mouf/nodejs-installer": "Use to install nodejs into the devshop bin dir using composer."
@@ -47,10 +45,6 @@
         {
             "type": "composer",
             "url": "https://packages.drupal.org/7"
-        },
-        {
-            "type": "path",
-            "url": "docker/bin"
         },
         {
             "type": "path",
@@ -83,10 +77,11 @@
     ],
     "config": {
         "bin-dir": "bin",
-        "platform": {
-            "php": "7.1.3"
-        },
-        "sort-packages:": "true"
+        "sort-packages:": "true",
+        "allow-plugins": {
+            "devshop/git-split": true,
+            "devshop/yaml-tasks": true
+        }
     },
     "extra": {
         "git-split": {
@@ -104,16 +99,13 @@
                 "src/DevShop/Component/GitSplit": "https://github.com/devshop-packages/git-split.git",
                 "src/DevShop/Component/PowerProcess": "https://github.com/devshop-packages/power-process.git",
                 "src/DevShop/Component/YamlTasks": "https://github.com/devshop-packages/yaml-tasks.git",
-                "src/DevShop/Component/DevShopControlTemplate": "https://github.com/devshop-packages/devshop-control-template.git",
-                "install": "https://github.com/opendevshop/devshop-install.git"
+                "src/DevShop/Component/ControlProject": "https://github.com/devshop-packages/devshop-control-project.git"
             }
         }
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
     "scripts": {
-        "post-install-cmd": [
-        ],
         "pre-update-cmd": [
         ],
         "uninstall": [
@@ -121,9 +113,14 @@
             "rm -rf vendor bin/*",
             "echo 'Done.'"
         ],
-        "reinstall": [
-            "@uninstall",
-            "@composer install --prefer-source --ansi"
+        "develop:prepare": [
+            "DevShop\\Composer::prepareDevelopmentEnvironment"
+        ],
+        "develop:status": [
+            "DevShop\\Composer::gitStatus"
+        ],
+        "post-install-cmd": [
+            "DevShop\\Composer::installControl"
         ],
         "roles:update": [
             "DevShop\\Composer::updateRoles"

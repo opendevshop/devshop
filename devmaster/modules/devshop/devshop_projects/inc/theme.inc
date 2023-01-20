@@ -187,7 +187,7 @@ function devshop_projects_preprocess_node(&$vars) {
           $vars['retry']['#children'] .= ' ' . l(t('Environment Settings'), $settings_link);
         }
       }
-      elseif ($vars['node']->task_type != 'install' && $vars['node']->task_type != 'delete') {
+      elseif ($vars['node']->task_type != 'install' && $vars['node']->task_type != 'delete' || ($vars['node']->task_type != 'delete' && $vars['node']->task_status == HOSTING_TASK_ERROR)) {
         $vars['retry'] = $form;
       }
 
@@ -338,11 +338,17 @@ function devshop_task_get_messages($task_node) {
       // devshop_check_errors($outputs[$command]['output']);
       $outputs[$command]['command'] = 'error';
     } elseif ($record->type == 'p_log') {
-      $command = 'notice_' . count($outputs);
+      $command = 'log_' . count($outputs);
       $outputs[$command]['status'] = '';
       $outputs[$command]['icon'] = '';
       $outputs[$command]['command'] = $record->message;
       $outputs[$command]['output'] = '';
+    } elseif ($record->type == 'p_notice') {
+      $command = 'notice_' . count($outputs);
+      $outputs[$command]['status'] = '';
+      $outputs[$command]['icon'] = '';
+      $outputs[$command]['command'] = '';
+      $outputs[$command]['output'] = $record->message;
     }
     // Let's show some success messages. There are way too many for verify and install tasks.
     elseif (($record->type == 'success' || $record->type == 'ok') && $task_node->task_type != 'verify' && $task_node->task_type != 'install') {
@@ -381,9 +387,21 @@ function devshop_task_get_messages($task_node) {
     else {
       $body = '';
     }
+
+    if (!empty($command)) {
+      $header = "<div class='panel-heading'><i class='fa fa-$icon pull-left'></i> $command</div>";
+    }
+    else {
+      $header = '';
+    }
+
+    if (empty($status)) {
+      $status = 'default';
+    }
+
     $messages[] = <<<HTML
 <div class="panel panel-$status devshop-command">
-  <div class="panel-heading"><i class="fa fa-$icon pull-left"></i> $command</div>
+  $header
   $body
 </div>
 HTML;

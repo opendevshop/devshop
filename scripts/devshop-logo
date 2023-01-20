@@ -1,7 +1,22 @@
 #!/usr/bin/env bash
-DEVSHOP_PATH="$( cd "$(dirname "$0")"/.. ; pwd -P )"
-PATH="$DEVSHOP_PATH/bin:$DEVSHOP_PATH/scripts:$PATH"
-VERSION=`branch-or-tag || cat $DEVSHOP_PATH/.git/HEAD`
+
+# Thank you composer for figuring this out!
+selfArg="$BASH_SOURCE"
+if [ -z "$selfArg" ]; then
+    selfArg="$0"
+fi
+
+self=$(realpath $selfArg 2> /dev/null)
+if [ -z "$self" ]; then
+    self="$selfArg"
+fi
+
+dir=$(cd "${self%[/\\]*}" > /dev/null; cd '../scripts' && pwd)
+
+PATH="$dir:$PATH"
+REF=$(cd $dir && branch-or-tag)
+VERSION=${REF:-=$(cat $dir/../.git/HEAD)}
+
 echo '
     ____              ____  _
    |  _ \  _____   __/ ___|| |__   ___  _ __

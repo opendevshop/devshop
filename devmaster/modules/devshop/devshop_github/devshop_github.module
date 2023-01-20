@@ -41,7 +41,7 @@ function devshop_github_token_is_valid($token = NULL) {
   }
 
   $client = new \Github\Client();
-  $client->authenticate($token, Github\Client::AUTH_HTTP_TOKEN);
+  $client->authenticate($token, \Github\AuthMethod::ACCESS_TOKEN);
 
   try {
     $show = $client->currentUser()->show();
@@ -49,7 +49,7 @@ function devshop_github_token_is_valid($token = NULL) {
   }
     // Happens when user has no public keys.
   catch (Exception $e) {
-    return $e;
+    return false;
   }
 }
 
@@ -79,7 +79,7 @@ function devshop_github_client($must_authenticate = FALSE) {
   if (!empty($github_token)) {
 
     // Set token in client.
-    $client->authenticate($github_token, Github\Client::AUTH_HTTP_TOKEN);
+    $client->authenticate($github_token, \Github\AuthMethod::ACCESS_TOKEN);
     try {
       // If currentUser()->show() worked, we know we are authenticated.
       $client->currentUser()->show();
@@ -163,8 +163,8 @@ function devshop_github_form_project_node_form_alter(&$form, &$form_state, $form
     '#suffix' => '</div>',
     '#weight' => -1000,
     '#markup' => implode(' ', array(
-      format_plural($pr_count, t('There is 1 open Pull Request in your project'), t('There are @number open Pull Requests in your project', array('@number' => $pr_count))),
-      t('Confirm your desired behavior in the "GitHub Integration" section.'),
+      format_plural($pr_count, t('There is 1 open Pull Request in your project.'), t('There are @number open Pull Requests in your project', array('@number' => $pr_count))),
+      t('Check pull request environment settings in the "GitHub Integration" section.'),
       l(t('View Pull Requests on GitHub.com'), $node->project->git_repo_url . '/pulls', array(
         'attributes' => array(
           'target' => '_blank',
@@ -449,6 +449,7 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
     $form['connect'] = array();
   }
 
+  $options = [];
   $repos = variable_get('devshop_github_available_repositories', array());
   foreach ($repos as $repo_name => $repo) {
     $options[$repo['org']][$repo['url']] = $repo_name;
@@ -768,13 +769,21 @@ function devshop_github_form_devshop_project_create_step_environments_alter(&$fo
 
       foreach ($prs as $pr) {
         // Prepare environment objects
-        $environment = new stdClass();
-        $environment->name = "pr{$pr['number']}";
-        $environment->git_ref = $pr['head']['ref'];
-        $project->environments[$environment->name] = $environment;
+        $env_name = "pr{$pr['number']}";
+        // If PR environment already exists, load it.
+        if (isset($project->environments[$env_name])) {
+          $environment = $project->environments[$env_name];
+        }
+        else {
+          $environment = new stdClass();
+          $environment->name = "pr{$pr['number']}";
+          $environment->git_ref = $pr['head']['ref'];
+          $project->environments[$environment->name] = $environment;
+        }
 
         // Use NEW form elements as the template.
         $environment_forms[$environment->name] = $form['project']['environments']['NEW'];
+        $environment_forms[$environment->name]['platform']['#value'] = $environment->platform;
 
         // Create a disabled textfield for display to user, and convert original element to "value" type so the info is passed.
         $environment_forms[$environment->name]['name']['#default_value'] = $environment->name;
@@ -826,7 +835,7 @@ function devshop_github_form_devshop_project_create_step_environments_alter(&$fo
       }
 
       // Merge environments fields together to put PRs on top.
-      $form['project']['environments'] = array_merge($form['project']['environments'], $environment_forms);
+      $form['project']['environments'] = array_merge($environment_forms, $form['project']['environments']);
     }
 
     $settings_link = l(t('Change Project Settings'), 'projects/add/settings', array(
@@ -1015,7 +1024,7 @@ function devshop_github_project_create_webhook($form, $form_state) {
   // Get GitHub client
   $client = new Github\Client();
   $github_token = variable_get('devshop_github_token', '');
-  $client->authenticate($github_token, Github\Client::AUTH_HTTP_TOKEN);
+  $client->authenticate($github_token, \Github\AuthMethod::ACCESS_TOKEN);
 
   // Create the webhook.
   try {
@@ -1111,7 +1120,7 @@ function devshop_github_node_update($node) {
   try {
     $token = variable_get('devshop_github_token', '');
     $client = new \Github\Client();
-    $client->authenticate($token, Github\Client::AUTH_HTTP_TOKEN);
+    $client->authenticate($token, \Github\AuthMethod::ACCESS_TOKEN);
 
     // Create a deployment status
     $project = $site->project;
@@ -1182,7 +1191,7 @@ function devshop_github_node_update($node) {
 //    try {
 //      $token = variable_get('devshop_github_token', '');
 //      $client = new \Github\Client();
-//      $client->authenticate($token, Github\Client::AUTH_HTTP_TOKEN);
+//      $client->authenticate($token, \Github\AuthMethod::ACCESS_TOKEN);
 //
 //      // Create a status
 //      $sha = $task->ref->environment->github_pull_request->pull_request_object->head->sha;
@@ -1407,7 +1416,7 @@ function devshop_github_webhook($project_node) {
 //            try {
 //              $token = variable_get('devshop_github_token', '');
 //              $client = new \Github\Client();
-//              $client->authenticate($token, Github\Client::AUTH_HTTP_TOKEN);
+//              $client->authenticate($token, \Github\AuthMethod::ACCESS_TOKEN);
 //
 //              $sha = $data->pull_request->head->sha;
 //
@@ -1566,7 +1575,7 @@ function devshop_github_webhook($project_node) {
             try {
               $token = variable_get('devshop_github_token', '');
               $client = new \Github\Client();
-              $client->authenticate($token, Github\Client::AUTH_HTTP_TOKEN);
+              $client->authenticate($token, \Github\AuthMethod::ACCESS_TOKEN);
 
               $sha = $data->pull_request->head->sha;
 
@@ -1728,7 +1737,7 @@ function devshop_github_check_key($silent = false) {
   }
 
   $client = new \Github\Client();
-  $client->authenticate($token, Github\Client::AUTH_HTTP_TOKEN);
+  $client->authenticate($token, \Github\AuthMethod::ACCESS_TOKEN);
 
   try {
     $keys = $client->currentUser()->keys()->all();

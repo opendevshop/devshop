@@ -1,0 +1,67 @@
+name: Install Methods
+on:
+  push:
+    branches: 1.x
+  pull_request:
+    types: [opened, synchronize]
+  schedule:
+    - cron: "0 0 * * *"
+    - cron: "0 12 * * *"
+
+env:
+  BRANCH: 1.x
+
+jobs:
+  install_script:
+    name: Install Script
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - 'ubuntu1804'
+          - 'ubuntu2004'
+
+    env:
+      OS: "${{ matrix.os }}"
+      ANSIBLE_EXTRA_VARS: "${{ matrix.vars }}"
+
+    steps:
+    - name: Prepare Pull Request-only environment
+      if: github.event_name=='pull_request'
+      run: |
+        echo "LOAD_DEVSHOP_VERSION=${{ github.head_ref }}" >> $GITHUB_ENV
+        echo "BRANCH=${{ github.head_ref }}" >> $GITHUB_ENV
+        echo "LOAD_DEVSHOP_SOURCE=${{ github.event.pull_request.head.repo.clone_url }}" >> $GITHUB_ENV
+
+    - name: Check Out Sourcecode
+      uses: actions/checkout@v2
+      if: github.event_name!='pull_request'
+
+    # Fetch all branches and tags so composer can resolve the version.
+    - name: Check Out Pull Request Sourcecode
+      uses: actions/checkout@v2
+      if: github.event_name=='pull_request'
+      with:
+        ref: ${{ github.event.pull_request.head.sha }}
+        fetch-depth: 0
+
+    - name: Build Install Script
+      run: make build
+      working-directory: install
+
+    - name: Run Install Script
+      run: bash .github/workflows/install-sh-test.sh
+
+    - name: Confirm DevShop Installation
+      run: |
+        docker exec -u aegir install-server-test devshop login
+        wget --output-file=artifact-install-script-frontpage.html http://install-test.devshop.local.computer
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v2
+      if: always()
+      with:
+        name: FrontPage
+        path: artifact-*
