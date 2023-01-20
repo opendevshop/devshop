@@ -211,6 +211,11 @@ class InstallDevmaster extends Command
         'git_docroot', NULL, InputOption::VALUE_OPTIONAL,
         'Path to document root exposed to web server.'
       )
+      ->addOption(
+        'git_reset', NULL, InputOption::VALUE_OPTIONAL,
+        'Reset working changes in the git repository.',
+        FALSE
+      )
 
       // path_to_drush
       ->addOption(
@@ -552,6 +557,7 @@ class InstallDevmaster extends Command
       'git_root' => $this->input->getOption('git_root'),
       'git_remote' => $this->input->getOption('git_remote'),
       'git_reference' => $this->input->getOption('git_reference'),
+      'git_reset' => $this->input->getOption('git_reset'),
       'git_docroot' => $this->input->getOption('git_docroot'),
     ));
 
