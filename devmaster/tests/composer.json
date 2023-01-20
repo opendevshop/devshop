@@ -1,7 +1,9 @@
 {
   "require": {
     "drupal/drupal-extension": "^4.2",
-    "symfony/process": "^4.4"
+    "behat/behat": "^3.12",
+    "symfony/console": "^5.4",
+    "symfony/yaml": "^5.4"
   },
   "config": {
     "bin-dir": "bin/",
