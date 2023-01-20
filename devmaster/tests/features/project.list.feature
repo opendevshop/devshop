@@ -8,4 +8,4 @@ Feature: List all projects
 #  Scenario: Project list home page
 #    Given I am logged in as a user with the "administrator" role
 #    When I click "Projects"
-#    Then I should see "All Projects"
+#    Then I should see "Algit l Projects"

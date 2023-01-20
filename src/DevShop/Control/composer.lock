@@ -1030,12 +1030,13 @@
             "dist": {
                 "type": "path",
                 "url": "../Component/ComposerCommon",
-                "reference": "bc4157992673aa3132002c174b276c3b10160b53"
+                "reference": "723e90b4f4e12705d3c3afe7470e39a4e7ee71bb"
             },
             "require": {
-                "consolidation/robo": "^1.0",
+                "consolidation/robo": "^2.0||^1.0",
                 "guzzlehttp/guzzle": "7.5.x-dev",
-                "knplabs/github-api": "3.9.x-dev",
+                "knplabs/github-api": "^3.0||^1.0",
+                "php": "^7.1||^8.0",
                 "teqneers/php-stream-wrapper-for-git": "^2.0@dev"
             },
             "type": "library",
@@ -2278,7 +2279,7 @@
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/hosting.git",
-                "reference": "558d265e3e862aadab16b053e27aa36ca8771a8a"
+                "reference": "e762b460f66aa259e8a56852abf0cc4676170d4c"
             },
             "require": {
                 "devshop/composer-common": "^1@dev",
@@ -2304,7 +2305,7 @@
                 },
                 "drupal": {
                     "version": "7.x-4.x-dev",
-                    "datestamp": "1629902387",
+                    "datestamp": "1668122417",
                     "security-coverage": {
                         "status": "not-covered",
                         "message": "Dev releases are not covered by Drupal security advisories."
@@ -2316,14 +2317,6 @@
                 "GPL-2.0-or-later"
             ],
             "authors": [
-                {
-                    "name": "Jon Pugh",
-                    "homepage": "https://www.drupal.org/user/17028"
-                },
-                {
-                    "name": "Steven Jones",
-                    "homepage": "https://www.drupal.org/user/99644"
-                },
                 {
                     "name": "adrian",
                     "homepage": "https://www.drupal.org/user/1337"
@@ -2357,16 +2350,24 @@
                     "homepage": "https://www.drupal.org/user/449000"
                 },
                 {
+                    "name": "Jon Pugh",
+                    "homepage": "https://www.drupal.org/user/17028"
+                },
+                {
+                    "name": "kienan",
+                    "homepage": "https://www.drupal.org/user/2241332"
+                },
+                {
                     "name": "memtkmcc",
                     "homepage": "https://www.drupal.org/user/92646"
                 },
                 {
-                    "name": "mig5",
-                    "homepage": "https://www.drupal.org/user/153206"
-                },
-                {
                     "name": "omega8cc",
                     "homepage": "https://www.drupal.org/user/539502"
+                },
+                {
+                    "name": "Steven Jones",
+                    "homepage": "https://www.drupal.org/user/99644"
                 }
             ],
             "description": "Allow this Drupal site to deploy hosted sites.",
@@ -7415,5 +7416,5 @@
         "ext-xml": "*"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.1.0"
 }
