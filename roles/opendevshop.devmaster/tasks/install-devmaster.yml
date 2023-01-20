@@ -75,7 +75,8 @@
                                 --git_root={{ devshop_control_git_root }} \
                                 --git_remote={{ devshop_control_git_remote }} \
                                 --git_reference={{ devshop_control_git_reference }}
-                                --git_docroot={{ devshop_control_git_docroot }}
+                                --git_docroot={{ devshop_control_git_docroot }} \
+                                --git_reset={{ devshop_control_git_reset }} \
                                 {{ devshop_control_install_options }}
 "
   when: devmaster_install_command is not defined
