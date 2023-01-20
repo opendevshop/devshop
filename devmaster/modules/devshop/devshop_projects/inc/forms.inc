@@ -1370,7 +1370,7 @@ function devshop_prepare_platform_node($project, $environment_name, $git_ref, $w
   }
 
   $platform_node->git_reference = $git_ref;
-  $platform_node->git_reset = $project->git_reset? $project->git_reset: 0;
+  $platform_node->git_reset = isset($project->git_reset) ? $project->git_reset: 0;
 
 
   // Enable git pull queue for this platform if chosen.
