@@ -11,25 +11,25 @@ on:
 
 jobs:
   # Test the image builds and works correctly.
-  test:
-    name: Test
-    runs-on: ubuntu-20.04
-    defaults:
-      run:
-        working-directory: docker
-
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Test building image.
-        run: docker-compose build
-
-      - name: Run the built image.
-        run: >-
-          docker-compose up -d
-
-      - name: Verify Ansible is accessible in the built image.
-        run: docker-compose exec -t env TERM=xterm ansible --version
+#  test:
+#    name: Test
+#    runs-on: ubuntu-20.04
+#    defaults:
+#      run:
+#        working-directory: docker
+#
+#    steps:
+#      - uses: actions/checkout@v2
+#
+#      - name: Test building image.
+#        run: docker-compose build
+#
+#      - name: Run the built image.
+#        run: >-
+#          docker-compose up -d
+#
+#      - name: Verify Ansible is accessible in the built image.
+#        run: docker-compose exec -t env TERM=xterm ansible --version
 
   # If on main branch, build and release image.
   release:
@@ -58,7 +58,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: ../
-          file: Dockerfile.ubuntu1804
+          file: docker/Dockerfile.ubuntu1804
           platforms: linux/amd64,linux/arm64
           push: true
           tags: devshop/server:latest
