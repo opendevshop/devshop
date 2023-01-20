@@ -659,7 +659,10 @@ function boots_preprocess_page(&$vars){
     if (is_numeric($vars['node']->project)) {
       $project_node = node_load($vars['node']->project);
       $vars['node']->project = $project_node->project;
-      $vars['node']->environment = $project_node->project->environments[$vars['node']->environment];
+
+      if (!empty($vars['node']->environment)) {
+        $vars['node']->environment = $project_node->project->environments[$vars['node']->environment];
+      }
     }
 
     // load $vars['node'] if it's not present (like on node/%/edit)
@@ -722,7 +725,7 @@ function boots_preprocess_page(&$vars){
       }
 
       // Only show environment name if site is in project.
-      if (isset($object->project)) {
+      if (isset($object->environment)) {
         $vars['title2'] = $object->environment->name;
       }
 
@@ -892,7 +895,7 @@ function boots_preprocess_node_project(&$vars){
   $project = $vars['project'] = $vars['node']->project;
 
   // Live Domain link.
-  if ($project->settings->live['live_domain']) {
+  if (isset($project->settings->live['live_domain']) && $project->settings->live['live_domain']) {
     $vars['live_domain_url'] =  'http://' . $project->settings->live['live_domain'];
     $vars['live_domain_text'] =  'http://' . $project->settings->live['live_domain'];
   }
@@ -1069,7 +1072,7 @@ HTML;
     $vars['project_messages'] = $project->messages;
   }
 
-  if (!$vars['node']->project->settings->deploy['allow_environment_deploy_config'] && count(array_filter($vars['node']->project->settings->deploy['default_hooks'])) == 0) {
+  if (isset($vars['node']->project->settings->deploy['default_hooks']) && !$vars['node']->project->settings->deploy['allow_environment_deploy_config'] && count(array_filter($vars['node']->project->settings->deploy['default_hooks'])) == 0) {
     $vars['project_messages'][] = array(
       'message' => t('No deploy hooks are configured for this project. If new code is deployed, you will have to run update.php manually. Check your !link.', array(
         '!link' => l(t('Project Settings'),"node/{$vars['node']->nid}/edit"),
