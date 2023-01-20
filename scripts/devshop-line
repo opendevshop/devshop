@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
-DEVSHOP_PATH="$( cd "$(dirname "$0")"/.. ; pwd -P )"
-PATH="$DEVSHOP_PATH/bin:$DEVSHOP_PATH/scripts:$PATH"
 CHARACTER="${1:--}"
 COLUMNS="$2"
 

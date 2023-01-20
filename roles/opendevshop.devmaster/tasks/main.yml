@@ -79,6 +79,18 @@
     name: safe.directory
     value: "{{ devshop_cli_path }}"
 
+- name: "Retrieve git information"
+  git:
+    repo: "{{ devshop_cli_repo }}"
+    dest: "{{ devshop_cli_path }}"
+    clone: no
+    update: no
+  register: devshop_installed_git_info
+
+- name: Git Information
+  debug:
+    msg: "{{ devshop_installed_git_info }}"
+
 - name: Detect currently installed version of DevShop.
   command: "{{ devshop_cli_path }}/scripts/branch-or-tag"
   register: __devshop_version_installed
@@ -130,7 +142,19 @@
     force: "{{ not devshop_cli_skip_update }}"
   when: not devshop_cli_skip_update
 
-- name: "Configure Composer Globally"
+- name: Ensure DevShop Control code is owned by platform user.
+  file:
+    state: directory
+    path: "{{ item }}"
+    group: "{{ aegir_user_name }}"
+    owner: "{{ aegir_user_name }}"
+    recurse: true
+  tags: [always]
+  with_items:
+    - "{{ devshop_control_git_root }}"
+    - "{{ devshop_cli_path }}"
+
+- name: "Composer Install DevShop Source"
   command: "{{ php_executable }} {{ composer_path }} {{ devshop_cli_composer_install_command }}"
   # Changed: true is so we don't fail ansible lint.
   changed_when: true
@@ -139,6 +163,9 @@
     chdir: "{{ item }}"
   with_items:
     - "{{ devshop_cli_path }}"
+  become: true
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
 
 - name: "Install DevShop dependencies with composer"
   command: "{{ php_executable }} {{ composer_path }} {{ devshop_cli_composer_install_command }}"
@@ -149,19 +176,6 @@
     chdir: "{{ item }}"
   with_items:
     - "{{ devshop_cli_path }}"
-
-- name: Ensure DevShop Control code is owned by aegir user.
-  file:
-    state: directory
-    path: "{{ item }}"
-    group: "{{ aegir_user_name }}"
-    owner: "{{ aegir_user_name }}"
-    recurse: true
-  when: devshop_control_git_root is match(devshop_cli_path)
-  tags: [always]
-  with_items:
-    - "{{ devshop_control_git_root }}"
-    - "{{ devshop_cli_path }}/devmaster"
 
 - name: Add DevShop bin directory to Path
   copy:

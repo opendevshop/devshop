@@ -33,7 +33,6 @@ docker run \
   --hostname $DEVSHOP_SERVER_HOSTNAME \
   --publish 80:80 \
   --volume $PWD/build/install.sh:/tmp/devshop-install.sh \
-  --volume /sys/fs/cgroup:/sys/fs/cgroup:ro \
   ubuntu/container
 
 docker exec \
