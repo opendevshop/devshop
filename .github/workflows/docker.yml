@@ -40,8 +40,8 @@ jobs:
         working-directory: docker
 
     needs: test
-    # @TODO: Change to 1.x once working, before merge.
-    if: github.ref == 'refs/heads/feature/docker/hub-publish'
+    # @TODO: Uncomment once working, before merge.
+    # if: github.ref == 'refs/heads/1.x'
 
     steps:
       - uses: actions/checkout@v2
