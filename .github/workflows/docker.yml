@@ -39,7 +39,7 @@ jobs:
       run:
         working-directory: docker
 
-    needs: test
+#    needs: test
     # @TODO: Uncomment once working, before merge.
     # if: github.ref == 'refs/heads/1.x'
 
