@@ -41,7 +41,6 @@ jobs:
       matrix:
         os_slug:
           - ubuntu1804
-          - ubuntu2004
 
         php_version:
           - 7.4
@@ -65,11 +64,11 @@ jobs:
 
       - name: Define Variables
         run: |
-          echo "CONTAINER_TAGS=devshop/server:${{ matrix.os_slug }}" >> $GITHUB_ENV
+          echo "CONTAINER_TAGS=devshop/server:php${{ matrix.php_version }}" >> $GITHUB_ENV
 
       - name: Define Latest
         if: matrix.os_slug=='2004'
-          echo "CONTAINER_TAGS=devshop/server:${{ matrix.os_slug }},devshop/server:latest" >> $GITHUB_ENV
+          echo "CONTAINER_TAGS=devshop/server:php${{ matrix.php_version }},devshop/server:latest" >> $GITHUB_ENV
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
