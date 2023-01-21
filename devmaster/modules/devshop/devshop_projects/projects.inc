@@ -104,7 +104,7 @@ function devshop_project_load($node) {
   }
 
   // Git Repo Host
-  if (strpos($project->git_url, 'github.com') !== FALSE) {
+  if (isset($project->git_url) && strpos($project->git_url, 'github.com') !== FALSE) {
     $project->git_provider = 'github';
     $project->git_repo_url = strtr($project->git_url, array(
       'git@github.com:' => 'http://github.com/',
@@ -118,7 +118,7 @@ function devshop_project_load($node) {
     $project->github_repo = $parts[2];
 
   }
-  elseif (strpos($project->git_url, variable_get('bitbucket_repo_url_trigger_word', 'bitbucket.org')) !== FALSE) {
+  elseif (isset($project->git_url) && strpos($project->git_url, variable_get('bitbucket_repo_url_trigger_word', 'bitbucket.org')) !== FALSE) {
     $project->git_provider = 'bitbucket';
     $project->git_repo_url = strtr($project->git_url, array(
       'git@bitbucket.com:' => 'http://bitbucket',

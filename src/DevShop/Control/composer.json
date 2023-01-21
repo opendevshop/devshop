@@ -40,7 +40,7 @@
         "cweagans/composer-patches": "^1.7",
         "drupal-composer/preserve-paths": "^0.1.6",
         "drupal/composer_autoloader": "^1.0",
-        "drupal/drupal": "^7.62",
+        "drupal/drupal": "^7.94",
         "symfony/filesystem": "~2.7 || ^3",
         "webflo/drupal-finder": "^1.2.1",
         "devshop/devmaster": "1.x-dev",
@@ -110,6 +110,9 @@
           "cweagans/composer-patches": true,
           "drupal-composer/preserve-paths": true,
           "oomphinc/composer-installers-extender": true
+        },
+        "platform": {
+          "php": "7.4.0"
         }
     },
     "autoload": {

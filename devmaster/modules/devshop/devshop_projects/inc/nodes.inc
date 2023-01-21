@@ -60,8 +60,7 @@ function devshop_projects_node_load($nodes, $types) {
         $node->duration = format_interval(time() - $node->executed, 1);
       }
       elseif ($node->task_status == HOSTING_TASK_QUEUED) {
-        $node->duration = t('Queued for %time',
-          array('%time' => format_interval(time() - $node->changed), 1));
+        $node->duration = t('Queued for %time', array('%time' => format_interval(time() - $node->changed)));
       }
       else {
         $node->duration = format_interval($node->delta, 1);
@@ -184,7 +183,7 @@ function devshop_projects_node_insert($node) {
   $info->code_path = hosting_path_normalize($node->project->code_path);
   $info->drupal_path = hosting_path_normalize($node->project->drupal_path);
   $info->base_url = $node->project->base_url;
-  $info->install_profile = $node->project->install_profile;
+  $info->install_profile = isset($node->project->install_profile) ? $node->project->install_profile: null;
 
   // Save serialized data, minus environments
   $info->settings = serialize($node->project->settings);
@@ -192,7 +191,7 @@ function devshop_projects_node_insert($node) {
   drupal_write_record('hosting_devshop_project', $info);
 
   // Save hosting context
-  if (!$node->old_vid) {
+  if (!isset($node->old_vid) || empty($node->old_vid)) {
 
     // Save the "hosting context", which includes setting the path alias.
     $name = ($node->hosting_name) ? $node->hosting_name : $node->title;

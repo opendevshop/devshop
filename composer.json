@@ -21,14 +21,15 @@
         "drush/drush": "^8",
         "ext-json": "*",
         "devshop/git-split": "@dev",
-        "devshop/github-api-cli": "@dev",
         "devshop/yaml-tasks": "@dev",
         "devshop/power-process": "@dev",
         "drupal/provision": "4.x-dev",
         "psr/cache": "^1.0",
         "symfony/deprecation-contracts": "^2.5",
         "symfony/options-resolver": "^4.4",
-        "devshop/bin-tools": "1.x-dev"
+        "devshop/bin-tools": "1.x-dev",
+        "php-http/httplug": "^2.3",
+        "devshop/composer-common": "1.x-dev"
     },
     "replace": {
         "drupal/drupal": "*"
@@ -81,6 +82,9 @@
         "allow-plugins": {
             "devshop/git-split": true,
             "devshop/yaml-tasks": true
+        },
+        "platform": {
+            "php": "7.4.0"
         }
     },
     "extra": {

@@ -102,11 +102,13 @@
       </span>
     </p>
     <div class="task-urls btn-group-xs">
+      <?php if (isset($environment->domains)): ?>
       <?php foreach ($environment->domains as $domain): ?>
           <a class="btn btn-text btn-xs" href="<?php print 'http://' . $domain; ?>" target="_blank">
               <i class="fa fa-globe"></i> <?php print $domain; ?>
           </a>
       <?php endforeach; ?>
+      <?php endif; ?>
 
     <?php if (isset($task_well)): ?>
       <?php print $task_well; ?>
