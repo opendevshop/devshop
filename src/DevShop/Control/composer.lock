@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ac5ad721726b384e6d0451f547a76496",
+    "content-hash": "ea565803e085489ca17310aa96cc2d90",
     "packages": [
         {
             "name": "clue/stream-filter",
@@ -7681,7 +7681,7 @@
         "drupal/aegir_config": 10,
         "drupal/cas_attributes": 5,
         "drupal/devshop_stats": 20,
-        "drupal/hosting": 15,
+        "drupal/hosting": 20,
         "drupal/hosting_filemanager": 20,
         "drupal/hosting_statsd": 10
     },
@@ -7700,5 +7700,5 @@
     "platform-overrides": {
         "php": "7.4.0"
     },
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.1.0"
 }
