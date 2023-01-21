@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "cbae48fcdb7ac8b8009e50d0ebf797eb",
+    "content-hash": "6be63c6c72aaa591e9b5fc9d997918f5",
     "packages": [
         {
             "name": "clue/stream-filter",
@@ -991,9 +991,10 @@
                 "reference": "f3d98ec32b262f3e06347b0b4da385ad4e73cfd5"
             },
             "dist": {
-                "type": "path",
-                "url": "../Component/GitTraits",
-                "reference": "723e90b4f4e12705d3c3afe7470e39a4e7ee71bb"
+                "type": "zip",
+                "url": "https://api.github.com/repos/devshop-packages/composer-common/zipball/f3d98ec32b262f3e06347b0b4da385ad4e73cfd5",
+                "reference": "f3d98ec32b262f3e06347b0b4da385ad4e73cfd5",
+                "shasum": ""
             },
             "require": {
                 "consolidation/robo": "^2.0||^1.0",
@@ -1031,7 +1032,7 @@
             "description": "Tools useful for any composer-based project.",
             "homepage": "https://getdevshop.com",
             "support": {
-                "source": "https://github.com/devshop-packages/composer-common/tree/feature/components/php-8"
+                "source": "https://github.com/devshop-packages/composer-common/tree/bug/docker/build-again"
             },
             "time": "2022-11-08T19:45:11+00:00"
         },
@@ -2812,17 +2813,17 @@
         },
         {
             "name": "drupal/hosting_tasks_extra",
-            "version": "3.190.0",
+            "version": "3.191.0",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/hosting_tasks_extra.git",
-                "reference": "7.x-3.190"
+                "reference": "7.x-3.191"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/hosting_tasks_extra-7.x-3.190.zip",
-                "reference": "7.x-3.190",
-                "shasum": "427e8213b11de0175a515f55912a9180be4cc5b3"
+                "url": "https://ftp.drupal.org/files/projects/hosting_tasks_extra-7.x-3.191.zip",
+                "reference": "7.x-3.191",
+                "shasum": "77d49528a314b11ebafa5604cde889b3f3e0588d"
             },
             "require": {
                 "drupal/drupal": "~7.0",
@@ -2835,8 +2836,8 @@
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "7.x-3.190",
-                    "datestamp": "1606489843",
+                    "version": "7.x-3.191",
+                    "datestamp": "1674283416",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -2848,14 +2849,6 @@
                 "GPL-2.0-or-later"
             ],
             "authors": [
-                {
-                    "name": "Jon Pugh",
-                    "homepage": "https://www.drupal.org/user/17028"
-                },
-                {
-                    "name": "Steven Jones",
-                    "homepage": "https://www.drupal.org/user/99644"
-                },
                 {
                     "name": "anarcat",
                     "homepage": "https://www.drupal.org/user/1274"
@@ -2885,16 +2878,20 @@
                     "homepage": "https://www.drupal.org/user/449000"
                 },
                 {
+                    "name": "Jon Pugh",
+                    "homepage": "https://www.drupal.org/user/17028"
+                },
+                {
                     "name": "memtkmcc",
                     "homepage": "https://www.drupal.org/user/92646"
                 },
                 {
-                    "name": "mig5",
-                    "homepage": "https://www.drupal.org/user/153206"
-                },
-                {
                     "name": "omega8cc",
                     "homepage": "https://www.drupal.org/user/539502"
+                },
+                {
+                    "name": "Steven Jones",
+                    "homepage": "https://www.drupal.org/user/99644"
                 }
             ],
             "description": "Adds additional tasks to Aegir.",
@@ -7404,5 +7401,5 @@
     "platform-overrides": {
         "php": "7.4.0"
     },
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.1.0"
 }
