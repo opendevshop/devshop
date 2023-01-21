@@ -36,7 +36,13 @@ jobs:
     name: Release
     runs-on: ubuntu-20.04
 
-#    needs: test
+    strategy:
+      fail-fast: false
+      matrix:
+        os_slug: 
+          - ubuntu1804
+          - ubuntu2004
+
     # @TODO: Uncomment once working, before merge.
     # if: github.ref == 'refs/heads/1.x'
 
@@ -66,7 +72,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: ./
-          file: ./docker/Dockerfile.ubuntu1804
+          file: ./docker/Dockerfile.${{ matrix.os_slug }}
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: devshop/server:latest
+          tags: devshop/server:${{ matrix.os_slug }}
