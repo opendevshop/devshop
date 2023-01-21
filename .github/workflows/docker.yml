@@ -68,6 +68,7 @@ jobs:
 
       - name: Define Latest
         if: matrix.os_slug=='2004'
+        run: |
           echo "CONTAINER_TAGS=devshop/server:php${{ matrix.php_version }},devshop/server:latest" >> $GITHUB_ENV
 
       - name: Set up QEMU
