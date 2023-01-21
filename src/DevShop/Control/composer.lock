@@ -417,12 +417,11 @@
             "dist": {
                 "type": "path",
                 "url": "../../../devmaster",
-                "reference": "b069b3bfe5d18ac131621b32723fa1ed56eb54da"
+                "reference": "08894c4ffde03232bfb087cab8877832b5fe128d"
             },
             "require": {
                 "cpliakas/git-wrapper": "~1.0",
-                "knplabs/github-api": "^3.8",
-                "php-http/guzzle7-adapter": "^1.1",
+                "knplabs/github-api": "^3.0||^1.0",
                 "sensiolabs/ansi-to-html": "^1.1",
                 "symfony/process": "^3.4",
                 "symfony/yaml": "^3.4",
@@ -4489,70 +4488,6 @@
                 "source": "https://github.com/php-http/discovery/tree/1.14.3"
             },
             "time": "2022-07-11T14:04:40+00:00"
-        },
-        {
-            "name": "php-http/guzzle7-adapter",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/php-http/guzzle7-adapter.git",
-                "reference": "03328049033fc2d9c2b2a93fb5554d519d78ce6e"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/php-http/guzzle7-adapter/zipball/03328049033fc2d9c2b2a93fb5554d519d78ce6e",
-                "reference": "03328049033fc2d9c2b2a93fb5554d519d78ce6e",
-                "shasum": ""
-            },
-            "require": {
-                "guzzlehttp/guzzle": "^7.0",
-                "php": "^7.3 | ^8.0",
-                "php-http/httplug": "^2.0",
-                "psr/http-client": "^1.0"
-            },
-            "provide": {
-                "php-http/async-client-implementation": "1.0",
-                "php-http/client-implementation": "1.0",
-                "psr/http-client-implementation": "1.0"
-            },
-            "require-dev": {
-                "php-http/client-integration-tests": "^3.0",
-                "phpspec/prophecy-phpunit": "^2.0",
-                "phpunit/phpunit": "^8.0|^9.3"
-            },
-            "default-branch": true,
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Http\\Adapter\\Guzzle7\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Tobias Nyholm",
-                    "email": "tobias.nyholm@gmail.com"
-                }
-            ],
-            "description": "Guzzle 7 HTTP Adapter",
-            "homepage": "http://httplug.io",
-            "keywords": [
-                "Guzzle",
-                "http"
-            ],
-            "support": {
-                "issues": "https://github.com/php-http/guzzle7-adapter/issues",
-                "source": "https://github.com/php-http/guzzle7-adapter/tree/master"
-            },
-            "time": "2023-01-05T08:47:11+00:00"
         },
         {
             "name": "php-http/httplug",
