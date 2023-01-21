@@ -27,7 +27,8 @@
         "psr/cache": "^1.0",
         "symfony/deprecation-contracts": "^2.5",
         "symfony/options-resolver": "^4.4",
-        "devshop/bin-tools": "1.x-dev"
+        "devshop/bin-tools": "1.x-dev",
+        "php-http/httplug": "^2.3"
     },
     "replace": {
         "drupal/drupal": "*"
