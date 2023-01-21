@@ -27,7 +27,7 @@
     "knplabs/github-api": "^1.0",
     "devshop/composer-common": "1.x-dev",
     "guzzlehttp/guzzle": "^6",
-    "php-http/guzzle6-adapter": "^2.0@dev"
+    "php-http/guzzle6-adapter": "2.x-dev"
   },
   "extra": {
     "branch-alias": {

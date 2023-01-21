@@ -21,7 +21,6 @@
         "drush/drush": "^8",
         "ext-json": "*",
         "devshop/git-split": "@dev",
-        "devshop/github-api-cli": "@dev",
         "devshop/yaml-tasks": "@dev",
         "devshop/power-process": "@dev",
         "drupal/provision": "4.x-dev",
