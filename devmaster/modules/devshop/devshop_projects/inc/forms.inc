@@ -1290,8 +1290,6 @@ function devshop_projects_create_environment_form(&$form, &$form_state, $form_id
   $form['profile']['#access'] = FALSE;
   $form['git']['#access'] = FALSE;
 
-    dsm($form);
-
 }
 
 /**
