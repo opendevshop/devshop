@@ -24,7 +24,7 @@
   "require": {
     "php": "^7.1||^8.0",
     "consolidation/robo": "^2",
-    "knplabs/github-api": "^3.9@dev",
+    "knplabs/github-api": "^1.0",
     "devshop/composer-common": "1.x-dev",
     "guzzlehttp/guzzle": "^6",
     "php-http/guzzle6-adapter": "^2.0@dev"
