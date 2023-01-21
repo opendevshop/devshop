@@ -1,11 +1,7 @@
-DevShop Composer Common
-=========================
+Git Traits
+==========
 
-The DevShop Composer Common component contains code that might be useful for any 
-composer-based project.
-
-Tools
------
+The Git Traits package makes it easy to make your classes aware of the git repos they reside in.
 
 ### GitRepositoryAwareTrait
 

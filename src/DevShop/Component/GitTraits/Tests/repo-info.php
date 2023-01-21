@@ -42,7 +42,7 @@ class repoInfo {
 
     function printBranches() {
         $this->io()->writeln([
-          "<comment>Package:</comment> devshop/composer-common",
+          "<comment>Package:</comment> devshop/git-traits",
           "<comment>Class:</comment> GitRepositoryAwareTrait",
         ]);
         $this->io()->block("This is an Example Class, used for Testing the GitRepositoryAwareTrait.");

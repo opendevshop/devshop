@@ -805,6 +805,7 @@ HTML;
 function devshop_projects_form_site_node_form_alter(&$form, &$form_state, $form_id) {
 
   $node = $form['#node'];
+  $environment = NULL;
 
   $form['environment'] = array(
     '#weight' => -9,
@@ -1113,7 +1114,7 @@ function devshop_projects_create_environment_form(&$form, &$form_state, $form_id
       ),
     )) . '</small>';
     $git_ref = $environment->git_ref;
-    $icon = $environment->git_ref_type == 'tag'? 'tag': 'code-fork';
+    $icon = isset($environment->git_ref_type) && $environment->git_ref_type == 'tag'? 'tag': 'code-fork';
     $environment_options[$environment->system_alias] = "<span>{$environment->name}</span> <small class='git-ref text-muted'><i class='fa fa-$icon'></i> $git_ref</small> <small>$link</small>";
   }
 
@@ -1288,6 +1289,7 @@ function devshop_projects_create_environment_form(&$form, &$form_state, $form_id
   $form['platform']['#access'] = FALSE;
   $form['profile']['#access'] = FALSE;
   $form['git']['#access'] = FALSE;
+
 }
 
 /**
@@ -1317,7 +1319,7 @@ function devshop_projects_create_environment_form_validate_name($element, &$form
     form_set_value($form['title'], devshop_environment_url($project, $element['#value']), $form_state);
 
     // Attach a new platform node.
-    $platform_node = devshop_prepare_platform_node($project, $element['#value'], $form_state['values']['git_ref'], $form_state['values']['web_server'], $form_state['values']['git']['repo_url']);
+    $platform_node = devshop_prepare_platform_node($project, $element['#value'], $form_state['values']['git_ref'], $form_state['values']['web_server']);
 
     // Set value in form_state.
     form_set_value($form['platform_node'], $platform_node, $form_state);
@@ -1366,7 +1368,7 @@ function devshop_prepare_platform_node($project, $environment_name, $git_ref, $w
   }
 
   $platform_node->git_reference = $git_ref;
-  $platform_node->git_reset = $project->git_reset? $project->git_reset: 0;
+  $platform_node->git_reset = isset($project->git_reset) ? $project->git_reset: 0;
 
 
   // Enable git pull queue for this platform if chosen.
@@ -1445,7 +1447,7 @@ function devshop_projects_create_environment_form_validate_import($element, &$fo
   if ($form_state['values']['install_method']['method'] == 'import' && empty($element['#value'])) {
     form_set_error('install_method][import', t('If using the "Import Database" Install Method, you must enter a MySQL connection URL or absolute path to an SQL file.'));
   }
-  elseif ($url_components['scheme'] == 'mysql') {
+  elseif (isset($url_components['scheme']) && $url_components['scheme'] == 'mysql') {
     $database = array(
       'database' => ltrim($url_components['path'], '/'),
       'username' => $url_components['user'],
@@ -1533,7 +1535,7 @@ function devshop_environment_add_form_profile_options($project) {
 function devshop_environment_deploy_hooks_form($project, $environment = NULL, $task_type = NULL) {
 
   // If environment not specified, just grab one.
-  if (!$environment) {
+  if (!$environment && isset($project->environments)) {
     $environment = current($project->environments);
     $is_environment_form = FALSE;
   }
@@ -1626,8 +1628,8 @@ function devshop_environment_deploy_hooks_form($project, $environment = NULL, $t
   // Disable deploy hooks on environment form, deploy task form ,and sync task form.
   if (
     // Environment form
-    ($is_environment_form && !$project->settings->deploy['allow_environment_deploy_config']) ||
-    ($task_type == 'deploy' && !$project->settings->deploy['allow_environment_deploy_hooks_override'])
+    ($is_environment_form && isset($project->settings) && !$project->settings->deploy['allow_environment_deploy_config']) ||
+    ($task_type == 'deploy' && isset($project->settings) && !$project->settings->deploy['allow_environment_deploy_hooks_override'])
   ) {
 
     foreach (element_children($return) as $i) {

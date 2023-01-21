@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2b2f5a9060ac08da3d203e868d5c5d94",
+    "content-hash": "de9dc80b41e24526ec2fc5339eb85963",
     "packages": [
         {
             "name": "behat/behat",
@@ -502,16 +502,16 @@
         },
         {
             "name": "drupal/drupal-driver",
-            "version": "v2.2.2",
+            "version": "dev-patch-1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/jhedstrom/DrupalDriver.git",
-                "reference": "632712db66681b76651518bf5ab1e60fddc70a39"
+                "url": "https://github.com/jonpugh/DrupalDriver.git",
+                "reference": "b6271c743b4f0e30a639cad84ef1e8d61a326769"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jhedstrom/DrupalDriver/zipball/632712db66681b76651518bf5ab1e60fddc70a39",
-                "reference": "632712db66681b76651518bf5ab1e60fddc70a39",
+                "url": "https://api.github.com/repos/jonpugh/DrupalDriver/zipball/b6271c743b4f0e30a639cad84ef1e8d61a326769",
+                "reference": "b6271c743b4f0e30a639cad84ef1e8d61a326769",
                 "shasum": ""
             },
             "require": {
@@ -541,6 +541,9 @@
             },
             "type": "library",
             "extra": {
+                "branch-alias": {
+                    "dev-master": "2.3.x-dev"
+                },
                 "installer-paths": {
                     "drupal/core": [
                         "type:drupal-core"
@@ -561,7 +564,19 @@
                     "Drupal\\Tests\\Driver": "tests/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "scripts": {
+                "test": [
+                    "composer validate --no-interaction",
+                    "parallel-lint src spec tests",
+                    "phpunit",
+                    "phpspec run -f pretty --no-interaction",
+                    "phpcs --standard=./phpcs-ruleset.xml .",
+                    "./vendor/bin/drupal-check --drupal-root=drupal ./src/Drupal/Driver/Cores/Drupal8.php ./src/Drupal/Driver/Fields/Drupal8",
+                    "cp ./vendor/palantirnet/drupal-rector/rector.php drupal/.",
+                    "cd drupal && ../vendor/bin/rector process ../src/Drupal/Driver/Cores/Drupal8.php --dry-run",
+                    "cd drupal && ../vendor/bin/rector process ../src/Drupal/Driver/Fields/Drupal8 --dry-run"
+                ]
+            },
             "license": [
                 "GPL-2.0-or-later"
             ],
@@ -579,16 +594,9 @@
                 "web"
             ],
             "support": {
-                "issues": "https://github.com/jhedstrom/DrupalDriver/issues",
-                "source": "https://github.com/jhedstrom/DrupalDriver/tree/v2.2.2"
+                "source": "https://github.com/jonpugh/DrupalDriver/tree/patch-1"
             },
-            "funding": [
-                {
-                    "url": "https://github.com/jhedstrom",
-                    "type": "github"
-                }
-            ],
-            "time": "2023-01-06T17:22:24+00:00"
+            "time": "2023-01-20T21:21:27+00:00"
         },
         {
             "name": "drupal/drupal-extension",
@@ -3352,9 +3360,18 @@
         }
     ],
     "packages-dev": [],
-    "aliases": [],
+    "aliases": [
+        {
+            "package": "drupal/drupal-driver",
+            "version": "dev-patch-1",
+            "alias": "v2.2.2",
+            "alias_normalized": "2.2.2.0"
+        }
+    ],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "drupal/drupal-driver": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],
