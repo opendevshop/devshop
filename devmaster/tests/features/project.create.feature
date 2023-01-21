@@ -132,7 +132,7 @@ Feature: Create a project and check settings
     Given I am on "http://testuser:testpassword@composer.testenv.devshop.local.computer"
     Then I should see "Welcome!"
     And I should see "Congratulations and welcome to the Drupal community."
-    And I should see "composer.dev.devshop.local.computer"
+    And I should see "composer.testenv.devshop.local.computer"
 
     Given I am on the homepage
     Then I should see the link "composer"
