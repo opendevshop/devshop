@@ -134,7 +134,7 @@ Feature: Create a project and check settings
     And I should see "Congratulations and welcome to the Drupal community."
     And I should see "composer.dev.devshop.local.computer"
 
-#    Given I am on the homepage
+    Given I am on the homepage
     Then I should see the link "composer"
     And I should see the link "testenv"
     When I click "testenv"
