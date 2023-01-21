@@ -29,7 +29,7 @@
         "symfony/options-resolver": "^4.4",
         "devshop/bin-tools": "1.x-dev",
         "php-http/httplug": "^2.3",
-        "devshop/composer-common": "1.x-dev"
+        "devshop/git-traits": "1.x-dev"
     },
     "replace": {
         "drupal/drupal": "*"

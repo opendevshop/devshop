@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0eb5bd41046135715d6e068fb93b225c",
+    "content-hash": "7b7ad0eb6a71df65d8278bcee80b2581",
     "packages": [
         {
             "name": "clue/stream-filter",
@@ -719,13 +719,8 @@
                 "reference": "f92048ef146d6c206b9d694bad260f0b01bfabbc"
             },
             "require": {
-                "php": "^7.1||^8.0",
                 "composer-plugin-api": "^1.0 || ^2.0",
-                "consolidation/robo": "^2.0||^1.0",
-                "guzzlehttp/guzzle": "^6",
-                "knplabs/github-api": "^3.0||^1.0",
-                "php-http/guzzle6-adapter": "^2.0@dev",
-                "teqneers/php-stream-wrapper-for-git": "^2.0@dev"
+                "php": "^7.1||^8.0"
             },
             "require-dev": {
                 "symfony/console": "^4.4|^5.0"
@@ -770,11 +765,14 @@
             "dist": {
                 "type": "path",
                 "url": "src/DevShop/Component/GitTraits",
-                "reference": "ba5872f00f7bb398ed8e236475e8527e239931b4"
+                "reference": "d2ca38ea2b221e5b0f1601e82987c0e23d6498f2"
             },
             "require": {
+                "consolidation/robo": "^2.0||^1.0",
+                "guzzlehttp/guzzle": "^6",
                 "knplabs/github-api": "^3.0||^1.0",
                 "php": "^7.1||^8.0",
+                "php-http/guzzle6-adapter": "^2.0@dev",
                 "teqneers/php-stream-wrapper-for-git": "^2.0@dev"
             },
             "type": "library",
@@ -4494,7 +4492,7 @@
         "devshop/power-process": 20,
         "drupal/provision": 20,
         "devshop/bin-tools": 20,
-        "devshop/composer-common": 20
+        "devshop/git-traits": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,
