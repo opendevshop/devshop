@@ -19,14 +19,14 @@
         "ext-json": "*",
         "composer-plugin-api": "^1.0 || ^2.0",
         "consolidation/robo": "^2",
-        "devshop/power-process": "^1.6",
-        "guzzlehttp/guzzle": "7.5.x-dev",
-        "guzzlehttp/psr7": "2.4.x-dev",
-        "knplabs/github-api": "3.9.x-dev",
+        "devshop/power-process": "@dev",
+        "guzzlehttp/guzzle": "^6",
+        "guzzlehttp/psr7": "^1.9",
+        "knplabs/github-api": "^2.1",
+        "php-http/guzzle6-adapter": "2.x-dev",
         "teqneers/php-stream-wrapper-for-git": "^2.0"
     },
     "require-dev": {
-        "composer/composer": "^1.10",
         "squizlabs/php_codesniffer": "^3.5"
     },
     "repositories": [
