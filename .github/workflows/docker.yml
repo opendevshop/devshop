@@ -39,12 +39,18 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os_slug: 
+        os_slug:
           - ubuntu1804
           - ubuntu2004
 
+        php_version:
+          - 7.4
+          - 8.0
+
     # @TODO: Uncomment once working, before merge.
     # if: github.ref == 'refs/heads/1.x'
+    env:
+      ANSIBLE_EXTRA_VARS
 
     steps:
       - name: Checkout sourcecode.
@@ -56,6 +62,14 @@ jobs:
           echo "devshop_version: ${{ github.head_ref }}" >> vars.yml
           echo "devshop_cli_repo: ${{ github.event.pull_request.head.repo.clone_url }}" >> vars.yml
           cat vars.yml
+
+      - name: Define Variables
+        run: |
+          echo "CONTAINER_TAGS=devshop/server:${{ matrix.os_slug }}" >> $GITHUB_ENV
+
+      - name: Define Latest
+        if: matrix.os_slug=='2004'
+          echo "CONTAINER_TAGS=devshop/server:${{ matrix.os_slug }},devshop/server:latest" >> $GITHUB_ENV
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
@@ -76,4 +90,4 @@ jobs:
           file: ./docker/Dockerfile.${{ matrix.os_slug }}
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: devshop/server:${{ matrix.os_slug }}
+          tags: github.env.CONTAINER_TAGS
