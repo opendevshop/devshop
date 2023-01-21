@@ -22,9 +22,9 @@
         "type": "path",
         "url": "../../../devmaster"
       },
-      "composer_common": {
+      "git_traits": {
         "type": "path",
-        "url": "../Component/ComposerCommon"
+        "url": "../Component/GitTraits"
       }
     },
     "require": {
@@ -40,7 +40,7 @@
         "cweagans/composer-patches": "^1.7",
         "drupal-composer/preserve-paths": "^0.1.6",
         "drupal/composer_autoloader": "^1.0",
-        "drupal/drupal": "^7.62",
+        "drupal/drupal": "^7.94",
         "symfony/filesystem": "~2.7 || ^3",
         "webflo/drupal-finder": "^1.2.1",
         "devshop/devmaster": "1.x-dev",
@@ -58,14 +58,14 @@
         "drupal/devshop_stats": "@dev",
         "drupal/entity": "^1.9",
         "drupal/features": "^2.11",
-        "drupal/hosting": "4.x-dev",
+        "drupal/hosting": "^4.0@dev",
         "drupal/hosting_filemanager": "dev-1.x",
         "drupal/hosting_git": "^3.181",
         "drupal/hosting_https": "^3.182",
         "drupal/hosting_logs": "^3.181",
         "drupal/hosting_site_backup_manager": "^3.180",
         "drupal/hosting_statsd": "@beta",
-        "drupal/hosting_tasks_extra": "^3.180",
+        "drupal/hosting_tasks_extra": "^3.191",
         "drupal/jquery_update": "^2.7",
         "drupal/libraries": "^2.0",
         "drupal/module_filter": "^2.2",
@@ -110,6 +110,9 @@
           "cweagans/composer-patches": true,
           "drupal-composer/preserve-paths": true,
           "oomphinc/composer-installers-extender": true
+        },
+        "platform": {
+          "php": "7.4.0"
         }
     },
     "autoload": {
