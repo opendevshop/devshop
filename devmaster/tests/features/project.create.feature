@@ -132,7 +132,7 @@ Feature: Create a project and check settings
     Given I am on "http://testuser:testpassword@composer.testenv.devshop.local.computer"
     Then I should see "Welcome to composer.testenv"
 
-    Given I am on the homepage
+#    Given I am on the homepage
     Then I should see the link "composer"
     And I should see the link "testenv"
     When I click "testenv"
