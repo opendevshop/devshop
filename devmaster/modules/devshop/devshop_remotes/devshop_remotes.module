@@ -366,6 +366,9 @@ function devshop_remotes_node_load($nodes, $types) {
         $node->project->settings->aliases = array();
       }
 
+      if (!isset($node->project) || !isset($node->project->environments)) {
+        return;
+      }
 
       // Load all composer.json files from all environments.
       foreach ($node->project->environments as $env) {
