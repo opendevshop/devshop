@@ -55,6 +55,7 @@ jobs:
         run: |
           echo "devshop_version: ${{ github.head_ref }}" >> vars.yml
           echo "devshop_cli_repo: ${{ github.event.pull_request.head.repo.clone_url }}" >> vars.yml
+          cat vars.yml
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
