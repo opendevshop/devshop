@@ -48,8 +48,6 @@ jobs:
 
     # @TODO: Uncomment once working, before merge.
     # if: github.ref == 'refs/heads/1.x'
-    env:
-      ANSIBLE_EXTRA_VARS
 
     steps:
       - name: Checkout sourcecode.
