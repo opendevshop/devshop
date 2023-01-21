@@ -2,8 +2,7 @@
 ---
 version: '3'
 services:
-  # The container, ie just a shell.
-  container:
+  devshop.server:
     volumes:
       - ../:/usr/share/devshop
       - $HOME/.ssh:/var/aegir/.ssh
