@@ -1,0 +1,4 @@
+# Vars file.
+# CI Tools can append to this file.
+---
+php_version: "8.0"
