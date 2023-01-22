@@ -513,7 +513,10 @@ class RoboFile extends \Robo\Tasks {
     if ($opts['build']) {
       $this->yell("Docker Image {$opts['docker-image']} was not found on this system or on docker hub.", 40, "blue");
       $this->say("Building it locally...");
-      $this->build($opts['build-folder'], $opts['build-service'], $opts);
+
+      $build_opts = $opts;
+      $build_opts['tags'] = 'build';
+      $this->build($build_opts['build-folder'], $build_opts['build-service'], $build_opts);
     }
     // Warn the user that this container is not being built.
     elseif (!$opts['build']) {
