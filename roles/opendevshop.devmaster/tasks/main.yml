@@ -7,6 +7,8 @@
       - "  Path: {{ devshop_cli_path }}"
       - "  Version: {{ devshop_version }}"
       - "  CLI Version: {{ devshop_cli_version }}"
+      - "  Tags: {{ ansible_run_tags }}"
+
 
 - name: Detect current server hostname.
   command: "hostname --fqdn"
@@ -259,15 +261,17 @@
 
 - name: "Install DevShop Web Interface"
   include_tasks: "install-devmaster.yml"
+  # Skip this step if "buildtime" tag is specified.
   when:
   - not devmaster_skip_install|bool
-  - "'runtime' in ansible_run_tags"
+  - "'buildtime' not in ansible_run_tags"
 
-- name: Configure DevShop Web Interface
+- name: "Configure DevShop Web Interface"
   include_tasks: "config-devmaster.yml"
+  # Skip this step if "buildtime" tag is specified..
   when:
   - not devmaster_skip_install|bool
-  - "'runtime' in ansible_run_tags"
+  - "'buildtime' not in ansible_run_tags"
 
 - name: Ensure privacy of SSH Keys
   file: path=/var/aegir/{{ item.path }} mode={{ item.mode }}
