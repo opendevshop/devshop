@@ -303,15 +303,15 @@ class RoboFile extends \Robo\Tasks {
     }
 
     // Runtime Environment for the docker-compose build command.
+    $opts['playbook-command-options'] = "--extra-vars=@/usr/share/devshop/vars.development.yml --extra-vars devshop_version={$branch} --extra-vars devshop_cli_version={$branch}";
     $env_build = $this->generateEnvironmentArgs($opts);
-
-    $env_build['ANSIBLE_EXTRA_VARS'] = "devshop_version={$branch} devshop_cli_version={$branch}";
-    $env_build['ANSIBLE_PLAYBOOK_COMMAND_OPTIONS_ARG'] = '--extra-vars=@/usr/share/devshop/vars.development.yml';
-
     print_r($env_build);
 
+    # Add --no-cache if needed.
+    $docker_compose_build_opts = "";
+
     $provision_io = new \DevShop\Component\PowerProcess\PowerProcessStyle($this->input(), $this->output());
-    $process = new \DevShop\Component\PowerProcess\PowerProcess("docker-compose build --no-cache $service", $provision_io);
+    $process = new \DevShop\Component\PowerProcess\PowerProcess("docker-compose build $docker_compose_build_opts $service", $provision_io);
     $process->setEnv($env_build);
     $process->disableOutput();
     $process->setTimeout(null);
