@@ -73,9 +73,9 @@ RUN echo "Copied DevShop Source into container."
 
 ENV OUTPUT err
 
+RUN mkdir -p ${DEVSHOP_ANSIBLE_PATH}
 RUN ${DEVSHOP_PATH}/scripts/run-quiet ${DEVSHOP_PATH}/docker/bin/docker-systemd-prepare
 RUN ${DEVSHOP_PATH}/scripts/run-quiet ${DEVSHOP_PATH}/install/devshop-install-prerequisites.sh
-RUN mkdir -p ${DEVSHOP_ANSIBLE_PATH}
 
 RUN echo "Running $DEVSHOP_ANSIBLE_INVENTORY_INFO_COMMAND ...\n" && \
   $DEVSHOP_ANSIBLE_INVENTORY_INFO_COMMAND
