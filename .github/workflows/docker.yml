@@ -62,12 +62,12 @@ jobs:
 
       - name: Set Container Tags
         run: |
-          echo "DOCKER_TAGS=devshop/server:php${{ matrix.php_version }}" >> $GITHUB_ENV
+          echo DOCKER_TAGS=devshop/server:php${{ matrix.php_version }} >> $GITHUB_ENV
 
       - name: Set 'latest' tag.
         if: matrix.php_version=='8.0'
         run: |
-          echo "DOCKER_TAGS=devshop/server:php${{ matrix.php_version }},devshop/server:latest" >> $GITHUB_ENV
+          echo DOCKER_TAGS=devshop/server:php${{ matrix.php_version }},devshop/server:latest >> $GITHUB_ENV
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
