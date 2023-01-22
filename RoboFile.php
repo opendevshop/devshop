@@ -240,7 +240,7 @@ class RoboFile extends \Robo\Tasks {
   public function build($folder = 'docker', $service = 'all', $opts = [
       'docker-image' => 'devshop/server:latest',
       'scratch' => FALSE,
-      'from' => 'ubuntu:20.04',
+      'from' => 'devshop/server:latest',
       'build-command' => NULL,
       'os' => NULL,
       'vars' => '',
@@ -273,7 +273,7 @@ class RoboFile extends \Robo\Tasks {
     // Define docker-image (name for the "image" in docker-compose)
     // Set FROM_IMAGE and DEVSHOP_DOCKER_IMAGE if --os option is used. (and --from was not used)
     if ($opts['scratch']) {
-      $opts['from'] = "ubuntu:20.04";
+      $opts['from'] = "devshop/server:latest";
     }
 
     if ($opts['os'] !== NULL) {
@@ -408,7 +408,7 @@ class RoboFile extends \Robo\Tasks {
     'docker-image' => 'devshop/server:latest',
     // The OS "slug" to use instead of devshop/server:ubuntu1804. If specified, "docker-image" option will be ignored.
     'os' => NULL,
-    'from' => 'ubuntu:20.04',
+    'from' => 'devshop/server:latest',
     'vars' => '',
     'tags' => '',
     'skip-tags' => '',
