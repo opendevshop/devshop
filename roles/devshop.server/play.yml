@@ -79,27 +79,28 @@
 
     - role: geerlingguy.repo-remi
       when: ansible_os_family == 'RedHat'
+      tags: [buildtime]
 
     - role: geerlingguy.apache
-      tags: [always]
+      tags: [buildtime]
 
     - role: geerlingguy.php-versions
-      tags: [always]
+      tags: [buildtime]
 
     - role: geerlingguy.php
-      tags: [always]
+      tags: [buildtime]
 
     - role: geerlingguy.php-mysql
-      tags: [always]
+      tags: [buildtime]
 
     - role: geerlingguy.composer
-      tags: [always]
+      tags: [buildtime]
 
     - role: geerlingguy.supervisor
-      tags: [always]
+      tags: [buildtime]
 
     - role: opendevshop.apache
-      tags: [always]
+      tags: [buildtime]
 
     # Always run everything. Tags inside the roles will limit tasks run.
     - role: opendevshop.devmaster

@@ -410,7 +410,7 @@ class RoboFile extends \Robo\Tasks {
     'os' => NULL,
     'from' => 'devshop/server:latest',
     'vars' => '',
-    'tags' => '',
+    'tags' => 'runtime',
     'skip-tags' => '',
     'playbook' => 'roles/devshop.server/play.yml',
     'playbook-command-options' => '',
@@ -579,7 +579,6 @@ class RoboFile extends \Robo\Tasks {
       // Runtime Environment for the $cmd list.
       $env_run = $this->generateEnvironmentArgs($opts);
       $env_run['ANSIBLE_PLAYBOOK_COMMAND_OPTIONS'] = '--extra-vars=@/usr/share/devshop/vars.development.yml';
-      print_r($env_run);
 
       $extra_vars = array();
 
