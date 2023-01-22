@@ -64,6 +64,9 @@ jobs:
         run: |
           echo "CONTAINER_TAGS=devshop/server:php${{ matrix.php_version }}" >> $GITHUB_ENV
 
+      - name: Environment
+        run: env
+
       - name: Define Latest
         if: matrix.os_slug=='2004'
         run: |
