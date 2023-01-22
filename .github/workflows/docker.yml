@@ -61,12 +61,10 @@ jobs:
           cat vars.yml
 
       - name: Set Container Tags
-        id: docker-tags
-        run: echo "DOCKER_TAGS=devshop/server:php${{ matrix.php_version }}" >> $GITHUB_OUTPUT
+        run: echo "DOCKER_TAGS=devshop/server:php${{ matrix.php_version }}" >> $GITHUB_ENV
 
       - name: Set 'latest' tag.
-        id: docker-tags
-        run: echo "DOCKER_TAGS=devshop/server:php${{ matrix.php_version }},devshop/server:latest" >> $GITHUB_OUTPUT
+        run: echo "DOCKER_TAGS=devshop/server:php${{ matrix.php_version }},devshop/server:latest" >> $GITHUB_ENV
         if: matrix.php_version=='8.0'
 
       - name: Set up QEMU
@@ -88,4 +86,4 @@ jobs:
           file: ./docker/Dockerfile.${{ matrix.os_slug }}
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ${{ steps.docker-tags.outputs.DOCKER_TAGS }}"
+          tags: ${{ process.env.DOCKER_TAGS }}"
