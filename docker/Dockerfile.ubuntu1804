@@ -83,6 +83,8 @@ RUN echo "Running $DEVSHOP_DOCKER_COMMAND_BUILD ...\n" && \
 
 # VOLUME ["/sys/fs/cgroup", "/tmp", "/run"]
 
+WORKDIR /var/aegir
+
 ENV INIT_COMMAND /lib/systemd/systemd
 ENTRYPOINT [/usr/share/devshop/docker/bin/docker-systemd-entrypoint]
 
