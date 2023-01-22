@@ -89,4 +89,4 @@ jobs:
           file: ./docker/Dockerfile.${{ matrix.os_slug }}
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ${{ env.DOCKER_TAGS }}"
+          tags: ${{ env.DOCKER_TAGS }}
