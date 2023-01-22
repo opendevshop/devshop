@@ -1,0 +1,8 @@
+# New.
+---
+version: '3'
+services:
+  devshop.server:
+    volumes:
+      - ../:/usr/share/devshop
+      - $HOME/.ssh:/var/aegir/.ssh

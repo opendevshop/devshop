@@ -227,6 +227,7 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
             'settings' => serialize($environment->settings),
           ))
           ->execute();
+        hosting_add_task($environment->platform, 'verify');
       }
       else {
         // CREATE the environment OBJECT, including a new platform and DB record.
@@ -253,7 +254,7 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
     // if verify task hasn't even run yet (and has never run) we can just delete
     // the platform node.
     if (empty($platform_node->verified)) {
-      node_delete($platform_node);
+      node_delete($platform_node->nid);
     }
     // Create 'delete' task for the removed platform
     else if ($platform_nid) {
@@ -272,7 +273,7 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
  */
 function devshop_project_environment_create_form_element($project, $environment) {
 
-  $name = $environment->name;
+  $name = isset($environment->name) ? $environment->name : '';
 
   $element = array(
     '#tree' => TRUE,

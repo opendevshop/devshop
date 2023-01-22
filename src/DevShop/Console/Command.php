@@ -254,7 +254,13 @@ abstract class Command extends BaseCommand
 
     // Lookup latest version.
     $client = new \Github\Client();
-    $release = $client->repositories()->releases()->latest('opendevshop', 'devshop');
+    $this->output->writeln("Looking up latest release of {$this->getRepoSlug()}...");
+    try {
+      $release = $client->repositories()->releases()->latest($this->getRepoOwner(), $this->getRepoName());
+    }
+    catch (RuntimeException $e) {
+      throw new RuntimeException("Unable to find releases for {$this->getRepoSlug()}. You can install via tag or branch with the --devshop_version option. The message was: {$e->getMessage()}", $e->getCode(), $e);
+    }
 
     // Make sure we got the release info
     if (empty($release)) {
@@ -289,7 +295,7 @@ abstract class Command extends BaseCommand
     $client = new \Github\Client();
 
     try {
-      $ref = $client->getHttpClient()->get('repos/opendevshop/devshop/git/refs/heads/' . $version);
+      $ref = $client->getHttpClient()->get("/repos/{$this->getRepoSlug()}/git/refs/heads/{$version}");
       $branch_found = TRUE;
       $this->targetVersionRef = 'branch';
     }
@@ -303,7 +309,7 @@ abstract class Command extends BaseCommand
     }
 
     try {
-      $ref = $client->getHttpClient()->get('repos/opendevshop/devshop/git/refs/tags/' . $version);
+      $ref = $client->getHttpClient()->get("/repos/{$this->getRepoSlug()}/git/refs/tags/{$version}");
       $tag_found = TRUE;
       $this->targetVersionRef = 'tag';
     }
@@ -315,7 +321,6 @@ abstract class Command extends BaseCommand
         return TRUE;
       }
     }
-
 
     // If we don't find a branch or tag, throw an exception
     if (!$branch_found && !$tag_found) {

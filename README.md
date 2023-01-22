@@ -37,13 +37,14 @@ These tools are designed to be useful regardless of the hosting or DevOps system
 
 ### Composer Packages
 
-#### [DevShop Control](./src/DevShop/Component/DevShopControlTemplate)
+#### [DevShop Control](src/DevShop/Control) & [DevShop Control Project](src/DevShop/Component/ControlProject)
 
 > Drupal CI/CD Dashboard and Ansible Server Manager in a Box
 
 - Web-based front-end for a DevShop server. Drupal 7 based. 
 - Add unlimited Drupal projects and environments per server.
-- Create and configure servers all through the web interface.  
+- Create and configure servers all through the web interface.
+- DevShop Control is built into the devshop codebase. The DevShop Control Project is a composer project template that can be used to deploy a custom devshop control site.
 
 #### [Deploy](./src/DevShop/Component/Deploy)
 
@@ -76,7 +77,7 @@ These tools are designed to be useful regardless of the hosting or DevOps system
 - Simple CLI wrapper for the GitHub API, where every API resource is a command and options are automatically passed. 
 - "Deploy" command provides simple way to interact with GitHub's Deployments API using composer commands and bin scripts.
 
-#### [GitComposerTools](./src/DevShop/Component/ComposerCommon)
+#### [Git Traits](./src/DevShop/Component/GitTraits)
 
 > Traits and classes for accessing Git, GitHub and Composer Data.
 

@@ -9,14 +9,14 @@
 
 /**
  * Implements drush_HOOK_post_COMMAND()
- * for provision_devshop_deploy.
+ * for provision_deploy.
  *
  * This hook should be put in sites/all/drush of your project and can be used
  * to fire off anything you want, post deploy.
  *
  */
-function drush_devshop_post_provision_devshop_deploy($branch = '') {
-  
+function drush_devshop_post_provision_deployEXAMPLE($branch = '') {
+
   drush_log('Hello, devshop', 'ok');
 
   if (empty($branch)) {

@@ -325,6 +325,7 @@ function devshop_project_create_step_git_submit(&$from, &$form_state) {
     $project->code_path = $form_state['values']['code_path'];
     $project->base_url = $form_state['values']['base_url'];
 
+    $project->settings = new stdClass();
     $project->settings->create_project_settings = $form_state['values']['settings'];
 
     // @TODO: We will clone the code for step 2 and look for drupal.

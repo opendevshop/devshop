@@ -56,8 +56,14 @@ function devshop_projects_create_wizard($step = NULL) {
   }
   else {
     // Load latest project object from database and use that for the ctools cache.
-    $project_node = node_load($project->nid);
-    $project = $project_node->project;
+    $project_node = node_load($project->nid, NULL, TRUE);
+
+    if ($project_node->project) {
+      $project = $project_node->project;
+    }
+    else {
+      $project = new stdClass();
+    }
 
     // If we have a name but no code_path or base URL.
     if (!empty($project->name) && empty($project->code_path)) {
@@ -251,16 +257,15 @@ function devshop_projects_add_status($type = 'platform') {
   ctools_include('object-cache');
   $project = ctools_object_cache_get('project', 'devshop_project');
 
-
   $project_node = node_load($project->nid);
 
   $all_tasks_completed = TRUE;
+  $all_tasks_successful = TRUE;
   $nids = array();
 
   // When checking project...
-  if ($type == 'project') {
-    $nids = array($project_node->nid);
-    $tasks = hosting_get_tasks(array('rid' => $project_node->nid));
+  if ($type == 'project' && isset($project_node->nid)) {
+    $tasks = hosting_get_tasks('rid', $project_node->nid);
     $last_task = array_shift($tasks);
     $status = _hosting_parse_error_code($last_task->task_status);
 
@@ -269,49 +274,89 @@ function devshop_projects_add_status($type = 'platform') {
     );
 
     $return['tasks_complete'] = $last_task->task_status == HOSTING_TASK_SUCCESS || $last_task->task_status == HOSTING_TASK_ERROR || $last_task->task_status == HOSTING_TASK_WARNING;
+    $return['tasks_success'] = $last_task->task_status == HOSTING_TASK_SUCCESS;
     drupal_json_output($return);
     exit;
   }
 
   // When checking platforms...
   if ($type == 'platform') {
+    $message = t('Preparing codebases...');
+    $message_class = 'info';
+    $button = '';
     foreach ($project_node->project->environments as $name => $environment) {
-      $nids[] = $environment->platform;
+      $platform = node_load($environment->platform);
+      $profiles_shortnames = hosting_get_profiles($platform->nid, 'short_name');
+      if (is_array($profiles_shortnames) && !empty($profiles_shortnames)) {
+        $install_profiles = array_combine($profiles_shortnames, (array) hosting_get_profiles($platform->nid));
+      }
+      else {
+        $install_profiles = array();
+      }
+
+      $last_task = hosting_get_most_recent_task($platform->nid, 'verify');
+      $return['tasks'][$name] = array(
+        'link' => devshop_get_logs_and_permalink($last_task),
+        'version' => !empty($platform->release->version) && $last_task->task_status == HOSTING_TASK_SUCCESS || $last_task->task_status == HOSTING_TASK_WARNING? $platform->release->version: $last_task->status_name,
+        'profiles' => implode(', ', $install_profiles),
+      );
+      // If task is not completed, mark all tasks not complete.
+      if ($last_task->task_status == HOSTING_TASK_ERROR) {
+        $retry_button = array(
+          '#type' => 'submit',
+          '#action' => 'retry',
+          '#value' => t('Pull code and try again'),
+          '#prefix' => '<div class="text-center">',
+          '#suffix' => '</div>',
+        );
+        $button = drupal_render($retry_button);
+        $message = t('Something went wrong when trying to clone your codebases.');
+        $message_class = 'danger';
+      }
+      if ($last_task->task_status == HOSTING_TASK_SUCCESS || $last_task->task_status == HOSTING_TASK_WARNING) {
+        //@TODO: Figure out how to reload the full form so the user can continue.
+        continue;
+      }
+      elseif ($last_task->task_status == HOSTING_TASK_ERROR) {
+        $all_tasks_successful = FALSE;
+      }
+      else {
+        $all_tasks_successful = FALSE;
+        $all_tasks_completed = FALSE;
+      }
     }
+    if ($all_tasks_completed) {
+      $message = t('Codebase preparation complete!');
+    }
+    $return['message'] = $message;
+    $return['button'] = $button;
+    $return['message_class'] = $message_class;
   }
 
-  // Check verification task for all nids
-  foreach ($nids as $nid) {
-    $platform = node_load($nid);
-    $profiles_shortnames = hosting_get_profiles($platform->nid, 'short_name');
-    if (is_array($profiles_shortnames) && !empty($profiles_shortnames)) {
-      $install_profiles = array_combine($profiles_shortnames, (array) hosting_get_profiles($platform->nid));
-    }
-    else {
-      $install_profiles = array();
-    }
-
-    $status = _hosting_parse_error_code($platform->environment->last_task_node->task_status);
-    if ($status == 'Queued') {
-      $status = '...';
-    }
-    $return['tasks'][$nid] = array(
-      'status' => $status,
-      'version' => !empty($platform->release->version)? $platform->release->version: '',
-      'profiles' => implode(', ', $install_profiles),
-    );
-    // If task is not completed, mark all tasks not complete.
-    if ($platform->environment->last_task_node->task_status == HOSTING_TASK_SUCCESS || $platform->environment->last_task_node->task_status == HOSTING_TASK_ERROR || $platform->environment->last_task_node->task_status == HOSTING_TASK_WARNING) {
-      continue;
-    }
-    else {
-      $all_tasks_completed = FALSE;
-    }
-
-  }
   $return['tasks_complete'] = $all_tasks_completed;
+  $return['tasks_success'] = $all_tasks_successful;
   drupal_json_output($return);
   exit;
+}
+
+/**
+ * @param $task
+ *
+ * @return string
+ */
+function devshop_get_logs_and_permalink($task) {
+  $link_text = t('Task #@num Logs', array('@num' => $task->nid));
+  $link_permalink_url = url("node/{$task->nid}", array('absolute' => TRUE));
+  $link_permalink_text = t('Permalink');
+
+  return <<<HTML
+    <div id="status-{$task->environment}">
+      <button type='button' class='btn btn-{$task->status_class} btn-{$task->status_bootstrap_class}' data-toggle='modal' data-target='#errors-modal-{$task->environment}' title='View detailed errors'>
+        <i class='fa fa-{$task->icon}'></i> $link_text
+      </button> 
+      <a href='$link_permalink_url ' target='_blank' class='btn btn-link'>$link_permalink_text <i class='fa fa-external-link'></i></a>
+    </div>
+HTML;
 }
 
 /**

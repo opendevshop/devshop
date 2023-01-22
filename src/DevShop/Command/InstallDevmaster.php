@@ -211,6 +211,11 @@ class InstallDevmaster extends Command
         'git_docroot', NULL, InputOption::VALUE_OPTIONAL,
         'Path to document root exposed to web server.'
       )
+      ->addOption(
+        'git_reset', NULL, InputOption::VALUE_OPTIONAL,
+        'Reset working changes in the git repository.',
+        FALSE
+      )
 
       // path_to_drush
       ->addOption(
@@ -248,23 +253,38 @@ class InstallDevmaster extends Command
     $output->writeln(' 3. Setup a cron job to run `drush @hostmaster hosting-tasks.`');
     $output->writeln('');
 
-    // devshop_version
+    // Check options.
     $version = $input->getOption('devshop_version');
-    if (empty($version)) {
-      $output->writeln('Checking for latest version...');
-      $input->setOption('devshop_version', $this->getLatestVersion());
+    $source_url = $input->getOption('git_remote');
+
+    // If no alternative source specified...
+    if (!empty($source_url)) {
+      // Change the "active repo" for this class, ie what is available in getRepository() and getRepoOwner() and getRepoName().
+      $this->setGitHubRepo($source_url);
+      $output->writeln('Alternate source specified: ' . $source_url);
     }
     else {
-      // Validate chosen version
-      $output->writeln('Validating version...');
-      try {
-        $this->checkVersion($version);
-      }
-      catch (\Exception $e) {
-        $output->writeln('<error>' . $e->getMessage() . '</error>');
-        exit(1);
-      }
+      $output->writeln('Current git remote: ' . $this->getRepoSlug());
     }
+
+    // If version was not specified, lookup the latest.
+    if (empty($version)) {
+      $version = $this->getLatestVersion();
+      $output->writeln("Checking for latest version... $version");
+    }
+
+    // Validate chosen version
+    $output->writeln("Validating version $version...");
+    try {
+      $this->checkVersion($version);
+      $output->writeln("Version $version exists in git repository {$this->getRepoSlug()}.");
+      $input->setOption('git_reference', $version);
+    }
+    catch (\Exception $e) {
+      $output->writeln('<error>' . $e->getMessage() . '</error>');
+      exit(1);
+    }
+
 
     // site
     if (!$input->getOption('site')) {
@@ -537,6 +557,7 @@ class InstallDevmaster extends Command
       'git_root' => $this->input->getOption('git_root'),
       'git_remote' => $this->input->getOption('git_remote'),
       'git_reference' => $this->input->getOption('git_reference'),
+      'git_reset' => $this->input->getOption('git_reset'),
       'git_docroot' => $this->input->getOption('git_docroot'),
     ));
 

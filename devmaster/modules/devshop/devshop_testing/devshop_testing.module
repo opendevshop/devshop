@@ -270,11 +270,11 @@ function devshop_testing_devshop_deploy_hooks_form_elements_alter(&$form, $is_en
   // Add to deploy hooks.
 
   // If this is the environment form and the project allows environment specific deploy hooks...
-  if ($is_environment_form && $form['#project']->settings->deploy['allow_environment_deploy_config']) {
+  if ($is_environment_form && isset($form['#project']->settings) && $form['#project']->settings->deploy['allow_environment_deploy_config']) {
     $default_value = $form['#environment']->settings->deploy['test'];
   }
   // If this is env form and project does not allow env specific deploy hooks...
-  elseif ($is_environment_form && !$form['#project']->settings->deploy['allow_environment_deploy_config']) {
+  elseif ($is_environment_form && isset($form['#project']->settings) && !$form['#project']->settings->deploy['allow_environment_deploy_config']) {
     $default_value = $form['#project']->settings->deploy['default_hooks']['test'];
   }
   // If this is a project form...

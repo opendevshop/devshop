@@ -566,12 +566,6 @@
     $label = t('Clean');
     $note = '';
 
-    if (strpos($environment->git_status, 'Your branch is ahead') !== FALSE) {
-      $icon = 'arrow-right';
-      $label = t('Ahead');
-      $item_class = 'info';
-    }
-
     if (strpos($environment->git_status, 'Untracked files:') !== FALSE) {
       $icon = 'exclamation-circle';
       $label = t('Untracked Files');
@@ -594,6 +588,11 @@ sites/all/drush/drushrc.php
 </pre>';
 
       }
+    }
+    if (strpos($environment->git_status, 'Your branch is ahead') !== FALSE) {
+      $icon = 'arrow-right';
+      $label = t('Ahead');
+      $item_class = 'info';
     }
 
     if (strpos($environment->git_status, 'modified:') !== FALSE || strpos($environment->git_status, 'deleted:') !== FALSE) {

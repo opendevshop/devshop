@@ -1,5 +1,11 @@
 ---
 
+- name: Ensure Supervisor is stopped for install (if configured).
+  service:
+    name: supervisord
+    state: stopped
+  when: supervisor_started
+
 - name: Get Install DevShop Control Environment (DEBUG)
   become: true
   become_user: "{{ aegir_user_name }}"
@@ -10,23 +16,23 @@
   tags: [runtime]
 
 - name: Get DevShop Control root
-  command: "{{ devshop_cli_bin_path }}/devshop-site-info {{ devshop_control_drush_alias }} root"
+  command: "{{ devshop_cli_scripts_path }}/devshop-site-info {{ devshop_control_drush_alias }} root"
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
   ignore_errors: true
   register: devmaster_site_root
-  changed_when: "devmaster_site_root.stdout != empty_string"
+  changed_when: devmaster_site_root.stdout | length > 0
   tags: [runtime]
 
 - name: Get DevShop Control URI
-  command: "{{ devshop_cli_bin_path }}/devshop-site-info {{ devshop_control_drush_alias }} uri"
+  command: "{{ devshop_cli_scripts_path }}/devshop-site-info {{ devshop_control_drush_alias }} uri"
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
   ignore_errors: true
   register: devmaster_site_uri
-  changed_when: "devmaster_site_uri.stdout != empty_string"
+  changed_when: devmaster_site_uri.stdout | length > 0
   tags: [runtime]
 
 - name: Set devmaster_site_root and devmaster_site_uri variables
@@ -50,13 +56,39 @@
     msg: "{{ devmaster_install_environment }}"
   tags: [runtime]
 
+- name: Define devmaster_install_command.
+  set_fact:
+    devmaster_install_command: "{{ devshop_cli_executable_path }} devmaster:install -n \
+                                --site={{ server_hostname }} \
+                                --aegir_db_host={{ database_host }} \
+                                --aegir_db_pass={{ mysql_root_password }} \
+                                --aegir_db_user={{ mysql_root_username }} \
+                                --aegir_db_port={{ database_host_port }} \
+                                --aegir_host={{ server_hostname }} \
+                                --client_name={{ aegir_client_name }} \
+                                --client_email={{ devshop_devmaster_email }} \
+                                --http_service_type={{ aegir_server_webserver }} \
+                                --profile={{ devshop_install_profile }} \
+                                --root={{ devshop_control_publish_path }} \
+                                --devshop_version={{ devshop_version }} \
+                                --drush-path={{ drush_executable_path }} \
+                                --git_root={{ devshop_control_git_root }} \
+                                --git_remote={{ devshop_control_git_remote }} \
+                                --git_reference={{ devshop_control_git_reference }}
+                                --git_docroot={{ devshop_control_git_docroot }} \
+                                --git_reset={{ devshop_control_git_reset }} \
+                                {{ devshop_control_install_options }}
+"
+  when: devmaster_install_command is not defined
+  tags: [runtime]
+
 - name: DevShop Control Install Command (DEBUG)
   debug:
     msg: "{{ devmaster_install_command }}"
   tags: [runtime]
 
 - name: Wait for MySQL Server to be ready.
-  command: "{{ devshop_cli_bin_path }}/wait-mysql"
+  command: "{{ devshop_cli_scripts_path }}/wait-mysql"
   changed_when: true
   tags: [runtime]
   environment:
@@ -64,13 +96,27 @@
     DATABASE_HOST: "{{ database_host }}"
 
 - name: Install DevShop Control
-  become: true
-  become_user: "{{ aegir_user_name }}"
-  become_method: "{{ ansible_become_method_aegir }}"
-  command: "{{ devmaster_install_command }}"
-  when:
-    - (devmaster_site_uri == empty_string) or (devshop_control_install_options is search("--force-reinstall"))
-  tags: [runtime]
+  block:
+    - name: Run Install DevShop Control Install Command
+      become: true
+      become_user: "{{ aegir_user_name }}"
+      become_method: "{{ ansible_become_method_aegir }}"
+      command: "{{ devmaster_install_command }}"
+      when:
+        - (devmaster_site_uri | length == 0) or (devshop_control_install_options is search("--force-reinstall"))
+      tags: [runtime]
+  rescue:
+    - name: DevShop Control install failed
+      debug:
+        msg:
+          - "DevShop Control Install Failed."
+          - "  Repo: {{ devshop_cli_repo }}"
+          - "  Path: {{ devshop_cli_path }}"
+          - "  Version: {{ devshop_version }}"
+          - "  CLI Version: {{ devshop_cli_version }}"
+          - "  DevShop Control Install Command: {{ devmaster_install_command }}"
+      failed_when: true
+      tags: [always]
 
 - name: DevShop Control Upgrade Command
   debug:
@@ -80,30 +126,24 @@
 - name: "Upgrade DevShop Control to {{ devshop_version }}"
   command: "{{ devmaster_upgrade_command }}"
   when:
-    - devmaster_site_uri != empty_string
+    - devmaster_site_uri | length > 0
     - not devmaster_skip_upgrade
   tags: [runtime]
 
 - name: Clear the drush cache.
-  command: "{{ drush_bin_path }} cc drush"
+  command: "{{ drush_executable_path }} cc drush"
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
   register: drush_cache_clear
-  changed_when: "drush_cache_clear.stdout != empty_string"
+  changed_when: drush_cache_clear.stdout | length > 0
   tags: [runtime]
 
 - name: Clear all DevShop Control Caches.
-  command: "{{ drush_bin_path }} {{ devshop_control_drush_alias }} cc all"
+  command: "{{ drush_executable_path }} {{ devshop_control_drush_alias }} cc all"
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
   register: devshop_cache_clear
-  changed_when: "devshop_cache_clear.stdout != empty_string"
+  changed_when: devshop_cache_clear.stdout | length > 0
   tags: [runtime]
-
-- name: restart supervisor
-  debug:
-  tags: [runtime]
-  when: supervisor_started
-  notify: restart supervisor

@@ -55,8 +55,8 @@ Available commands:
   stop                Stop devshop containers using docker-compose stop
   test                Run all devshop tests on the containers.
   up                  Launch devshop containers using docker-compose up and follow logs.
+  build               Build devshop containers from the Dockerfiles. 
  prepare
-  prepare:containers  Build aegir and devshop containers from the Dockerfiles. Detects your UID or you can pass as an argument.
   prepare:host        Check for docker, docker-compose and drush. Install them if they are missing.
   prepare:sourcecode  Clone all needed source code and build devmaster from the makefile.
 ```
@@ -143,6 +143,26 @@ It uses the install.sh file in this repo to provision the vagrant server.
 This is the recommended install method for servers as well as vagrant boxes.
 
 See [Development with Vagrant](https://github.com/opendevshop/documentation/tree/4c1866b89e87467c5d6bad83343cb3e8de6230a5/development-vagrant.md) for legacy instructions.
+
+## Known Issues
+
+Using Docker on a linux system can cause mysql to fail to install or start.
+
+If you get this error, it can be resolved by configuring AppArmour:
+
+```
+/usr/sbin/mysqld: error while loading shared libraries:
+```
+
+See the solution mentioned here: https://stackoverflow.com/a/60423057
+
+On the host machine (your laptop)
+
+```
+sudo ln -s /etc/apparmor.d/usr.sbin.mysqld /etc/apparmor.d/disable/
+sudo apparmor_parser -R /etc/apparmor.d/usr.sbin.mysqld
+```
+
 
 ## Help Improve Documentation
 

@@ -1,6 +1,0 @@
-#
-# DevShop Ansible Container Default Inventory
-#
-# The group name here must match the "hosts" string in a playbook.
-[local]
-localhost ansible_connection=local
