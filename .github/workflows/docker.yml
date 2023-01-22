@@ -43,8 +43,8 @@ jobs:
           - ubuntu1804
 
         php_version:
-          - 7.4
-          - 8.0
+          - "7.4"
+          - "8.0"
 
     # @TODO: Uncomment once working, before merge.
     # if: github.ref == 'refs/heads/1.x'
