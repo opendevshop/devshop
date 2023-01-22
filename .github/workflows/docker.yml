@@ -60,17 +60,14 @@ jobs:
           echo "devshop_cli_repo: ${{ github.event.pull_request.head.repo.clone_url }}" >> vars.yml
           cat vars.yml
 
-      - name: Define Variables
-        run: |
-          echo "CONTAINER_TAGS=devshop/server:php${{ matrix.php_version }}" >> $GITHUB_ENV
+      - name: Set Container Tags
+        id: docker-tags
+        run: echo "DOCKER_TAGS=devshop/server:php${{ matrix.php_version }}" >> $GITHUB_OUTPUT
 
-      - name: Environment
-        run: env
-
-      - name: Define Latest
-        if: matrix.os_slug=='2004'
-        run: |
-          echo "CONTAINER_TAGS=devshop/server:php${{ matrix.php_version }},devshop/server:latest" >> $GITHUB_ENV
+      - name: Set 'latest' tag.
+        id: docker-tags
+        run: echo "DOCKER_TAGS=devshop/server:php${{ matrix.php_version }},devshop/server:latest" >> $GITHUB_OUTPUT
+        if: matrix.php_version=='8.0'
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
@@ -91,4 +88,4 @@ jobs:
           file: ./docker/Dockerfile.${{ matrix.os_slug }}
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ${{ github.env.CONTAINER_TAGS }}
+          tags: ${{ steps.docker-tags.outputs.DOCKER_TAGS }}"
