@@ -58,6 +58,7 @@ jobs:
         run: |
           echo "devshop_version: ${{ github.head_ref }}" >> vars.yml
           echo "devshop_cli_repo: ${{ github.event.pull_request.head.repo.clone_url }}" >> vars.yml
+          echo DOCKER_TAGS=devshop/server:php${{ matrix.php_version }} >> vars.yml
           cat vars.yml
 
       - name: Set Container Tags
