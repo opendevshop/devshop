@@ -515,7 +515,7 @@ class RoboFile extends \Robo\Tasks {
       $this->say("Building it locally...");
 
       $build_opts = $opts;
-      $build_opts['tags'] = 'build';
+      $build_opts['tags'] = 'buildtime';
       $this->build($build_opts['build-folder'], $build_opts['build-service'], $build_opts);
     }
     // Warn the user that this container is not being built.
