@@ -24,6 +24,7 @@
 - name: geerlingguy.mysql
 - name: geerlingguy.php-mysql
 - name: geerlingguy.php-versions
+- name: geerlingguy.php-xdebug
 - name: geerlingguy.repo-remi
 
 # Forked for compatibility with AmazonLinux (Centos6)
