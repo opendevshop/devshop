@@ -270,13 +270,14 @@ function devshop_task_get_messages($task_node) {
     SELECT message, type, timestamp FROM {hosting_task_log}
       WHERE nid = :nid
         AND vid = :vid
-        AND (type LIKE :devshop OR type = :error OR type = :warning)
+        AND (type LIKE :devshop OR type = :error OR type = :warning OR type = :process)
       ORDER BY lid", array(
     ':nid' => $task_node->nid,
     ':vid' => $task_node->vid,
     ':devshop' => 'p_%',
     ':error' => 'error',
     ':warning' => 'warning',
+    ':process' => 'process',
 //    ':success' => 'success',
 //    ':ok' => 'ok',
   ));
@@ -288,7 +289,7 @@ function devshop_task_get_messages($task_node) {
       $process_logs = TRUE;
     }
 
-    if ($record->type == 'p_command') {
+    if ($record->type == 'process_start') {
       if (empty($record->message)) {
         continue;
       }
@@ -303,15 +304,15 @@ function devshop_task_get_messages($task_node) {
         $outputs[$command]['icon'] .= ' fa-spin';
       }
       continue;
-    } elseif ($record->type == 'p_info') {
+    } elseif ($record->type == 'process') {
       $outputs[$command]['output'] .= $record->message;
       $outputs[$command]['status'] = 'default';
       $outputs[$command]['icon'] = 'gear fa-spin';
-    } elseif ($record->type == 'p_ok') {
+    } elseif ($record->type == 'process_stop') {
       $outputs[$command]['output'] .= $record->message;
       $outputs[$command]['status'] = 'success';
       $outputs[$command]['icon'] = 'check';
-    } elseif ($record->type == 'p_error') {
+    } elseif ($record->type == 'error') {
       $outputs[$command]['status'] = 'danger';
       $outputs[$command]['icon'] = 'exclamation-circle';
       $outputs[$command]['output'] = isset($outputs[$command]['output']) ? $outputs[$command]['output'] .= $record->message : $record->message;
@@ -328,7 +329,7 @@ function devshop_task_get_messages($task_node) {
     elseif ($process_logs && $record->type == 'error' && $record->message == 'PROVISION_PROCESS_ERROR') {
       continue;
 
-    } elseif ($record->type == 'error') {
+    } elseif ($record->type == 'process_error') {
       $command = 'error_' . count($outputs);
       $outputs[$command]['status'] = 'danger';
       $outputs[$command]['icon'] = 'exclamation-circle';
@@ -337,6 +338,7 @@ function devshop_task_get_messages($task_node) {
       // @TODO: Here, we can check for obscure aegir errors and write our own.
       // devshop_check_errors($outputs[$command]['output']);
       $outputs[$command]['command'] = 'error';
+
     } elseif ($record->type == 'p_log') {
       $command = 'notice_' . count($outputs);
       $outputs[$command]['status'] = '';
