@@ -100,6 +100,6 @@ ENV ANSIBLE_TAGS=runtime
 WORKDIR /var/aegir
 
 ENV INIT_COMMAND /lib/systemd/systemd
-ENTRYPOINT [/usr/share/devshop/docker/bin/docker-systemd-entrypoint]
+ENTRYPOINT [${DEVSHOP_PATH}/docker/scripts/docker-systemd-entrypoint]
 
 RUN devshop-logo 'DevShop Server build finished.'

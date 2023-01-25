@@ -20,13 +20,6 @@ services:
       - "2222:22"
       - "33066:3306"
     privileged: true
-    entrypoint: /usr/share/devshop/docker/bin/docker-systemd-entrypoint
-    volumes:
-      - /var/lib/mysql
-#    volumes:
-      # - /sys/fs/cgroup:/sys/fs/cgroup:ro
-      # Attempting tip from https://github.com/geerlingguy/docker-ubuntu2004-ansible/issues/18#issuecomment-1152157965
-      # - /sys/fs/cgroup:/sys/fs/cgroup:rw
 
     environment:
       - ANSIBLE_EXTRA_VARS

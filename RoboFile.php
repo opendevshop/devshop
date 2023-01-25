@@ -238,9 +238,9 @@ class RoboFile extends \Robo\Tasks {
    * @option $build-command The command to run at the end of the docker build process. (Defaults to scripts/devshop-ansible-playbook)
    */
   public function build($folder = 'docker', $service = 'all', $opts = [
-      'docker-image' => 'devshop/server:latest',
+      'docker-image' => '',
       'scratch' => FALSE,
-      'from' => 'devshop/server:latest',
+      'from' => '',
       'build-command' => NULL,
       'os' => NULL,
       'vars' => '',
@@ -273,7 +273,7 @@ class RoboFile extends \Robo\Tasks {
     // Define docker-image (name for the "image" in docker-compose)
     // Set FROM_IMAGE and DEVSHOP_DOCKER_IMAGE if --os option is used. (and --from was not used)
     if ($opts['scratch']) {
-      $opts['from'] = "devshop/server:latest";
+      $opts['from'] = "ubuntu:18.04";
     }
 
     if ($opts['os'] !== NULL) {
@@ -405,10 +405,10 @@ class RoboFile extends \Robo\Tasks {
     'build' => FALSE,
     'skip-source-prep' => FALSE,
     // This is the image string used in docker-compose.
-    'docker-image' => 'devshop/server:latest',
+    'docker-image' => '',
     // The OS "slug" to use instead of devshop/server:ubuntu1804. If specified, "docker-image" option will be ignored.
     'os' => NULL,
-    'from' => 'devshop/server:latest',
+    'from' => '',
     'vars' => '',
     'tags' => 'runtime',
     'skip-tags' => '',
@@ -587,7 +587,11 @@ class RoboFile extends \Robo\Tasks {
 
       // Set devshop_version and cli_repo here because every local dev environment is different.
       $extra_vars['devshop_version'] = $branch;
-      $extra_vars['devshop_cli_repo'] = $remote_url;
+
+      // If branch hasn't been pushed yet, this will be empty. Passing empty devshop_cli_repo fails playbook.
+      if ($remote_url) {
+        $extra_vars['devshop_cli_repo'] = $remote_url;
+      }
 
       // Set extra ansible vars when not in CI.
       if (empty($_SERVER['CI'])) {
