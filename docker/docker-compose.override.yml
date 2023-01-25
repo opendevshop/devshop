@@ -5,6 +5,12 @@ services:
   devshop.server:
     # Use the pre-built images for speed.
     image: ${DEVSHOP_DOCKER_IMAGE:-devshop/server:php8.0}
+    build:
+      args:
+        DEVSHOP_CONTAINER_FROM: ${DEVSHOP_CONTAINER_FROM:-devshop/server:php8.0}
+
     volumes:
       - ../:/usr/share/devshop
+      - ../aegir-home:/var/aegir
       - $HOME/.ssh:/var/aegir/.ssh
+      - /var/lib/mysql
