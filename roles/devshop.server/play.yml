@@ -95,7 +95,7 @@
       tags: [always]
 
     - role: geerlingguy.mysql
-      tags: [always]
+      tags: [buildtime]
 
     - role: geerlingguy.repo-remi
       when: ansible_os_family == 'RedHat'

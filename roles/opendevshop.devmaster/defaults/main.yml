@@ -100,6 +100,9 @@ devshop_control_publish_path: "{{ devshop_control_git_root }}/{{ devshop_control
 devshop_control_drush_alias: "@hostmaster"
 devshop_control_install_options: ""
 
+# If the site settings exist but drush doesn't see a working site, --force-reinstall.
+devshop_control_force_reinstall_if_missing: no
+
 devshop_install_profile: devmaster
 
 devmaster_upgrade_command: |
@@ -135,3 +138,26 @@ devshop_install_phase: runtime
 
 devshop_pip_packages:
   - mysqlclient
+
+#
+devmaster_install_command: {{ devshop_cli_executable_path }} devmaster:install -n \
+    --site={{ server_hostname }} \
+    --aegir_db_host={{ database_host }} \
+    --aegir_db_pass={{ mysql_root_password }} \
+    --aegir_db_user={{ mysql_root_username }} \
+    --aegir_db_port={{ database_host_port }} \
+    --aegir_host={{ server_hostname }} \
+    --client_name={{ aegir_client_name }} \
+    --client_email={{ devshop_devmaster_email }} \
+    --http_service_type={{ aegir_server_webserver }} \
+    --profile={{ devshop_install_profile }} \
+    --root={{ devshop_control_publish_path }} \
+    --devshop_version={{ devshop_version }} \
+    --drush-path={{ drush_executable_path }} \
+    --git_root={{ devshop_control_git_root }} \
+    --git_remote={{ devshop_control_git_remote }} \
+    --git_reference={{ devshop_control_git_reference }}
+    --git_docroot={{ devshop_control_git_docroot }} \
+    --git_reset={{ devshop_control_git_reset }} \
+    {{ devshop_control_install_options }}
+

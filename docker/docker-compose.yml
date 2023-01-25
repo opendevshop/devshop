@@ -21,6 +21,8 @@ services:
       - "33066:3306"
     privileged: true
 
+    entrypoint: /usr/share/devshop/docker/bin/docker-systemd-entrypoint
+
     environment:
       - ANSIBLE_EXTRA_VARS
       - ANSIBLE_TAGS

@@ -259,16 +259,42 @@
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
 
+- name: Check if site settings exists.
+  stat:
+    path: "{{ devshop_control_publish_path }}/sites/{{ server_hostname }}/settings.php"
+  register: devshop_control_site_settings_file_exists
+
+- name: Check if site is already installed.
+  command: "{{ drush_executable_path }} --root={{ devshop_control_publish_path }} status bootstrap"
+  args:
+    chdir: "{{ devshop_control_publish_path }}"
+  register: drupal_site_installed
+  failed_when: "drupal_site_installed.stdout is undefined"
+  changed_when: false
+  become: true
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
+
+- name: Force reinstall if settings.php exists.
+  set_fact:
+    devshop_control_install_options: "{{ devshop_control_install_options }} --force-reinstall"
+  when:
+    - "'Drupal bootstrap' not in drupal_site_installed.stdout"
+    - devshop_control_force_reinstall_if_missing
+    - devshop_control_site_settings_file_exists.stat.exists
+
+
 - name: "Install DevShop Web Interface"
   include_tasks: "install-devmaster.yml"
   # Skip this step if "buildtime" tag is specified.
   when:
+  - "'Drupal bootstrap' not in drupal_site_installed.stdout"
   - not devmaster_skip_install|bool
   - "'buildtime' not in ansible_run_tags"
 
 - name: "Configure DevShop Web Interface"
   include_tasks: "config-devmaster.yml"
-  # Skip this step if "buildtime" tag is specified..
+  # Skip this step if "buildtime" tag is specified.
   when:
   - not devmaster_skip_install|bool
   - "'buildtime' not in ansible_run_tags"
