@@ -24,6 +24,14 @@ body.admin-menu .navbar-static-top {
   border-bottom-right-radius: 0px;
 }
 
+#task-info .task-urls {
+  padding-bottom: .75em;
+}
+
+#task-info .task-urls.btn-group-xs .btn:first-child {
+  padding-left: 0px;
+}
+
 .environment .list-group-item .content {
     font-size: .7em;
     text-transform: uppercase;
@@ -1005,9 +1013,20 @@ div.hosting-task-retry form, div.hosting-task-retry form input {
     background: #262626;
     padding: 0;
 }
-
+.devshop-command.panel {
+    margin-top: 20px;
+}
+.devshop-command.panel.panel-default {
+    margin-top: 0;
+    margin-bottom: 0;
+    border: 0;
+}
 .panel-type-error pre {
   white-space: normal;
+}
+
+.devshop-command.panel.panel-default pre.ansi_box {
+  padding: .2em 1.25em;
 }
 
 pre.ansi_box {
@@ -1015,7 +1034,6 @@ pre.ansi_box {
     white-space: pre-wrap;
     line-height: 120%;
 }
-
 .errors-table td > div {
     color: rgb(51, 51, 51);
     display: block;
@@ -1100,6 +1118,13 @@ a.logo img {
 #devshop-project-create-step-environments #edit-cancel,
 #project-node-form #edit-cancel {
     float: right;
+}
+
+#devshop-project-create-step-sites table td {
+    width: 15%;
+}
+#devshop-project-create-step-sites table tr td:last-child {
+    width: 40%;
 }
 
 li.text.code {

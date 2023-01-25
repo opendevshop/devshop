@@ -28,6 +28,10 @@ function boots_preprocess_environment(&$vars) {
     $environment->last_task_node = node_load($environment->last_task_nid);
   }
 
+  if (!isset($environment->git_ref_type)) {
+    $environment->git_ref_type = '';
+  }
+
   // Available deploy data targets.
   $vars['target_environments'] = $project->environments;
 
@@ -366,7 +370,6 @@ function boots_preprocess_environment(&$vars) {
   
   //   Load git information
   if (isset($environment->repo_path) && file_exists($environment->repo_path . '/.git')) {
-    
     // Timestamp of last commit.
     $environment->git_last = shell_exec("cd {$environment->repo_path}; git log --pretty=format:'%ct' --max-count=1");
     $environment->git_last_timestamp = date('N');
@@ -659,7 +662,10 @@ function boots_preprocess_page(&$vars){
     if (is_numeric($vars['node']->project)) {
       $project_node = node_load($vars['node']->project);
       $vars['node']->project = $project_node->project;
-      $vars['node']->environment = $project_node->project->environments[$vars['node']->environment];
+
+      if (!empty($vars['node']->environment)) {
+        $vars['node']->environment = $project_node->project->environments[$vars['node']->environment];
+      }
     }
 
     // load $vars['node'] if it's not present (like on node/%/edit)
@@ -722,7 +728,7 @@ function boots_preprocess_page(&$vars){
       }
 
       // Only show environment name if site is in project.
-      if (isset($object->project)) {
+      if (isset($object->environment)) {
         $vars['title2'] = $object->environment->name;
       }
 
@@ -866,7 +872,7 @@ function boots_preprocess_node_task(&$vars) {
   global $user;
   $node = $vars['node'];
 
-  if ($node->task_status == HOSTING_TASK_QUEUED) {
+  if ($node->task_status == HOSTING_TASK_QUEUED || $node->task_status == HOSTING_TASK_PROCESSING) {
     $vars['cancel_button'] = l(t('Cancel'), "hosting/tasks/{$node->nid}/cancel", array(
       'attributes' => array('class' => array('btn btn-default')),
       'query' => array(
@@ -892,7 +898,7 @@ function boots_preprocess_node_project(&$vars){
   $project = $vars['project'] = $vars['node']->project;
 
   // Live Domain link.
-  if ($project->settings->live['live_domain']) {
+  if (isset($project->settings->live['live_domain']) && $project->settings->live['live_domain']) {
     $vars['live_domain_url'] =  'http://' . $project->settings->live['live_domain'];
     $vars['live_domain_text'] =  'http://' . $project->settings->live['live_domain'];
   }
@@ -1069,7 +1075,7 @@ HTML;
     $vars['project_messages'] = $project->messages;
   }
 
-  if (!$vars['node']->project->settings->deploy['allow_environment_deploy_config'] && count(array_filter($vars['node']->project->settings->deploy['default_hooks'])) == 0) {
+  if (isset($vars['node']->project->settings->deploy['default_hooks']) && !$vars['node']->project->settings->deploy['allow_environment_deploy_config'] && count(array_filter($vars['node']->project->settings->deploy['default_hooks'])) == 0) {
     $vars['project_messages'][] = array(
       'message' => t('No deploy hooks are configured for this project. If new code is deployed, you will have to run update.php manually. Check your !link.', array(
         '!link' => l(t('Project Settings'),"node/{$vars['node']->nid}/edit"),

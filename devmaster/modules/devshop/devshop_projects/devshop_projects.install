@@ -488,3 +488,13 @@ function devshop_projects_update_7010() {
   db_query("CREATE UNIQUE INDEX project_nid_name ON {hosting_devshop_project_environment}(project_nid, name)")
     ->execute();
 }
+
+/**
+ * Fully resetting project and site node menu settings.
+ */
+function devshop_projects_update_7011 () {
+  variable_set('menu_options_site', []);
+  variable_set('menu_options_platform', []);
+  variable_set('menu_options_server', []);
+  variable_set('menu_options_project', []);
+}

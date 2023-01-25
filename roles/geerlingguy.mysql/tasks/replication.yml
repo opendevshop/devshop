@@ -9,34 +9,34 @@
   when:
     - mysql_replication_role == 'master'
     - mysql_replication_user.name is defined
-    - mysql_replication_master | default(false)
+    - (mysql_replication_master | length) > 0
   tags: ['skip_ansible_galaxy']
 
 - name: Check slave replication status.
   mysql_replication:
-    mode: getslave
-    login_user: "{{ mysql_replication_user.name }}"
-    login_password: "{{ mysql_replication_user.password }}"
+    mode: getreplica
+    login_user: "{{ mysql_root_username }}"
+    login_password: "{{ mysql_root_password }}"
   ignore_errors: true
   register: slave
   when:
     - mysql_replication_role == 'slave'
-    - mysql_replication_master | default(false)
+    - (mysql_replication_master | length) > 0
   tags: ['skip_ansible_galaxy']
 
 - name: Check master replication status.
-  mysql_replication: mode=getmaster
+  mysql_replication: mode=getprimary
   delegate_to: "{{ mysql_replication_master }}"
   register: master
   when:
     - (slave.Is_Slave is defined and not slave.Is_Slave) or (slave.Is_Slave is not defined and slave is failed)
     - mysql_replication_role == 'slave'
-    - mysql_replication_master | default(false)
+    - (mysql_replication_master | length) > 0
   tags: ['skip_ansible_galaxy']
 
 - name: Configure replication on the slave.
   mysql_replication:
-    mode: changemaster
+    mode: changeprimary
     master_host: "{{ mysql_replication_master }}"
     master_user: "{{ mysql_replication_user.name }}"
     master_password: "{{ mysql_replication_user.password }}"
@@ -47,12 +47,12 @@
     - (slave.Is_Slave is defined and not slave.Is_Slave) or (slave.Is_Slave is not defined and slave is failed)
     - mysql_replication_role == 'slave'
     - mysql_replication_user.name is defined
-    - mysql_replication_master | default(false)
+    - (mysql_replication_master | length) > 0
 
 - name: Start replication.
-  mysql_replication: mode=startslave
+  mysql_replication: mode=startreplica
   when:
     - (slave.Is_Slave is defined and not slave.Is_Slave) or (slave.Is_Slave is not defined and slave is failed)
     - mysql_replication_role == 'slave'
-    - mysql_replication_master | default(false)
+    - (mysql_replication_master | length) > 0
   tags: ['skip_ansible_galaxy']

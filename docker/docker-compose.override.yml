@@ -1,0 +1,10 @@
+# New.
+---
+version: '3'
+services:
+  devshop.server:
+    # Use the pre-built images for speed.
+    image: ${DEVSHOP_DOCKER_IMAGE:-devshop/server:php8.0}
+    volumes:
+      - ../:/usr/share/devshop
+      - $HOME/.ssh:/var/aegir/.ssh

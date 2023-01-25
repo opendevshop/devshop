@@ -187,7 +187,7 @@ function devshop_projects_preprocess_node(&$vars) {
           $vars['retry']['#children'] .= ' ' . l(t('Environment Settings'), $settings_link);
         }
       }
-      elseif ($vars['node']->task_type != 'install' && $vars['node']->task_type != 'delete') {
+      elseif ($vars['node']->task_type != 'install' && $vars['node']->task_type != 'delete' || ($vars['node']->task_type != 'delete' && $vars['node']->task_status == HOSTING_TASK_ERROR)) {
         $vars['retry'] = $form;
       }
 
@@ -236,7 +236,7 @@ function devshop_projects_preprocess_node(&$vars) {
     if ($vars['node']->task_status == HOSTING_TASK_PROCESSING || $vars['node']->task_status == HOSTING_TASK_QUEUED ) {
       $vars['follow_checkbox'] = array(
         '#type' => 'markup',
-        '#markup' => '<button class="follow-checkbox btn btn-default"><input type="checkbox" id="follow">' . t('Follow Logs') . '</button>',
+        '#markup' => '<label for="follow" type="button" class="follow-checkbox btn btn-link"><input type="checkbox" id="follow"> ' . t('Scroll Logs') . '</label>',
       );
 
       $vars['follow_checkbox'] = drupal_render($vars['follow_checkbox']);
@@ -340,11 +340,17 @@ function devshop_task_get_messages($task_node) {
       $outputs[$command]['command'] = 'error';
 
     } elseif ($record->type == 'p_log') {
-      $command = 'notice_' . count($outputs);
+      $command = 'log_' . count($outputs);
       $outputs[$command]['status'] = '';
       $outputs[$command]['icon'] = '';
       $outputs[$command]['command'] = $record->message;
       $outputs[$command]['output'] = '';
+    } elseif ($record->type == 'p_notice') {
+      $command = 'notice_' . count($outputs);
+      $outputs[$command]['status'] = '';
+      $outputs[$command]['icon'] = '';
+      $outputs[$command]['command'] = '';
+      $outputs[$command]['output'] = $record->message;
     }
     // Let's show some success messages. There are way too many for verify and install tasks.
     elseif (($record->type == 'success' || $record->type == 'ok') && $task_node->task_type != 'verify' && $task_node->task_type != 'install') {
@@ -383,9 +389,21 @@ function devshop_task_get_messages($task_node) {
     else {
       $body = '';
     }
+
+    if (!empty($command)) {
+      $header = "<div class='panel-heading'><i class='fa fa-$icon pull-left'></i> $command</div>";
+    }
+    else {
+      $header = '';
+    }
+
+    if (empty($status)) {
+      $status = 'default';
+    }
+
     $messages[] = <<<HTML
 <div class="panel panel-$status devshop-command">
-  <div class="panel-heading"><i class="fa fa-$icon pull-left"></i> $command</div>
+  $header
   $body
 </div>
 HTML;
@@ -418,12 +436,12 @@ function template_preprocess_devshop_project_nav(&$vars) {
   }
 
   // Generate branches/tags lists
-  $vars['branches_count'] = count($project->settings->git['branches']);
-  $vars['tags_count'] = count($project->settings->git['tags']);
+  $vars['branches_count'] = isset($project->settings->git['branches']) ? count($project->settings->git['branches']) : 0;
+  $vars['tags_count'] = isset($project->settings->git['tags']) ? count($project->settings->git['tags']) : 0;
   $vars['branches_items'] = array();
   $vars['branches_icon'] = 'code-fork';
 
-  if ($vars['branches_count'] == 0) {
+  if ($vars['branches_count'] == 0 && isset($node->project->verify) && isset($node->verify)) {
     // If branches are 0 and last verifying is queued...
     if ($node->project->verify->task_status == HOSTING_TASK_PROCESSING || $node->verify->task_status === HOSTING_TASK_QUEUED) {
       $vars['branches_show_label'] = TRUE;
@@ -452,9 +470,11 @@ function template_preprocess_devshop_project_nav(&$vars) {
     $vars['branches_show_label'] = FALSE;
     $vars['branches_label'] = format_plural($vars['branches_count'], t('1 Branch'), t('!count Branches', array('!count' => $vars['branches_count'])));
 
-    foreach ($project->settings->git['branches'] as $branch) {
-      $href = isset($vars['github_url']) ? $vars['github_url'] . '/tree/' . $branch : '#';
-      $vars['branches_items'][] = "<a href='$href'><i class='fa fa-code-fork'></i> $branch </a>";
+    if (isset($project->settings->git['branches'])) {
+      foreach ($project->settings->git['branches'] as $branch) {
+        $href = isset($vars['github_url']) ? $vars['github_url'] . '/tree/' . $branch : '#';
+        $vars['branches_items'][] = "<a href='$href'><i class='fa fa-code-fork'></i> $branch </a>";
+      }
     }
   }
 
@@ -482,7 +502,7 @@ function template_preprocess_devshop_project_nav(&$vars) {
   }
 
   // Add "refresh branches" link if project is manual deploy mode or is missing a webhook
-  if ($project->settings->deploy['method'] == 'manual' || empty($project->settings->deploy['last_webhook'])) {
+  if (isset($project->settings->deploy) && $project->settings->deploy['method'] == 'manual' || empty($project->settings->deploy['last_webhook'])) {
     $link_refresh = l(t('Refresh branches'), 'hosting_confirm/' . $node->nid . '/project_verify', array('attributes' => array('class' => array('refresh-link')), 'query' => array('token' => drupal_get_token($user->uid))));
     array_unshift($vars['branches_items'], $link_refresh);
   }
