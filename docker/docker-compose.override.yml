@@ -3,6 +3,7 @@
 version: '3'
 services:
   devshop.server:
+    image: devshop/server:php8.0
     volumes:
       - ../:/usr/share/devshop
       - $HOME/.ssh:/var/aegir/.ssh
