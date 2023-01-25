@@ -51,7 +51,7 @@ ENV DEVSHOP_DOCKER_COMMAND_RUN $DEFAULT_DEVSHOP_DOCKER_COMMAND_RUN
 
 # Run ansible-playbook again with build-time options.
 ARG ANSIBLE_TAGS_ARG
-ENV ANSIBLE_TAGS ${ANSIBLE_TAGS_ARG}
+ENV ANSIBLE_TAGS ${ANSIBLE_TAGS_ARG:-buildtime}
 
 # Run ansible-playbook again with build-time options.
 ARG ANSIBLE_EXTRA_VARS_ARG
