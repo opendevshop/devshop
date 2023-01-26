@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ea565803e085489ca17310aa96cc2d90",
+    "content-hash": "e6dd8e0caf122e0e015c8886ebe00a31",
     "packages": [
         {
             "name": "clue/stream-filter",
@@ -2238,24 +2238,20 @@
         },
         {
             "name": "drupal/hosting",
-            "version": "4.0.0-alpha4",
+            "version": "dev-4.x",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/hosting.git",
-                "reference": "7.x-4.0-alpha4"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/hosting-7.x-4.0-alpha4.zip",
-                "reference": "7.x-4.0-alpha4",
-                "shasum": "14f9548d9828a9d7597d605847ae553171bc96f3"
+                "reference": "868bd07a5c97bab320fa704f17026a69b0d81aaf"
             },
             "require": {
                 "devshop/git-traits": "@dev",
                 "drupal/drupal": "~7.0",
                 "drupal/views": "*",
                 "drupal/views_bulk_operations": "*",
-                "laravel-validation-rules/ip": "^1.4"
+                "laravel-validation-rules/ip": "^1.4",
+                "sensiolabs/ansi-to-html": "^1.1",
+                "symfony/process": "^3.3"
             },
             "require-dev": {
                 "drupal/hosting_alias": "*",
@@ -2269,12 +2265,15 @@
             },
             "type": "drupal-module",
             "extra": {
+                "branch-alias": {
+                    "dev-4.x": "4.x-dev"
+                },
                 "drupal": {
-                    "version": "7.x-4.0-alpha4",
-                    "datestamp": "1674314258",
+                    "version": "7.x-4.0-alpha4+13-dev",
+                    "datestamp": "1674691347",
                     "security-coverage": {
                         "status": "not-covered",
-                        "message": "Alpha releases are not covered by Drupal security advisories."
+                        "message": "Dev releases are not covered by Drupal security advisories."
                     }
                 }
             },
@@ -2318,10 +2317,6 @@
                 {
                     "name": "Jon Pugh",
                     "homepage": "https://www.drupal.org/user/17028"
-                },
-                {
-                    "name": "kienan",
-                    "homepage": "https://www.drupal.org/user/2241332"
                 },
                 {
                     "name": "memtkmcc",
