@@ -91,9 +91,7 @@ Feature: Create a project and check settings
 
     When I click "Create New Environment"
     And I fill in "testenv" for "Environment Name"
-    And I select the radio button "Drupal Profile"
     And I select "9.x" from "git_ref"
-    Then I select the radio button "Standard Install with commonly used features pre-configured."
 
     #@TODO: Check lots of settings
 
