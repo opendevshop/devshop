@@ -154,9 +154,9 @@ function devshop_project_load($node) {
           db.title as db_server,
           db.nid as db_server_nid,
           s.db_name,
-          s.profile as install_profile,
           pn.title as project_name,
-          sn.created as created,
+          pn.created as created,
+          sn.created as created_site,
           s.vid,
           sn.title as system_domain,
           a.redirection as redirect_domain,
@@ -190,6 +190,8 @@ function devshop_project_load($node) {
     ]
   ));
   foreach ($environment_data as $environment) {
+
+    $environment->install_profile = $project->install_profile? : 'standard';
 
     // Site dashboard URL.
     $environment->dashboard_url = url("node/{$environment->site}", array(
@@ -238,16 +240,18 @@ function devshop_project_load($node) {
       $environment->git_ref_url = url("node/$environment->site/logs/commits");
     }
 
+    // @TODO: Get this another way.
     // Environment Drupal version.
-    $iid = db_query("SELECT iid FROM {hosting_package_instance} i left join {hosting_package} p on p.nid=i.package_id WHERE p.package_type = :type AND i.rid = :nid", array(':type' => 'platform', ':nid' => $environment->platform))->fetchField();
-    $release = hosting_package_instance_load($iid);
-
-    if (isset($release->version)) {
-      $environment->version = $release->version;
-    }
-    else {
-      $environment->version = t('unknown');
-    }
+//    $iid = db_query("SELECT iid FROM {hosting_package_instance} i left join {hosting_package} p on p.nid=i.package_id WHERE p.package_type = :type AND i.rid = :nid", array(':type' => 'platform', ':nid' => $environment->platform))->fetchField();
+//    $release = hosting_package_instance_load($iid);
+//
+//    if (isset($release->version)) {
+//      $environment->version = $release->version;
+//    }
+//    else {
+//      $environment->version = t('unknown');
+//    }
+    $environment->version = '';
 
     // @TODO: Make "servers" more abstract so we can add many more.
     // HTTP Server
@@ -385,22 +389,10 @@ function devshop_project_load($node) {
       // Install Method: "Profile"
       case "profile":
       default:
+        $environment->install_method_label = t('Installed with !profile', array(
+          '!profile' => $environment->install_profile,
+        ));
 
-        // We don't know package ID until platform verifies.
-        if ($environment->install_profile == 0 && !empty($environment->settings->install_method['profile'])) {
-          $environment->install_method_label = t('Installed with !profile', array(
-            '!profile' => $environment->settings->install_method['profile'],
-          ));
-        }
-        elseif (!empty($environment->settings->install_method['profile'])) {
-          $profile = node_load($environment->install_profile);
-          $environment->install_method_label = t('Installed with !profile', array(
-            '!profile' => l($profile->title, "node/{$environment->install_profile}"),
-          ));
-        }
-        else {
-          $environment->install_method_label = '';
-        }
         break;
     }
 
