@@ -274,7 +274,7 @@ function devshop_projects_add_status($type = 'platform') {
     );
 
     $return['tasks_complete'] = $last_task->task_status == HOSTING_TASK_SUCCESS || $last_task->task_status == HOSTING_TASK_ERROR || $last_task->task_status == HOSTING_TASK_WARNING;
-    $return['tasks_success'] = $last_task->task_status == HOSTING_TASK_SUCCESS;
+    $return['tasks_success'] = $last_task->task_status == HOSTING_TASK_SUCCESS || $last_task->task_status == HOSTING_TASK_WARNING;
     drupal_json_output($return);
     exit;
   }
