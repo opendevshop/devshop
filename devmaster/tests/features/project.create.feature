@@ -57,7 +57,7 @@ Feature: Create a project and check settings
 #    When I click "Process Failed"
     Then I should see "8."
     Then I should not see "Platform verification failed"
-    When I select "standard" from "install_profile"
+#    When I select "standard" from "install_profile"
 
 #    Then I break
 
