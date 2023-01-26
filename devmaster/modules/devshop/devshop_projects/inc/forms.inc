@@ -1413,10 +1413,7 @@ function devshop_prepare_platform_node($project, $environment_name, $git_ref, $w
  * @param $form
  */
 function devshop_projects_create_environment_form_validate_profile($element, &$form_state, &$form) {
-  if ($form_state['values']['install_method']['method'] == 'profile' && $form_state['values']['install_method']['profile'] =='_other' && empty($element['#value'])) {
-    form_set_error('install_method][profile_other', t('You must enter a profile name.'));
-  }
-  elseif ($form_state['values']['install_method']['method'] == 'profile' && $form_state['values']['install_method']['profile'] =='_other') {
+  if ($form_state['values']['install_method']['method'] == 'profile' && $form_state['values']['install_method']['profile'] =='_other') {
     form_set_value($form['install_method']['profile'], $element['#value'], $form_state);
   }
 }
