@@ -269,6 +269,9 @@ function devshop_projects_node_update($node) {
   elseif (!empty($project->settings->default_environment['install_profile'])) {
     $info->install_profile = $project->settings->default_environment['install_profile'];
   }
+  else {
+    $info->install_profile = null;
+  }
 
   // Save serialized data, minus environments
   $info->settings = serialize($project->settings);
