@@ -25,4 +25,4 @@ devshop_cli_skip_update: true
 devmaster_skip_upgrade: true
 
 # Change this if needed, but the default is set in vars.yml (included in play.yml)
-php_version: "8.1"
+php_version: "8.0"

@@ -274,7 +274,7 @@ function devshop_projects_add_status($type = 'platform') {
     );
 
     $return['tasks_complete'] = $last_task->task_status == HOSTING_TASK_SUCCESS || $last_task->task_status == HOSTING_TASK_ERROR || $last_task->task_status == HOSTING_TASK_WARNING;
-    $return['tasks_success'] = $last_task->task_status == HOSTING_TASK_SUCCESS;
+    $return['tasks_success'] = $last_task->task_status == HOSTING_TASK_SUCCESS || $last_task->task_status == HOSTING_TASK_WARNING;
     drupal_json_output($return);
     exit;
   }
@@ -286,19 +286,11 @@ function devshop_projects_add_status($type = 'platform') {
     $button = '';
     foreach ($project_node->project->environments as $name => $environment) {
       $platform = node_load($environment->platform);
-      $profiles_shortnames = hosting_get_profiles($platform->nid, 'short_name');
-      if (is_array($profiles_shortnames) && !empty($profiles_shortnames)) {
-        $install_profiles = array_combine($profiles_shortnames, (array) hosting_get_profiles($platform->nid));
-      }
-      else {
-        $install_profiles = array();
-      }
 
       $last_task = hosting_get_most_recent_task($platform->nid, 'verify');
       $return['tasks'][$name] = array(
         'link' => devshop_get_logs_and_permalink($last_task),
         'version' => !empty($platform->release->version) && $last_task->task_status == HOSTING_TASK_SUCCESS || $last_task->task_status == HOSTING_TASK_WARNING? $platform->release->version: $last_task->status_name,
-        'profiles' => implode(', ', $install_profiles),
       );
       // If task is not completed, mark all tasks not complete.
       if ($last_task->task_status == HOSTING_TASK_ERROR) {

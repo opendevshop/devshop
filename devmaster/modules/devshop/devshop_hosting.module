@@ -341,36 +341,32 @@ HTML;
  *
  */
 function devshop_get_tasks($environment, $type = NULL, $key = NULL, $limit = 20) {
-
-  // Load tasks from hosting_task table for both site and platform.
   $args = array();
-  if ($environment->site) {
+  if (!empty($environment->site)) {
     if ($type) {
-      $where = "(t.rid = :site OR t.rid = :platform) AND t.task_type = :type";
+      $where = "t.rid = :site AND t.task_type = :type";
       $args = array(
         ':site' => $environment->site,
-        ':platform' => $environment->platform,
         ':type' => $type
       );
     }
     else {
-      $where = "(t.rid = :site OR t.rid = :platform)";
+      $where = "t.rid = :site";
       $args = array(
         ':site' => $environment->site,
-        ':platform' => $environment->platform,
       );
     }
   }
+  // If no site was found...
   else {
     if ($type) {
-      $where = "(t.rid = :platform AND t.task_type = :type)";
+      $where = "t.task_type = :type";
       $args = array(
-        ':platform' => $environment->platform,
         ':type' => $type
       );
     }
     else {
-      $where = "(t.rid = :platform)";
+      $where = "t.rid = :platform";
       $args = array(
         ':platform' => $environment->platform,
       );

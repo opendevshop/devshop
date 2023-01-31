@@ -29,7 +29,7 @@ function devshop_testing_post_hosting_import_task($task, $data)
   $platform = node_load($task->ref->platform);
 
   // If environment settings say to run tests on deploy...
-  if (isset($platform->environment->settings->deploy) && $platform->environment->settings->deploy['test']) {
+  if (!empty($platform->environment->settings->deploy['test'])) {
     drush_log('[DEVSHOP] Triggering test run...', 'ok');
     hosting_add_task($task->ref->nid, 'test');
   }
