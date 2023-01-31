@@ -980,7 +980,7 @@
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/provision.git",
-                "reference": "ab49204d0964bd2a41384b9dea1032b041aa8a03"
+                "reference": "57d3ee8e78ba374bab5d7417888d7437c3cce64d"
             },
             "require": {
                 "drupal/drupal": "~7.0",
@@ -996,7 +996,7 @@
                 },
                 "drupal": {
                     "version": "7.x-4.x-dev",
-                    "datestamp": "1674526851",
+                    "datestamp": "1675170764",
                     "security-coverage": {
                         "status": "not-covered",
                         "message": "Dev releases are not covered by Drupal security advisories."
@@ -1050,10 +1050,6 @@
                 {
                     "name": "Jon Pugh",
                     "homepage": "https://www.drupal.org/user/17028"
-                },
-                {
-                    "name": "kienan",
-                    "homepage": "https://www.drupal.org/user/2241332"
                 },
                 {
                     "name": "memtkmcc",
