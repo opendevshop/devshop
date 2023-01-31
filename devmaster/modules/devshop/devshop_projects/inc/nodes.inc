@@ -262,7 +262,16 @@ function devshop_projects_node_update($node) {
   $info->code_path = hosting_path_normalize($project->code_path);
   $info->drupal_path = hosting_path_normalize($project->drupal_path);
   $info->base_url = $project->base_url;
-  $info->install_profile = $project->install_profile? $project->install_profile: $project->settings->default_environment['install_profile'];
+
+  if (!empty($project->install_profile)) {
+    $info->install_profile = $project->install_profile;
+  }
+  elseif (!empty($project->settings->default_environment['install_profile'])) {
+    $info->install_profile = $project->settings->default_environment['install_profile'];
+  }
+  else {
+    $info->install_profile = null;
+  }
 
   // Save serialized data, minus environments
   $info->settings = serialize($project->settings);

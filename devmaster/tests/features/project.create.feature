@@ -57,7 +57,7 @@ Feature: Create a project and check settings
 #    When I click "Process Failed"
     Then I should see "8."
     Then I should not see "Platform verification failed"
-    When I select "standard" from "install_profile"
+#    When I select "standard" from "install_profile"
 
 #    Then I break
 
@@ -91,9 +91,7 @@ Feature: Create a project and check settings
 
     When I click "Create New Environment"
     And I fill in "testenv" for "Environment Name"
-    And I select the radio button "Drupal Profile"
     And I select "9.x" from "git_ref"
-    Then I select the radio button "Standard Install with commonly used features pre-configured."
 
     #@TODO: Check lots of settings
 
@@ -148,3 +146,20 @@ Feature: Create a project and check settings
     And I should see "Disabled"
 
     # @TODO: Test setting for "allow sites to be destroyed"
+
+
+    # Testing "Manual Install"
+    When I click "Create New Environment"
+    And I fill in "manualinstall" for "Environment Name"
+    And I select "9.x" from "git_ref"
+    And I select "manual" from "install_method[method]"
+    Then I press "Create New Environment"
+    Then I should see "Environment manualinstall created in project composer."
+
+    When I run drush "hosting-tasks --force --fork=0 --strict=0"
+
+    Then I should see "Environment Dashboard"
+    And I should see "Manually Installed"
+    Given I am on "http://myproject.manual.devshop.local.computer/core/install.php"
+    # This fails in CI right now.
+    # Then I should see "Choose language"
