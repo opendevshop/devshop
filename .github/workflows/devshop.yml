@@ -83,12 +83,12 @@ jobs:
 #          echo "ANSIBLE_VERBOSITY=2" >> $GITHUB_ENV
 
       # Build "devshop.server"
-      - name: "Build devshop/server:${{ matrix.os }}"
+      - name: "Build ${{ env.DEVSHOP_DOCKER_IMAGE }}"
         working-directory: docker
         run: docker-compose build
 
       # Launch Container
-      - name: "Launch a freshly built devshop/server:${{ matrix.os }} container"
+      - name: "Launch a freshly built ${{ env.DEVSHOP_DOCKER_IMAGE }} container"
         working-directory: docker
         run: |
           docker-compose up --detach devshop.server
