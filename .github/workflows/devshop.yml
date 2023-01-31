@@ -81,6 +81,11 @@ jobs:
 # If you need really big logs...
 #          echo "ANSIBLE_VERBOSITY=2" >> $GITHUB_ENV
 
+      - name: Set OS so correct Dockerfile is used.
+        if: matrix.from == 'ubuntu:20.04'
+        run: |
+          echo "OS=ubuntu2004" >> $GITHUB_ENV
+
       # Build "devshop.server"
       - name: "Build ${{ env.DEVSHOP_DOCKER_IMAGE }}"
         working-directory: docker
