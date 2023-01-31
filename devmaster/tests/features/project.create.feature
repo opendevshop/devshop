@@ -146,3 +146,19 @@ Feature: Create a project and check settings
     And I should see "Disabled"
 
     # @TODO: Test setting for "allow sites to be destroyed"
+
+
+    # Testing "Manual Install"
+    When I click "Create New Environment"
+    And I fill in "manualinstall" for "Environment Name"
+    And I select "9.x" from "git_ref"
+    And I select "manual" from "install_method[method]"
+    Then I press "Create New Environment"
+    Then I should see "Environment manualinstall created in project composer."
+
+    When I run drush "hosting-tasks --force --fork=0 --strict=0"
+
+    Then I should see "Environment Dashboard"
+    And I should see "Manually Installed"
+    Given I am on "http://myproject.manual.devshop.local.computer/core/install.php"
+    Then I should see "Choose language"
