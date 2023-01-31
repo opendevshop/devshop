@@ -686,10 +686,7 @@ function devshop_projects_create_site($project, $platform_node, $environment_nam
   $node->db_server = $server;
 
   $node->platform = $platform_node->nid;
-
-  // Lookup this platforms install profile
-//  $node->profile = db_query('SELECT nid FROM {hosting_package} WHERE short_name = :short_name', array(':short_name' => $project->install_profile))->fetchField();
-  $node->profile = 0;
+  $node->profile = $project->install_profile ? : '';
 
   // @TODO: Improve site language handling?
   $node->site_language = !empty($user->language) ? $user->language : 'en';

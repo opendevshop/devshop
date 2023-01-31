@@ -60,15 +60,15 @@ function devshop_project_create_step_sites($form, &$form_state) {
     if ($task->task_status == HOSTING_TASK_SUCCESS || $task->task_status == HOSTING_TASK_WARNING) {
 
       // It's not really ready until we get a version.
-//      if (empty($platform->release->version)) {
-//        $completed = FALSE;
-//        $row['version'] = '...';
-//        $row['profiles'] = '';
-//      }
-//      else {
-//        $row['version'] = "<label id='version-{$name}'>" . $platform->release->version;
-//        $row['profiles'] = '';
-//      }
+      if (empty($platform->release->version)) {
+        $completed = FALSE;
+        $row['version'] = '...';
+        $row['profiles'] = '';
+      }
+      else {
+        $row['version'] = "<label id='version-{$name}'>" . $platform->release->version;
+        $row['profiles'] = '';
+      }
 
       // Collect install profiles
 //      $profiles_shortnames = hosting_get_profiles($platform->nid, 'short_name');

@@ -240,17 +240,16 @@ function devshop_project_load($node) {
       $environment->git_ref_url = url("node/$environment->site/logs/commits");
     }
 
-    // @TODO: Get this another way.
     // Environment Drupal version.
-//    $iid = db_query("SELECT iid FROM {hosting_package_instance} i left join {hosting_package} p on p.nid=i.package_id WHERE p.package_type = :type AND i.rid = :nid", array(':type' => 'platform', ':nid' => $environment->platform))->fetchField();
-//    $release = hosting_package_instance_load($iid);
-//
-//    if (isset($release->version)) {
-//      $environment->version = $release->version;
-//    }
-//    else {
-//      $environment->version = t('unknown');
-//    }
+    $iid = db_query("SELECT iid FROM {hosting_package_instance} i left join {hosting_package} p on p.nid=i.package_id WHERE p.package_type = :type AND i.rid = :nid", array(':type' => 'platform', ':nid' => $environment->platform))->fetchField();
+    $release = hosting_package_instance_load($iid);
+
+    if (isset($release->version)) {
+      $environment->version = $release->version;
+    }
+    else {
+      $environment->version = t('unknown');
+    }
     $environment->version = '';
 
     // @TODO: Make "servers" more abstract so we can add many more.
