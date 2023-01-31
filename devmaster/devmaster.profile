@@ -123,6 +123,12 @@ function devmaster_bootstrap() {
   $node->type = 'platform';
   $node->title = 'hostmaster';
   $node->publish_path = d()->root;
+  $node->git_root = d()->git_root;
+  $node->git_remote = d()->git_remote;
+  $node->git_reference = d()->git_reference;
+  $node->git_reset = d()->git_reset;
+  $node->git_docroot = d()->git_docroot;
+
   $node->makefile = '';
   $node->verified = 1;
   $node->web_server = variable_get('hosting_default_web_server', 2);
@@ -156,6 +162,7 @@ function devmaster_bootstrap() {
   $node->short_name = 'devmaster';
   $node->status = 1;
   node_save($node);
+  $profile_name = $node->short_name;
   $profile_id = $node->nid;
 
   $instance = new stdClass();
@@ -179,7 +186,7 @@ function devmaster_bootstrap() {
   $node->client = $client_id;
   $node->db_name = '';
   $node->db_server = $db_node->nid;
-  $node->profile = $profile_id;
+  $node->profile = $profile_name;
   $node->import = true;
   $node->hosting_name = 'hostmaster';
   $node->site_status = 1;

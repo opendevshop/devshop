@@ -980,7 +980,7 @@
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/provision.git",
-                "reference": "d60aa9f52afe5354d4efc6e53dbc9db7e0b9d441"
+                "reference": "0a60390a0080854a9668b8e8a55c766504435840"
             },
             "require": {
                 "drupal/drupal": "~7.0",
@@ -995,8 +995,8 @@
                     "dev-4.x": "4.x-dev"
                 },
                 "drupal": {
-                    "version": "7.x-4.x-dev",
-                    "datestamp": "1674258829",
+                    "version": "7.x-4.0-beta1+1-dev",
+                    "datestamp": "1675186666",
                     "security-coverage": {
                         "status": "not-covered",
                         "message": "Dev releases are not covered by Drupal security advisories."
@@ -1050,10 +1050,6 @@
                 {
                     "name": "Jon Pugh",
                     "homepage": "https://www.drupal.org/user/17028"
-                },
-                {
-                    "name": "kienan",
-                    "homepage": "https://www.drupal.org/user/2241332"
                 },
                 {
                     "name": "memtkmcc",
@@ -4504,5 +4500,5 @@
     "platform-overrides": {
         "php": "7.4.0"
     },
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.1.0"
 }

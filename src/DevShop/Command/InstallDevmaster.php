@@ -227,6 +227,10 @@ class InstallDevmaster extends Command
         'force-reinstall', NULL, InputOption::VALUE_NONE,
         'Delete any existing site with the specified URI'
       )
+      ->addOption(
+        'fail-if-unknown-version', NULL, InputOption::VALUE_NONE,
+        'Available if you really need to fail the command when the chosen version is not found in the remote.'
+      )
     ;
   }
 
@@ -269,8 +273,8 @@ class InstallDevmaster extends Command
 
     // If version was not specified, lookup the latest.
     if (empty($version)) {
-      $version = $this->getLatestVersion();
-      $output->writeln("Checking for latest version... $version");
+      $output->writeln('Checking for latest version...');
+      $input->setOption('devshop_version', $this->getLatestVersion());
     }
 
     // Validate chosen version
@@ -281,10 +285,11 @@ class InstallDevmaster extends Command
       $input->setOption('git_reference', $version);
     }
     catch (\Exception $e) {
-      $output->writeln('<error>' . $e->getMessage() . '</error>');
-      exit(1);
+      $output->writeln('<warning>' . "Version $version does not exist in git repository {$this->getRepoSlug()}." . '</warning>');
+      if ($input->getOption('fail-if-unknown-version')) {
+        exit(1);
+      }
     }
-
 
     // site
     if (!$input->getOption('site')) {

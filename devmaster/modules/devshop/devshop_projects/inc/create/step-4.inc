@@ -26,8 +26,6 @@ function devshop_project_create_step_sites($form, &$form_state) {
     t('Name'),
     t('Branch'),
     t('Version'),
-    t('Install Profiles'),
-    t('Status')
   );
   $all_tasks_queued = TRUE;
   $all_tasks_succeeded = TRUE;
@@ -54,8 +52,8 @@ function devshop_project_create_step_sites($form, &$form_state) {
     $row = array();
     $row['name'] = $name;
     $row['branch'] = $environment->git_ref;
-    $row['version'] = t('...');
-    $row['profiles'] = '';
+//    $row['version'] = t('...');
+//    $row['profiles'] = '';
     $row['status'] = $status_link;
 
     // If platform verified successfully:
@@ -73,31 +71,31 @@ function devshop_project_create_step_sites($form, &$form_state) {
       }
 
       // Collect install profiles
-      $profiles_shortnames = hosting_get_profiles($platform->nid, 'short_name');
+//      $profiles_shortnames = hosting_get_profiles($platform->nid, 'short_name');
+//
+//      if (is_array($profiles_shortnames) && !empty($profiles_shortnames)) {
+//        $profiles[$name] = array_combine($profiles_shortnames, (array) hosting_get_profiles($platform->nid));
+//        $row['profiles'] = implode(', ', $profiles[$name]);
+//      }
+//      else {
+//        $profiles[$name] = array();
+//      }
 
-      if (is_array($profiles_shortnames) && !empty($profiles_shortnames)) {
-        $profiles[$name] = array_combine($profiles_shortnames, (array) hosting_get_profiles($platform->nid));
-        $row['profiles'] = implode(', ', $profiles[$name]);
-      }
-      else {
-        $profiles[$name] = array();
-      }
-
-      // If no tasks have failed, save available profiles
-      if ($all_tasks_succeeded) {
-        if (empty($available_profiles)) {
-          $available_profiles = $profiles[$name];
-        }
-        else {
-          $available_profiles = array_intersect_key($available_profiles, $profiles[$name]);
-        }
-      }
+//      // If no tasks have failed, save available profiles
+//      if ($all_tasks_succeeded) {
+//        if (empty($available_profiles)) {
+//          $available_profiles = $profiles[$name];
+//        }
+//        else {
+//          $available_profiles = array_intersect_key($available_profiles, $profiles[$name]);
+//        }
+//      }
     }
     // If platform verification failed:
     elseif ($task->task_status == HOSTING_TASK_ERROR) {
       $completed = TRUE;
       $all_tasks_succeeded = FALSE;
-      $available_profiles = array();
+//      $available_profiles = array();
 
       $messages = devshop_task_get_messages($task);
       $errors_rendered = implode("\n", $messages);
@@ -211,32 +209,30 @@ HTML;
   // If ready...
   else {
 
-    // If no common profiles found, just set to standard.
-    if (count($available_profiles) == 0) {
-      $available_profiles['standard'] = 'No default profile.';
-      $default_profile = 'standard';
-    }
+//    // If no common profiles found, just set to standard.
+//    if (count($available_profiles) == 0) {
+//      $available_profiles['standard'] = 'No default profile.';
+//      $default_profile = 'standard';
+//    }
 
     $project->no_finish = FALSE;
 
-    // Install Profile
-    // Sensible default?
-    // Lets go with standard for now... we can update later.
-    if (isset($available_profiles['standard'])) {
-      $default_profile = 'standard';
-    }
-    // If 'drupal' profile exists, it is likely drupal6!
-    elseif (isset($available_profiles['drupal'])) {
-      $default_profile = 'drupal';
-    }
-
+//    // Install Profile
+//    // Sensible default?
+//    // Lets go with standard for now... we can update later.
+//    if (isset($available_profiles['standard'])) {
+//      $default_profile = 'standard';
+//    }
+//    // If 'drupal' profile exists, it is likely drupal6!
+//    elseif (isset($available_profiles['drupal'])) {
+//      $default_profile = 'drupal';
+//    }
+    $default_profile = 'default';
     $form['install_profile'] = array(
-      '#type' => 'radios',
-      '#options' => $available_profiles,
-      '#title' => t('Project Install Profile'),
-      '#required' => 1,
-      '#description' => t('Choose the default installation profile for this project.'),
-      '#default_value' => $default_profile,
+      '#type' => 'textfield',
+      '#title' => t('Install Profile'),
+      '#description' => t('The installation profile you would like to install sites with (optional).'),
+      '#default_value' => '',
     );
   }
 
@@ -264,8 +260,5 @@ function devshop_project_create_step_sites_validate(&$from, &$form_state) {
     }
     // Reload project and environnt data so latest tasks are present.
     $form_state['redirect'] = 'projects/add/sites';
-  }
-  elseif (empty($form_state['values']['install_profile'])) {
-    form_set_error('install_profile', t('You must choose an install profile. Please wait for all environments to verify.'));
   }
 }
