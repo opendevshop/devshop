@@ -40,14 +40,16 @@ jobs:
         vars:
           - 'php_version=7.4'
           - 'php_version=8.0'
-          # - 'php_version=8.1'
 
-        os:
-          - 'ubuntu1804'
-          - 'ubuntu2004'
+        from:
+          - 'devshop/server:latest'
+          - 'ubuntu:20.04'
+          - 'ubuntu:18.04'
+
     env:
-      OS: "${{ matrix.os }}"
-      DEVSHOP_DOCKER_IMAGE:  "devshop/server:${{ matrix.os }}"
+      DEVSHOP_DOCKER_IMAGE:  "devshop/server:built"
+      DEVSHOP_CONTAINER_FROM:  "${{ matrix.from }}"
+
       HOSTNAME: "devshop.${{ github.event.pull_request.number }}.${{ matrix.os }}.actions.github.com"
       ANSIBLE_EXTRA_VARS: "${{ matrix.vars }}"
 
