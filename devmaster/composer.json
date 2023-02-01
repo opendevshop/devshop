@@ -21,12 +21,10 @@
     }
   ],
   "require": {
-    "cpliakas/git-wrapper": "~1.0",
     "guzzlehttp/guzzle": "^6",
     "knplabs/github-api": "^3.0||^1.0",
     "sensiolabs/ansi-to-html": "^1.1",
-    "symfony/process": "^3.4",
-    "symfony/yaml": "^3.4",
+    "symfony/yaml": "^4.4",
     "toin0u/digitalocean-v2": "^2.3"
   },
   "minimum-stability": "dev",
