@@ -610,6 +610,9 @@ BODY;
         if ($tasks_failed) {
             return 1;
         }
+        else {
+            return 0;
+        }
     }
 
     private function loadTasksYml()
