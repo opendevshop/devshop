@@ -33,7 +33,7 @@ function devshop_github_add_key_to_account($form, &$form_state) {
 
     // Create public key
     $client = new \Github\Client();
-    $client->authenticate($token, Github\Client::AUTH_HTTP_TOKEN);
+    $client->authenticate($token, \Github\AuthMethod::ACCESS_TOKEN);
     try {
       $return = $client->currentUser()->keys()->create($params);
     }

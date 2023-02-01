@@ -1,5 +1,4 @@
 #!/bin/sh
-# Copied from https://github.com/geerlingguy/docker-ubuntu1804-ansible/blob/master/initctl_faker
 ALIAS_CMD="$(echo ""$0"" | sed -e 's?/sbin/??')"
 
 case "$ALIAS_CMD" in
@@ -22,3 +21,4 @@ case "$1" in
         exit 0
         ;;
 esac
+Footer

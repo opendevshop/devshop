@@ -341,34 +341,11 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
     '#group' => 'project_settings',
   );
 
-  // Install Profile
-  $available_profiles = array();
-  foreach ($project->environments as $name => $environment) {
-    // Passing null to hosting_get_profiles returns all profiles.
-    if (is_null($environment->platform)) {
-      continue;
-    }
-    $profiles_shortnames = hosting_get_profiles($environment->platform, 'short_name');
-    if (is_array($profiles_shortnames) && !empty($profiles_shortnames)) {
-      $profiles[$name] = array_combine($profiles_shortnames, (array)hosting_get_profiles($environment->platform));
-    } else {
-      $profiles[$name] = array();
-    }
-    if (empty($available_profiles)) {
-      $available_profiles = $profiles[$name];
-    } else {
-      $available_profiles = array_intersect_key($available_profiles, $profiles[$name]);
-    }
-  }
-
   $form['project']['settings']['default_environment']['install_profile'] = array(
-    '#type' => 'radios',
-    '#options' => $available_profiles,
+    '#type' => 'textfield',
     '#title' => t('Default Install Profile'),
-    '#required' => 1,
     '#description' => t('New environments will be created using this install profile. Existing environments will not be affected.'),
     '#default_value' => $node->project->install_profile,
-    '#access' => count($available_profiles),
   );
 
   // HTTP Server select.
@@ -805,6 +782,7 @@ HTML;
 function devshop_projects_form_site_node_form_alter(&$form, &$form_state, $form_id) {
 
   $node = $form['#node'];
+  $environment = NULL;
 
   $form['environment'] = array(
     '#weight' => -9,
@@ -1039,12 +1017,12 @@ function devshop_projects_create_environment_form(&$form, &$form_state, $form_id
     '#process' => array('devshop_environment_method_process'),
     '#weight' => -99,
     '#options' => array(
+      'profile' => t('Install Drupal'),
       'clone' => t('Clone Environment'),
-      'profile' => t('Drupal Profile'),
-      'manual' => t('Empty Database'),
+      'manual' => t('Manual Install'),
       'import' => t('Import Database'),
     ),
-    '#default_value' => 'clone',
+    '#default_value' => 'profile',
   );
 
   $form['install_method']['none'] = array(
@@ -1056,49 +1034,19 @@ function devshop_projects_create_environment_form(&$form, &$form_state, $form_id
       ),
     ),
     'note' => array(
-      '#markup' => t('An empty database will be created. You can install Drupal manually by visiting install.php, by using Drush, or you can manually import a database.'),
+      '#markup' => t('The site code and database will be set up. Visit the site to proceed through the install process.'),
     ),
   );
 
   $form['install_method']['profile'] = array(
-    '#type' => 'radios',
+    '#type' => 'textfield',
     '#title' => t('Drupal Install Profile'),
-    '#description' => t('These install profiles were found in other environments in this project. If you choose an install profile that does not exist in the codebase, the "Standard" profile will be used.'),
+    '#description' => t('Enter the name of an install profile to use for this site. (optional)'),
     '#description_display' => 'before',
     '#weight' => -98,
-    '#required' => TRUE,
-    '#options' => devshop_environment_add_form_profile_options($project),
     '#states' => array(
       'visible' => array(
         ':input[name="install_method[method]"]' => array('value' => 'profile'),
-      ),
-    ),
-  );
-
-  // Set default profile.
-  if (count($form['install_method']['profile']['#options']) == 1 || empty($project->install_profile)) {
-    $form['install_method']['profile']['#default_value'] = '_other';
-  }
-  else {
-    $form['install_method']['profile']['#default_value'] = $project->install_profile;
-  }
-
-  $form['install_method']['profile_other'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Other Install Profile'),
-    '#title_display' => 'invisible',
-    '#description' => t('Enter the exact name the install profile to use. It must already exist in your git branch or tag.'),
-    '#element_validate' => array(
-      'devshop_projects_create_environment_form_validate_profile'
-    ),
-    '#attributes' => array(
-      'placeholder' => t('Profile Name'),
-    ),
-    '#weight' => -97,
-    '#states' => array(
-      'visible' => array(
-        ':input[name="install_method[method]"]' => array('value' => 'profile'),
-        ':input[name="install_method[profile]"]' => array('value' => '_other'),
       ),
     ),
   );
@@ -1113,7 +1061,7 @@ function devshop_projects_create_environment_form(&$form, &$form_state, $form_id
       ),
     )) . '</small>';
     $git_ref = $environment->git_ref;
-    $icon = $environment->git_ref_type == 'tag'? 'tag': 'code-fork';
+    $icon = isset($environment->git_ref_type) && $environment->git_ref_type == 'tag'? 'tag': 'code-fork';
     $environment_options[$environment->system_alias] = "<span>{$environment->name}</span> <small class='git-ref text-muted'><i class='fa fa-$icon'></i> $git_ref</small> <small>$link</small>";
   }
 
@@ -1288,6 +1236,7 @@ function devshop_projects_create_environment_form(&$form, &$form_state, $form_id
   $form['platform']['#access'] = FALSE;
   $form['profile']['#access'] = FALSE;
   $form['git']['#access'] = FALSE;
+
 }
 
 /**
@@ -1317,7 +1266,8 @@ function devshop_projects_create_environment_form_validate_name($element, &$form
     form_set_value($form['title'], devshop_environment_url($project, $element['#value']), $form_state);
 
     // Attach a new platform node.
-    $platform_node = devshop_prepare_platform_node($project, $element['#value'], $form_state['values']['git_ref'], $form_state['values']['web_server'], $form_state['values']['git']['repo_url']);
+    $platform_node = devshop_prepare_platform_node($project, $element['#value'], $form_state['values']['git_ref'], $form_state['values']['web_server']);
+    $platform_node->no_verify = TRUE;
 
     // Set value in form_state.
     form_set_value($form['platform_node'], $platform_node, $form_state);
@@ -1366,6 +1316,7 @@ function devshop_prepare_platform_node($project, $environment_name, $git_ref, $w
   }
 
   $platform_node->git_reference = $git_ref;
+  $platform_node->git_reset = isset($project->git_reset) ? $project->git_reset: 0;
 
 
   // Enable git pull queue for this platform if chosen.
@@ -1409,10 +1360,7 @@ function devshop_prepare_platform_node($project, $environment_name, $git_ref, $w
  * @param $form
  */
 function devshop_projects_create_environment_form_validate_profile($element, &$form_state, &$form) {
-  if ($form_state['values']['install_method']['method'] == 'profile' && $form_state['values']['install_method']['profile'] =='_other' && empty($element['#value'])) {
-    form_set_error('install_method][profile_other', t('You must enter a profile name.'));
-  }
-  elseif ($form_state['values']['install_method']['method'] == 'profile' && $form_state['values']['install_method']['profile'] =='_other') {
+  if ($form_state['values']['install_method']['method'] == 'profile' && $form_state['values']['install_method']['profile'] =='_other') {
     form_set_value($form['install_method']['profile'], $element['#value'], $form_state);
   }
 }
@@ -1444,7 +1392,7 @@ function devshop_projects_create_environment_form_validate_import($element, &$fo
   if ($form_state['values']['install_method']['method'] == 'import' && empty($element['#value'])) {
     form_set_error('install_method][import', t('If using the "Import Database" Install Method, you must enter a MySQL connection URL or absolute path to an SQL file.'));
   }
-  elseif ($url_components['scheme'] == 'mysql') {
+  elseif (isset($url_components['scheme']) && $url_components['scheme'] == 'mysql') {
     $database = array(
       'database' => ltrim($url_components['path'], '/'),
       'username' => $url_components['user'],
@@ -1532,7 +1480,7 @@ function devshop_environment_add_form_profile_options($project) {
 function devshop_environment_deploy_hooks_form($project, $environment = NULL, $task_type = NULL) {
 
   // If environment not specified, just grab one.
-  if (!$environment) {
+  if (!$environment && isset($project->environments)) {
     $environment = current($project->environments);
     $is_environment_form = FALSE;
   }
@@ -1625,8 +1573,8 @@ function devshop_environment_deploy_hooks_form($project, $environment = NULL, $t
   // Disable deploy hooks on environment form, deploy task form ,and sync task form.
   if (
     // Environment form
-    ($is_environment_form && !$project->settings->deploy['allow_environment_deploy_config']) ||
-    ($task_type == 'deploy' && !$project->settings->deploy['allow_environment_deploy_hooks_override'])
+    ($is_environment_form && isset($project->settings) && !$project->settings->deploy['allow_environment_deploy_config']) ||
+    ($task_type == 'deploy' && isset($project->settings) && !$project->settings->deploy['allow_environment_deploy_hooks_override'])
   ) {
 
     foreach (element_children($return) as $i) {

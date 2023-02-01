@@ -273,7 +273,7 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
  */
 function devshop_project_environment_create_form_element($project, $environment) {
 
-  $name = $environment->name;
+  $name = isset($environment->name) ? $environment->name : '';
 
   $element = array(
     '#tree' => TRUE,

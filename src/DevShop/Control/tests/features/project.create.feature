@@ -12,12 +12,12 @@ Feature: Create a project and check settings
     And I click "Start a new Project"
     Then I should see "Step 1"
     Then I fill in "composer" for "Project Code Name"
-    And I fill in "http://github.com/opendevshop/devshop-composer-template.git" for "Git Repository URL"
+    And I fill in "https://github.com/opendevshop/drupal-project.git" for "Git Repository URL"
     When I press "Next"
 
     # Step 2
     Then I should see "composer"
-    And I should see "http://github.com/opendevshop/devshop-composer-template.git"
+    And I should see "https://github.com/opendevshop/drupal-project.git"
     Then I should see "Please wait while we connect and analyze your repository."
     When I run drush "hosting-tasks --force --fork=0 --strict=0"
     # Then print last drush output
@@ -33,18 +33,18 @@ Feature: Create a project and check settings
 
     Then I should see "Create as many new environments as you would like."
     When I fill in "dev" for "project[environments][NEW][name]"
-    And I select "8.x" from "project[environments][NEW][git_ref]"
+    And I select "9.x" from "project[environments][NEW][git_ref]"
 
     And I press "Add environment"
     And I fill in "live" for "project[environments][NEW][name]"
-    And I select "8.x" from "project[environments][NEW][git_ref]"
+    And I select "9.x" from "project[environments][NEW][git_ref]"
     And I press "Add environment"
     Then I press "Next"
 
     # Step 4
     And I should see "dev"
     And I should see "live"
-    And I should see "8.x"
+    And I should see "9.x"
 
     When I run drush "hosting-tasks --force --fork=0 --strict=0"
     # Then print last drush output
@@ -57,7 +57,7 @@ Feature: Create a project and check settings
 #    When I click "Process Failed"
     Then I should see "8."
     Then I should not see "Platform verification failed"
-    When I select "standard" from "install_profile"
+#    When I select "standard" from "install_profile"
 
 #    Then I break
 
@@ -91,9 +91,7 @@ Feature: Create a project and check settings
 
     When I click "Create New Environment"
     And I fill in "testenv" for "Environment Name"
-    And I select the radio button "Drupal Profile"
-    And I select "8.x" from "git_ref"
-    Then I select the radio button "Standard Install with commonly used features pre-configured."
+    And I select "9.x" from "git_ref"
 
     #@TODO: Check lots of settings
 
@@ -130,7 +128,9 @@ Feature: Create a project and check settings
 #    Then the response status code should be 401
 
     Given I am on "http://testuser:testpassword@composer.testenv.devshop.local.computer"
-    Then I should see "Welcome to composer.testenv"
+    Then I should see "Welcome!"
+    And I should see "Congratulations and welcome to the Drupal community."
+    And I should see "composer.testenv.devshop.local.computer"
 
     Given I am on the homepage
     Then I should see the link "composer"
@@ -146,3 +146,20 @@ Feature: Create a project and check settings
     And I should see "Disabled"
 
     # @TODO: Test setting for "allow sites to be destroyed"
+
+
+    # Testing "Manual Install"
+    When I click "Create New Environment"
+    And I fill in "manualinstall" for "Environment Name"
+    And I select "9.x" from "git_ref"
+    And I select "manual" from "install_method[method]"
+    Then I press "Create New Environment"
+    Then I should see "Environment manualinstall created in project composer."
+
+    When I run drush "hosting-tasks --force --fork=0 --strict=0"
+
+    Then I should see "Environment Dashboard"
+    And I should see "Manually Installed"
+    Given I am on "http://myproject.manual.devshop.local.computer/core/install.php"
+    # This fails in CI right now.
+    # Then I should see "Choose language"

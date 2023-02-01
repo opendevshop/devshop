@@ -1,7 +1,7 @@
 {
-  "name": "devshop/docker-bin-tools",
+  "name": "devshop/git-traits",
   "type": "library",
-  "description": "All of the scripts used in Docker containers and images.",
+  "description": "Traits to make classes git-aware.",
   "keywords": [],
   "homepage": "https://getdevshop.com",
   "license": "MIT",
@@ -16,19 +16,23 @@
     }
   ],
   "require": {
-  },
-  "require-dev": {
+    "php": "^7.1||^8.0",
+    "knplabs/github-api": "^3.0||^1.0",
+    "teqneers/php-stream-wrapper-for-git": "^2.0@dev",
+    "guzzlehttp/guzzle": "^6",
+    "php-http/guzzle6-adapter": "^2.0@dev"
   },
   "extra": {
     "branch-alias": {
       "dev-master": "1.x-dev"
     }
   },
+  "autoload": {
+    "psr-4": {
+      "DevShop\\Component\\Common\\": "src/"
+    }
+  },
   "bin": [
-    "docker-systemd",
-    "docker-systemd-entrypoint",
-    "docker-systemd-initctl-faker",
-    "docker-systemd-prepare"
   ],
   "minimum-stability": "dev"
 }

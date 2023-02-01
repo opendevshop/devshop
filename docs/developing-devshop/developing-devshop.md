@@ -144,6 +144,26 @@ This is the recommended install method for servers as well as vagrant boxes.
 
 See [Development with Vagrant](https://github.com/opendevshop/documentation/tree/4c1866b89e87467c5d6bad83343cb3e8de6230a5/development-vagrant.md) for legacy instructions.
 
+## Known Issues
+
+Using Docker on a linux system can cause mysql to fail to install or start.
+
+If you get this error, it can be resolved by configuring AppArmour:
+
+```
+/usr/sbin/mysqld: error while loading shared libraries:
+```
+
+See the solution mentioned here: https://stackoverflow.com/a/60423057
+
+On the host machine (your laptop)
+
+```
+sudo ln -s /etc/apparmor.d/usr.sbin.mysqld /etc/apparmor.d/disable/
+sudo apparmor_parser -R /etc/apparmor.d/usr.sbin.mysqld
+```
+
+
 ## Help Improve Documentation
 
 Think this can be improved? You can [edit this file on GitHub](https://github.com/opendevshop/devshop/edit/0.x/README.vagrant.md) and select "Create a new branch for this commit and start a pull request.".

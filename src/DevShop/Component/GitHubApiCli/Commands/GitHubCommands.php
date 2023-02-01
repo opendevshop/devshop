@@ -3,6 +3,7 @@
 namespace DevShop\Component\GitHubApiCli\Commands;
 
 use DevShop\Component\GitHubApiCli\GitHubApiCli;
+use Robo\Symfony\ConsoleIO;
 use Symfony\Component\Console\Exception\InvalidOptionException;
 use Symfony\Component\Yaml\Yaml;
 
@@ -76,7 +77,7 @@ class GitHubCommands extends \Robo\Tasks
 
         try {
             $api = $this->cli->api($apiName);
-            $this->io()->listing($this->cli->getApiMethods($api));
+            $this->io()->listing($this->cli->getApiMethods($apiName));
         } catch (\Exception $e) {
             $this->io()->error('Unable to list methods: '.$e->getMessage());
         }
@@ -104,7 +105,7 @@ class GitHubCommands extends \Robo\Tasks
     public function api(
       $apiName = null,
       $apiMethod = null,
-      array $apiMethodArgs,
+      array $apiMethodArgs = null,
       $opts = [
         'param|p' => [],
       ]
@@ -124,6 +125,10 @@ class GitHubCommands extends \Robo\Tasks
               0
             );
         }
+
+      if (!$apiMethodArgs) {
+        $apiMethodArgs = [];
+      }
 
 
         // Validate the API request.
@@ -162,9 +167,11 @@ class GitHubCommands extends \Robo\Tasks
                         }
                         $params[$param_pair[0]] = $param_pair[1];
                     }
+
+                  $apiMethodArgs[] = $param;
+
                 }
 
-                $apiMethodArgs[] = $params;
             }
 
             // Validate the number of arguments with reflection.
@@ -176,10 +183,11 @@ class GitHubCommands extends \Robo\Tasks
             $this->yell("Confirming parameters for: $apiClass::$apiMethod()");
 
             // Confirm arguments
+            $default_values = [];
             foreach ($parameters as $i => $arg)
             {
                 $default_value = !empty($apiMethodArgs[$i])? $apiMethodArgs[$i]: '';
-
+                $default_values[$arg->name] = $default_value;
                 // If Method parameter is expecting an array, ask for multiple params.
                 $type = $arg->getType();
                 if ($type == 'array') {
@@ -190,7 +198,8 @@ class GitHubCommands extends \Robo\Tasks
                     $params = [];
 
                     // Confirm existing params first
-                    foreach ($default_value as $paramName => $paramValue) {
+                    foreach ($default_values
+ as $paramName => $paramValue) {
                         $value = $this->askDefault("{$arg->name} (Enter as many as needed. Leave blank to continue.)", "{$paramName}={$paramValue}");
 
                         // If param has =, explode.
@@ -235,11 +244,20 @@ class GitHubCommands extends \Robo\Tasks
                     $apiMethodArgsConfirmed[$arg->name] = $params;
                 }
                 else {
-                    if (empty($default_value)) {
+                  foreach ($default_values as $name => $value){
+                    // If param has =, explode.
+                    if (strpos($value, '=') !== FALSE) {
+                      list($key, $value) = explode('=', $value);
+                      $default_values[$name] = $value;
+                    }
+                  }
+
+                    if (empty($default_values[$arg->name])) {
                         $apiMethodArgsConfirmed[$arg->name] = $this->ask($arg->name);
                     }
                     else {
-                        $apiMethodArgsConfirmed[$arg->name] = $this->askDefault($arg->name, $default_value);
+                        $apiMethodArgsConfirmed[$arg->name] = $this->askDefault($arg->name, $default_values[$arg->name]
+);
                     }
                 }
             }

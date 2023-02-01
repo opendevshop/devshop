@@ -77,7 +77,7 @@ These tools are designed to be useful regardless of the hosting or DevOps system
 - Simple CLI wrapper for the GitHub API, where every API resource is a command and options are automatically passed. 
 - "Deploy" command provides simple way to interact with GitHub's Deployments API using composer commands and bin scripts.
 
-#### [GitComposerTools](./src/DevShop/Component/ComposerCommon)
+#### [Git Traits](./src/DevShop/Component/GitTraits)
 
 > Traits and classes for accessing Git, GitHub and Composer Data.
 

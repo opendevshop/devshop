@@ -434,12 +434,12 @@ function template_preprocess_devshop_project_nav(&$vars) {
   }
 
   // Generate branches/tags lists
-  $vars['branches_count'] = count($project->settings->git['branches']);
-  $vars['tags_count'] = count($project->settings->git['tags']);
+  $vars['branches_count'] = isset($project->settings->git['branches']) ? count($project->settings->git['branches']) : 0;
+  $vars['tags_count'] = isset($project->settings->git['tags']) ? count($project->settings->git['tags']) : 0;
   $vars['branches_items'] = array();
   $vars['branches_icon'] = 'code-fork';
 
-  if ($vars['branches_count'] == 0) {
+  if ($vars['branches_count'] == 0 && isset($node->project->verify) && isset($node->verify)) {
     // If branches are 0 and last verifying is queued...
     if ($node->project->verify->task_status == HOSTING_TASK_PROCESSING || $node->verify->task_status === HOSTING_TASK_QUEUED) {
       $vars['branches_show_label'] = TRUE;
@@ -468,9 +468,11 @@ function template_preprocess_devshop_project_nav(&$vars) {
     $vars['branches_show_label'] = FALSE;
     $vars['branches_label'] = format_plural($vars['branches_count'], t('1 Branch'), t('!count Branches', array('!count' => $vars['branches_count'])));
 
-    foreach ($project->settings->git['branches'] as $branch) {
-      $href = isset($vars['github_url']) ? $vars['github_url'] . '/tree/' . $branch : '#';
-      $vars['branches_items'][] = "<a href='$href'><i class='fa fa-code-fork'></i> $branch </a>";
+    if (isset($project->settings->git['branches'])) {
+      foreach ($project->settings->git['branches'] as $branch) {
+        $href = isset($vars['github_url']) ? $vars['github_url'] . '/tree/' . $branch : '#';
+        $vars['branches_items'][] = "<a href='$href'><i class='fa fa-code-fork'></i> $branch </a>";
+      }
     }
   }
 
@@ -498,7 +500,7 @@ function template_preprocess_devshop_project_nav(&$vars) {
   }
 
   // Add "refresh branches" link if project is manual deploy mode or is missing a webhook
-  if ($project->settings->deploy['method'] == 'manual' || empty($project->settings->deploy['last_webhook'])) {
+  if (isset($project->settings->deploy) && $project->settings->deploy['method'] == 'manual' || empty($project->settings->deploy['last_webhook'])) {
     $link_refresh = l(t('Refresh branches'), 'hosting_confirm/' . $node->nid . '/project_verify', array('attributes' => array('class' => array('refresh-link')), 'query' => array('token' => drupal_get_token($user->uid))));
     array_unshift($vars['branches_items'], $link_refresh);
   }

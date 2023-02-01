@@ -57,7 +57,13 @@ function devshop_projects_create_wizard($step = NULL) {
   else {
     // Load latest project object from database and use that for the ctools cache.
     $project_node = node_load($project->nid, NULL, TRUE);
-    $project = $project_node->project;
+
+    if ($project_node->project) {
+      $project = $project_node->project;
+    }
+    else {
+      $project = new stdClass();
+    }
 
     // If we have a name but no code_path or base URL.
     if (!empty($project->name) && empty($project->code_path)) {
@@ -258,7 +264,7 @@ function devshop_projects_add_status($type = 'platform') {
   $nids = array();
 
   // When checking project...
-  if ($type == 'project') {
+  if ($type == 'project' && isset($project_node->nid)) {
     $tasks = hosting_get_tasks('rid', $project_node->nid);
     $last_task = array_shift($tasks);
     $status = _hosting_parse_error_code($last_task->task_status);
@@ -268,7 +274,7 @@ function devshop_projects_add_status($type = 'platform') {
     );
 
     $return['tasks_complete'] = $last_task->task_status == HOSTING_TASK_SUCCESS || $last_task->task_status == HOSTING_TASK_ERROR || $last_task->task_status == HOSTING_TASK_WARNING;
-    $return['tasks_success'] = $last_task->task_status == HOSTING_TASK_SUCCESS;
+    $return['tasks_success'] = $last_task->task_status == HOSTING_TASK_SUCCESS || $last_task->task_status == HOSTING_TASK_WARNING;
     drupal_json_output($return);
     exit;
   }
@@ -280,19 +286,11 @@ function devshop_projects_add_status($type = 'platform') {
     $button = '';
     foreach ($project_node->project->environments as $name => $environment) {
       $platform = node_load($environment->platform);
-      $profiles_shortnames = hosting_get_profiles($platform->nid, 'short_name');
-      if (is_array($profiles_shortnames) && !empty($profiles_shortnames)) {
-        $install_profiles = array_combine($profiles_shortnames, (array) hosting_get_profiles($platform->nid));
-      }
-      else {
-        $install_profiles = array();
-      }
 
       $last_task = hosting_get_most_recent_task($platform->nid, 'verify');
       $return['tasks'][$name] = array(
         'link' => devshop_get_logs_and_permalink($last_task),
         'version' => !empty($platform->release->version) && $last_task->task_status == HOSTING_TASK_SUCCESS || $last_task->task_status == HOSTING_TASK_WARNING? $platform->release->version: $last_task->status_name,
-        'profiles' => implode(', ', $install_profiles),
       );
       // If task is not completed, mark all tasks not complete.
       if ($last_task->task_status == HOSTING_TASK_ERROR) {

@@ -36,7 +36,7 @@ function drush_devshop_projects_pre_hosting_task()
   $task =& drush_get_context('HOSTING_TASK');
 
   // For all tasks
-  if ($task->ref->type == 'site' || $task->ref->type == 'platform' || $task->ref->type == 'project') {
+  if (isset($task->ref->project) && ($task->ref->type == 'site' || $task->ref->type == 'platform' || $task->ref->type == 'project')) {
     $drush_aliases = new Provision_Config_ProjectAliases($task->ref->project->name, $task->ref->project);
   }
 

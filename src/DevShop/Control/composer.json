@@ -21,10 +21,18 @@
       "devshop_devmaster": {
         "type": "path",
         "url": "../../../devmaster"
+      },
+      "git_traits": {
+        "type": "path",
+        "url": "../Component/GitTraits"
+      },
+      "behat": {
+        "type": "vcs",
+        "url":  "https://github.com/jonpugh/DrupalDriver.git"
       }
     },
     "require": {
-        "php": ">=5.3.3",
+        "php": "^7.1||^8.0",
         "ext-curl": "*",
         "ext-gd": "*",
         "ext-json": "*",
@@ -36,7 +44,8 @@
         "cweagans/composer-patches": "^1.7",
         "drupal-composer/preserve-paths": "^0.1.6",
         "drupal/composer_autoloader": "^1.0",
-        "drupal/drupal": "^7.62",
+        "drupal/drupal": "^7.94",
+        "drupal/drupal-driver":  "dev-patch-1 as v2.2.2",
         "symfony/filesystem": "~2.7 || ^3",
         "webflo/drupal-finder": "^1.2.1",
         "devshop/devmaster": "1.x-dev",
@@ -54,14 +63,14 @@
         "drupal/devshop_stats": "@dev",
         "drupal/entity": "^1.9",
         "drupal/features": "^2.11",
-        "drupal/hosting": "4.x-dev",
+        "drupal/hosting": "dev-4.x",
         "drupal/hosting_filemanager": "dev-1.x",
         "drupal/hosting_git": "^3.181",
         "drupal/hosting_https": "^3.182",
         "drupal/hosting_logs": "^3.181",
         "drupal/hosting_site_backup_manager": "^3.180",
         "drupal/hosting_statsd": "@beta",
-        "drupal/hosting_tasks_extra": "^3.180",
+        "drupal/hosting_tasks_extra": "^3.191",
         "drupal/jquery_update": "^2.7",
         "drupal/libraries": "^2.0",
         "drupal/module_filter": "^2.2",
@@ -82,7 +91,13 @@
         "npm-asset/underscore": "^1.10",
         "oomphinc/composer-installers-extender": "^2.0",
         "toin0u/digitalocean-v2": "~2.0",
-        "sensiolabs/ansi-to-html": "^1.2"
+        "sensiolabs/ansi-to-html": "^1.2",
+        "symfony/deprecation-contracts": "^2.5",
+        "psr/cache": "^1.0",
+        "symfony/options-resolver": "^4.4",
+        "drupal/drupal-extension": "^4.2",
+        "symfony/dependency-injection": "^4.4",
+        "symfony/process": "^4.4"
     },
     "conflict": {
         "drupal/core": "8.*"
@@ -97,15 +112,15 @@
    },
     "config": {
         "bin-dir": "bin",
-        "platform": {
-            "php": "7.1.3"
-        },
         "sort-packages": false,
         "allow-plugins": {
           "composer/installers": true,
           "cweagans/composer-patches": true,
           "drupal-composer/preserve-paths": true,
           "oomphinc/composer-installers-extender": true
+        },
+        "platform": {
+            "php": "7.4.0"
         }
     },
     "autoload": {
