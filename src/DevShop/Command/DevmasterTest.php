@@ -66,7 +66,7 @@ class DevmasterTest extends Command {
       }
       else {
         // If no behat path is set, use the devmaster repository root / tests.
-        $input->setOption('behat-path', $input->getOption('root') . '/profiles/devmaster/tests');
+        $input->setOption('behat-path', realpath($input->getOption('root') . '/../tests'));
       }
     }
     
@@ -110,19 +110,19 @@ class DevmasterTest extends Command {
 //    $fs = new Filesystem();
 //    $fs->dumpFile($path, trim($output));
 //    $fs->dumpFile($settings_default_path, trim($output));
-
-    // Run composer install
-    $process = new Process('composer install --no-progress --no-suggest --ansi');
-    $process->setTimeout(NULL);
-    $process->setWorkingDirectory($input->getOption('behat-path'));
-
-    $process->run(function ($type, $buffer) {
-      if (Process::ERR === $type) {
-        echo $buffer;
-      } else {
-        echo $buffer;
-      }
-    });
+//
+//    // Run composer install
+////    $process = new Process('composer install --no-progress --no-suggest --ansi');
+////    $process->setTimeout(NULL);
+////    $process->setWorkingDirectory($input->getOption('behat-path'));
+//
+//    $process->run(function ($type, $buffer) {
+//      if (Process::ERR === $type) {
+//        echo $buffer;
+//      } else {
+//        echo $buffer;
+//      }
+//    });
 
     // Show git info
     $process = new Process('git log -3');
@@ -131,7 +131,7 @@ class DevmasterTest extends Command {
     echo $process->getOutput() . $process->getErrorOutput() ;
 
     // Run bin/behat
-    $cmd = 'bin/behat --colors --format-settings=\'{"expand": true}\'';
+    $cmd = '../bin/behat --colors --format-settings=\'{"expand": true}\'';
     
     if ($input->getOption('name')) {
       $cmd .= ' --name=' . $input->getOption('name');
