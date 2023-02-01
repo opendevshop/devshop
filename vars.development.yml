@@ -5,8 +5,8 @@
 devshop_cli_skip_update: true
 devmaster_skip_upgrade: true
 
-# Change this when testing. The default is in vars.yml.
-php_version: "8.1"
+# The default for local development.
+php_version: "8.0"
 
 ## Uncomment to reinstall hostmaster instance on every robo up.
 ## I'm leaving this commented because otherwise it would reinstall every time.
