@@ -25,7 +25,6 @@ use Robo\Common\IO;
 class repoInfo {
 
     use GitHubRepositoryAwareTrait;
-    use IO;
 
     function __construct()
     {
@@ -36,35 +35,27 @@ class repoInfo {
         $this->getRepository()->getCurrentRemote();
         $this->setGitHubRepo($this->getRepository()->getCurrentRemote()['origin']['fetch']);
 
-        // Get a ConsoleOutput object so we can look nice.
-        $this->setOutput(new ConsoleOutput());
     }
 
     function printBranches() {
-        $this->io()->writeln([
-          "<comment>Package:</comment> devshop/git-traits",
-          "<comment>Class:</comment> GitRepositoryAwareTrait",
+
+        $output = [
+                "Repo Information",
+                'Current Branch:' . $this->getRepository()->getCurrentBranch(),
+                'Current Remote',
+                "    Fetch:" . current($this->getRepository()->getCurrentRemote())['fetch'],
+                "    Push:" . current($this->getRepository()->getCurrentRemote())['push'],
+                'Current Commit: ' . $this->getRepository()->getCurrentCommit(),
+        ];
+        print_r($output);
+
+        print_r($this->getRepository()->getBranches());
+
+        print_r([
+          "GitHub Repo Information",
+          'GitHub Repo Owner: ' . $this->getRepoOwner(),
+          'GitHub Repo Name: ' . $this->getRepoName(),
         ]);
-        $this->io()->block("This is an Example Class, used for Testing the GitRepositoryAwareTrait.");
-
-        $this->io()->table(["Repo Information"], [
-          ['Current Branch', $this->getRepository()->getCurrentBranch()],
-          ['Current Remote', "Fetch:" . current($this->getRepository()->getCurrentRemote())['fetch']],
-          ['',               "Push:" . current($this->getRepository()->getCurrentRemote())['push']],
-          ['Current Commit', $this->getRepository()->getCurrentCommit()],
-        ]);
-
-        // Show all branches
-        foreach ($this->getRepository()->getBranches() as $branch) {
-            $rows[] = [$branch];
-        }
-        $this->io()->table(["Repo Branches"], $rows);
-
-        $this->io()->table(["GitHub Repo Information"], [
-          ['GitHub Repo Owner', $this->getRepoOwner()],
-          ['GitHub Repo Name', $this->getRepoName()],
-        ]);
-
     }
 }
 
