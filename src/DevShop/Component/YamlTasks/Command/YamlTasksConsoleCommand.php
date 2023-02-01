@@ -609,8 +609,7 @@ BODY;
 
         if ($tasks_failed) {
             return 1;
-        }
-        else {
+        } else {
             return 0;
         }
     }
