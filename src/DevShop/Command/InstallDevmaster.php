@@ -675,20 +675,7 @@ PHP;
    *   Run `drush hosting-setup`
    */
   private function finalize() {
-
-    // Run `drush cc drush`
     $drush_path = $this->input->getOption('drush-path');
-    if ($this->runProcess(new Process("{$drush_path} cc drush"))) {
-      $this->output->writeln("");
-      $this->output->writeln("Running <comment>drush cc drush</comment>: <info>Done</info>");
-      $this->output->writeln("");
-    }
-    else {
-      $this->output->writeln("");
-      $this->output->writeln("<error>Unable to run drush cc drush. Cannot continue.</error>");
-      $this->output->writeln("");
-      exit(1);
-    }
 
     // Run `drush @hostmaster hosting-setup`
     // @see install.hostmaster.inc: 275
@@ -705,15 +692,15 @@ PHP;
       exit(1);
     }
 
-    // Run `drush @hostmaster cc drush`
-    if ($this->runProcess(new Process("{$drush_path} @{$master_drush_alias} cc drush"))) {
+    // Run `drush cc drush`
+    if ($this->runProcess(new Process("{$drush_path} cc drush"))) {
       $this->output->writeln("");
-      $this->output->writeln("Running <comment>drush @{$master_drush_alias} cc drush</comment>: <info>Done</info>");
+      $this->output->writeln("Running <comment>drush cc drush</comment>: <info>Done</info>");
       $this->output->writeln("");
     }
     else {
       $this->output->writeln("");
-      $this->output->writeln("<error>Unable to run drush @{$master_drush_alias} cc drush. Cannot continue.</error>");
+      $this->output->writeln("<error>Unable to run drush cc drush. Cannot continue.</error>");
       $this->output->writeln("");
       exit(1);
     }
