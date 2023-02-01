@@ -26,11 +26,6 @@ class repoInfo {
 
     use GitHubRepositoryAwareTrait;
 
-  /**
-   * @var ConsoleOutput
-   */
-    protected $io;
-
     function __construct()
     {
         // Set repository to the current git checkout.
