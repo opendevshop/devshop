@@ -765,10 +765,9 @@
             "dist": {
                 "type": "path",
                 "url": "src/DevShop/Component/GitTraits",
-                "reference": "d2ca38ea2b221e5b0f1601e82987c0e23d6498f2"
+                "reference": "2d3aa37749722edad452c770545231c3dfdc0695"
             },
             "require": {
-                "consolidation/robo": "^2.0||^1.0",
                 "guzzlehttp/guzzle": "^6",
                 "knplabs/github-api": "^3.0||^1.0",
                 "php": "^7.1||^8.0",
@@ -4596,5 +4595,5 @@
     "platform-overrides": {
         "php": "7.4.0"
     },
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.1.0"
 }
