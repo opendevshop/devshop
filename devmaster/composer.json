@@ -30,10 +30,7 @@
   "minimum-stability": "dev",
   "prefer-stable": true,
   "config": {
-    "sort-packages": true,
-    "platform": {
-      "php": "7.4.0"
-    }
+    "sort-packages": true
   },
   "extra": {
     "installer-paths": {
