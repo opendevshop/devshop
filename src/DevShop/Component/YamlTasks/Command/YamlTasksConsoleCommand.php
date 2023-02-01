@@ -339,6 +339,7 @@ class YamlTasksConsoleCommand extends BaseCommand
             $this->warningLite("The filter '$filter_string' was specified but it did not match any tasks.");
             exit(1);
         }
+        return 0;
     }
 
     /**
