@@ -607,7 +607,7 @@ BODY;
         $this->io->table(array('Task Results'), $rows);
 
         if ($tasks_failed) {
-            exit(1);
+            return 1;
         }
     }
 
