@@ -10,13 +10,18 @@ function devshop_github_form_devshop_projects_settings_form_alter(&$form, &$form
   $token_valid = $token? devshop_github_token_is_valid($token): FALSE;
 
   $ssh_key = variable_get('devshop_public_key', '');
-  $ssh_key_exists = !empty($ssh_key);
+
+  $hostmaster_platform = node_load(hosting_get_hostmaster_platform_nid());
+  $hostmaster_server = node_load($hostmaster_platform->web_server);
 
   $form['github'] = array(
     '#title' => t('GitHub Integration'),
-    '#description' => '',
     '#type' => 'fieldset',
     '#weight' => -3,
+    '#description' => t('DevShop clones your code using the %app_user user on the server !hostmaster_server. The user must have SSH access to the chosen repositories.', array(
+        '%app_user' => variable_get('devshop_app_user', 'aegir'),
+        '!hostmaster_server' => l($hostmaster_server->title, "node/{$hostmaster_server->nid}"),
+        ))
   );
 
   $form['github']['devshop_github_token'] = array(
@@ -35,11 +40,8 @@ function devshop_github_form_devshop_projects_settings_form_alter(&$form, &$form
       'placeholder' => $token? t('Replace the current GitHub Token'): t('Enter a GitHub Token'),
     ),
   );
-  $hostmaster_platform = node_load(hosting_get_hostmaster_platform_nid());
-  $hostmaster_server = node_load($hostmaster_platform->web_server);
-
   if (empty($token)) {
-    $access_message = t('Not set up.');
+    $access_message = t('Token not set up.');
     $access_class = 'info';
     $access_note = t('Enter a token to connect this DevShop to your GitHub repositories.');
   }
@@ -61,11 +63,42 @@ function devshop_github_form_devshop_projects_settings_form_alter(&$form, &$form
     '#suffix' => '</div>',
   );
 
-  $form['github']['#description'] = t('DevShop clones your code using the %app_user user on the server !hostmaster_server. The user must have SSH access to the chosen repositories.', [
-      '%app_user' => variable_get('devshop_app_user', 'aegir'),
-      '!hostmaster_server' => l($hostmaster_server->title, "node/{$hostmaster_server->nid}"),
-      '!note' => $access_note,
-  ]);
+  // SSH Key access
+  if (empty($ssh_key)) {
+    $access_message = t('Unknown Public Key');
+    $access_class = 'warning';
+    $access_note = t("DevShop does not know the user's public key. See DevShop Server Access: Public Key below.");
+  }
+  elseif (empty($token)) {
+    $access_message = t('Public Key: Not set up.');
+    $access_class = 'info';
+    $access_note = t('Enter a token to check SSH access to your repositories.');
+  }
+  elseif (!devshop_github_check_key()) {
+    $access_message = t('Public Key: Access Denied');
+    $access_class = 'warning';
+    $access_note = t("The Public Key was not found in the account that owns this GitHub token. !link", array(
+      '!link' => l(t('Click here to add it to your GitHub account automatically'), 'admin/devshop/github/add-key', array(
+          'query' => array(
+              'destination' => $_GET['q'],
+          ),
+          'attributes' => array(
+              'class' => array('btn btn-default'),
+          ),
+      ))));
+  }
+  else {
+    $access_message = t('Public Key has access.');
+    $access_class = 'success';
+    $access_note = t("DevShop can clone your GitHub repositories using the Public Key stored below.");
+  }
+  $form['github']['key_status'] = array(
+      '#type' => 'item',
+      '#title' => $access_message,
+      '#prefix' => "<div class='alert alert-$access_class'>",
+      '#description' => $access_note,
+      '#suffix' => '</div>',
+  );
 
 //
 //  if (!$ssh_key_exists) {
