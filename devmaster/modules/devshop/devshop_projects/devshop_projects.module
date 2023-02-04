@@ -285,7 +285,7 @@ function devshop_projects_node_access($node, $op, $account) {
  */
 function devshop_projects_menu() {
   //Settings page.
-  $items['admin/devshop'] = array(
+  $items['admin/hosting'] = array(
     'title' => 'DevShop Settings',
     'description' => 'Default values for use in creation project',
     'page callback' => 'drupal_get_form',
@@ -295,9 +295,10 @@ function devshop_projects_menu() {
     'file path' => drupal_get_path('module', 'devshop_projects') . '/inc',
     'type' => MENU_NORMAL_ITEM,
   );
-  $items['admin/devshop/settings'] = array(
+  $items['admin/hosting/devshop'] = array(
     'title' => t('DevShop Settings'),
     'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => -100,
   );
 
   $items['projects'] = array(
@@ -578,6 +579,9 @@ function devshop_projects_menu_alter(&$items) {
     $items['admin/devshop/cloud'] = $items['admin/hosting/cloud'];
     $items['admin/devshop/cloud']['weight'] = 10;
   }
+
+  $items['admin/hosting/features']['type'] = MENU_LOCAL_TASK;
+
 }
 
 /**
