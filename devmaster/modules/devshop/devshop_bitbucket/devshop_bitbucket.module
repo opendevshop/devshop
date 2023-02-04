@@ -99,6 +99,128 @@ function devshop_bitbucket_form_project_node_form_alter(&$form, &$form_state, $f
 }
 
 /**
+ * BitBucket API key form.
+ * @return array()
+ */
+function devshop_bitbucket_form_devshop_projects_settings_form_alter(&$form, &$form_state, $form_id) {
+
+  $token = devshop_bitbucket_token();
+  $token_valid = $token? devshop_bitbucket_token_is_valid($token): FALSE;
+
+  $ssh_key = variable_get('devshop_public_key', '');
+
+  $form['bitbucket'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('BitBucket Integration'),
+    '#group' => 'settings',
+    '#weight' => -2,
+    '#description' => t('DevShop integrates with BitBucket to provide a number of features:'),
+  );
+
+  $form['bitbucket']['features'] = array(
+    '#theme' => 'item_list',
+    '#items' => array(
+      t('Loads a list of available repositories for creating new projects.'),
+      t('Post task status to BitBucket Build Status.'),
+      t('Create environments from Pull Requests.'),
+    ),
+    '#attributes' => array(
+      'class' => array('text small text-muted')
+    )
+  );
+
+  $bitbucket_url = "https://bitbucket.com/settings/tokens";
+  $form['bitbucket']['devshop_bitbucket_token'] = array(
+    '#type' => 'password',
+    '#title' => t('BitBucket Token'),
+    '#description' => t('Enter a BitBucket token to connect this DevShop to your code repositories. !link. Be sure to select the following Oauth Scopes: <em>repo, repo:status, repo:deployment, public_repo, write:public_key, write_repo_hook</em>', [
+      '!link' => l(t('Create a new token'), $bitbucket_url, array(
+        'attributes' => array(
+          'target' => '_blank',
+        )
+      ))
+    ]),
+    '#default_value' => variable_get('devshop_bitbucket_token', ''),
+    '#element_validate' => array(
+      'devshop_bitbucket_settings_form_validate_token',
+    ),
+    '#attributes' => array(
+      'placeholder' => $token? t('Replace the current BitBucket Token'): t('Enter a BitBucket Token'),
+    ),
+  );
+  // Test for public key access.
+  if (!empty($token)) {
+
+    $form['bitbucket_public_keys'] = array(
+      '#markup' => '',
+    );
+
+    if (devshop_bitbucket_check_key()) {
+      $form['bitbucket_public_keys']['#markup'] = ' <div class="alert alert-success">' . t('The DevShop Public SSH Key has been found in your bitbucket account.') . '</div>';
+    }
+    else {
+      $form['bitbucket_public_keys']['#markup'] = t('The DevShop Public SSH Key was not found in your account.') . '  ';
+
+      $form['bitbucket_public_keys']['#markup'] .= '</div>';
+      $form['bitbucket_public_keys']['#prefix'] = '<div class="alert alert-danger">';
+      $form['bitbucket_public_keys']['#suffix'] = l('<i class="fa fa-bitbucket"></i> ' . t('Add devshop public key to your bitbucket account'), 'admin/devshop/bitbucket/add-key', array(
+          'attributes' => array(
+            'class' => array('btn btn-primary btn-large'),
+          ),
+          'html' => TRUE,
+        )) . '</div>';
+    }
+  }
+
+  return system_settings_form($form);
+}
+
+/**
+ * Retrieve the token from either environment variable or drupal variable.
+ * @return mixed
+ */
+function devshop_bitbucket_token() {
+
+  // If ENV var is set, use that instead
+  if (!empty($_SERVER['BITBUCKET_TOKEN'])) {
+    $token = $_SERVER['BITBUCKET_TOKEN'];
+  }
+
+  // If no ENV var, load Drupal variable.
+  else {
+    $token = variable_get('devshop_bitbucket_token', '');
+  }
+
+  return $token;
+}
+
+/**
+ * Check if a token is valid. Checks the stored token if none is passed in.
+ *
+ * @param null $token
+ *   A specific token to check.
+ *
+ * @return bool|\Exception
+ */
+function devshop_bitbucket_token_is_valid($token = NULL) {
+
+  if (empty($token)) {
+    $token = devshop_bitbucket_token();
+  }
+
+  $client = new \bitbucket\Client();
+  $client->authenticate($token, bitbucket\Client::AUTH_OAUTH_TOKEN);
+
+  try {
+    $user = $client->currentUser();
+    return TRUE;
+  }
+  catch (Exception $e) {
+    return FALSE;
+  }
+}
+
+/**
  * Implements hook_form_alter().
  */
 function devshop_bitbucket_form_devshop_project_create_step_git_alter(&$form, &$form_state, $form_id) {

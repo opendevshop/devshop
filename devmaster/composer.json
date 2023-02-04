@@ -21,6 +21,7 @@
     }
   ],
   "require": {
+    "bitbucket/client": "^4.1",
     "guzzlehttp/guzzle": "^6",
     "knplabs/github-api": "^3.0||^1.0",
     "sensiolabs/ansi-to-html": "^1.1",
