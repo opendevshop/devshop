@@ -41,12 +41,12 @@ function devshop_github_form_devshop_projects_settings_form_alter(&$form, &$form
     ),
   );
   if (empty($token)) {
-    $access_message = t('Token not set up.');
+    $access_message = t('Token: not set up.');
     $access_class = 'info';
     $access_note = t('Enter a token to connect this DevShop to your GitHub repositories.');
   }
   elseif (!$token_valid) {
-    $access_message = t('Invalid token.');
+    $access_message = t('Token is invalid.');
     $access_class = 'danger';
     $access_note = t('The stored GitHub token is invalid. Enter a new one to continue.');
   }
@@ -77,20 +77,17 @@ function devshop_github_form_devshop_projects_settings_form_alter(&$form, &$form
   elseif (!devshop_github_check_key()) {
     $access_message = t('Public Key: Access Denied');
     $access_class = 'warning';
-    $access_note = t("The Public Key was not found in the account that owns this GitHub token. !link", array(
-      '!link' => l(t('Click here to add it to your GitHub account automatically'), 'admin/devshop/github/add-key', array(
+    $access_note = t("The Public Key was not found in the account that owns this GitHub token. Add the public key to individual repositories as a Deploy Key, or !link to have DevShop add it for you.", array(
+      '!link' => l(t('Click Here'), 'admin/devshop/github/add-key', array(
           'query' => array(
               'destination' => $_GET['q'],
-          ),
-          'attributes' => array(
-              'class' => array('btn btn-default'),
           ),
       ))));
   }
   else {
     $access_message = t('Public Key has access.');
     $access_class = 'success';
-    $access_note = t("DevShop can clone your GitHub repositories using the Public Key stored below.");
+    $access_note = t("The server's Public Key was found in the GitHub account that owns this token. DevShop can clone your GitHub repositories using the Public Key stored below.");
   }
   $form['github']['key_status'] = array(
       '#type' => 'item',
