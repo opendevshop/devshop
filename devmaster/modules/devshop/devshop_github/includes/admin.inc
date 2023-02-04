@@ -166,6 +166,7 @@ function devshop_github_settings_form_validate_token($element, &$form_state, $fo
 
   $token = $form_state['values']['devshop_github_token'];
   if (empty($token)) {
+    form_set_value($element, variable_get('devshop_github_token'), $form_state);
     return;
   }
   $e = devshop_github_token_is_valid($token);
@@ -173,7 +174,7 @@ function devshop_github_settings_form_validate_token($element, &$form_state, $fo
     form_error($element,  $e->getMessage());
   }
   else {
-    variable_set('devshop_github_token', $token);
+    form_set_value($element, $token, $form_state);
     devshop_github_refresh_repositories();
   }
 }
