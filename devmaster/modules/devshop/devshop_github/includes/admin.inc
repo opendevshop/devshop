@@ -147,7 +147,7 @@ function devshop_github_form_devshop_projects_settings_form_alter(&$form, &$form
       '@count_string' => format_plural($count, t('1 GitHub organization'), t('@count GitHub organizations'))
   )));
   $form['github']['button'] = array(
-    '#markup' => l(t('Refresh GitHub Data'),'admin/devshop/github/load-repos', array('attributes' => array(
+    '#markup' => l(t('Reload GitHub Projects'),'admin/devshop/github/load-repos', array('attributes' => array(
     'class' => array('btn btn-info'),
   ))));
 
