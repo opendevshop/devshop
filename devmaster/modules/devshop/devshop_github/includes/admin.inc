@@ -61,7 +61,7 @@ function devshop_github_form_devshop_projects_settings_form_alter(&$form, &$form
     '#suffix' => '</div>',
   );
 
-  $node = t('DevShop clones your code using the %app_user user on the server !hostmaster_server. !note', [
+  $form['github']['#description'] = t('DevShop clones your code using the %app_user user on the server !hostmaster_server. The user must have SSH access to the chosen repositories.', [
       '%app_user' => variable_get('devshop_app_user', 'aegir'),
       '!hostmaster_server' => l($hostmaster_server->title, "node/{$hostmaster_server->nid}"),
       '!note' => $access_note,
@@ -101,24 +101,22 @@ function devshop_github_form_devshop_projects_settings_form_alter(&$form, &$form
     '#access' => !empty(variable_get('devshop_github_token')),
   );
 
-  $form['projects']['message'] = array(
-    '#prefix' => "<div class='alert alert-success'><i class='fa fa-check'></i>",
+  $form['github']['message'] = array(
+    '#prefix' => "<div class='alert alert-success'><i class='fa fa-check'></i> ",
     '#suffix' => '</div>',
-    '#weight' => -1,
     '#markup' =>  t('@count_string associated with this GitHub token.', array(
       '@count_string' => format_plural($count, t('1 repository found'), t('@count repositories found'))
   )));
 
   $orgs = variable_get('devshop_github_available_organizations', array());
   $count = count($orgs);
-  $form['projects']['message_orgs'] = array(
-    '#prefix' => "<div class='alert alert-success'><i class='fa fa-check'></i>",
+  $form['github']['message_orgs'] = array(
+    '#prefix' => "<div class='alert alert-success'><i class='fa fa-check'></i> ",
     '#suffix' => '</div>',
-    '#weight' => -1,
     '#markup' =>  t('@count_string with create repo privileges.', array(
       '@count_string' => format_plural($count, t('1 GitHub organization'), t('@count GitHub organizations'))
   )));
-  $form['projects']['button'] = array(
+  $form['github']['button'] = array(
     '#markup' => l(t('Refresh GitHub Data'),'admin/devshop/github/load-repos', array('attributes' => array(
     'class' => array('btn btn-info'),
   ))));
