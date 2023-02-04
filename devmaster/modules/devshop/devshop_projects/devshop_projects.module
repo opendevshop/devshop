@@ -298,7 +298,7 @@ function devshop_projects_menu() {
   $items['admin/hosting/devshop'] = array(
     'title' => t('DevShop Settings'),
     'type' => MENU_DEFAULT_LOCAL_TASK,
-    'weight' => -100,
+    'weight' => -10,
   );
 
   $items['projects'] = array(
@@ -398,6 +398,41 @@ function devshop_projects_menu() {
   );
 
   return $items;
+}
+
+/**
+ * Implements hook_menu_alter().
+ *
+ * Replaces node/add/project with a ctools wizard.
+ */
+function devshop_projects_menu_alter(&$items) {
+  $items['node/add/project']['page callback'] = 'devshop_projects_create_wizard';
+  $items['node/add/project']['page arguments'] = array(3);
+  $items['node/add/project']['file'] = 'create-wizard.inc';
+  $items['node/add/project']['file path'] = drupal_get_path('module', 'devshop_projects') . '/inc';
+
+  // Hosting now hides all but migrate and clone tasks.
+  $path = sprintf("hosting_confirm/%hosting_%s_wildcard/site_deploy", 'deploy', 'deploy', 'deploy');
+  $items[$path]['access callback'] = 'devshop_hosting_task_menu_access_csrf';
+
+  // Redirect hosting/task/% to the node
+  $items['hosting/task/%'] = array(
+      'page callback' => 'drupal_goto_nid',
+      'page arguments' => array(2),
+      'access callback' => TRUE,
+  );
+
+  if (isset($items['admin/hosting/cloud'])) {
+    $items['admin/devshop/cloud'] = $items['admin/hosting/cloud'];
+    $items['admin/devshop/cloud']['weight'] = 10;
+  }
+
+  $items['admin/hosting/settings']['title'] = t('Aegir Settings');
+  $items['admin/hosting/settings']['weight'] = -2;
+
+  $items['admin/hosting/features']['type'] = MENU_LOCAL_TASK;
+  $items['admin/hosting/features']['title'] = t('Aegir Features');
+  $items['admin/hosting/features']['weight'] = -1;
 }
 
 /**
@@ -551,37 +586,6 @@ function devshop_projects_add($step = NULL) {
 function devshop_projects_hosting_task_confirm_form_page($nid, $task) {
   $node = node_load($nid);
   return drupal_get_form('hosting_task_confirm_form', $node, $task);
-}
-
-/**
- * Implements hook_menu_alter().
- *
- * Replaces node/add/project with a ctools wizard.
- */
-function devshop_projects_menu_alter(&$items) {
-  $items['node/add/project']['page callback'] = 'devshop_projects_create_wizard';
-  $items['node/add/project']['page arguments'] = array(3);
-  $items['node/add/project']['file'] = 'create-wizard.inc';
-  $items['node/add/project']['file path'] = drupal_get_path('module', 'devshop_projects') . '/inc';
-
-  // Hosting now hides all but migrate and clone tasks.
-  $path = sprintf("hosting_confirm/%hosting_%s_wildcard/site_deploy", 'deploy', 'deploy', 'deploy');
-  $items[$path]['access callback'] = 'devshop_hosting_task_menu_access_csrf';
-
-  // Redirect hosting/task/% to the node
-  $items['hosting/task/%'] = array(
-    'page callback' => 'drupal_goto_nid',
-    'page arguments' => array(2),
-    'access callback' => TRUE,
-  );
-
-  if (isset($items['admin/hosting/cloud'])) {
-    $items['admin/devshop/cloud'] = $items['admin/hosting/cloud'];
-    $items['admin/devshop/cloud']['weight'] = 10;
-  }
-
-  $items['admin/hosting/features']['type'] = MENU_LOCAL_TASK;
-
 }
 
 /**
