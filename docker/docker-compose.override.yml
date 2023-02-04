@@ -7,4 +7,5 @@ services:
     image: ${DEVSHOP_DOCKER_IMAGE:-devshop/server:php8.0}
     volumes:
       - ../:/usr/share/devshop
+      - ../aegir-home:/var/aegir
       - $HOME/.ssh:/var/aegir/.ssh
