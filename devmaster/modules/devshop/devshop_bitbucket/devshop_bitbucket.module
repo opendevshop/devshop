@@ -12,7 +12,7 @@
 function devshop_bitbucket_menu() {
   $items = array();
 //
-//  $items['admin/devshop/bitbucket'] = array(
+//  $items['admin/hosting/bitbucket'] = array(
 //    'title' => 'BitBucket',
 //    'description' => 'DevShop BitBucket Integration Settings',
 //    'page callback' => 'drupal_get_form',
@@ -22,7 +22,7 @@ function devshop_bitbucket_menu() {
 //    'file path' => drupal_get_path('module', 'devshop_bitbucket') . '/includes',
 //    'type' => MENU_LOCAL_TASK,
 //  );
-//  $items['admin/devshop/bitbucket/add-key'] = array(
+//  $items['admin/hosting/bitbucket/add-key'] = array(
 //    'title' => 'Add public key to bitbucket Account',
 //    'page callback' => 'drupal_get_form',
 //    'page arguments' => array('devshop_bitbucket_add_key_to_account'),
@@ -163,7 +163,7 @@ function devshop_bitbucket_form_devshop_projects_settings_form_alter(&$form, &$f
 
       $form['bitbucket_public_keys']['#markup'] .= '</div>';
       $form['bitbucket_public_keys']['#prefix'] = '<div class="alert alert-danger">';
-      $form['bitbucket_public_keys']['#suffix'] = l('<i class="fa fa-bitbucket"></i> ' . t('Add devshop public key to your bitbucket account'), 'admin/devshop/bitbucket/add-key', array(
+      $form['bitbucket_public_keys']['#suffix'] = l('<i class="fa fa-bitbucket"></i> ' . t('Add devshop public key to your bitbucket account'), 'admin/hosting/bitbucket/add-key', array(
           'attributes' => array(
             'class' => array('btn btn-primary btn-large'),
           ),
@@ -229,7 +229,7 @@ function devshop_bitbucket_form_devshop_project_create_step_git_alter(&$form, &$
 //  $token = variable_get('devshop_bitbucket_token', '');
 //
 //  if (empty($token)) {
-//    $form['connect']['#description'] = ' <div class="alert alert-danger">' . t('bitbucket API Token was not found.') . ' ' . l(t('Configure DevShop bitbucket Settings'), 'admin/devshop/bitbucket') . '</div>';
+//    $form['connect']['#description'] = ' <div class="alert alert-danger">' . t('bitbucket API Token was not found.') . ' ' . l(t('Configure DevShop bitbucket Settings'), 'admin/hosting/bitbucket') . '</div>';
 //    return;
 //  }
 //
@@ -239,7 +239,7 @@ function devshop_bitbucket_form_devshop_project_create_step_git_alter(&$form, &$
 //  else {
 //    $form['connect']['#description'] = t('The DevShop Public SSH Key was not found in your account.') . '  ';
 //
-//    $form['connect']['#description'] .= l(t('Add devshop public key to your bitbucket account'), 'admin/devshop/bitbucket/add-key', array(
+//    $form['connect']['#description'] .= l(t('Add devshop public key to your bitbucket account'), 'admin/hosting/bitbucket/add-key', array(
 //            'query' => array(
 //              'destination' => $_GET['q'],
 //            ),

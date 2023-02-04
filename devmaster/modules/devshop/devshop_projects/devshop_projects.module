@@ -423,8 +423,8 @@ function devshop_projects_menu_alter(&$items) {
   );
 
   if (isset($items['admin/hosting/cloud'])) {
-    $items['admin/devshop/cloud'] = $items['admin/hosting/cloud'];
-    $items['admin/devshop/cloud']['weight'] = 10;
+    $items['admin/hosting/cloud'] = $items['admin/hosting/cloud'];
+    $items['admin/hosting/cloud']['weight'] = 10;
   }
 
   $items['admin/hosting/settings']['title'] = t('Aegir Settings');

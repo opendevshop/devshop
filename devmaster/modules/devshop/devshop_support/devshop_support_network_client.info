@@ -2,5 +2,5 @@ name = DevShop Support Network Client
 description = Connects your DevShop server to the DevShop.Support system.
 package = DevShop
 core = 7.x
-configure = admin/devshop/support
+configure = admin/hosting/support
 

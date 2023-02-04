@@ -86,7 +86,7 @@ function devshop_github_form_devshop_projects_settings_form_alter(&$form, &$form
     $access_message = t('Public Key: Access Denied');
     $access_class = 'warning';
     $access_note = t("The Public Key was not found in the account that owns this GitHub token. Add the public key to individual repositories as a Deploy Key, or !link to have DevShop add it for you.", array(
-      '!link' => l(t('Click Here'), 'admin/devshop/github/add-key', array(
+      '!link' => l(t('Click Here'), 'admin/hosting/github/add-key', array(
           'query' => array(
               'destination' => $_GET['q'],
           ),
@@ -155,7 +155,7 @@ function devshop_github_form_devshop_projects_settings_form_alter(&$form, &$form
       '@count_string' => format_plural($count, t('1 GitHub organization'), t('@count GitHub organizations'))
   )));
   $form['github']['button'] = array(
-    '#markup' => l(t('Reload GitHub Projects'),'admin/devshop/github/load-repos', array('attributes' => array(
+    '#markup' => l(t('Reload GitHub Projects'),'admin/hosting/github/load-repos', array('attributes' => array(
     'class' => array('btn btn-info'),
   ))));
 
@@ -194,13 +194,13 @@ function devshop_github_get_repositories_page() {
   $token = variable_get('devshop_github_token', '');
   if (empty($token)) {
     drupal_set_message('GitHub API Token is not set.', 'error');
-    drupal_goto('admin/devshop');
+    drupal_goto('admin/hosting');
     return;
   }
 
   devshop_github_refresh_repositories();
 
-  drupal_goto('admin/devshop');
+  drupal_goto('admin/hosting');
   return;
 }
 

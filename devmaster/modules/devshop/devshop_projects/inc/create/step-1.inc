@@ -112,7 +112,7 @@ function devshop_project_create_step_git($form, $form_state) {
   else {
     $msg = t('If you haven\'t granted this server access to your Git repository, you should do so now using it\'s public SSH key:');
 
-    $link = l(t('Edit devshop public key'), 'admin/devshop', array(
+    $link = l(t('Edit devshop public key'), 'admin/hosting', array(
       'query' => array(
         'destination' => $_GET['q'],
       ),
@@ -196,7 +196,7 @@ HTML;
   $tips[] = t('You can use a repository with a full Drupal stack committed, in the root or in a sub folder');
   $tips[] = t('If a composer.json file is found in the root of the project, <code>composer install</code> will be run automatically.');
   $tips[] = t("If your repository is not public, make sure your server has SSH access. Check the !link to see this server's public key.", array(
-    '!link' => l(t('DevShop Settings'), 'admin/devshop'),
+    '!link' => l(t('DevShop Settings'), 'admin/hosting'),
   ));
   $tips = theme('item_list', array('items' => $tips));
 
