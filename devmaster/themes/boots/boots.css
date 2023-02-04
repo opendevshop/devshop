@@ -1390,3 +1390,13 @@ form .well .form-type-radios .form-type-radio
 kbd.alert {
   display: block;
 }
+
+#devshop-projects-settings-form fieldset ul {
+    list-style: square;
+    margin: 0;
+    padding-left: 2em;
+}
+
+#devshop-projects-settings-form fieldset ul li {
+  padding: .5em 0;
+}

@@ -11,17 +11,25 @@ function devshop_github_form_devshop_projects_settings_form_alter(&$form, &$form
 
   $ssh_key = variable_get('devshop_public_key', '');
 
-  $hostmaster_platform = node_load(hosting_get_hostmaster_platform_nid());
-  $hostmaster_server = node_load($hostmaster_platform->web_server);
-
   $form['github'] = array(
     '#title' => t('GitHub Integration'),
     '#type' => 'fieldset',
+    '#group' => 'settings',
     '#weight' => -3,
-    '#description' => t('DevShop clones your code using the %app_user user on the server !hostmaster_server. The user must have SSH access to the chosen repositories.', array(
-        '%app_user' => variable_get('devshop_app_user', 'aegir'),
-        '!hostmaster_server' => l($hostmaster_server->title, "node/{$hostmaster_server->nid}"),
-        ))
+    '#description' => t('DevShop integrates with GitHub to provide a number of features:'),
+  );
+  $form['github']['features'] = array(
+    '#theme' => 'item_list',
+    '#items' => array(
+      t('Submit Public Key to GitHub account to grant this server access to clone code.'),
+      t('Loads a list of available repositories for creating new projects.'),
+      t('Create new repositories on GitHub when adding projects.'),
+      t('Post task statuses to GitHub to integrate with Deployments and Commit Status API.'),
+      t('Create environments from Pull Requests'),
+    ),
+    '#attributes' => array(
+      'class' => array('text small text-muted')
+    )
   );
 
   $form['github']['devshop_github_token'] = array(

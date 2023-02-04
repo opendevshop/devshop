@@ -25,7 +25,12 @@ function devshop_element_validate_explode_array($element, &$form_state, &$form) 
 function devshop_projects_settings_form($form, &$form_state) {
   $form = array();
 
+  $form['settings'] = array(
+    '#type' => 'vertical_tabs',
+  );
+
   $form['projects'] = array(
+    '#group' => 'settings',
     '#type' => 'fieldset',
     '#title' => t('Project Templates'),
   );
@@ -50,6 +55,7 @@ function devshop_projects_settings_form($form, &$form_state) {
 
   $form['paths'] = array(
     '#type' => 'fieldset',
+    '#group' => 'settings',
     '#title' => t('Paths'),
   );
   $form['paths']['devshop_projects_allow_custom_code_path'] = array(
@@ -75,6 +81,7 @@ function devshop_projects_settings_form($form, &$form_state) {
   $form['urls'] = array(
     '#type' => 'fieldset',
     '#title' => t('URLs'),
+    '#group' => 'settings',
   );
 
   $form['urls']['devshop_projects_allow_changing_project_git_url'] = array(
@@ -110,11 +117,19 @@ function devshop_projects_settings_form($form, &$form_state) {
 //    '#default_value' => variable_get('devshop_support_widget_enable', TRUE),
 //  );
 
+  $hostmaster_platform = node_load(hosting_get_hostmaster_platform_nid());
+  $hostmaster_server = node_load($hostmaster_platform->web_server);
+
   // Server settings.
   $form['server'] = array(
     '#type' => 'fieldset',
-    '#title' => t('DevShop Server Access'),
+    '#title' => t('Public Key'),
     '#weight' => -1,
+    '#group' => 'settings',
+    '#description' => t('DevShop clones your code using the %app_user user on the server !hostmaster_server. The user must have SSH access to the chosen repositories.', array(
+      '%app_user' => variable_get('devshop_app_user', 'aegir'),
+      '!hostmaster_server' => l($hostmaster_server->title, "node/{$hostmaster_server->nid}"),
+    ))
   );
   $form['server']['devshop_public_key'] = array(
     '#title' => t('Public Key'),
