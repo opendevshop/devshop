@@ -82,6 +82,11 @@ function devshop_github_form_devshop_projects_settings_form_alter(&$form, &$form
     $access_class = 'info';
     $access_note = t('Enter a token to check SSH access to your repositories.');
   }
+  elseif (!$token_valid) {
+    $access_message = t('Public Key: Not set up.');
+    $access_class = 'info';
+    $access_note = t('Enter a valid token to check SSH access to your repositories.');
+  }
   elseif (!devshop_github_check_key()) {
     $access_message = t('Public Key: Access Denied');
     $access_class = 'warning';
