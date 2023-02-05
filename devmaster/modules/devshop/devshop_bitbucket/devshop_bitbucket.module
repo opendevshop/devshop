@@ -4,7 +4,6 @@
  * @file devshop_bitbucket.module
  */
 
-//require_once 'vendor/autoload.php';
 
 /**
  * Implements hook_menu().
@@ -129,11 +128,13 @@ function devshop_bitbucket_form_devshop_projects_settings_form_alter(&$form, &$f
     )
   );
 
-  $bitbucket_url = "https://bitbucket.com/settings/tokens";
+  $bitbucket_url = "https://bitbucket.org/account/settings/app-passwords/new";
   $form['bitbucket']['devshop_bitbucket_token'] = array(
     '#type' => 'password',
+    '#size' => '256',
+    '#maxlength' => '256',
     '#title' => t('BitBucket Token'),
-    '#description' => t('Enter a BitBucket token to connect this DevShop to your code repositories. !link. Be sure to select the following Oauth Scopes: <em>repo, repo:status, repo:deployment, public_repo, write:public_key, write_repo_hook</em>', [
+    '#description' => t('Enter a BitBucket token to connect this DevShop to your code repositories. !link. Be sure to select the following scopes: <em>Repositories: Read, Pull requests: read, Webhooks: Read and write</em>', [
       '!link' => l(t('Create a new token'), $bitbucket_url, array(
         'attributes' => array(
           'target' => '_blank',
@@ -148,31 +149,92 @@ function devshop_bitbucket_form_devshop_projects_settings_form_alter(&$form, &$f
       'placeholder' => $token? t('Replace the current BitBucket Token'): t('Enter a BitBucket Token'),
     ),
   );
-  // Test for public key access.
-  if (!empty($token)) {
 
-    $form['bitbucket_public_keys'] = array(
-      '#markup' => '',
-    );
 
-    if (devshop_bitbucket_check_key()) {
-      $form['bitbucket_public_keys']['#markup'] = ' <div class="alert alert-success">' . t('The DevShop Public SSH Key has been found in your bitbucket account.') . '</div>';
-    }
-    else {
-      $form['bitbucket_public_keys']['#markup'] = t('The DevShop Public SSH Key was not found in your account.') . '  ';
-
-      $form['bitbucket_public_keys']['#markup'] .= '</div>';
-      $form['bitbucket_public_keys']['#prefix'] = '<div class="alert alert-danger">';
-      $form['bitbucket_public_keys']['#suffix'] = l('<i class="fa fa-bitbucket"></i> ' . t('Add devshop public key to your bitbucket account'), 'admin/hosting/bitbucket/add-key', array(
-          'attributes' => array(
-            'class' => array('btn btn-primary btn-large'),
-          ),
-          'html' => TRUE,
-        )) . '</div>';
-    }
+  if (empty($token)) {
+    $access_message = t('Token: not set up.');
+    $access_class = 'info';
+    $access_note = t('Enter a token to connect this DevShop to your repositories.');
   }
+  elseif (!$token_valid) {
+    $access_message = t('Token is invalid.');
+    $access_class = 'danger';
+    $access_note = t('The stored token is invalid. Enter a new one to continue.');
+  }
+  else {
+    $access_message = t('Token is valid.');
+    $access_class = 'success';
+    $access_note = t('The stored token is valid.');
+  }
+  $form['bitbucket']['token_status'] = array(
+    '#type' => 'item',
+    '#title' => $access_message,
+    '#prefix' => "<div class='alert alert-$access_class'>",
+    '#description' => $access_note,
+    '#suffix' => '</div>',
+  );
+
+  // SSH Key access
+  if (empty($ssh_key)) {
+    $access_message = t('Unknown Public Key');
+    $access_class = 'warning';
+    $access_note = t("DevShop does not know the user's public key. See DevShop Server Access: Public Key below.");
+  }
+  elseif (empty($token)) {
+    $access_message = t('Public Key: Not set up.');
+    $access_class = 'info';
+    $access_note = t('Enter a token to check SSH access to your repositories.');
+  }
+  elseif (!devshop_bitbucket_check_key()) {
+    $access_message = t('Public Key: Access Denied');
+    $access_class = 'warning';
+    $access_note = t("The Public Key was not found in the account that owns this GitHub token. Add the public key to individual repositories as a Deploy Key, or !link to have DevShop add it for you.", array(
+      '!link' => l(t('Click Here'), 'admin/hosting/github/add-key', array(
+        'query' => array(
+          'destination' => $_GET['q'],
+        ),
+      ))));
+  }
+  else {
+    $access_message = t('Public Key has access.');
+    $access_class = 'success';
+    $access_note = t("The server's Public Key was found in the GitHub account that owns this token. DevShop can clone your GitHub repositories using the Public Key stored below.");
+  }
+  $form['bitbucket']['key_status'] = array(
+    '#type' => 'item',
+    '#title' => $access_message,
+    '#prefix' => "<div class='alert alert-$access_class'>",
+    '#description' => $access_note,
+    '#suffix' => '</div>',
+  );
 
   return system_settings_form($form);
+}
+
+/**
+ * Element validation for License Key. Pings devshop.support
+ *
+ * @param $element
+ * @param $form_state
+ * @param $form
+ */
+function devshop_bitbucket_settings_form_validate_token($element, &$form_state, $form) {
+
+  $token = $form_state['values']['devshop_bitbucket_token'];
+  if (empty($token)) {
+    form_set_value($element, variable_get('devshop_bitbucket_token'), $form_state);
+    return;
+  }
+
+  $client = new \Bitbucket\Client();
+  $client->authenticate(Bitbucket\Client::AUTH_OAUTH_TOKEN, $token);
+  try {
+    $user = $client->currentUser();
+    form_set_value($element, $token, $form_state);
+  }
+  catch (Exception $e) {
+    form_error($element, 'Invalid Token: ' . $e->getMessage());
+  }
 }
 
 /**
@@ -208,9 +270,8 @@ function devshop_bitbucket_token_is_valid($token = NULL) {
     $token = devshop_bitbucket_token();
   }
 
-  $client = new \bitbucket\Client();
-  $client->authenticate($token, bitbucket\Client::AUTH_OAUTH_TOKEN);
-
+  $client = new \Bitbucket\Client();
+  $client->authenticate(Bitbucket\Client::AUTH_OAUTH_TOKEN, $token);
   try {
     $user = $client->currentUser();
     return TRUE;

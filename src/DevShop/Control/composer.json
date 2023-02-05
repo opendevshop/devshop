@@ -97,7 +97,8 @@
         "symfony/options-resolver": "^4.4",
         "drupal/drupal-extension": "^4.2",
         "symfony/dependency-injection": "^4.4",
-        "symfony/process": "^4.4"
+        "symfony/process": "^4.4",
+        "bitbucket/client": "^4.1"
     },
     "conflict": {
         "drupal/core": "8.*"

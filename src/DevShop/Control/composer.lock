@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0e0485eb8a49f43ee7852b6df2bc5ab9",
+    "content-hash": "a4caac5e0d48ecd4cd98f13ac47d475b",
     "packages": [
         {
             "name": "behat/behat",
@@ -456,6 +456,83 @@
             "time": "2022-03-30T09:27:43+00:00"
         },
         {
+            "name": "bitbucket/client",
+            "version": "v4.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/BitbucketPHP/Client.git",
+                "reference": "c8a6e24ec71e987dde37207d4bd0810989c7a8b8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/BitbucketPHP/Client/zipball/c8a6e24ec71e987dde37207d4bd0810989c7a8b8",
+                "reference": "c8a6e24ec71e987dde37207d4bd0810989c7a8b8",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "php": "^7.2.5 || ^8.0",
+                "php-http/cache-plugin": "^1.7.5",
+                "php-http/client-common": "^2.5",
+                "php-http/discovery": "^1.14",
+                "php-http/httplug": "^2.2",
+                "php-http/multipart-stream-builder": "^1.2",
+                "psr/cache": "^1.0 || ^2.0 || ^3.0",
+                "psr/http-client-implementation": "^1.0",
+                "psr/http-factory-implementation": "^1.0",
+                "psr/http-message": "^1.0",
+                "symfony/polyfill-php80": "^1.17"
+            },
+            "require-dev": {
+                "bamarni/composer-bin-plugin": "^1.4.1",
+                "guzzlehttp/guzzle": "^7.4",
+                "http-interop/http-factory-guzzle": "^1.0",
+                "php-http/mock-client": "^1.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Bitbucket\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Graham Campbell",
+                    "email": "hello@gjcampbell.co.uk",
+                    "homepage": "https://github.com/GrahamCampbell"
+                }
+            ],
+            "description": "Bitbucket API 2.0 client for PHP",
+            "keywords": [
+                "Bitbucket API",
+                "Bitbucket API Client",
+                "Bitbucket Client",
+                "BitbucketAPI",
+                "Graham Campbell",
+                "GrahamCampbell",
+                "bitbucket"
+            ],
+            "support": {
+                "issues": "https://github.com/BitbucketPHP/Client/issues",
+                "source": "https://github.com/BitbucketPHP/Client/tree/v4.1.0"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/GrahamCampbell",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/bitbucket/client",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2022-01-23T19:14:04+00:00"
+        },
+        {
             "name": "clue/stream-filter",
             "version": "v1.6.0",
             "source": {
@@ -806,9 +883,10 @@
             "dist": {
                 "type": "path",
                 "url": "../../../devmaster",
-                "reference": "dd1f520f78db5a282b3d291c258b63e86f3d03a7"
+                "reference": "13ceff6dd3b4faf64a826804e948a2341d57d4f2"
             },
             "require": {
+                "bitbucket/client": "^4.1",
                 "guzzlehttp/guzzle": "^6",
                 "knplabs/github-api": "^3.0||^1.0",
                 "sensiolabs/ansi-to-html": "^1.1",
@@ -8158,5 +8236,5 @@
     "platform-overrides": {
         "php": "7.4.0"
     },
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.1.0"
 }
