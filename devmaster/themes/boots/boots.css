@@ -1401,11 +1401,10 @@ kbd.alert {
     padding-top: 1em;
 }
 
-#devshop-projects-settings-form .alert > div {
-    padding-left: 1em;
-    margin-top: -.2em;
+#devshop-projects-settings-form .alert > div
+{
+    padding-left: 2em;
 }
-
 #devshop-projects-settings-form .btn-group a {
     padding: 1em;
     display: inline-block;

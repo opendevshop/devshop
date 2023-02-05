@@ -61,7 +61,8 @@ function devshop_github_form_devshop_projects_settings_form_alter(&$form, &$form
   );
   $form['github']['features']['list'] = array(
     '#theme' => 'item_list',
-    '#prefix' => '<i class="fa fa-question-circle fa-4x pull-right"></i>' . t('DevShop integrates with GitHub to provide a number of features:'),
+    '#prefix' => '<i class="fa fa-question-circle fa-2x pull-left"></i><div>' . t('DevShop integrates with GitHub to provide a number of features:'),
+    '#suffix' => '</div>',
     '#items' => array(
       t('Create environments from Pull Requests'),
       t('Loads a list of available repositories for creating new projects.'),
