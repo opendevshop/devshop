@@ -123,7 +123,7 @@ function devshop_projects_settings_form($form, &$form_state) {
   // Server settings.
   $form['server'] = array(
     '#type' => 'fieldset',
-    '#title' => t('Public Key'),
+    '#title' => t('DevShop Public Key'),
     '#weight' => -1,
     '#group' => 'settings',
     '#description' => t('DevShop clones your code using the %app_user user on the server !hostmaster_server. The user must have SSH access to the chosen repositories.', array(
@@ -132,7 +132,7 @@ function devshop_projects_settings_form($form, &$form_state) {
     ))
   );
   $form['server']['devshop_public_key'] = array(
-    '#title' => t('Public Key'),
+    '#title' => t('DevShop Public Key'),
     '#description' => theme('item_list', array(
       'items' => array(
         t('The public key for this server. This key will be used when cloning code and syncing data from remote servers.'),
