@@ -32,7 +32,7 @@ function devshop_projects_settings_form($form, &$form_state) {
   $form['create'] = array(
     '#group' => 'settings',
     '#type' => 'fieldset',
-    '#title' => t('Creating Projects'),
+    '#title' => t('Project Sources'),
   );
   $form['create']['devshop_allow_any_git_repo'] = array(
     '#title' => t('Allow any Git repository'),
@@ -111,6 +111,7 @@ function devshop_projects_settings_form($form, &$form_state) {
     '#default_value' => variable_get('devshop_project_base_path', '/var/aegir/projects'),
   );
   $form['projects']['devshop_projects_allow_custom_code_path'] = array(
+    '#prefix' => '<label>' . t('Customizing Projects') . '</label>',
     '#title' => t('Allow projects to have their own code path.'),
     '#description' => t('Allow each project to have a custom "Code Path". If not checked, project paths are set as "/var/aegir/projects/{PROJECT_NAME}.'),
     '#type' => 'checkbox',
@@ -138,6 +139,7 @@ function devshop_projects_settings_form($form, &$form_state) {
 //  <div class="help-block">When creating or editing a site, show a field for changing the default files paths. <em>CAUTION:</em> The web server user will be granted write access permission to these folders so that the Drupal site can receive uploaded files. If this is checked, Aegir users can enter any path, and the <code>aegir</code> system user will attempt to make it writable for the web server user, typically <code>www-data</code>, <code>apache</code> or <code>nginx</code>. </div>
 
   $form['projects']['hosting_require_disable_before_delete'] = array(
+    '#prefix' => '<label>' . t('Disabling and Deleting Sites') . '</label>',
     '#title' => t('Sites must be disabled sites before they can be deleted.'),
     '#description' => t("If checked, a site must be disabled before it is deleted. <em>Recommended. If not checked, DevShop users can delete any site.</em>"),
     '#type' => 'checkbox',
