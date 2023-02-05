@@ -150,7 +150,6 @@ function devshop_projects_settings_form($form, &$form_state) {
       t("DevShop clones git repositories as the %user@!server server using this Public Key", $t),
       t("Actions on the server respect the server's SSH configuration."),
       t("<em class='text-warning'>Warning:</em> If you grant access to a remote server using this key, anyone who can access %user@!server will be able to access the remote.", $t),
-      t("If the SSH keys change on the server, you can update this one by running the command: !command", $t)
     ),
     '#attributes' => array(
       'class' => array('text small text-muted')
@@ -166,6 +165,11 @@ function devshop_projects_settings_form($form, &$form_state) {
       '#markup' => variable_get('devshop_public_key', ''),
       '#suffix' => '</code></pre>',
     ),
+  );
+  $form['public_key']['update'] = array(
+    '#prefix' => '<div class="alert alert-info">',
+    '#markup' => t("Note: If the SSH keys change on the server, you can update this one by running the command: !command", $t),
+    '#suffix' => '</div>',
   );
   return system_settings_form($form);
 }
