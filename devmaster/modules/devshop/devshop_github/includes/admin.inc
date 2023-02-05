@@ -7,7 +7,31 @@
 function devshop_github_form_devshop_projects_settings_form_alter(&$form, &$form_state, $form_id) {
 
   $token = devshop_github_token();
-  $token_valid = $token? devshop_github_token_is_valid($token): FALSE;
+  $client = new \Github\Client();
+  $client->authenticate($token, \Github\AuthMethod::ACCESS_TOKEN);
+
+  try {
+    $gh_user = $client->currentUser()->show();
+    $token_valid = TRUE;
+  }
+    // Happens when user has no public keys.
+  catch (Exception $e) {
+    $gh_user = FALSE;
+    $token_valid = FALSE;
+  }
+
+  $t = array(
+    '!user' => l($gh_user['login'], $gh_user['html_url'], array(
+      'attributes' => array(
+        'target' => '_blank'))),
+    '!create_token' => l(t('Create a new token'), 'https://github.com/settings/tokens/new?scopes=repo,admin:public_key,admin:repo_hook&description=' . $_SERVER['HTTP_HOST'], array(
+      'attributes' => array(
+        'target' => '_blank'))),
+    '!devshop_settings' => l(t('DevShop Public Key Settings'), current_path(), array(
+      'fragment' => 'edit-server')),
+    '!github_settings' => l(t('GitHub Personal Tokens'), current_path(), array(
+      'fragment' => 'edit-server')),
+  );
 
   $ssh_key = variable_get('devshop_public_key', '');
 
@@ -16,10 +40,18 @@ function devshop_github_form_devshop_projects_settings_form_alter(&$form, &$form
     '#type' => 'fieldset',
     '#group' => 'settings',
     '#weight' => -3,
-    '#description' => t('DevShop integrates with GitHub to provide a number of features:'),
   );
-  $form['github']['features'] = array(
+  $form['github']['features']  = array(
+    '#type' => 'container',
+    '#attributes' => array(
+      'class' => array(
+        'alert alert-info'
+      )
+    )
+  );
+  $form['github']['features']['list'] = array(
     '#theme' => 'item_list',
+    '#prefix' => '<i class="fa fa-question-circle fa-4x pull-right"></i>' . t('DevShop integrates with GitHub to provide a number of features:'),
     '#items' => array(
       t('Submit Public Key to GitHub account to grant this server access to clone code.'),
       t('Loads a list of available repositories for creating new projects.'),
@@ -35,11 +67,7 @@ function devshop_github_form_devshop_projects_settings_form_alter(&$form, &$form
   $form['github']['devshop_github_token'] = array(
     '#type' => 'password',
     '#title' => t('GitHub Token'),
-    '#description' => t('Enter a GitHub token to connect this DevShop to your code repositories. !link.', [
-        '!link' => l(t('Create a new token'), 'https://github.com/settings/tokens/new?scopes=repo,admin:public_key,admin:repo_hook&description=' . $_SERVER['HTTP_HOST'], array('attributes' => array(
-            'target' => '_blank',
-        )))
-    ]),
+    '#description' => t('Enter a GitHub token to connect this DevShop to your repositories. <p>!create_token.', $t),
     '#default_value' => variable_get('devshop_github_token', ''),
     '#element_validate' => array(
       'devshop_github_settings_form_validate_token',
@@ -51,17 +79,17 @@ function devshop_github_form_devshop_projects_settings_form_alter(&$form, &$form
   if (empty($token)) {
     $access_message = t('Token: not set up.');
     $access_class = 'info';
-    $access_note = t('Enter a token to connect this DevShop to your GitHub repositories.');
+    $access_note = t('Enter a token to connect this DevShop to your GitHub repositories. !create_token', $t);
   }
   elseif (!$token_valid) {
     $access_message = t('Token is invalid.');
     $access_class = 'danger';
-    $access_note = t('The stored GitHub token is invalid. Enter a new one to continue.');
+    $access_note = t('The stored GitHub token is invalid. Enter a new one to continue. !create_token', $t);
   }
   else {
     $access_message = t('Token is valid.');
     $access_class = 'success';
-    $access_note = t('The stored GitHub token is valid.');
+    $access_note = t('Successfully connected to GitHub API as !user.', $t);
   }
   $form['github']['token_status'] = array(
     '#type' => 'item',
@@ -75,7 +103,9 @@ function devshop_github_form_devshop_projects_settings_form_alter(&$form, &$form
   if (empty($ssh_key)) {
     $access_message = t('Unknown Public Key');
     $access_class = 'warning';
-    $access_note = t("DevShop does not know the user's public key. See DevShop Server Access: Public Key below.");
+    $access_note = t("DevShop does not know the user's public key. See the !link section in DevShop Settings.", array(
+      '!link' => $public_key_link,
+    ));
   }
   elseif (empty($token)) {
     $access_message = t('Public Key: Not set up.');
@@ -100,7 +130,7 @@ function devshop_github_form_devshop_projects_settings_form_alter(&$form, &$form
   else {
     $access_message = t('Public Key has access.');
     $access_class = 'success';
-    $access_note = t("The server's Public Key was found in the GitHub account that owns this token. DevShop can clone your GitHub repositories using the Public Key stored below.");
+    $access_note = t("The DevShop Public Key was found in !user's account. <p> See !github_settings and !devshop_settings.", $t);
   }
   $form['github']['key_status'] = array(
       '#type' => 'item',
@@ -180,13 +210,23 @@ function devshop_github_settings_form_validate_token($element, &$form_state, $fo
     form_set_value($element, variable_get('devshop_github_token'), $form_state);
     return;
   }
-  $e = devshop_github_token_is_valid($token);
-  if (is_subclass_of($e, 'Exception')) {
-    form_error($element,  $e->getMessage());
-  }
-  else {
+
+  $client = new \Github\Client();
+  $client->authenticate($token, \Github\AuthMethod::ACCESS_TOKEN);
+
+  try {
+    $gh_user = $client->currentUser()->show();
     form_set_value($element, $token, $form_state);
-    devshop_github_refresh_repositories();
+    drupal_set_message(t('Successully connected to GitHub API as !link.', array(
+      '!link' => l($gh_user['login'], $gh_user['url']),
+    )));
+    return TRUE;
+  }
+    // Happens when user has no public keys.
+  catch (Exception $e) {
+    form_error($element,  t('GitHub Token was rejected: %message', array(
+      '%message' => $e->getMessage(),
+    )));
   }
 }
 

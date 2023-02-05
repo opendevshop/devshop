@@ -1400,3 +1400,7 @@ kbd.alert {
 #devshop-projects-settings-form fieldset ul li {
   padding: .5em 0;
 }
+
+#devshop-projects-settings-form p {
+    padding-top: 1em;
+}
