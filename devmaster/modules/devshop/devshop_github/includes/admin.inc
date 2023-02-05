@@ -65,7 +65,7 @@ function devshop_github_form_devshop_projects_settings_form_alter(&$form, &$form
     '#items' => array(
       t('Create environments from Pull Requests'),
       t('Loads a list of available repositories for creating new projects.'),
-      t('Create new repositories on GitHub when adding projects.'),
+      t('Create new repositories on GitHub..'),
       t('Post task statuses to GitHub to integrate with Deployments and Commit Status API.'),
     ),
     '#attributes' => array(
