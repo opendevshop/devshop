@@ -63,11 +63,10 @@ function devshop_github_form_devshop_projects_settings_form_alter(&$form, &$form
     '#theme' => 'item_list',
     '#prefix' => '<i class="fa fa-question-circle fa-4x pull-right"></i>' . t('DevShop integrates with GitHub to provide a number of features:'),
     '#items' => array(
-      t('Submit Public Key to GitHub account to grant this server access to clone code.'),
+      t('Create environments from Pull Requests'),
       t('Loads a list of available repositories for creating new projects.'),
       t('Create new repositories on GitHub when adding projects.'),
       t('Post task statuses to GitHub to integrate with Deployments and Commit Status API.'),
-      t('Create environments from Pull Requests'),
     ),
     '#attributes' => array(
       'class' => array('text small text-muted')
