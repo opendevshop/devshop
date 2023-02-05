@@ -29,48 +29,60 @@ function devshop_projects_settings_form($form, &$form_state) {
     '#type' => 'vertical_tabs',
   );
 
-  $form['projects'] = array(
+  $form['create'] = array(
     '#group' => 'settings',
     '#type' => 'fieldset',
-    '#title' => t('Project Templates'),
+    '#title' => t('Creating Projects'),
   );
-  $form['projects']['devshop_git_repo_suggestions'] = array(
-    '#title' => t('Available Git Repositories'),
-    '#description' => t('Enter Git repository URLs, one per line. When creating a new project, these Git repositories are available to clone into new projects.'),
+  $form['create']['devshop_allow_any_git_repo'] = array(
+    '#title' => t('Allow any Git repository'),
+    '#description' => t('Allow users to enter any git repository when starting a project.'),
+    '#type' => 'checkbox',
+    '#default_value' => variable_get('devshop_allow_git_repo_options', TRUE),
+  );
+  $form['create']['devshop_allow_git_repo_options'] = array(
+    '#title' => t('Allow choice of Git Repositories'),
+    '#description' => t('Allow users to choose from a list of git repositories when starting a project.'),
+    '#type' => 'checkbox',
+    '#default_value' => variable_get('devshop_allow_git_repo_options', TRUE),
+  );
+
+  $form['create']['devshop_git_repo_options'] = array(
+    '#description' => t('Enter the Git repositories to make available to users, one per line.'),
     '#type' => 'textarea',
-    '#default_value' => implode(PHP_EOL, variable_get('devshop_git_repo_suggestions', array(
+    '#default_value' => implode(PHP_EOL, variable_get('devshop_git_repo_options', array(
       'git@github.com:opendevshop/devshop-composer-template.git'
     ))),
     '#element_validate' => array('devshop_element_validate_explode_array'),
+    '#states' => array(
+      'visible' => array(
+        ':input[name="devshop_allow_git_repo_options"]' => array('checked' => TRUE)
+      ),
+    ),
   );
-  $form['projects']['devshop_composer_project_suggestions'] = array(
+
+  $form['create']['devshop_allow_create_repo_github'] = array(
+    '#title' => t('Allow creation of new git repositories'),
+    '#description' => t('Allow users to create new git repositories when starting a new project.'),
+    '#type' => 'checkbox',
+    '#default_value' => variable_get('devshop_allow_create_repo_github', TRUE),
+  );
+  $form['create']['devshop_composer_project_suggestions'] = array(
     '#title' => t('Available Composer Projects'),
-    '#description' => t('Enter Composer project names, one per line. These projects are available when creating new projects.'),
+    '#description' => t('When creating a new git repository, allow users to choose from these composer projects.'),
     '#type' => 'textarea',
     '#default_value' => implode(PHP_EOL, variable_get('devshop_composer_project_suggestions', array(
       'devshop/composer-template:8.x-dev'
     ))),
     '#element_validate' => array('devshop_element_validate_explode_array'),
+    '#states' => array(
+      'visible' => array(
+        ':input[name="devshop_allow_create_repo_github"]' => array('checked' => TRUE)
+      ),
+    ),
   );
 
-  $form['paths'] = array(
-    '#type' => 'fieldset',
-    '#group' => 'settings',
-    '#title' => t('Paths'),
-  );
-  $form['paths']['devshop_projects_allow_custom_code_path'] = array(
-    '#title' => t('Allow custom code path per project.'),
-    '#description' => t('Allow each project to have a custom "Code Path". If not checked, project paths are set as "/var/aegir/projects/{PROJECT_NAME}.'),
-    '#type' => 'checkbox',
-    '#default_value' => variable_get('devshop_projects_allow_custom_code_path', FALSE),
-  );
-  $form['paths']['devshop_project_base_path'] = array(
-    '#title' => t('Projects Base Path'),
-    '#type' => 'textfield',
-    '#description' => t('The default base path that all projects will be created in.  Projects each get their own folder inside this path.'),
-    '#default_value' => variable_get('devshop_project_base_path', '/var/aegir/projects'),
-  );
-  $form['paths']['devshop_project_default_drupal_path'] = array(
+  $form['create']['devshop_project_default_drupal_path'] = array(
     '#title' => t('Default Document Root'),
     '#type' => 'textfield',
     '#description' => t("If index.php isn't in the root of the git repo, you can edit the 'Path to Drupal' setting on each project.  Set a default 'Path to Drupal' here. (For example, an Acquia hosted repo uses 'docroot'.)"),
@@ -78,32 +90,43 @@ function devshop_projects_settings_form($form, &$form_state) {
   );
 
 
-  $form['urls'] = array(
+  $form['projects'] = array(
     '#type' => 'fieldset',
-    '#title' => t('URLs'),
     '#group' => 'settings',
+    '#title' => t('Project Settings'),
   );
-
-  $form['urls']['devshop_projects_allow_changing_project_git_url'] = array(
-    '#title' => t("Allow changing a project's Default Git URL."),
-    '#description' => t("When editing a project, do not allow changes to the Git URL."),
-    '#type' => 'checkbox',
-    '#default_value' => variable_get('devshop_projects_allow_changing_project_git_url', TRUE),
-  );
-  $form['urls']['devshop_projects_allow_custom_base_url'] = array(
-    '#title' => t('Allow custom Environment Domain Name Pattern per project.'),
-    '#description' => t('If enabled each project can set an Environment URL Pattern.'),
-    '#type' => 'checkbox',
-    '#default_value' => variable_get('devshop_projects_allow_custom_base_url', FALSE),
-  );
-  $form['urls']['devshop_project_environment_url_pattern'] = array(
-    '#title' => t('Environment Domain Name Pattern'),
+  $form['projects']['devshop_project_environment_url_pattern'] = array(
+    '#title' => t('Default Environment Domain Name Pattern'),
     '#type' => 'textfield',
     '#description' => t("Each environment will have a system domain name generated for it based on it's name. Use @project for project name, @hostname for '%host', @environment for the environment's name.", array('%host' => $_SERVER['SERVER_NAME'])),
     '#default_value' => variable_get('devshop_project_environment_url_pattern', '@project.@environment.@hostname'),
     '#element_validate' => array(
       'devshop_project_settings_validate_environment_url_pattern',
     ),
+  );
+  $form['projects']['devshop_project_base_path'] = array(
+    '#title' => t('Projects Base Path'),
+    '#type' => 'textfield',
+    '#description' => t('The default base path that all projects will be created in.  Projects each get their own folder inside this path.'),
+    '#default_value' => variable_get('devshop_project_base_path', '/var/aegir/projects'),
+  );
+  $form['projects']['devshop_projects_allow_custom_code_path'] = array(
+    '#title' => t('Allow projects to have their own code path.'),
+    '#description' => t('Allow each project to have a custom "Code Path". If not checked, project paths are set as "/var/aegir/projects/{PROJECT_NAME}.'),
+    '#type' => 'checkbox',
+    '#default_value' => variable_get('devshop_projects_allow_custom_code_path', FALSE),
+  );
+  $form['projects']['devshop_projects_allow_custom_base_url'] = array(
+    '#title' => t('Allow projects to have their own environment domain name pattern..'),
+    '#description' => t('If enabled each project can set an Environment URL Pattern. Useful if you want all environments to have a custom top-level domain, such as dev.mysite.com.'),
+    '#type' => 'checkbox',
+    '#default_value' => variable_get('devshop_projects_allow_custom_base_url', FALSE),
+  );
+  $form['projects']['devshop_projects_allow_changing_project_git_url'] = array(
+    '#title' => t("Allow changing a project's Git URL."),
+    '#description' => t("If checked, a project's git remote URL can be changed. Existing sites will not be changed."),
+    '#type' => 'checkbox',
+    '#default_value' => variable_get('devshop_projects_allow_changing_project_git_url', TRUE),
   );
 
 //  $form['support'] = array(

@@ -605,7 +605,7 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
     ),
   );
 
-  $suggested_repos = variable_get('devshop_git_repo_suggestions', array(
+  $suggested_repos = variable_get('devshop_git_repo_options', array(
     'git@github.com:opendevshop/devshop-composer-template.git',
   ));
   $options = array_combine(array_values($suggested_repos),array_values($suggested_repos));
