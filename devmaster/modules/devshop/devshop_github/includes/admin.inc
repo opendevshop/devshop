@@ -26,21 +26,20 @@ function devshop_github_form_devshop_projects_settings_form_alter(&$form, &$form
         'target' => '_blank'))),
     '!create_token' => l(t('Create new token'), 'https://github.com/settings/tokens/new?scopes=repo,admin:public_key,admin:repo_hook&description=' . $_SERVER['HTTP_HOST'], array(
       'attributes' => array(
-        'class' => array('btn btn-link btn-sm'),
         'target' => '_blank'))),
-    '!github_tokens' => l(t('Manage GitHub Tokens'), 'https://github.com/settings/tokens', array(
+    '!github_tokens' => l(t('GitHub Personal Tokens'), 'https://github.com/settings/tokens', array(
       'attributes' => array(
-        'class' => array('btn btn-link btn-sm'),
         'target' => '_blank'),
       'fragment' => 'edit-server')),
-    '!github_keys' => l(t('Manage GitHub SSH Keys'), 'https://github.com/settings/keys', array(
+    '!github_keys' => l(t('GitHub SSH Keys'), 'https://github.com/settings/keys', array(
       'attributes' => array(
-        'class' => array('btn btn-link btn-sm'),
         'target' => '_blank'),
       'fragment' => 'edit-server')),
-    '!devshop_settings' => l(t('DevShop Public Key Settings'), current_path(), array(
+    '!devshop_settings' => l(t('DevShop Public Key'), current_path(), array(
       'fragment' => 'edit-server')),
-    '!devshop_add_key' => l(t('Add Public Key to GitHub Account'), 'admin/hosting/github/add-key', array(
+    '!devshop_add_key' => l(t('Add DevShop Public Key to GitHub'), 'admin/hosting/github/add-key', array(
+      'attributes' => array(
+      ),
       'query' => array('destination' => current_path())))
   );
 
@@ -118,7 +117,7 @@ function devshop_github_form_devshop_projects_settings_form_alter(&$form, &$form
     $access_message = t('Unknown Public Key');
     $access_class = 'warning';
     $access_icon = 'check';
-    $access_note = t("DevShop does not know the user's public key. See !devshop_settings.", $t);
+    $access_note = t("DevShop does not know the server's public key. See !devshop_settings.", $t);
   }
   elseif (empty($token)) {
     $access_message = t('Public Key: not set up.');
@@ -133,10 +132,18 @@ function devshop_github_form_devshop_projects_settings_form_alter(&$form, &$form
     $access_note = t('Unable to check for SSH access without a valid token.');
   }
   elseif (!devshop_github_check_key()) {
-    $access_message = t('Public Key: Access Denied');
+    $access_message = t('Public Key: Not Found');
     $access_class = 'warning';
-    $access_icon = 'danger';
-    $access_note = t("The Public Key was not found in account !user. ", $t);
+    $access_icon = 'warning';
+    $access_note = t("The !devshop_settings was not found in account !user. You can: ", $t);
+    $access_note .= theme('item_list', array(
+      'type' => 'ol',
+      'items' => array(
+        t('Automatically !devshop_add_key.', $t),
+        t('Manually add the !devshop_settings to your GitHub account on the !github_keys page.', $t),
+        t('Add the !devshop_settings to each repository as a Deploy Key.', $t),
+        t('Configure SSH manually on the server.', $t),
+    )));
   }
   else {
     $access_message = t('Public Key has access.');

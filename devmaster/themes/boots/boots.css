@@ -1397,10 +1397,6 @@ kbd.alert {
     padding-left: 2em;
 }
 
-#devshop-projects-settings-form fieldset ul li {
-  padding: .5em 0;
-}
-
 #devshop-projects-settings-form p {
     padding-top: 1em;
 }
@@ -1408,4 +1404,13 @@ kbd.alert {
 #devshop-projects-settings-form .alert > div {
     padding-left: 1em;
     margin-top: -.2em;
+}
+
+#devshop-projects-settings-form .btn-group a {
+    padding: 1em;
+    display: inline-block;
+}
+
+#devshop-projects-settings-form .alert li {
+    margin: .5em 0em;
 }
