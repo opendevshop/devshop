@@ -120,29 +120,52 @@ function devshop_projects_settings_form($form, &$form_state) {
   $hostmaster_platform = node_load(hosting_get_hostmaster_platform_nid());
   $hostmaster_server = node_load($hostmaster_platform->web_server);
 
+  $t = array();
+  $t['%user'] = variable_get('devshop_app_user', 'aegir');
+  $t['!server'] = l($hostmaster_server->title, "node/{$hostmaster_server->nid}");
+  $t['!command'] = '<pre>drush @hm vset devshop_public_key "$(cat ~/.ssh/id_rsa.pub)"</pre>';
+
   // Server settings.
-  $form['server'] = array(
+  $form['public_key'] = array(
     '#type' => 'fieldset',
     '#title' => t('DevShop Public Key'),
     '#weight' => -1,
     '#group' => 'settings',
-    '#description' => t('DevShop clones your code using the %app_user user on the server !hostmaster_server. The user must have SSH access to the chosen repositories.', array(
-      '%app_user' => variable_get('devshop_app_user', 'aegir'),
-      '!hostmaster_server' => l($hostmaster_server->title, "node/{$hostmaster_server->nid}"),
-    ))
   );
-  $form['server']['devshop_public_key'] = array(
+  $form['public_key']['features']  = array(
+    '#type' => 'container',
+    '#attributes' => array(
+      'class' => array(
+        'alert alert-info'
+      )
+    )
+  );
+  $form['public_key']['features']['list'] = array(
+    '#theme' => 'item_list',
+    '#prefix' => '<i class="fa fa-question-circle fa-2x pull-left"></i><div>' . t('Grant this DevShop server access to your git repositories and existing websites & servers.'),
+    '#suffix' => '</div>',
+    '#items' => array(
+      t("The Public Key below is shown <em>for your convenience only</em>. It is displayed when creating projects to assist users with connecting their repos."),
+      t("It can be used to grant DevShop access to git repository hosts, servers or sites hosted elsewhere."),
+      t("DevShop clones git repositories as the %user@!server server using this Public Key", $t),
+      t("Actions on the server respect the server's SSH configuration."),
+      t("<em class='text-warning'>Warning:</em> If you grant access to a remote server using this key, anyone who can access %user@!server will be able to access the remote.", $t),
+      t("If the SSH keys change on the server, you can update this one by running the command: !command", $t)
+    ),
+    '#attributes' => array(
+      'class' => array('text small text-muted')
+    )
+  );
+
+  $form['public_key']['devshop_public_key'] = array(
+    '#type' => 'item',
     '#title' => t('DevShop Public Key'),
-    '#description' => theme('item_list', array(
-      'items' => array(
-        t('The public key for this server. This key will be used when cloning code and syncing data from remote servers.'),
-        t('Add this key to your git host to allow this DevShop to clone protected code.'),
-        t('Add this key to other hosts to authorize this DevShop to connect and copy data from your existing sites.'),
-        t('<em class="text-warning">Warning:</em> If you authorize this key on a production server, any user who can access this DevShop will be able to access that server.')
-      ),
-    )),
-    '#type' => 'textarea',
-    '#default_value' => variable_get('devshop_public_key', ''),
+    'key' => array(
+      '#type' => 'item',
+      '#prefix' => '<pre><code>',
+      '#markup' => variable_get('devshop_public_key', ''),
+      '#suffix' => '</code></pre>',
+    ),
   );
   return system_settings_form($form);
 }
