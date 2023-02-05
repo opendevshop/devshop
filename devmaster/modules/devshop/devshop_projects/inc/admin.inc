@@ -167,7 +167,7 @@ function devshop_projects_settings_form($form, &$form_state) {
     ),
   );
   $form['public_key']['update'] = array(
-    '#prefix' => '<div class="alert alert-info">',
+    '#prefix' => '<div class="alert alert-warning">',
     '#markup' => t("Note: If the SSH keys change on the server, you can update this one by running the command: !command", $t),
     '#suffix' => '</div>',
   );
