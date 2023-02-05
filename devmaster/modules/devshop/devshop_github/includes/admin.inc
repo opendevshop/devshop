@@ -158,8 +158,6 @@ function devshop_github_form_devshop_projects_settings_form_alter(&$form, &$form
     '#markup' => l(t('Reload GitHub Projects'),'admin/hosting/github/load-repos', array('attributes' => array(
     'class' => array('btn btn-info'),
   ))));
-
-  $form = system_settings_form($form);
   return $form;
 }
 
