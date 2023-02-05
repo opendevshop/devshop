@@ -122,13 +122,30 @@ function devshop_projects_settings_form($form, &$form_state) {
     '#type' => 'checkbox',
     '#default_value' => variable_get('devshop_projects_allow_custom_base_url', FALSE),
   );
+  $form['projects']['hosting_site_allow_custom_file_paths'] = array(
+    '#title' => t("Allow sites to customize their paths for uploaded files."),
+    '#description' => t("If checked, each site can configure custom paths for the public, private and temporary files."),
+    '#type' => 'checkbox',
+    '#default_value' => variable_get('hosting_site_allow_custom_file_paths', TRUE),
+  );
+
   $form['projects']['devshop_projects_allow_changing_project_git_url'] = array(
     '#title' => t("Allow changing a project's Git URL."),
     '#description' => t("If checked, a project's git remote URL can be changed. Existing sites will not be changed."),
     '#type' => 'checkbox',
     '#default_value' => variable_get('devshop_projects_allow_changing_project_git_url', TRUE),
   );
+//  <div class="help-block">When creating or editing a site, show a field for changing the default files paths. <em>CAUTION:</em> The web server user will be granted write access permission to these folders so that the Drupal site can receive uploaded files. If this is checked, Aegir users can enter any path, and the <code>aegir</code> system user will attempt to make it writable for the web server user, typically <code>www-data</code>, <code>apache</code> or <code>nginx</code>. </div>
 
+  $form['projects']['hosting_require_disable_before_delete'] = array(
+    '#title' => t('Sites must be disabled sites before they can be deleted.'),
+    '#description' => t("If checked, a site must be disabled before it is deleted. <em>Recommended. If not checked, DevShop users can delete any site.</em>"),
+    '#type' => 'checkbox',
+    '#default_value' => variable_get('hosting_require_disable_before_delete', TRUE),
+  );
+
+//  <label class="control-label" for="edit-hosting-require-disable-before-delete"><input type="checkbox" id="edit-hosting-require-disable-before-delete" name="hosting_require_disable_before_delete" value="1" checked="checked" class="form-checkbox">Require site to be disabled before deletion</label>
+//
 //  $form['support'] = array(
 //      '#type' => 'fieldset',
 //      '#title' => t('DevShop Support'),
