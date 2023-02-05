@@ -1404,3 +1404,8 @@ kbd.alert {
 #devshop-projects-settings-form p {
     padding-top: 1em;
 }
+
+#devshop-projects-settings-form .alert > div {
+    padding-left: 1em;
+    margin-top: -.2em;
+}

@@ -24,13 +24,24 @@ function devshop_github_form_devshop_projects_settings_form_alter(&$form, &$form
     '!user' => l($gh_user['login'], $gh_user['html_url'], array(
       'attributes' => array(
         'target' => '_blank'))),
-    '!create_token' => l(t('Create a new token'), 'https://github.com/settings/tokens/new?scopes=repo,admin:public_key,admin:repo_hook&description=' . $_SERVER['HTTP_HOST'], array(
+    '!create_token' => l(t('Create new token'), 'https://github.com/settings/tokens/new?scopes=repo,admin:public_key,admin:repo_hook&description=' . $_SERVER['HTTP_HOST'], array(
       'attributes' => array(
+        'class' => array('btn btn-link btn-sm'),
         'target' => '_blank'))),
+    '!github_tokens' => l(t('Manage GitHub Tokens'), 'https://github.com/settings/tokens', array(
+      'attributes' => array(
+        'class' => array('btn btn-link btn-sm'),
+        'target' => '_blank'),
+      'fragment' => 'edit-server')),
+    '!github_keys' => l(t('Manage GitHub SSH Keys'), 'https://github.com/settings/keys', array(
+      'attributes' => array(
+        'class' => array('btn btn-link btn-sm'),
+        'target' => '_blank'),
+      'fragment' => 'edit-server')),
     '!devshop_settings' => l(t('DevShop Public Key Settings'), current_path(), array(
       'fragment' => 'edit-server')),
-    '!github_settings' => l(t('GitHub Personal Tokens'), current_path(), array(
-      'fragment' => 'edit-server')),
+    '!devshop_add_key' => l(t('Add Public Key to GitHub Account'), 'admin/hosting/github/add-key', array(
+      'query' => array('destination' => current_path())))
   );
 
   $ssh_key = variable_get('devshop_public_key', '');
@@ -67,7 +78,7 @@ function devshop_github_form_devshop_projects_settings_form_alter(&$form, &$form
   $form['github']['devshop_github_token'] = array(
     '#type' => 'password',
     '#title' => t('GitHub Token'),
-    '#description' => t('Enter a GitHub token to connect this DevShop to your repositories. <p>!create_token.', $t),
+    '#description' => t('Enter a GitHub token to connect this DevShop to your repositories. <div class="btn-group">!create_token !github_tokens !github_keys</div>', $t),
     '#default_value' => variable_get('devshop_github_token', ''),
     '#element_validate' => array(
       'devshop_github_settings_form_validate_token',
@@ -78,23 +89,26 @@ function devshop_github_form_devshop_projects_settings_form_alter(&$form, &$form
   );
   if (empty($token)) {
     $access_message = t('Token: not set up.');
-    $access_class = 'info';
-    $access_note = t('Enter a token to connect this DevShop to your GitHub repositories. !create_token', $t);
+    $access_class = 'warning';
+    $access_icon = 'warning';
+    $access_note = t('Enter a token to connect this DevShop to your GitHub repositories.');
   }
   elseif (!$token_valid) {
     $access_message = t('Token is invalid.');
     $access_class = 'danger';
-    $access_note = t('The stored GitHub token is invalid. Enter a new one to continue. !create_token', $t);
+    $access_icon = 'warning';
+    $access_note = t('The stored GitHub token is invalid or has expired. Enter a new one to continue.');
   }
   else {
     $access_message = t('Token is valid.');
     $access_class = 'success';
+    $access_icon = 'check';
     $access_note = t('Successfully connected to GitHub API as !user.', $t);
   }
   $form['github']['token_status'] = array(
     '#type' => 'item',
     '#title' => $access_message,
-    '#prefix' => "<div class='alert alert-$access_class'>",
+    '#prefix' => "<div class='alert alert-$access_class'><i class='fa fa-$access_icon pull-left'></i>",
     '#description' => $access_note,
     '#suffix' => '</div>',
   );
@@ -103,39 +117,37 @@ function devshop_github_form_devshop_projects_settings_form_alter(&$form, &$form
   if (empty($ssh_key)) {
     $access_message = t('Unknown Public Key');
     $access_class = 'warning';
-    $access_note = t("DevShop does not know the user's public key. See the !link section in DevShop Settings.", array(
-      '!link' => $public_key_link,
-    ));
+    $access_icon = 'check';
+    $access_note = t("DevShop does not know the user's public key. See !devshop_settings.", $t);
   }
   elseif (empty($token)) {
-    $access_message = t('Public Key: Not set up.');
-    $access_class = 'info';
+    $access_message = t('Public Key: not set up.');
+    $access_class = 'warning';
+    $access_icon = 'warning';
     $access_note = t('Enter a token to check SSH access to your repositories.');
   }
   elseif (!$token_valid) {
-    $access_message = t('Public Key: Not set up.');
-    $access_class = 'info';
-    $access_note = t('Enter a valid token to check SSH access to your repositories.');
+    $access_message = t('Public Key: Invalid token.');
+    $access_class = 'danger';
+    $access_icon = 'warning';
+    $access_note = t('Unable to check for SSH access without a valid token.');
   }
   elseif (!devshop_github_check_key()) {
     $access_message = t('Public Key: Access Denied');
     $access_class = 'warning';
-    $access_note = t("The Public Key was not found in the account that owns this GitHub token. Add the public key to individual repositories as a Deploy Key, or !link to have DevShop add it for you.", array(
-      '!link' => l(t('Click Here'), 'admin/hosting/github/add-key', array(
-          'query' => array(
-              'destination' => $_GET['q'],
-          ),
-      ))));
+    $access_icon = 'danger';
+    $access_note = t("The Public Key was not found in account !user. ", $t);
   }
   else {
     $access_message = t('Public Key has access.');
     $access_class = 'success';
-    $access_note = t("The DevShop Public Key was found in !user's account. <p> See !github_settings and !devshop_settings.", $t);
+    $access_icon = 'check';
+    $access_note = t("The DevShop Public Key was found in !user's account.", $t);
   }
   $form['github']['key_status'] = array(
       '#type' => 'item',
       '#title' => $access_message,
-      '#prefix' => "<div class='alert alert-$access_class'>",
+      '#prefix' => "<div class='alert alert-$access_class'><i class='fa fa-$access_icon pull-left'></i>",
       '#description' => $access_note,
       '#suffix' => '</div>',
   );
@@ -190,6 +202,7 @@ function devshop_github_form_devshop_projects_settings_form_alter(&$form, &$form
       '@count_string' => format_plural($count, t('1 GitHub organization'), t('@count GitHub organizations'))
   )));
   $form['github']['button'] = array(
+    '#access' => $token_valid,
     '#markup' => l(t('Reload GitHub Projects'),'admin/hosting/github/load-repos', array('attributes' => array(
     'class' => array('btn btn-info'),
   ))));
