@@ -24,7 +24,12 @@ Feature: Create a project and check settings
     And I reload the page
 
     Then I fill in "web" for "Document Root"
+    And I check "Pull Request Environments'
+
     When I press "Next"
+    Then I should see "pr1"
+    And I should see "(PR TEST)"
+
     And I should see "DOCUMENT ROOT web"
 
     When I run drush "hosting-tasks --force --fork=0 --strict=0"

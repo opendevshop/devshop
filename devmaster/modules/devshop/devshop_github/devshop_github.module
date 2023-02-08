@@ -425,11 +425,8 @@ function devshop_github_form_site_node_form_validate_pr($element, &$form_state, 
         $remote_url = $pr->head->repo->clone_url;
       }
 
-      // Set repo_url for this environment to the forked git remote.
-      form_set_value($form['git']['repo_url'], $remote_url, $form_state);
-
-      // Recreate the platform node, with the new git repo_url.
-      $platform_node = devshop_prepare_platform_node($form_state['project'], $form_state['environment_name'], $form_state['values']['git_ref'], $form_state['values']['web_server'], $form_state['values']['git']['repo_url']);
+      // Recreate the platform node, with the new git git_remote.
+      $platform_node = devshop_prepare_platform_node($form_state['project'], $form_state['environment_name'], $form_state['values']['git_ref'], $form_state['values']['web_server'], $form_state['values']['git']['git_remote']);
       $platform_node->no_verify = TRUE;
       form_set_value($form['platform_node'], $platform_node, $form_state);
     }
