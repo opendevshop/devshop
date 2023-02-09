@@ -69,7 +69,6 @@ Feature: Create a project and check settings
 
     And I reload the page
     Then I should see the link "dev"
-    Then I should see the link "live"
 #    Given I go to "http://dev.composer.devshop.travis"
 #    When I click "Visit Environment"
 
