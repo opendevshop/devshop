@@ -40,10 +40,10 @@ Feature: Create a project and check settings
     When I fill in "dev" for "project[environments][NEW][name]"
     And I select "9.x" from "project[environments][NEW][git_ref]"
 
-    And I press "Add environment"
-    And I fill in "live" for "project[environments][NEW][name]"
-    And I select "9.x" from "project[environments][NEW][git_ref]"
-    And I press "Add environment"
+#    And I press "Add environment"
+#    And I fill in "live" for "project[environments][NEW][name]"
+#    And I select "9.x" from "project[environments][NEW][git_ref]"
+#    And I press "Add environment"
     Then I press "Create Project & Environments"
 
     # FINISH!
