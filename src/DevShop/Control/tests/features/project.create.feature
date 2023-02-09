@@ -57,6 +57,7 @@ Feature: Create a project and check settings
 
     Then I should see "dev"
     And I should see "live"
+    And I should see the link "Update readme. (PR TEST)"
 
     And I reload the page
 #    When I click "Process Failed"
