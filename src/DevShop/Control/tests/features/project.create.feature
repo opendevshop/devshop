@@ -61,7 +61,7 @@ Feature: Create a project and check settings
     And I should see the link "http://composer.dev.devshop.local.computer"
 
     And I should see the link "Update readme. (PR TEST)"
-    And I should see the link "Add Behat Drupal Extension"
+    And I should see the link "Add Behat tests"
 
     When I run drush "hosting-tasks --force --fork=0 --strict=0"
     # Then print last drush output
