@@ -24,7 +24,7 @@ Feature: Create a project and check settings
     And I reload the page
 
     Then I fill in "web" for "Document Root"
-    And I check "Pull Request Environments'
+    And I check the box "Pull Request Environments"
 
     When I press "Next"
     Then I should see "pr1"
