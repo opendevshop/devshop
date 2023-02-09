@@ -29,8 +29,7 @@
         "symfony/options-resolver": "^4.4",
         "devshop/bin-tools": "1.x-dev",
         "php-http/httplug": "^2.3",
-        "devshop/git-traits": "1.x-dev",
-        "knplabs/github-api": "^3.9||^1.0"
+        "devshop/git-traits": "1.x-dev"
     },
     "replace": {
         "drupal/drupal": "*"

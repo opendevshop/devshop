@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9e03b17dce223747947d485cd827e9bb",
+    "content-hash": "7b7ad0eb6a71df65d8278bcee80b2581",
     "packages": [
         {
             "name": "clue/stream-filter",
@@ -765,13 +765,14 @@
             "dist": {
                 "type": "path",
                 "url": "src/DevShop/Component/GitTraits",
-                "reference": "b0f550a940073cd5e55e75f55ac32cdcf3a8c0e6"
+                "reference": "5d69907ba1ef0d2a18719033daa7cb19cae55cf1"
             },
             "require": {
                 "guzzlehttp/guzzle": "^6",
                 "http-interop/http-factory-guzzle": "^1.2",
                 "knplabs/github-api": "^3.9||^1.0",
                 "php": "^7.1||^8.0",
+                "php-http/discovery": "~1.14.0",
                 "php-http/guzzle6-adapter": "^2.0@dev",
                 "teqneers/php-stream-wrapper-for-git": "^2.0@dev"
             },
@@ -857,12 +858,12 @@
             "dist": {
                 "type": "path",
                 "url": "src/DevShop/Component/YamlTasks",
-                "reference": "a8cb8e49eb48437b4435315d15c623c43517f267"
+                "reference": "fb5ee9f9bfc514cc658a395a75fbf918862968cc"
             },
             "require": {
                 "composer-plugin-api": "^1.0 || ^2.0",
                 "consolidation/robo": "^2",
-                "devshop/power-process": "@dev",
+                "devshop/power-process": "1.x-dev",
                 "ext-json": "*",
                 "guzzlehttp/guzzle": "^6",
                 "guzzlehttp/psr7": "^1.9",
