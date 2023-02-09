@@ -441,17 +441,18 @@ function devshop_github_form_site_node_form_validate_pr($element, &$form_state, 
 function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$form_state, $form_id) {
 
   module_load_include('inc', 'devshop_github', 'includes/admin');
+  $key_exists = devshop_github_token();
+  $key_valid = devshop_github_token_is_valid(TRUE);
 
-  if (!devshop_github_check_key(TRUE)) {
-
-    drupal_set_message( '<p class="alert text-center"><i class="fa fa-exclamation-circle"></i> ' . t('DevShop GitHub Integration is not set up. You should complete setup on the Settings page before continuing.') . '</p><p class="alert text-center">' .  l( '<i class="fa fa-github"></i> ' . t('DevShop GitHub Settings'),'admin/hosting', array(
-      'html' => TRUE,
-      'attributes' => array(
-        'class' => array('btn btn-default text-center'),
-      ))) .'</p>' , 'warning');
+  if (!$key_exists) {
+    drupal_set_message(t('GitHub API Integration has not been enabled. You can still add public git repositories. Check !settings to enable additional features.', [
+      '!settings' => l(t('DevShop GitHub Settings'), 'admin/hosting'),
+    ]), 'warning');
   }
-  else {
-    $form['connect'] = array();
+  elseif (!$key_valid) {
+    drupal_set_message(t('Your GitHub API Token is invalid. Check !settings to add a new one.', [
+      '!settings' => l(t('DevShop GitHub Settings'), 'admin/hosting'),
+    ]), 'error');
   }
 
   $options = [];
