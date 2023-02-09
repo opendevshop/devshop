@@ -231,11 +231,13 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
         hosting_add_task($environment->platform, 'verify');
       }
       else {
-        // CREATE the environment OBJECT, including a new platform and DB record.
-        drupal_set_message(t('Creating environment %name', array(
-          '%name' => $name,
-        )));
-        hosting_create_environment($project, $name, $environment->git_ref, NULL, $environment->settings, 'create', $git_remote, TRUE); ;
+        if ($form_state['clicked_button']['#name'] != 'add_environment') {
+          // CREATE the environment OBJECT, including a new platform and DB record.
+          drupal_set_message(t('Creating environment %name', array(
+            '%name' => $name,
+          )));
+          hosting_create_environment($project, $name, $environment->git_ref, NULL, $environment->settings, 'create', $git_remote, TRUE);;
+        }
       }
     }
   }
