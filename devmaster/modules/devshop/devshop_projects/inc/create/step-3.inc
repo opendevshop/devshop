@@ -123,7 +123,8 @@ function devshop_project_create_step_environments_validate(&$form, &$form_state)
     }
   }
 
-
+//  dsm($form_state['values']['project']['environments']);
+//  form_set_error('project', 'halt');
 }
 
 ///**

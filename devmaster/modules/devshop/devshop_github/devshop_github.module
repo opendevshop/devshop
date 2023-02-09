@@ -343,6 +343,8 @@ function devshop_github_form_site_node_form_alter(&$form, &$form_state, $form_id
       $form['actions']['submit']['#submit'][] = 'devshop_github_environment_create_submit';
     }
   }
+  dsm($form);
+  dsm($form_state);
 }
 
 /**
@@ -828,11 +830,13 @@ function devshop_github_form_devshop_project_create_step_environments_alter(&$fo
         }
 
         $environment_forms[$environment->name]['settings']['git_remote'] = array(
+          '#type' => 'value',
           '#value' => $remote_url,
         );
 
         // Save data for devshop_github_node_insert() to process.
-        $environment_forms[$environment->name]['pull_request'] = array(
+        $environment_forms[$environment->name]['settings']['pull_request'] = array(
+          '#type' => 'value',
           '#value' => $pr,
         );
       }
@@ -895,6 +899,8 @@ function devshop_github_form_devshop_project_create_step_environments_alter(&$fo
   }
   $form['pr_environments']['help'] = $help_display;
   $form['pr_environments']['help']['#weight'] = -1;
+
+  dsm($form);
 }
 
 /**
@@ -1094,12 +1100,22 @@ function devshop_github_node_load($nodes, $types) {
  * When submitting from the Site form, and user selects a PR branch, "pull_request" is populated with the PR object.
  */
 function devshop_github_node_insert($node) {
-  if ($node->type == 'site' && !empty($node->pull_request)) {
+  if ($node->type == 'site' && (!empty($node->pull_request) || !empty($node->settings->pull_request))) {
     $environment = new stdClass();
     $environment->name = $node->environment_name;
     $environment->site = $node->nid;
     $environment->project_nid = $node->project_nid;
-    devshop_github_save_pr_env_data($node->pull_request, $environment);
+
+    if (!empty($node->pull_request)) {
+      $pr_data = convert_to_object($node->pull_request);
+    }
+    elseif (!empty($node->settings->pull_request)) {
+      $pr_data = convert_to_object($node->settings->pull_request);
+    }
+    else {
+      return;
+    }
+    devshop_github_save_pr_env_data($pr_data, $environment);
   }
 }
 
