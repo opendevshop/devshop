@@ -322,6 +322,7 @@ function devshop_github_form_site_node_form_alter(&$form, &$form_state, $form_id
 
       $form['git_ref']['#title'] = t('Branch, Tag, or Pull Request');
     }
+    dsm($form_state, 'formstate');
 
     $default_branch_option = array(
       t('Default Branch') => array(
@@ -1097,6 +1098,7 @@ function devshop_github_node_insert($node) {
   if ($node->type == 'site' && !empty($node->pull_request)) {
     $environment = new stdClass();
     $environment->name = $node->environment_name;
+    $environment->site = $node->nid;
     $environment->project_nid = $node->project_nid;
     devshop_github_save_pr_env_data($node->pull_request, $environment);
   }
@@ -1819,6 +1821,8 @@ function devshop_github_save_pr_env_data($pr, $environment) {
 
   // Save environment record.
   try {
+    watchdog('debug', 'environment:' .print_r($environment,1));
+    watchdog('debug', 'PR Save:' .print_r($info,1));
     drupal_write_record('hosting_devshop_github_pull_requests', $info, $update);
     return TRUE;
   }
