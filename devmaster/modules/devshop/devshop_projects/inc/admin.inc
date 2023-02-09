@@ -214,10 +214,11 @@ function devshop_projects_settings_form($form, &$form_state) {
     $warnings[] = t("If you wish to display the Public Key to users, enter it below, or run the following command on the server to read the existing <code>~/.ssh/id_rsa.pub</code> file automatically.");
   }
   else {
-    $form['public_key']['devshop_public_key']['#description'] = t("Note: This key is stored in DevShop as a variable. The web server cannot read it directly. If the SSH keys change on the server, and you wish to show users the key when creating projects, you can update this one by running the command: !command", $t);
+    $form['public_key']['devshop_public_key']['#description'] = t("Note: This key is stored in DevShop as a variable. The web server cannot read it directly. If the SSH keys change on the server, and you wish to show users the correct key when creating projects, you must update the Displayed Public Key below.", $t);
   }
 
   $form['public_key']['warnings'] = array(
+    '#access' => count($warnings),
     '#type' => 'container',
     '#attributes' => array(
       'class' => array(
@@ -229,6 +230,21 @@ function devshop_projects_settings_form($form, &$form_state) {
       '#prefix' => '<i class="fa fa-warning fa-2x pull-left"></i>' ,
       '#items' => $warnings,
     )
+  );
+  $form['public_key']['set_key'] = array(
+    '#title' => t('Change Displayed Public Key'),
+    '#type' => 'fieldset',
+    '#attributes' => array(
+      'class' => array('panel-warning'),
+    ),
+    '#collapsible' => true,
+    '#collapsed' => true,
+  );
+  $form['public_key']['set_key']['devshop_public_key'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Displayed Public Key'),
+    '#default_value' => variable_get('devshop_public_key', ''),
+    '#description' => t('Enter the contents of the <code>~/.ssh/id_rsa.pub</code> file here. To hide the Public Key from users, leave this blank. To set this from the server, run the command: !command', $t),
   );
   return system_settings_form($form);
 }
