@@ -143,7 +143,6 @@ function devshop_projects_create_wizard_info() {
       'git_url' => t('Step 1: Source Code'),
       'settings' => t('Step 2: Settings'),
       'environments' => t('Step 3: Environments'),
-      'sites' => t('Step 4: Install Profile'),
     ),
     'forms' => array(
       'git_url' => array(
@@ -154,9 +153,6 @@ function devshop_projects_create_wizard_info() {
       ),
       'environments' => array(
         'form id' => 'devshop_project_create_step_environments'
-      ),
-      'sites' => array(
-        'form id' => 'devshop_project_create_step_sites'
       ),
     ),
   );
@@ -216,19 +212,6 @@ function devshop_projects_create_wizard_finish(&$form_state) {
 
   $project = &$form_state['project'];
   $project_node = node_load($project->nid);
-
-  // Save the extra options to the project node.
-  $project_node->project->install_profile = $form_state['values']['install_profile'];
-
-  // Create the site nodes, saving to the environment.
-  // @TODO: Can we speed things up here by only running install for the first,
-  // then  "Cloning" to create the rest?
-  foreach ($project_node->project->environments as $environment_name => &$environment) {
-    // @TODO: Does this set the http_server as well?? Doesn't look like it.
-    $db_server = $environment->db_server_nid;
-    $site_node = devshop_projects_create_site($project_node->project, node_load($environment->platform), $environment_name, $db_server);
-    $environment->site = $site_node->nid;
-  }
 
   // Set to not verify and to publish.
   $project_node->no_verify = TRUE;

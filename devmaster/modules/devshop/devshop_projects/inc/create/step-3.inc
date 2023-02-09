@@ -234,7 +234,7 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
         drupal_set_message(t('Creating environment %name', array(
           '%name' => $name,
         )));
-        hosting_create_environment($project, $name, $environment->git_ref, NULL, $environment->settings, 'create', $git_remote, FALSE); ;
+        hosting_create_environment($project, $name, $environment->git_ref, NULL, $environment->settings, 'create', $git_remote, TRUE); ;
       }
     }
   }
