@@ -322,7 +322,6 @@ function devshop_github_form_site_node_form_alter(&$form, &$form_state, $form_id
 
       $form['git_ref']['#title'] = t('Branch, Tag, or Pull Request');
     }
-    dsm($form_state, 'formstate');
 
     $default_branch_option = array(
       t('Default Branch') => array(
