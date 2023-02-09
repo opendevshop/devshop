@@ -19,7 +19,7 @@
         "ext-json": "*",
         "composer-plugin-api": "^1.0 || ^2.0",
         "consolidation/robo": "^2",
-        "devshop/power-process": "1.x-dev",
+        "devshop/power-process": "1.x-dev@dev",
         "guzzlehttp/guzzle": "^6",
         "guzzlehttp/psr7": "^1.9",
         "http-interop/http-factory-guzzle": "^1.2",
