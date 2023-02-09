@@ -392,7 +392,7 @@ class RoboFile extends \Robo\Tasks {
    * @option $build-folder If using --build, the folder to run 'docker-compose build' in. Use "all" to build in folder 'docker', then 'roles'.
    * @option $build-service If using --build, the service to build. passed to 'docker-compose build $SERVICE'. Use "all" to build all services.
    */
-  public function up($docker_command = '/usr/share/devshop/scripts/devshop-ansible-playbook', $opts = [
+  public function up($docker_command = '', $opts = [
     'destroy' => FALSE,
     'no-follow' => FALSE,
     'test' => FALSE,
