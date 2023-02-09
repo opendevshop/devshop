@@ -831,9 +831,9 @@ function devshop_github_form_devshop_project_create_step_environments_alter(&$fo
           '#value' => $remote_url,
         );
 
-        // Save a flag that this is a pr_environment, so that the site knows to load the PR data later.
-        $environment_forms[$environment->name]['pr_environment'] = array(
-          '#value' => TRUE,
+        // Save data for devshop_github_node_insert() to process.
+        $environment_forms[$environment->name]['pull_request'] = array(
+          '#value' => $pr,
         );
       }
 
