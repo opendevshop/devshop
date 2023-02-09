@@ -191,7 +191,9 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
 
   // Create all environments
   if ($form_state['clicked_button']['#name'] == 'add_environment') {
-    // @TODO: Adding environment is not working.
+    $project->environments = $environments;
+    ctools_object_cache_set('project', 'devshop_project', $project);
+    $form_state['redirect'] = 'projects/add/environments';
   }
   else {
     foreach ($environments as $name => $environment) {
