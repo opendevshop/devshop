@@ -61,7 +61,7 @@ function devshop_projects_create_wizard($step = NULL) {
       // But save environments from the cache object because we don't save those to the node anymore.
       $environments = $project->environments;
       $project = $project_node->project;
-      $project->environments = $environments;
+      $project->environments = (array) $environments;
     }
     else {
       $project = new stdClass();
