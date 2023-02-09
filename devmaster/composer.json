@@ -23,7 +23,7 @@
   "require": {
     "bitbucket/client": "^4.1",
     "guzzlehttp/guzzle": "^6",
-    "knplabs/github-api": "^3.0||^1.0",
+    "knplabs/github-api": "^3.9||^1.0",
     "sensiolabs/ansi-to-html": "^1.1",
     "symfony/yaml": "^4.4",
     "toin0u/digitalocean-v2": "^2.3"
