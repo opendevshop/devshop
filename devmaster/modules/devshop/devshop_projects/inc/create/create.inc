@@ -28,7 +28,7 @@ function devshop_projects_create_wizard($step = NULL) {
   }
 
   // Create default project object
-  if (empty($project) || !isset($project->git_url)) {
+  if (empty($project) || empty($project->git_repo_url)) {
     // set form to first step -- we have no data
     $step = current(array_keys($form_info['order']));
     $project = new stdClass();
@@ -58,7 +58,10 @@ function devshop_projects_create_wizard($step = NULL) {
     $project_node = node_load($project->nid, NULL, TRUE);
 
     if ($project_node->project) {
+      // But save environments from the cache object because we don't save those to the node anymore.
+      $environments = $project->environments;
       $project = $project_node->project;
+      $project->environments = $environments;
     }
     else {
       $project = new stdClass();
