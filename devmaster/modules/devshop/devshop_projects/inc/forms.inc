@@ -103,6 +103,20 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
 //      'makefile_path',
 //    ),
 //  );
+
+  $form['project']['codebase']['install_profile'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Install Profile'),
+    '#description' => t('Enter the name of the install profile to use for sites in this project.'),
+    '#size' => 40,
+    '#default_value' => $project->install_profile,
+    '#maxlength' => 255,
+    '#weight' => 3,
+    '#parents' => array(
+      'project',
+      'install_profile',
+    ),
+  );
   $form['project']['codebase']['base_url'] = array(
     '#type' => 'textfield',
     '#title' => t('Environment Domain Name Pattern'),
