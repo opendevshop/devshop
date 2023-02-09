@@ -842,7 +842,7 @@ function devshop_github_form_devshop_project_create_step_environments_alter(&$fo
       }
 
       // Merge environments fields together to put PRs on top.
-      $form['project']['environments'] = array_merge($environment_forms, $form['project']['environments']);
+      $form['project']['environments'] = array_merge($form['project']['environments'], $environment_forms);
     }
 
     $settings_link = l(t('Change Project Settings'), 'projects/add/settings', array(
