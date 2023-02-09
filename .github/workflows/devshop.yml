@@ -28,7 +28,7 @@ env:
   GIT_REF: 1.x
 
   # Prevents including docker-compose.override, which is for local development.
-  COMPOSE_FILE: docker-compose.yml
+  COMPOSE_FILE: docker-compose.yml,docker-compose.ci.yml
 
 jobs:
   docker:
