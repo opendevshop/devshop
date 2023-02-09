@@ -9,6 +9,7 @@ set -e
 #
 # The DOCKER_COMMAND is the actual Docker CMD used for this container image.
 # $@ is every argument and option passed to the entrypoint (which is the same way CMD/ENTRPOINT work)
+INIT_COMMAND=${INIT_COMMAND:-/lib/systemd/systemd}
 DOCKER_COMMAND=${@}
 DOCKER_COMMAND_POST=${DOCKER_COMMAND_POST:-"echo 'No DOCKER_COMMAND_POST variable set. Which should never happen, because it is in the Dockerfile. Probably means you are running this outside of a container.'"}
 SYSTEM_STATUS_COMMAND=${SYSTEM_STATUS_COMMAND:-systemctl status --no-pager}
@@ -101,7 +102,7 @@ else
   # Let INIT COMMAND run, then wait 3 seconds, then show some messages and check system status.
   ( \
      echo "Waiting 3 seconds for systemd to start..." &&
-     sleep ${INIT_COMMAND_WAIT:-3} && \
+     sleep ${INIT_COMMAND_WAIT:-5} && \
      echo "System Status: " && $SYSTEM_STATUS_COMMAND && \
      echo $WELCOME_MESSAGE \
   ) &
@@ -112,3 +113,4 @@ fi
 
 echo "Running $INIT_COMMAND ..."
 exec "$INIT_COMMAND"
+
