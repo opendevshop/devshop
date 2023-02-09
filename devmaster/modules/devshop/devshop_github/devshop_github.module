@@ -736,10 +736,13 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
  * Implements hook_devshop_project_git_repo_options().
  */
 function devshop_github_devshop_project_git_repo_options() {
-  return array(
-    'github_existing' => t('Use an existing GitHub repository'),
-    'github_create' => t('Create a new GitHub repository'),
-  );
+
+  if (devshop_github_token_is_valid()) {
+    return array(
+      'github_create' => t('Create a new GitHub repository'),
+      'github_existing' => t('An existing GitHub repository'),
+    );
+  }
 }
 
 /**
