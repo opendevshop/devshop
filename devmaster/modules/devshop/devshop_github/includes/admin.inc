@@ -70,7 +70,7 @@ function devshop_github_form_devshop_projects_settings_form_alter(&$form, &$form
       t('Post task statuses to GitHub to integrate with Deployments and Commit Status API.'),
     ),
     '#attributes' => array(
-      'class' => array('text small text-muted')
+      'class' => array('text text-dark')
     )
   );
 

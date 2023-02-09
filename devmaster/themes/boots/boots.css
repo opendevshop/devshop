@@ -1392,18 +1392,20 @@ kbd.alert {
 }
 
 #devshop-projects-settings-form fieldset ul {
-    list-style: square;
+    list-style: none;
     margin: 0;
-    padding-left: 2em;
+    padding-left: 0;
 }
-
+#devshop-projects-settings-form fieldset ul li {
+    padding-bottom: 1em;
+}
 #devshop-projects-settings-form p {
     padding-top: 1em;
 }
-
-#devshop-projects-settings-form .alert > div
+#devshop-projects-settings-form .alert > div,
+#devshop-projects-settings-form .alert > ul
 {
-    padding-left: 2em;
+    padding-left: 2.5em;
 }
 #devshop-projects-settings-form .btn-group a {
     padding: 1em;
@@ -1411,5 +1413,4 @@ kbd.alert {
 }
 
 #devshop-projects-settings-form .alert li {
-    margin: .5em 0em;
 }

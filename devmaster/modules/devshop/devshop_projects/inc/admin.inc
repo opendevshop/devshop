@@ -186,16 +186,15 @@ function devshop_projects_settings_form($form, &$form_state) {
     '#theme' => 'item_list',
     '#prefix' => '<i class="fa fa-question-circle fa-2x pull-left"></i><div>' . t('Grant this DevShop server access to your git repositories and existing websites & servers.'),
     '#suffix' => '</div>',
-    '#items' => array(
-      t("The Public Key below is shown <em>for your convenience only</em>. It is displayed when creating projects to assist users with connecting their repos."),
-      t("It can be used to grant DevShop access to git repository hosts, servers or sites hosted elsewhere."),
-      t("DevShop clones git repositories as the %user@!server server using this Public Key", $t),
-      t("Actions on the server respect the server's SSH configuration."),
-      t("<em class='text-warning'>Warning:</em> If you grant access to a remote server using this key, anyone who can access %user@!server will be able to access the remote.", $t),
-    ),
     '#attributes' => array(
-      'class' => array('text small text-muted')
-    )
+      'class' => array('text text-dark')
+    ),
+    '#items' => array(
+      t("DevShop can display it's Public Key for you when creating projects, to make granting access to your git repositories and remote sites easier."),
+      t("DevShop clones git repositories as the %user@!server server using this Public Key", $t),
+      t("When you log in via SSH as the %user@!server, the <code>ssh</code> command will use this Public Key when connecting to other sites and servers by default. Standard SSH configuration still applies.", $t),
+      t("DevShop generates a new unique key pair on installation."),
+    ),
   );
 
   $form['public_key']['devshop_public_key'] = array(
@@ -204,14 +203,32 @@ function devshop_projects_settings_form($form, &$form_state) {
     'key' => array(
       '#type' => 'item',
       '#prefix' => '<pre><code>',
-      '#markup' => variable_get('devshop_public_key', ''),
+      '#markup' => variable_get('devshop_public_key', t('Unknown public key.')),
       '#suffix' => '</code></pre>',
     ),
   );
-  $form['public_key']['update'] = array(
-    '#prefix' => '<div class="alert alert-warning">',
-    '#markup' => t("Note: If the SSH keys change on the server, you can update this one by running the command: !command", $t),
-    '#suffix' => '</div>',
+
+  $warnings = [];
+  if (empty(variable_get('devshop_public_key', ''))) {
+    $warnings[] = t("The 'devshop_public_key' variable is missing. This does <em>not necessarily</em> mean that your keys are missing from the server.");
+    $warnings[] = t("If you wish to display the Public Key to users, enter it below, or run the following command on the server to read the existing <code>~/.ssh/id_rsa.pub</code> file automatically.");
+  }
+  else {
+    $form['public_key']['devshop_public_key']['#description'] = t("Note: This key is stored in DevShop as a variable. The web server cannot read it directly. If the SSH keys change on the server, and you wish to show users the key when creating projects, you can update this one by running the command: !command", $t);
+  }
+
+  $form['public_key']['warnings'] = array(
+    '#type' => 'container',
+    '#attributes' => array(
+      'class' => array(
+        'alert alert-warning text-dark'
+      )
+    ),
+    'warnings' => array(
+      '#theme' => 'item_list',
+      '#prefix' => '<i class="fa fa-warning fa-2x pull-left"></i>' ,
+      '#items' => $warnings,
+    )
   );
   return system_settings_form($form);
 }
