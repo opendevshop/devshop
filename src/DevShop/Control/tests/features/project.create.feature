@@ -44,31 +44,7 @@ Feature: Create a project and check settings
     And I fill in "live" for "project[environments][NEW][name]"
     And I select "9.x" from "project[environments][NEW][git_ref]"
     And I press "Add environment"
-    Then I press "Next"
-
-    # Step 4
-    And I should see "dev"
-    And I should see "live"
-    And I should see "9.x"
-
-    When I run drush "hosting-tasks --force --fork=0 --strict=0"
-    # Then print last drush output
-    And I reload the page
-
-    Then I should see "dev"
-    And I should see "live"
-    And I should see the link "Update readme. (PR TEST)"
-    And I should see the link "Add Behat Drupal Extension"
-
-    And I reload the page
-#    When I click "Process Failed"
-    Then I should see "8."
-    Then I should not see "Platform verification failed"
-#    When I select "standard" from "install_profile"
-
-#    Then I break
-
-    And I press "Create Project & Environments"
+    Then I press "Create Project & Environments"
 
     # FINISH!
     Then I should see "Your project has been created. Your sites are being installed."
@@ -82,6 +58,9 @@ Feature: Create a project and check settings
     And I should see the link "dev"
     And I should see the link "live"
     And I should see the link "http://composer.dev.devshop.local.computer"
+
+    And I should see the link "Update readme. (PR TEST)"
+    And I should see the link "Add Behat Drupal Extension"
 
     When I run drush "hosting-tasks --force --fork=0 --strict=0"
     # Then print last drush output
