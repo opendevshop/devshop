@@ -17,10 +17,12 @@
   ],
   "require": {
     "php": "^7.1||^8.0",
-    "knplabs/github-api": "^3.0||^1.0",
+    "knplabs/github-api": "^3.9||^1.0",
     "teqneers/php-stream-wrapper-for-git": "^2.0@dev",
     "guzzlehttp/guzzle": "^6",
-    "php-http/guzzle6-adapter": "^2.0@dev"
+    "php-http/guzzle6-adapter": "^2.0@dev",
+    "http-interop/http-factory-guzzle": "^1.2",
+    "php-http/discovery": "~1.14.0"
   },
   "extra": {
     "branch-alias": {
@@ -33,6 +35,5 @@
     }
   },
   "bin": [
-  ],
-  "minimum-stability": "dev"
+  ]
 }
