@@ -4,4 +4,4 @@ version: '3'
 services:
   devshop.server:
     volumes:
-      - $PWD/.github/test-artifacts:/var/aegir/test-artifacts
+      - ../.github/test-artifacts:/var/aegir/test-artifacts
