@@ -800,17 +800,32 @@ function devshop_github_form_devshop_project_create_step_environments_alter(&$fo
 
         $environment_forms[$environment->name]['git_ref']['#value'] = $environment->git_ref;
         $environment_forms[$environment->name]['git_ref']['#type'] = 'value';
+        $icon = $project->settings->git['refs'][$environment->git_ref] == 'branch' ? 'code-fork': 'tag';
 
-        $environment_forms[$environment->name]['git_ref']['pr'] = array(
+        $environment_forms[$environment->name]['git_ref']['info']['ref'] = array(
           '#theme' => 'link',
-          '#text' => "<img src='{$pr['user']['avatar_url']}' width='28'> PR" . $pr['number'] . htmlentities($pr['title']),
+          '#text' => "<em class='fa fa-$icon'></em> " . $environment->git_ref,
           '#path' => $pr['html_url'],
           '#options' => array(
             'html' => true,
             'attributes' => array(
               'target' => '_blank',
               'class' => array(
-                'btn btn-default'
+                'btn btn-default btn-sm'
+              ),
+            ),
+          ),
+        );
+        $environment_forms[$environment->name]['git_ref']['info']['pr'] = array(
+          '#theme' => 'link',
+          '#text' => "<img src='{$pr['user']['avatar_url']}' width='28' class='img-responsive img-thumbnail'> PR" . $pr['number'] . htmlentities($pr['title']),
+          '#path' => $pr['html_url'],
+          '#options' => array(
+            'html' => true,
+            'attributes' => array(
+              'target' => '_blank',
+              'class' => array(
+                'btn btn-text'
               ),
             ),
           ),
@@ -846,7 +861,7 @@ function devshop_github_form_devshop_project_create_step_environments_alter(&$fo
       }
 
       // Merge environments fields together to put PRs on top.
-      $form['project']['environments'] = array_merge($form['project']['environments'], $environment_forms);
+      $form['project']['environments'] = array_merge($environment_forms, $form['project']['environments']);
     }
 
     $settings_link = l(t('Change Project Settings'), 'projects/add/settings', array(
