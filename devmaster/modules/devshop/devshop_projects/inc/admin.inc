@@ -217,6 +217,29 @@ function devshop_projects_settings_form($form, &$form_state) {
     $form['public_key']['devshop_public_key']['#description'] = t("Note: This key is stored in DevShop as a variable. The web server cannot read it directly. If the SSH keys change on the server, and you wish to show users the correct key when creating projects, you must update the Displayed Public Key below.", $t);
   }
 
+  $form['public_key']['set_key'] = array(
+    '#title' => t('Change Displayed Public Key'),
+    '#type' => 'fieldset',
+    '#attributes' => array(
+      'class' => array('panel-warning'),
+    ),
+    '#collapsible' => true,
+    '#collapsed' => true,
+    '#weight' => 100,
+  );
+  $form['public_key']['set_key']['devshop_public_key'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Displayed Public Key'),
+    '#default_value' => variable_get('devshop_public_key', ''),
+    '#description' => t('Enter the contents of the <code>~/.ssh/id_rsa.pub</code> file here. To hide the Public Key from users, leave this blank. To set this from the server, run the command: !command', $t),
+  );
+  $form['#validate'][] = 'devshop_project_settings_validate_displayed_ssh_key';
+
+  if (!devshop_public_key_valid_fingerprint()) {
+    $warnings[] = t('Warning: the Displayed SSH Key is not a valid key. Update it below to give users the right key.');
+    $form['public_key']['set_key']['#collapsed'] = FALSE;
+  }
+
   $form['public_key']['warnings'] = array(
     '#access' => count($warnings),
     '#type' => 'container',
@@ -227,28 +250,25 @@ function devshop_projects_settings_form($form, &$form_state) {
     ),
     'warnings' => array(
       '#theme' => 'item_list',
-      '#prefix' => '<i class="fa fa-warning fa-2x pull-left"></i>' ,
+      '#prefix' => '<i class="fa fa-warning pull-left"></i>' ,
       '#items' => $warnings,
     )
-  );
-  $form['public_key']['set_key'] = array(
-    '#title' => t('Change Displayed Public Key'),
-    '#type' => 'fieldset',
-    '#attributes' => array(
-      'class' => array('panel-warning'),
-    ),
-    '#collapsible' => true,
-    '#collapsed' => true,
-  );
-  $form['public_key']['set_key']['devshop_public_key'] = array(
-    '#type' => 'textarea',
-    '#title' => t('Displayed Public Key'),
-    '#default_value' => variable_get('devshop_public_key', ''),
-    '#description' => t('Enter the contents of the <code>~/.ssh/id_rsa.pub</code> file here. To hide the Public Key from users, leave this blank. To set this from the server, run the command: !command', $t),
   );
   return system_settings_form($form);
 }
 
+/**
+ * Validate that the displayed SSH key is valid, then store the sanitized version.
+ */
+function devshop_project_settings_validate_displayed_ssh_key(&$form, &$form_state) {
+  if ($fingerprint = devshop_public_key_valid_fingerprint($form_state['values']['devshop_public_key'])) {
+
+  }
+  else {
+    form_set_error('devshop_public_key', t('SSH Key is not valid. Try again.'));
+    $form['public_key']['set_key']['#collapsed'] = FALSE;
+  }
+}
 /**
  * Validate that the default environment domain pattern has @environment and @project.
  */

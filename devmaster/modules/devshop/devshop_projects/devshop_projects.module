@@ -893,25 +893,20 @@ function convert_to_object($thing) {
  * @return bool|string
  * @throws \SSHKeyParseException
  */
-function devshop_public_key_valid_fingerprint() {
-
-  $devshop_key = variable_get('devshop_public_key', '');
-  $command = '<code>drush @hostmaster vset devshop_public_key "$(cat ~/.ssh/id_rsa.pub)" --yes</code>';
+function devshop_public_key_valid_fingerprint($devshop_key = '') {
 
   if (empty($devshop_key)) {
-    drupal_set_message(t("DevShop does not know what the server's public SSH Key is. Run the command: !command", array(
-      '!command' => $command,
-    )), 'error');
+    $devshop_key = variable_get('devshop_public_key', '');
+  }
+
+  if (empty($devshop_key)) {
     return FALSE;
   }
 
   try {
     $devshop_sshkey = sshkey_parse($devshop_key);
   }
-  catch (Exception $e) {
-    drupal_set_message(t("The ssh key saved in DevShop was invalid. Run the command to re-import it: !command", array(
-      '!command' => $command,
-    )), 'error');
+  catch (\SSHKeyParseException $e) {
     return FALSE;
   }
 
