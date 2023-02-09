@@ -709,7 +709,7 @@ class RoboFile extends \Robo\Tasks {
       // Remove devmaster site folder
       $version = self::DEVSHOP_LOCAL_VERSION;
       $uri = self::DEVSHOP_LOCAL_URI;
-      $this->_exec("cd docker && docker-compose exec devshop.server rm -rf /usr/share/devshop/src/DevShop/Control/web/sites/{$uri}");
+      $this->_exec("rm -rf ./src/DevShop/Control/web/sites/{$uri}");
       $this->_exec('cd docker && docker-compose kill');
       $this->_exec('cd docker && docker-compose rm -fv');
     }
