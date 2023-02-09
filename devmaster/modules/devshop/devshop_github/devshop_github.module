@@ -442,7 +442,7 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
 
   module_load_include('inc', 'devshop_github', 'includes/admin');
   $key_exists = devshop_github_token();
-  $key_valid = devshop_github_token_is_valid(TRUE);
+  $key_valid = devshop_github_token_is_valid();
 
   if (!$key_exists && drupal_valid_path('admin/hosting')) {
     drupal_set_message(t('GitHub API Integration has not been enabled. You can still add public git repositories. Check !settings to enable additional features.', [
