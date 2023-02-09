@@ -28,7 +28,7 @@ function devshop_projects_create_wizard($step = NULL) {
   }
 
   // Create default project object
-  if (empty($project) || empty($project->git_repo_url)) {
+  if (empty($project) || empty($project->git_url)) {
     // set form to first step -- we have no data
     $step = current(array_keys($form_info['order']));
     $project = new stdClass();
