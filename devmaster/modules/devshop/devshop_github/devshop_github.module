@@ -343,8 +343,6 @@ function devshop_github_form_site_node_form_alter(&$form, &$form_state, $form_id
       $form['actions']['submit']['#submit'][] = 'devshop_github_environment_create_submit';
     }
   }
-  dsm($form);
-  dsm($form_state);
 }
 
 /**
