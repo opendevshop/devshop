@@ -779,7 +779,7 @@ function devshop_github_form_devshop_project_create_step_environments_alter(&$fo
         $env_name = "pr{$pr['number']}";
         // If PR environment already exists, load it.
         if (isset($project->environments[$env_name])) {
-          $environment = $project->environments[$env_name];
+          $environment = convert_to_object($project->environments[$env_name]);
         }
         else {
           $environment = new stdClass();
