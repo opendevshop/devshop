@@ -114,18 +114,27 @@ function devshop_bitbucket_form_devshop_projects_settings_form_alter(&$form, &$f
     '#title' => t('BitBucket Integration'),
     '#group' => 'settings',
     '#weight' => -2,
-    '#description' => t('DevShop integrates with BitBucket to provide a number of features:'),
   );
 
-  $form['bitbucket']['features'] = array(
+  $form['bitbucket']['features']  = array(
+    '#type' => 'container',
+    '#attributes' => array(
+      'class' => array(
+        'alert alert-info'
+      )
+    )
+  );
+  $form['bitbucket']['features']['list'] = array(
     '#theme' => 'item_list',
+    '#prefix' => '<i class="fa fa-question-circle fa-2x pull-left"></i><div>' . t('DevShop integrates with BitBucket to provide a number of features:'),
+    '#suffix' => '</div>',
     '#items' => array(
       t('Loads a list of available repositories for creating new projects.'),
       t('Post task status to BitBucket Build Status.'),
       t('Create environments from Pull Requests.'),
     ),
     '#attributes' => array(
-      'class' => array('text small text-muted')
+      'class' => array('text text-dark')
     )
   );
 
@@ -149,28 +158,105 @@ function devshop_bitbucket_form_devshop_projects_settings_form_alter(&$form, &$f
     ),
   );
   // Test for public key access.
-  if (!empty($token)) {
-
-    $form['bitbucket_public_keys'] = array(
-      '#markup' => '',
-    );
-
-    if (devshop_bitbucket_check_key()) {
-      $form['bitbucket_public_keys']['#markup'] = ' <div class="alert alert-success">' . t('The DevShop Public SSH Key has been found in your bitbucket account.') . '</div>';
-    }
-    else {
-      $form['bitbucket_public_keys']['#markup'] = t('The DevShop Public SSH Key was not found in your account.') . '  ';
-
-      $form['bitbucket_public_keys']['#markup'] .= '</div>';
-      $form['bitbucket_public_keys']['#prefix'] = '<div class="alert alert-danger">';
-      $form['bitbucket_public_keys']['#suffix'] = l('<i class="fa fa-bitbucket"></i> ' . t('Add devshop public key to your bitbucket account'), 'admin/hosting/bitbucket/add-key', array(
-          'attributes' => array(
-            'class' => array('btn btn-primary btn-large'),
-          ),
-          'html' => TRUE,
-        )) . '</div>';
-    }
+  if (empty($token)) {
+    $access_message = t('Token: not set up.');
+    $access_class = 'warning';
+    $access_icon = 'warning';
+    $access_note = t('Enter a token to connect this DevShop to your BitBucket repositories.');
   }
+  elseif (!$token_valid) {
+    $access_message = t('Token is invalid.');
+    $access_class = 'danger';
+    $access_icon = 'warning';
+    $access_note = t('The stored BitBucket token is invalid or has expired. Enter a new one to continue.');
+  }
+  else {
+    $access_message = t('Token is valid.');
+    $access_class = 'success';
+    $access_icon = 'check';
+    $access_note = t('Successfully connected to BitBucket API as !user.', $t);
+  }
+  $form['bitbucket']['token_status'] = array(
+    '#type' => 'item',
+    '#title' => $access_message,
+    '#prefix' => "<div class='alert alert-$access_class'><i class='fa fa-$access_icon pull-left'></i>",
+    '#description' => $access_note,
+    '#suffix' => '</div>',
+  );
+
+  // SSH Key access
+  if (empty($ssh_key)) {
+    $access_message = t('Unknown Public Key');
+    $access_class = 'warning';
+    $access_icon = 'check';
+    $access_note = t("DevShop does not know the server's public key. See !devshop_settings.", $t);
+  }
+  elseif (empty($token)) {
+    $access_message = t('Public Key: not set up.');
+    $access_class = 'warning';
+    $access_icon = 'warning';
+    $access_note = t('Enter a token to check SSH access to your repositories.');
+  }
+  elseif (!$token_valid) {
+    $access_message = t('Public Key: Invalid token.');
+    $access_class = 'danger';
+    $access_icon = 'warning';
+    $access_note = t('Unable to check for SSH access without a valid token.');
+  }
+  elseif (!devshop_bitbucket_check_key()) {
+    $access_message = t('Public Key: Not Found');
+    $access_class = 'warning';
+    $access_icon = 'warning';
+    $access_note = t("The !devshop_settings was not found in account !user. You can: ", $t);
+    $access_note .= theme('item_list', array(
+      'type' => 'ol',
+      'items' => array(
+        t('Automatically !devshop_add_key.', $t),
+        t('Manually add the !devshop_settings to your BitBucket account on the !bitbucket_keys page.', $t),
+        t('Add the !devshop_settings to each repository as a Deploy Key.', $t),
+        t('Configure SSH manually on the server.', $t),
+      )));
+  }
+  else {
+    $access_message = t('Public Key has access.');
+    $access_class = 'success';
+    $access_icon = 'check';
+    $access_note = t("The DevShop Public Key was found in !user's account.", $t);
+  }
+  $form['bitbucket']['key_status'] = array(
+    '#type' => 'item',
+    '#title' => $access_message,
+    '#prefix' => "<div class='alert alert-$access_class'><i class='fa fa-$access_icon pull-left'></i>",
+    '#description' => $access_note,
+    '#suffix' => '</div>',
+  );
+
+  $repos = variable_get('devshop_bitbucket_available_repositories', array());
+  $count = count($repos);
+  $form['bitbucket']['repos'] = array(
+    '#type' => 'container',
+    '#weight' => 5,
+    '#access' => !empty(variable_get('devshop_bitbucket_token')),
+  );
+
+  $form['bitbucket']['message'] = array(
+    '#prefix' => "<div class='alert alert-success'><i class='fa fa-check'></i> ",
+    '#suffix' => '</div>',
+    '#markup' =>  format_plural($count, t('1 repository found'), t('DevShop can access @count repositories.')));
+
+  $orgs = variable_get('devshop_bitbucket_available_organizations', array());
+  $count = count($orgs);
+  $form['bitbucket']['message_orgs'] = array(
+    '#prefix' => "<div class='alert alert-success'><i class='fa fa-check'></i> ",
+    '#suffix' => '</div>',
+    '#markup' =>  t('DevShop can create repositories in @count_string.', array(
+      '@count_string' => format_plural($count, t('1 BitBucket organization'), t('@count BitBucket organizations'))
+    )));
+  $form['bitbucket']['button'] = array(
+    '#access' => $token_valid,
+    '#markup' => l(t('Reload BitBucket Projects'),'admin/hosting/bitbucket/load-repos', array('attributes' => array(
+      'class' => array('btn btn-info'),
+    ))));
 
   return system_settings_form($form);
 }
@@ -863,4 +949,38 @@ function devshop_bitbucket_check_key() {
 //      return TRUE;
 //    }
 //  }
+}
+
+/**
+ * Element validation for License Key. Pings devshop.support
+ *
+ * @param $element
+ * @param $form_state
+ * @param $form
+ */
+function devshop_bitbucket_settings_form_validate_token($element, &$form_state, $form) {
+
+  $token = $form_state['values']['devshop_bitbucket_token'];
+  if (empty($token)) {
+    form_set_value($element, variable_get('devshop_bitbucket_token'), $form_state);
+    return;
+  }
+
+  $client = new Bitbucket\Client();
+  $client->authenticate(Bitbucket\Client::AUTH_OAUTH_TOKEN,$token);
+
+  try {
+    $user = $client->currentUser()->show();
+    form_set_value($element, $token, $form_state);
+    drupal_set_message(t('Successully connected to GitHub API as !link.', array(
+      '!link' => l($user['login'], $user['url']),
+    )));
+    return TRUE;
+  }
+    // Happens when user has no public keys.
+  catch (Exception $e) {
+    form_error($element,  t('GitHub Token was rejected: %message', array(
+      '%message' => $e->getMessage(),
+    )));
+  }
 }
