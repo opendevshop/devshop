@@ -40,10 +40,10 @@ Feature: Create a project and check settings
     When I fill in "dev" for "project[environments][NEW][name]"
     And I select "9.x" from "project[environments][NEW][git_ref]"
 
-#    And I press "Add environment"
-#    And I fill in "live" for "project[environments][NEW][name]"
-#    And I select "9.x" from "project[environments][NEW][git_ref]"
-#    And I press "Add environment"
+    And I press "Add environment"
+    And I fill in "live" for "project[environments][NEW][name]"
+    And I select "9.x" from "project[environments][NEW][git_ref]"
+    And I press "Add environment"
     Then I press "Create Project & Environments"
 
     # FINISH!
@@ -56,8 +56,7 @@ Feature: Create a project and check settings
     # And I should see "standard"
 #    And I should see "http://github.com/opendevshop/drupal"
     And I should see the link "dev"
-  # @TODO: Fix adding environments.
-  #    And I should see the link "live"
+    And I should see the link "live"
     And I should see the link "http://composer.dev.devshop.local.computer"
 
     And I should see the link "Update readme. (PR TEST)"
