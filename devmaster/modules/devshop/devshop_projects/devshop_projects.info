@@ -7,7 +7,6 @@ files[] = inc/create/create.inc
 files[] = inc/create/step-1.inc
 files[] = inc/create/step-2.inc
 files[] = inc/create/step-3.inc
-files[] = inc/create/step-4.inc
 files[] = inc/admin.inc
 files[] = inc/create-wizard.inc
 files[] = inc/forms.inc

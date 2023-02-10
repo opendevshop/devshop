@@ -24,12 +24,10 @@
   "require": {
     "php": "^7.1||^8.0",
     "consolidation/robo": "^2",
-    "knplabs/github-api": "^3.0||^1.0",
+    "knplabs/github-api": "^3.9||^1.0",
     "devshop/git-traits": "@dev",
     "guzzlehttp/guzzle": "^6",
     "php-http/guzzle6-adapter": "2.x-dev"
-  },
-  "require-dev": {
   },
   "extra": {
     "branch-alias": {
@@ -43,6 +41,5 @@
   },
   "bin": [
     "github"
-  ],
-  "minimum-stability": "dev"
+  ]
 }
