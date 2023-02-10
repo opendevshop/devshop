@@ -425,11 +425,8 @@ function devshop_github_form_site_node_form_validate_pr($element, &$form_state, 
         $remote_url = $pr->head->repo->clone_url;
       }
 
-      // Set repo_url for this environment to the forked git remote.
-      form_set_value($form['git']['repo_url'], $remote_url, $form_state);
-
-      // Recreate the platform node, with the new git repo_url.
-      $platform_node = devshop_prepare_platform_node($form_state['project'], $form_state['environment_name'], $form_state['values']['git_ref'], $form_state['values']['web_server'], $form_state['values']['git']['repo_url']);
+      // Recreate the platform node, with the new git git_remote.
+      $platform_node = devshop_prepare_platform_node($form_state['project'], $form_state['environment_name'], $form_state['values']['git_ref'], $form_state['values']['web_server'], $form_state['values']['git']['git_remote']);
       $platform_node->no_verify = TRUE;
       form_set_value($form['platform_node'], $platform_node, $form_state);
     }
@@ -442,17 +439,18 @@ function devshop_github_form_site_node_form_validate_pr($element, &$form_state, 
 function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$form_state, $form_id) {
 
   module_load_include('inc', 'devshop_github', 'includes/admin');
+  $key_exists = devshop_github_token();
+  $key_valid = devshop_github_token_is_valid();
 
-  if (!devshop_github_check_key(TRUE)) {
-
-    drupal_set_message( '<p class="alert text-center"><i class="fa fa-exclamation-circle"></i> ' . t('DevShop GitHub Integration is not set up. You should complete setup on the Settings page before continuing.') . '</p><p class="alert text-center">' .  l( '<i class="fa fa-github"></i> ' . t('DevShop GitHub Settings'),'admin/hosting', array(
-      'html' => TRUE,
-      'attributes' => array(
-        'class' => array('btn btn-default text-center'),
-      ))) .'</p>' , 'warning');
+  if (!$key_exists && drupal_valid_path('admin/hosting')) {
+    drupal_set_message(t('GitHub API Integration has not been enabled. You can still add public git repositories. Check !settings to enable additional features.', [
+      '!settings' => l(t('DevShop GitHub Settings'), 'admin/hosting'),
+    ]), 'warning');
   }
-  else {
-    $form['connect'] = array();
+  elseif (!$key_valid && drupal_valid_path('admin/hosting')) {
+    drupal_set_message(t('Your GitHub API Token is invalid. Check !settings to add a new one.', [
+      '!settings' => l(t('DevShop GitHub Settings'), 'admin/hosting'),
+    ]), 'error');
   }
 
   $options = [];
@@ -605,7 +603,7 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
     ),
   );
 
-  $suggested_repos = variable_get('devshop_git_repo_suggestions', array(
+  $suggested_repos = variable_get('devshop_git_repo_options', array(
     'git@github.com:opendevshop/devshop-composer-template.git',
   ));
   $options = array_combine(array_values($suggested_repos),array_values($suggested_repos));
@@ -736,10 +734,13 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
  * Implements hook_devshop_project_git_repo_options().
  */
 function devshop_github_devshop_project_git_repo_options() {
-  return array(
-    'github_existing' => t('Use an existing GitHub repository'),
-    'github_create' => t('Create a new GitHub repository'),
-  );
+
+  if (devshop_github_token_is_valid()) {
+    return array(
+      'github_create' => t('Create a new GitHub repository'),
+      'github_existing' => t('An existing GitHub repository'),
+    );
+  }
 }
 
 /**
@@ -778,7 +779,7 @@ function devshop_github_form_devshop_project_create_step_environments_alter(&$fo
         $env_name = "pr{$pr['number']}";
         // If PR environment already exists, load it.
         if (isset($project->environments[$env_name])) {
-          $environment = $project->environments[$env_name];
+          $environment = convert_to_object($project->environments[$env_name]);
         }
         else {
           $environment = new stdClass();
@@ -789,7 +790,7 @@ function devshop_github_form_devshop_project_create_step_environments_alter(&$fo
 
         // Use NEW form elements as the template.
         $environment_forms[$environment->name] = $form['project']['environments']['NEW'];
-        $environment_forms[$environment->name]['platform']['#value'] = $environment->platform;
+//        $environment_forms[$environment->name]['platform']['#value'] = $environment->platform;
 
         // Create a disabled textfield for display to user, and convert original element to "value" type so the info is passed.
         $environment_forms[$environment->name]['name']['#default_value'] = $environment->name;
@@ -797,17 +798,32 @@ function devshop_github_form_devshop_project_create_step_environments_alter(&$fo
 
         $environment_forms[$environment->name]['git_ref']['#value'] = $environment->git_ref;
         $environment_forms[$environment->name]['git_ref']['#type'] = 'value';
+        $icon = $project->settings->git['refs'][$environment->git_ref] == 'branch' ? 'code-fork': 'tag';
 
-        $environment_forms[$environment->name]['git_ref']['pr'] = array(
+        $environment_forms[$environment->name]['git_ref']['info']['ref'] = array(
           '#theme' => 'link',
-          '#text' => "<img src='{$pr['user']['avatar_url']}' width='28'> PR" . $pr['number'] . htmlentities($pr['title']),
+          '#text' => "<em class='fa fa-$icon'></em> " . $environment->git_ref,
           '#path' => $pr['html_url'],
           '#options' => array(
             'html' => true,
             'attributes' => array(
               'target' => '_blank',
               'class' => array(
-                'btn btn-default'
+                'btn btn-default btn-sm'
+              ),
+            ),
+          ),
+        );
+        $environment_forms[$environment->name]['git_ref']['info']['pr'] = array(
+          '#theme' => 'link',
+          '#text' => "<img src='{$pr['user']['avatar_url']}' width='28' class='img-responsive img-thumbnail'> PR" . $pr['number'] . htmlentities($pr['title']),
+          '#path' => $pr['html_url'],
+          '#options' => array(
+            'html' => true,
+            'attributes' => array(
+              'target' => '_blank',
+              'class' => array(
+                'btn btn-text'
               ),
             ),
           ),
@@ -831,17 +847,19 @@ function devshop_github_form_devshop_project_create_step_environments_alter(&$fo
         }
 
         $environment_forms[$environment->name]['settings']['git_remote'] = array(
+          '#type' => 'value',
           '#value' => $remote_url,
         );
 
-        // Save a flag that this is a pr_environment, so that the site knows to load the PR data later.
-        $environment_forms[$environment->name]['pr_environment'] = array(
-          '#value' => TRUE,
+        // Save data for devshop_github_node_insert() to process.
+        $environment_forms[$environment->name]['settings']['pull_request'] = array(
+          '#type' => 'value',
+          '#value' => $pr,
         );
       }
 
       // Merge environments fields together to put PRs on top.
-      $form['project']['environments'] = array_merge($environment_forms, $form['project']['environments']);
+      $form['project']['environments'] = array_merge($form['project']['environments'], $environment_forms);
     }
 
     $settings_link = l(t('Change Project Settings'), 'projects/add/settings', array(
@@ -898,6 +916,7 @@ function devshop_github_form_devshop_project_create_step_environments_alter(&$fo
   }
   $form['pr_environments']['help'] = $help_display;
   $form['pr_environments']['help']['#weight'] = -1;
+
 }
 
 /**
@@ -1097,11 +1116,22 @@ function devshop_github_node_load($nodes, $types) {
  * When submitting from the Site form, and user selects a PR branch, "pull_request" is populated with the PR object.
  */
 function devshop_github_node_insert($node) {
-  if ($node->type == 'site' && !empty($node->pull_request)) {
+  if ($node->type == 'site' && (!empty($node->pull_request) || !empty($node->settings->pull_request))) {
     $environment = new stdClass();
     $environment->name = $node->environment_name;
+    $environment->site = $node->nid;
     $environment->project_nid = $node->project_nid;
-    devshop_github_save_pr_env_data($node->pull_request, $environment);
+
+    if (!empty($node->pull_request)) {
+      $pr_data = convert_to_object($node->pull_request);
+    }
+    elseif (!empty($node->settings->pull_request)) {
+      $pr_data = convert_to_object($node->settings->pull_request);
+    }
+    else {
+      return;
+    }
+    devshop_github_save_pr_env_data($pr_data, $environment);
   }
 }
 
@@ -1765,36 +1795,6 @@ function devshop_github_check_key($silent = false) {
 }
 
 /**
- * Check that we are getting a fingerprint at all first.
- * @return bool|string
- * @throws \SSHKeyParseException
- */
-function devshop_public_key_valid_fingerprint() {
-
-  $devshop_key = variable_get('devshop_public_key', '');
-  $command = '<code>drush @hostmaster vset devshop_public_key "$(cat ~/.ssh/id_rsa.pub)" --yes</code>';
-
-  if (empty($devshop_key)) {
-    drupal_set_message(t("DevShop does not know what the server's public SSH Key is. Run the command: !command", array(
-      '!command' => $command,
-    )), 'error');
-    return FALSE;
-  }
-
-  try {
-    $devshop_sshkey = sshkey_parse($devshop_key);
-  }
-  catch (Exception $e) {
-    drupal_set_message(t("The ssh key saved in DevShop was invalid. Run the command to re-import it: !command", array(
-      '!command' => $command,
-    )), 'error');
-    return FALSE;
-  }
-
-  return $devshop_sshkey['fingerprint'];
-}
-
-/**
  * @param $pr
  * @param $environment
  */
@@ -1822,6 +1822,8 @@ function devshop_github_save_pr_env_data($pr, $environment) {
 
   // Save environment record.
   try {
+    watchdog('debug', 'environment:' .print_r($environment,1));
+    watchdog('debug', 'PR Save:' .print_r($info,1));
     drupal_write_record('hosting_devshop_github_pull_requests', $info, $update);
     return TRUE;
   }

@@ -887,3 +887,28 @@ function convert_to_object($thing) {
   $object = Yaml::parse($yml, Yaml::PARSE_OBJECT_FOR_MAP);
   return $object;
 }
+
+/**
+ * Check that we are getting a fingerprint at all first.
+ * @return bool|string
+ * @throws \SSHKeyParseException
+ */
+function devshop_public_key_valid_fingerprint($devshop_key = '') {
+
+  if (empty($devshop_key)) {
+    $devshop_key = variable_get('devshop_public_key', '');
+  }
+
+  if (empty($devshop_key)) {
+    return FALSE;
+  }
+
+  try {
+    $devshop_sshkey = sshkey_parse($devshop_key);
+  }
+  catch (\SSHKeyParseException $e) {
+    return FALSE;
+  }
+
+  return $devshop_sshkey['fingerprint'];
+}

@@ -392,7 +392,7 @@ class RoboFile extends \Robo\Tasks {
    * @option $build-folder If using --build, the folder to run 'docker-compose build' in. Use "all" to build in folder 'docker', then 'roles'.
    * @option $build-service If using --build, the service to build. passed to 'docker-compose build $SERVICE'. Use "all" to build all services.
    */
-  public function up($docker_command = '/usr/share/devshop/scripts/devshop-ansible-playbook', $opts = [
+  public function up($docker_command = '', $opts = [
     'destroy' => FALSE,
     'no-follow' => FALSE,
     'test' => FALSE,
@@ -709,7 +709,7 @@ class RoboFile extends \Robo\Tasks {
       // Remove devmaster site folder
       $version = self::DEVSHOP_LOCAL_VERSION;
       $uri = self::DEVSHOP_LOCAL_URI;
-      $this->_exec("cd docker && docker-compose exec devshop.server rm -rf /usr/share/devshop/src/DevShop/Control/web/sites/{$uri}");
+      $this->_exec("rm -rf ./src/DevShop/Control/web/sites/{$uri}");
       $this->_exec('cd docker && docker-compose kill');
       $this->_exec('cd docker && docker-compose rm -fv');
     }

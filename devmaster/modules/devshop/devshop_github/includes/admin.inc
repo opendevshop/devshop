@@ -7,7 +7,41 @@
 function devshop_github_form_devshop_projects_settings_form_alter(&$form, &$form_state, $form_id) {
 
   $token = devshop_github_token();
-  $token_valid = $token? devshop_github_token_is_valid($token): FALSE;
+  $client = new \Github\Client();
+  $client->authenticate($token, \Github\AuthMethod::ACCESS_TOKEN);
+
+  try {
+    $gh_user = $client->currentUser()->show();
+    $token_valid = TRUE;
+  }
+    // Happens when user has no public keys.
+  catch (Exception $e) {
+    $gh_user = FALSE;
+    $token_valid = FALSE;
+  }
+
+  $t = array(
+    '!user' => l($gh_user['login'], $gh_user['html_url'], array(
+      'attributes' => array(
+        'target' => '_blank'))),
+    '!create_token' => l(t('Create new token'), 'https://github.com/settings/tokens/new?scopes=repo,admin:public_key,admin:repo_hook&description=' . $_SERVER['HTTP_HOST'], array(
+      'attributes' => array(
+        'target' => '_blank'))),
+    '!github_tokens' => l(t('GitHub Personal Tokens'), 'https://github.com/settings/tokens', array(
+      'attributes' => array(
+        'target' => '_blank'),
+      'fragment' => 'edit-server')),
+    '!github_keys' => l(t('GitHub SSH Keys'), 'https://github.com/settings/keys', array(
+      'attributes' => array(
+        'target' => '_blank'),
+      'fragment' => 'edit-server')),
+    '!devshop_settings' => l(t('DevShop Public Key'), current_path(), array(
+      'fragment' => 'edit-server')),
+    '!devshop_add_key' => l(t('Add DevShop Public Key to GitHub'), 'admin/hosting/github/add-key', array(
+      'attributes' => array(
+      ),
+      'query' => array('destination' => current_path())))
+  );
 
   $ssh_key = variable_get('devshop_public_key', '');
 
@@ -16,30 +50,34 @@ function devshop_github_form_devshop_projects_settings_form_alter(&$form, &$form
     '#type' => 'fieldset',
     '#group' => 'settings',
     '#weight' => -3,
-    '#description' => t('DevShop integrates with GitHub to provide a number of features:'),
   );
-  $form['github']['features'] = array(
+  $form['github']['features']  = array(
+    '#type' => 'container',
+    '#attributes' => array(
+      'class' => array(
+        'alert alert-info'
+      )
+    )
+  );
+  $form['github']['features']['list'] = array(
     '#theme' => 'item_list',
+    '#prefix' => '<i class="fa fa-question-circle fa-2x pull-left"></i><div>' . t('DevShop integrates with GitHub to provide a number of features:'),
+    '#suffix' => '</div>',
     '#items' => array(
-      t('Submit Public Key to GitHub account to grant this server access to clone code.'),
-      t('Loads a list of available repositories for creating new projects.'),
-      t('Create new repositories on GitHub when adding projects.'),
-      t('Post task statuses to GitHub to integrate with Deployments and Commit Status API.'),
       t('Create environments from Pull Requests'),
+      t('Loads a list of available repositories for creating new projects.'),
+      t('Create new repositories on GitHub.'),
+      t('Post task statuses to GitHub to integrate with Deployments and Commit Status API.'),
     ),
     '#attributes' => array(
-      'class' => array('text small text-muted')
+      'class' => array('text text-dark')
     )
   );
 
   $form['github']['devshop_github_token'] = array(
     '#type' => 'password',
     '#title' => t('GitHub Token'),
-    '#description' => t('Enter a GitHub token to connect this DevShop to your code repositories. !link.', [
-        '!link' => l(t('Create a new token'), 'https://github.com/settings/tokens/new?scopes=repo,admin:public_key,admin:repo_hook&description=' . $_SERVER['HTTP_HOST'], array('attributes' => array(
-            'target' => '_blank',
-        )))
-    ]),
+    '#description' => t('Enter a GitHub token to connect this DevShop to your repositories. <div class="btn-group">!create_token !github_tokens !github_keys</div>', $t),
     '#default_value' => variable_get('devshop_github_token', ''),
     '#element_validate' => array(
       'devshop_github_settings_form_validate_token',
@@ -50,23 +88,26 @@ function devshop_github_form_devshop_projects_settings_form_alter(&$form, &$form
   );
   if (empty($token)) {
     $access_message = t('Token: not set up.');
-    $access_class = 'info';
+    $access_class = 'warning';
+    $access_icon = 'warning';
     $access_note = t('Enter a token to connect this DevShop to your GitHub repositories.');
   }
   elseif (!$token_valid) {
     $access_message = t('Token is invalid.');
     $access_class = 'danger';
-    $access_note = t('The stored GitHub token is invalid. Enter a new one to continue.');
+    $access_icon = 'warning';
+    $access_note = t('The stored GitHub token is invalid or has expired. Enter a new one to continue.');
   }
   else {
     $access_message = t('Token is valid.');
     $access_class = 'success';
-    $access_note = t('The stored GitHub token is valid.');
+    $access_icon = 'check';
+    $access_note = t('Successfully connected to GitHub API as !user.', $t);
   }
   $form['github']['token_status'] = array(
     '#type' => 'item',
     '#title' => $access_message,
-    '#prefix' => "<div class='alert alert-$access_class'>",
+    '#prefix' => "<div class='alert alert-$access_class'><i class='fa fa-$access_icon pull-left'></i>",
     '#description' => $access_note,
     '#suffix' => '</div>',
   );
@@ -75,32 +116,45 @@ function devshop_github_form_devshop_projects_settings_form_alter(&$form, &$form
   if (empty($ssh_key)) {
     $access_message = t('Unknown Public Key');
     $access_class = 'warning';
-    $access_note = t("DevShop does not know the user's public key. See DevShop Server Access: Public Key below.");
+    $access_icon = 'check';
+    $access_note = t("DevShop does not know the server's public key. See !devshop_settings.", $t);
   }
   elseif (empty($token)) {
-    $access_message = t('Public Key: Not set up.');
-    $access_class = 'info';
+    $access_message = t('Public Key: not set up.');
+    $access_class = 'warning';
+    $access_icon = 'warning';
     $access_note = t('Enter a token to check SSH access to your repositories.');
   }
+  elseif (!$token_valid) {
+    $access_message = t('Public Key: Invalid token.');
+    $access_class = 'danger';
+    $access_icon = 'warning';
+    $access_note = t('Unable to check for SSH access without a valid token.');
+  }
   elseif (!devshop_github_check_key()) {
-    $access_message = t('Public Key: Access Denied');
+    $access_message = t('Public Key: Not Found');
     $access_class = 'warning';
-    $access_note = t("The Public Key was not found in the account that owns this GitHub token. Add the public key to individual repositories as a Deploy Key, or !link to have DevShop add it for you.", array(
-      '!link' => l(t('Click Here'), 'admin/hosting/github/add-key', array(
-          'query' => array(
-              'destination' => $_GET['q'],
-          ),
-      ))));
+    $access_icon = 'warning';
+    $access_note = t("The !devshop_settings was not found in account !user. You can: ", $t);
+    $access_note .= theme('item_list', array(
+      'type' => 'ol',
+      'items' => array(
+        t('Automatically !devshop_add_key.', $t),
+        t('Manually add the !devshop_settings to your GitHub account on the !github_keys page.', $t),
+        t('Add the !devshop_settings to each repository as a Deploy Key.', $t),
+        t('Configure SSH manually on the server.', $t),
+    )));
   }
   else {
     $access_message = t('Public Key has access.');
     $access_class = 'success';
-    $access_note = t("The server's Public Key was found in the GitHub account that owns this token. DevShop can clone your GitHub repositories using the Public Key stored below.");
+    $access_icon = 'check';
+    $access_note = t("The DevShop Public Key was found in !user's account.", $t);
   }
   $form['github']['key_status'] = array(
       '#type' => 'item',
       '#title' => $access_message,
-      '#prefix' => "<div class='alert alert-$access_class'>",
+      '#prefix' => "<div class='alert alert-$access_class'><i class='fa fa-$access_icon pull-left'></i>",
       '#description' => $access_note,
       '#suffix' => '</div>',
   );
@@ -142,24 +196,21 @@ function devshop_github_form_devshop_projects_settings_form_alter(&$form, &$form
   $form['github']['message'] = array(
     '#prefix' => "<div class='alert alert-success'><i class='fa fa-check'></i> ",
     '#suffix' => '</div>',
-    '#markup' =>  t('@count_string associated with this GitHub token.', array(
-      '@count_string' => format_plural($count, t('1 repository found'), t('@count repositories found'))
-  )));
+    '#markup' =>  format_plural($count, t('1 repository found'), t('DevShop can access @count repositories.')));
 
   $orgs = variable_get('devshop_github_available_organizations', array());
   $count = count($orgs);
   $form['github']['message_orgs'] = array(
     '#prefix' => "<div class='alert alert-success'><i class='fa fa-check'></i> ",
     '#suffix' => '</div>',
-    '#markup' =>  t('@count_string with create repo privileges.', array(
+    '#markup' =>  t('DevShop can create repositories in @count_string.', array(
       '@count_string' => format_plural($count, t('1 GitHub organization'), t('@count GitHub organizations'))
   )));
   $form['github']['button'] = array(
+    '#access' => $token_valid,
     '#markup' => l(t('Reload GitHub Projects'),'admin/hosting/github/load-repos', array('attributes' => array(
     'class' => array('btn btn-info'),
   ))));
-
-  $form = system_settings_form($form);
   return $form;
 }
 
@@ -177,13 +228,23 @@ function devshop_github_settings_form_validate_token($element, &$form_state, $fo
     form_set_value($element, variable_get('devshop_github_token'), $form_state);
     return;
   }
-  $e = devshop_github_token_is_valid($token);
-  if (is_subclass_of($e, 'Exception')) {
-    form_error($element,  $e->getMessage());
-  }
-  else {
+
+  $client = new \Github\Client();
+  $client->authenticate($token, \Github\AuthMethod::ACCESS_TOKEN);
+
+  try {
+    $gh_user = $client->currentUser()->show();
     form_set_value($element, $token, $form_state);
-    devshop_github_refresh_repositories();
+    drupal_set_message(t('Successully connected to GitHub API as !link.', array(
+      '!link' => l($gh_user['login'], $gh_user['url']),
+    )));
+    return TRUE;
+  }
+    // Happens when user has no public keys.
+  catch (Exception $e) {
+    form_error($element,  t('GitHub Token was rejected: %message', array(
+      '%message' => $e->getMessage(),
+    )));
   }
 }
 
