@@ -50,9 +50,12 @@
     "bin": [
         "yaml-tasks"
     ],
-    "config": {
-        "bin-dir": "bin",
-        "sort-packages": true
-    },
+  "config": {
+    "bin-dir": "bin",
+    "sort-packages": true,
+    "allow-plugins": {
+      "php-http/discovery": true
+    }
+  },
     "minimum-stability": "dev"
 }
