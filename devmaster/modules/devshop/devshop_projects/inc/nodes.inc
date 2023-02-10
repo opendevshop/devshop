@@ -194,7 +194,7 @@ function devshop_projects_node_insert($node) {
   if (!isset($node->old_vid) || empty($node->old_vid)) {
 
     // Save the "hosting context", which includes setting the path alias.
-    $name = ($node->hosting_name) ? $node->hosting_name : $node->title;
+    $name = !empty($node->hosting_name) ? $node->hosting_name : $node->title;
 
     // Ensure "project_" prefix on hosting context name.
     if (strpos($name, 'project_') !== 0) {

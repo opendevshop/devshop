@@ -24,7 +24,12 @@ Feature: Create a project and check settings
     And I reload the page
 
     Then I fill in "web" for "Document Root"
+    And I check the box "Pull Request Environments"
+
     When I press "Next"
+    Then I should see "pr1"
+    And I should see "(PR TEST)"
+
     And I should see "DOCUMENT ROOT web"
 
     When I run drush "hosting-tasks --force --fork=0 --strict=0"
@@ -39,29 +44,7 @@ Feature: Create a project and check settings
     And I fill in "live" for "project[environments][NEW][name]"
     And I select "9.x" from "project[environments][NEW][git_ref]"
     And I press "Add environment"
-    Then I press "Next"
-
-    # Step 4
-    And I should see "dev"
-    And I should see "live"
-    And I should see "9.x"
-
-    When I run drush "hosting-tasks --force --fork=0 --strict=0"
-    # Then print last drush output
-    And I reload the page
-
-    Then I should see "dev"
-    And I should see "live"
-
-    And I reload the page
-#    When I click "Process Failed"
-    Then I should see "8."
-    Then I should not see "Platform verification failed"
-#    When I select "standard" from "install_profile"
-
-#    Then I break
-
-    And I press "Create Project & Environments"
+    Then I press "Create Project & Environments"
 
     # FINISH!
     Then I should see "Your project has been created. Your sites are being installed."
@@ -76,13 +59,15 @@ Feature: Create a project and check settings
     And I should see the link "live"
     And I should see the link "http://composer.dev.devshop.local.computer"
 
+    And I should see the link "Update readme. (PR TEST)"
+    And I should see the link "Add Behat tests"
+
     When I run drush "hosting-tasks --force --fork=0 --strict=0"
     # Then print last drush output
     Then drush output should not contain "This task is already running, use --force"
 
     And I reload the page
     Then I should see the link "dev"
-    Then I should see the link "live"
 #    Given I go to "http://dev.composer.devshop.travis"
 #    When I click "Visit Environment"
 

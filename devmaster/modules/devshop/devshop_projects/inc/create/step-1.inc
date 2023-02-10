@@ -104,33 +104,11 @@ function devshop_project_create_step_git($form, $form_state) {
   $pubkey = variable_get('devshop_public_key', '');
   
   // If we don't yet have the server's public key saved as a variable...
-  if (empty($pubkey)) {
-    $output = t("This DevShop doesn't yet know your server's public SSH key. To import it, run the following command on your server as <code>aegir</code> user:");
-    $command = 'drush @hostmaster vset devshop_public_key "$(cat ~/.ssh/id_rsa.pub)" --yes';
-    $output .= "<div class='command'><input size='160' value='$command' onclick='this.select()' /></div>";
+  if (empty($pubkey) && drupal_valid_path('admin/hosting')) {
+    drupal_set_message(t("DevShop can display it's Public Key for you when creating projects, to make granting access to your git repositories easier. However, this DevShop does not know the it's public key. To fix this, check !settings. ", [
+      '!settings' => l(t('DevShop Settings: Public Key'), 'admin/hosting', ['fragment' => 'edit-public-key']),
+    ]), 'warning');
   }
-  else {
-    $msg = t('If you haven\'t granted this server access to your Git repository, you should do so now using it\'s public SSH key:');
-
-    $link = l(t('Edit devshop public key'), 'admin/devshop', array(
-      'query' => array(
-        'destination' => $_GET['q'],
-      ),
-      'attributes' => array(
-        'class' => array('btn btn-default')
-      ),
-    ));
-    $output = <<<HTML
-  <div class="alert alert-warning"><p>$msg </p>
-  <textarea cols="80" id="rsa" onclick='this.select()' class="pull-left">$pubkey</textarea> $link
-  </div>
-HTML;
-  }
-  
-  // Add info about connecting to Repo
-  $form['connect']  = array(
-    '#markup'=> $output,
-  );
 
   $tips[] = t('For best results, use the !link project as a starting point for Composer based projects.', [
     '!link' => l(t('DevShop Composer Template'), 'https://github.com/opendevshop/devshop-composer-template', array(
@@ -196,7 +174,7 @@ HTML;
   $tips[] = t('You can use a repository with a full Drupal stack committed, in the root or in a sub folder');
   $tips[] = t('If a composer.json file is found in the root of the project, <code>composer install</code> will be run automatically.');
   $tips[] = t("If your repository is not public, make sure your server has SSH access. Check the !link to see this server's public key.", array(
-    '!link' => l(t('DevShop Settings'), 'admin/devshop'),
+    '!link' => l(t('DevShop Settings'), 'admin/hosting'),
   ));
   $tips = theme('item_list', array('items' => $tips));
 
