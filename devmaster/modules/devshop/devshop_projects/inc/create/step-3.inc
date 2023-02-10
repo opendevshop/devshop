@@ -59,14 +59,10 @@ function devshop_project_create_step_environments($form, &$form_state) {
     $project->environments['NEW'] = array();
   }
   foreach ($project->environments as $name => $environment) {
-    // No platforms exist yet
-    if ($name == 'NEW') {
-      $env_title = '';
+    if (empty($name)) {
+      continue;
     }
-    else {
-      $env_title = $name;
-    }
-
+    $environment = convert_to_object($environment);
     $form['project']['environments'][$name] = devshop_project_environment_create_form_element($project, $environment);
 
     // Add Environment
@@ -113,7 +109,7 @@ function devshop_project_create_step_environments_validate(&$form, &$form_state)
     }
 
     // Reject if empty
-    if (count($values['project']['environments']) < 1) {
+    if (count($form_state['values']['project']['environments']) < 1) {
       if ($form_state['clicked_button']['#name'] == 'add_environment') {
         form_set_error('project][environments][NEW][name', t('Name this environment before you add another.'));
       }
@@ -122,9 +118,6 @@ function devshop_project_create_step_environments_validate(&$form, &$form_state)
       }
     }
   }
-
-//  dsm($form_state['values']['project']['environments']);
-//  form_set_error('project', 'halt');
 }
 
 ///**
@@ -184,13 +177,15 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
   // Save environments data
   $environments = $form_state['values']['project']['environments'];
 
-  // Delete all existing environments
-  db_delete('hosting_devshop_project_environment')
-    ->condition('project_nid', $project_node->nid)
-    ->execute();
-
   // Create all environments
   if ($form_state['clicked_button']['#name'] == 'add_environment') {
+
+    if (isset($environments['NEW']) && !empty($environments['NEW']['name'])) {
+      $new_name = $environments['NEW']['name'];
+      $environments[$new_name] = $environments['NEW'];
+      unset($environments['NEW']);
+    }
+
     $project->environments = $environments;
     ctools_object_cache_set('project', 'devshop_project', $project);
     $form_state['redirect'] = 'projects/add/environments';

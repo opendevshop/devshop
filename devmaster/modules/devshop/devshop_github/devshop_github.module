@@ -790,7 +790,7 @@ function devshop_github_form_devshop_project_create_step_environments_alter(&$fo
 
         // Use NEW form elements as the template.
         $environment_forms[$environment->name] = $form['project']['environments']['NEW'];
-        $environment_forms[$environment->name]['platform']['#value'] = $environment->platform;
+//        $environment_forms[$environment->name]['platform']['#value'] = $environment->platform;
 
         // Create a disabled textfield for display to user, and convert original element to "value" type so the info is passed.
         $environment_forms[$environment->name]['name']['#default_value'] = $environment->name;
