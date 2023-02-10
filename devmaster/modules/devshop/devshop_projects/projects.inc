@@ -104,7 +104,7 @@ function devshop_project_load($node) {
   }
 
   // Git Repo Host
-  if (strpos($project->git_url, 'github.com') !== FALSE) {
+  if (isset($project->git_url) && strpos($project->git_url, 'github.com') !== FALSE) {
     $project->git_provider = 'github';
     $project->git_repo_url = strtr($project->git_url, array(
       'git@github.com:' => 'http://github.com/',
@@ -118,7 +118,7 @@ function devshop_project_load($node) {
     $project->github_repo = $parts[2];
 
   }
-  elseif (strpos($project->git_url, variable_get('bitbucket_repo_url_trigger_word', 'bitbucket.org')) !== FALSE) {
+  elseif (isset($project->git_url) && strpos($project->git_url, variable_get('bitbucket_repo_url_trigger_word', 'bitbucket.org')) !== FALSE) {
     $project->git_provider = 'bitbucket';
     $project->git_repo_url = strtr($project->git_url, array(
       'git@bitbucket.com:' => 'http://bitbucket',
@@ -154,9 +154,9 @@ function devshop_project_load($node) {
           db.title as db_server,
           db.nid as db_server_nid,
           s.db_name,
-          s.profile as install_profile,
           pn.title as project_name,
-          sn.created as created,
+          pn.created as created,
+          sn.created as created_site,
           s.vid,
           sn.title as system_domain,
           a.redirection as redirect_domain,
@@ -190,6 +190,8 @@ function devshop_project_load($node) {
     ]
   ));
   foreach ($environment_data as $environment) {
+
+    $environment->install_profile = $project->install_profile? : 'standard';
 
     // Site dashboard URL.
     $environment->dashboard_url = url("node/{$environment->site}", array(
@@ -248,6 +250,7 @@ function devshop_project_load($node) {
     else {
       $environment->version = t('unknown');
     }
+    $environment->version = '';
 
     // @TODO: Make "servers" more abstract so we can add many more.
     // HTTP Server
@@ -385,22 +388,10 @@ function devshop_project_load($node) {
       // Install Method: "Profile"
       case "profile":
       default:
+        $environment->install_method_label = t('Installed with !profile', array(
+          '!profile' => $environment->install_profile,
+        ));
 
-        // We don't know package ID until platform verifies.
-        if ($environment->install_profile == 0 && !empty($environment->settings->install_method['profile'])) {
-          $environment->install_method_label = t('Installed with !profile', array(
-            '!profile' => $environment->settings->install_method['profile'],
-          ));
-        }
-        elseif (!empty($environment->settings->install_method['profile'])) {
-          $profile = node_load($environment->install_profile);
-          $environment->install_method_label = t('Installed with !profile', array(
-            '!profile' => l($profile->title, "node/{$environment->install_profile}"),
-          ));
-        }
-        else {
-          $environment->install_method_label = '';
-        }
         break;
     }
 

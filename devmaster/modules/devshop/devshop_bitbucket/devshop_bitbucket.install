@@ -64,7 +64,7 @@ function devshop_bitbucket_install() {
 
   // Display a message about setting a bitbucket personal token.
   drupal_set_message(t('DevShop bitbucket module has been enabled.  You must add an access token to enable full functionality at !link.', array(
-    '!link' => l(t('the settings page'), 'admin/devshop/bitbucket'),
+    '!link' => l(t('the settings page'), 'admin/hosting/bitbucket'),
   )));
 }
 

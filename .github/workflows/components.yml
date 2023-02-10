@@ -63,8 +63,6 @@ jobs:
     - name: Install dependencies
       working-directory: ${{env.working-directory}}
       run: |
-        composer config repositories.power-process '{"type": "path","url": "../PowerProcess"}'
-        composer require devshop/power-process
         composer install --prefer-dist --no-progress --no-suggest
 
     - name: Run Yaml Tasks
@@ -207,8 +205,8 @@ jobs:
 #        run: |
 #          ./github deploy:update -n --state=success
 
-  ComposerCommon:
-    name: ComposerCommon
+  GitTraits:
+    name: GitTraits
 
     runs-on: ubuntu-latest
     strategy:
@@ -220,7 +218,7 @@ jobs:
 
     # Set working directory for entire file. https://github.community/t5/GitHub-Actions/use-working-directory-for-entire-job/td-p/36759
     env:
-      working-directory: ./src/DevShop/Component/ComposerCommon
+      working-directory: ./src/DevShop/Component/GitTraits
 
     steps:
       - uses: actions/checkout@v1

@@ -240,7 +240,7 @@ class RoboFile extends \Robo\Tasks {
   public function build($folder = 'docker', $service = 'all', $opts = [
       'docker-image' => 'devshop/server:latest',
       'scratch' => FALSE,
-      'from' => 'ubuntu:20.04',
+      'from' => 'devshop/server:latest',
       'build-command' => NULL,
       'os' => NULL,
       'vars' => '',
@@ -273,7 +273,7 @@ class RoboFile extends \Robo\Tasks {
     // Define docker-image (name for the "image" in docker-compose)
     // Set FROM_IMAGE and DEVSHOP_DOCKER_IMAGE if --os option is used. (and --from was not used)
     if ($opts['scratch']) {
-      $opts['from'] = "ubuntu:20.04";
+      $opts['from'] = "devshop/server:latest";
     }
 
     if ($opts['os'] !== NULL) {
@@ -303,15 +303,15 @@ class RoboFile extends \Robo\Tasks {
     }
 
     // Runtime Environment for the docker-compose build command.
+    $opts['playbook-command-options'] = "--extra-vars=@/usr/share/devshop/vars.development.yml --extra-vars devshop_version={$branch} --extra-vars devshop_cli_version={$branch}";
     $env_build = $this->generateEnvironmentArgs($opts);
-
-    $env_build['ANSIBLE_EXTRA_VARS'] = "devshop_version={$branch} devshop_cli_version={$branch}";
-    $env_build['ANSIBLE_PLAYBOOK_COMMAND_OPTIONS_ARG'] = '--extra-vars=@/usr/share/devshop/vars.development.yml';
-
     print_r($env_build);
 
+    # Add --no-cache if needed.
+    $docker_compose_build_opts = "";
+
     $provision_io = new \DevShop\Component\PowerProcess\PowerProcessStyle($this->input(), $this->output());
-    $process = new \DevShop\Component\PowerProcess\PowerProcess("docker-compose build --no-cache $service", $provision_io);
+    $process = new \DevShop\Component\PowerProcess\PowerProcess("docker-compose build $docker_compose_build_opts $service", $provision_io);
     $process->setEnv($env_build);
     $process->disableOutput();
     $process->setTimeout(null);
@@ -392,7 +392,7 @@ class RoboFile extends \Robo\Tasks {
    * @option $build-folder If using --build, the folder to run 'docker-compose build' in. Use "all" to build in folder 'docker', then 'roles'.
    * @option $build-service If using --build, the service to build. passed to 'docker-compose build $SERVICE'. Use "all" to build all services.
    */
-  public function up($docker_command = '/usr/share/devshop/scripts/devshop-ansible-playbook', $opts = [
+  public function up($docker_command = '', $opts = [
     'destroy' => FALSE,
     'no-follow' => FALSE,
     'test' => FALSE,
@@ -408,9 +408,9 @@ class RoboFile extends \Robo\Tasks {
     'docker-image' => 'devshop/server:latest',
     // The OS "slug" to use instead of devshop/server:ubuntu1804. If specified, "docker-image" option will be ignored.
     'os' => NULL,
-    'from' => 'ubuntu:20.04',
+    'from' => 'devshop/server:latest',
     'vars' => '',
-    'tags' => '',
+    'tags' => 'runtime',
     'skip-tags' => '',
     'playbook' => 'roles/devshop.server/play.yml',
     'playbook-command-options' => '',
@@ -513,7 +513,10 @@ class RoboFile extends \Robo\Tasks {
     if ($opts['build']) {
       $this->yell("Docker Image {$opts['docker-image']} was not found on this system or on docker hub.", 40, "blue");
       $this->say("Building it locally...");
-      $this->build($opts['build-folder'], $opts['build-service'], $opts);
+
+      $build_opts = $opts;
+      $build_opts['tags'] = 'buildtime';
+      $this->build($build_opts['build-folder'], $build_opts['build-service'], $build_opts);
     }
     // Warn the user that this container is not being built.
     elseif (!$opts['build']) {
@@ -579,7 +582,6 @@ class RoboFile extends \Robo\Tasks {
       // Runtime Environment for the $cmd list.
       $env_run = $this->generateEnvironmentArgs($opts);
       $env_run['ANSIBLE_PLAYBOOK_COMMAND_OPTIONS'] = '--extra-vars=@/usr/share/devshop/vars.development.yml';
-      print_r($env_run);
 
       $extra_vars = array();
 
@@ -707,7 +709,7 @@ class RoboFile extends \Robo\Tasks {
       // Remove devmaster site folder
       $version = self::DEVSHOP_LOCAL_VERSION;
       $uri = self::DEVSHOP_LOCAL_URI;
-      $this->_exec("cd docker && docker-compose exec devshop.server rm -rf /usr/share/devshop/src/DevShop/Control/web/sites/{$uri}");
+      $this->_exec("rm -rf ./src/DevShop/Control/web/sites/{$uri}");
       $this->_exec('cd docker && docker-compose kill');
       $this->_exec('cd docker && docker-compose rm -fv');
     }
@@ -796,7 +798,7 @@ class RoboFile extends \Robo\Tasks {
    * Run all devshop tests on the containers.
    */
   public function test($user = 'aegir', $opts = array(
-    'compose-file' => 'docker/docker-compose.yml:docker/docker-compose.override.yml',
+    'compose-file' => 'docker-compose.yml:docker-compose.override.yml',
     'reinstall' => FALSE
   )) {
     $is_tty = !empty($_SERVER['XDG_SESSION_TYPE']) && $_SERVER['XDG_SESSION_TYPE'] == 'tty';

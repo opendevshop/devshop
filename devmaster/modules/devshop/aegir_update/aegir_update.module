@@ -76,7 +76,7 @@ function aegir_update_post_hosting_update_drupal_task($task, $data) {
  * Defines the list of tasks that appear under the gear icon.
  */
 function aegir_update_devshop_environment_menu($environment) {
-
+    $items = [];
     if ($environment->site && $environment->site_status == HOSTING_SITE_ENABLED) {
         $items[] = 'update_drupal';
     }

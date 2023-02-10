@@ -155,7 +155,7 @@ HTML;
 
   // No Projects
   if (empty($rows)) {
-    $link = url('admin/devshop');
+    $link = url('admin/hosting');
     $welcome = t('Welcome to <em>your</em> DevShop!');
     $subtitle = t("You are almost ready to start working.");
     $text = t("Check your DevShop settings or get started with a new Project.");

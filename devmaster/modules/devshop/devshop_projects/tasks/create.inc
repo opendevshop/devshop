@@ -50,6 +50,7 @@ function hosting_create_environment($project, $new_environment_name, $new_enviro
     $site->uid = $user->uid;
     $site->name = $user->name;
     $site->client = HOSTING_DEFAULT_CLIENT;
+    $site->settings = $settings;
 
     // Attach a new platform node.
     $site->platform_node = $platform;
@@ -142,8 +143,14 @@ function hosting_create_environment($project, $new_environment_name, $new_enviro
   }
 
   // Get platform verify task
-  $tasks = hosting_get_tasks('rid', $site->nid);
-  $environment->last_task = current($tasks)->nid;
+  if (isset($site->nid)) {
+    $tasks = hosting_get_tasks('rid', $site->nid);
+    $environment->last_task = current($tasks)->nid;
+  }
+  else {
+    $environment->last_task = 0;
+  }
+
   $environment->project_nid = $project->nid;
 
   db_insert('hosting_devshop_project_environment')

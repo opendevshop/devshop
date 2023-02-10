@@ -227,6 +227,10 @@ class InstallDevmaster extends Command
         'force-reinstall', NULL, InputOption::VALUE_NONE,
         'Delete any existing site with the specified URI'
       )
+      ->addOption(
+        'fail-if-unknown-version', NULL, InputOption::VALUE_NONE,
+        'Available if you really need to fail the command when the chosen version is not found in the remote.'
+      )
     ;
   }
 
@@ -269,8 +273,8 @@ class InstallDevmaster extends Command
 
     // If version was not specified, lookup the latest.
     if (empty($version)) {
-      $version = $this->getLatestVersion();
-      $output->writeln("Checking for latest version... $version");
+      $output->writeln('Checking for latest version...');
+      $input->setOption('devshop_version', $this->getLatestVersion());
     }
 
     // Validate chosen version
@@ -281,10 +285,11 @@ class InstallDevmaster extends Command
       $input->setOption('git_reference', $version);
     }
     catch (\Exception $e) {
-      $output->writeln('<error>' . $e->getMessage() . '</error>');
-      exit(1);
+      $output->writeln('<warning>' . "Version $version does not exist in git repository {$this->getRepoSlug()}." . '</warning>');
+      if ($input->getOption('fail-if-unknown-version')) {
+        exit(1);
+      }
     }
-
 
     // site
     if (!$input->getOption('site')) {
@@ -670,20 +675,7 @@ PHP;
    *   Run `drush hosting-setup`
    */
   private function finalize() {
-
-    // Run `drush cc drush`
     $drush_path = $this->input->getOption('drush-path');
-    if ($this->runProcess(new Process("{$drush_path} cc drush"))) {
-      $this->output->writeln("");
-      $this->output->writeln("Running <comment>drush cc drush</comment>: <info>Done</info>");
-      $this->output->writeln("");
-    }
-    else {
-      $this->output->writeln("");
-      $this->output->writeln("<error>Unable to run drush cc drush. Cannot continue.</error>");
-      $this->output->writeln("");
-      exit(1);
-    }
 
     // Run `drush @hostmaster hosting-setup`
     // @see install.hostmaster.inc: 275
@@ -700,15 +692,15 @@ PHP;
       exit(1);
     }
 
-    // Run `drush @hostmaster cc drush`
-    if ($this->runProcess(new Process("{$drush_path} @{$master_drush_alias} cc drush"))) {
+    // Run `drush cc drush`
+    if ($this->runProcess(new Process("{$drush_path} cc drush"))) {
       $this->output->writeln("");
-      $this->output->writeln("Running <comment>drush @{$master_drush_alias} cc drush</comment>: <info>Done</info>");
+      $this->output->writeln("Running <comment>drush cc drush</comment>: <info>Done</info>");
       $this->output->writeln("");
     }
     else {
       $this->output->writeln("");
-      $this->output->writeln("<error>Unable to run drush @{$master_drush_alias} cc drush. Cannot continue.</error>");
+      $this->output->writeln("<error>Unable to run drush cc drush. Cannot continue.</error>");
       $this->output->writeln("");
       exit(1);
     }
