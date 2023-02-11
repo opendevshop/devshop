@@ -253,13 +253,13 @@ function devshop_bitbucket_form_devshop_projects_settings_form_alter(&$form, &$f
   $form['bitbucket']['tokens'] = array(
     '#type' => 'fieldset',
     '#title' => t('Access Token'),
-    '#description' => t(' A repository token will only be able to connect to a single repository. If you want to use this DevShop for more than one repository, you must use a Project or Workspace token, which requires a Premium BitBucket account. See !docs_tokens for more information.', $t),
+    '#description' => t('Access Tokens can be created for Repositories, Projects, or Workspaces. To create a new token, visit your repository, project, or workspace settings page, then click "Access tokens". <p>See !docs_tokens for more information.', $t),
     '#group' => 'authentication',
   );
   $form['bitbucket']['tokens']['devshop_bitbucket_token'] = array(
     '#type' => 'password',
     '#title' => t('Bitbucket Access Token'),
-    '#description' => t('The access token to use when connecting to BitBucket. !create_token', $t),
+    '#description' => t('The access token to use when connecting to BitBucket.', $t),
     '#maxlength' => '1024',
     '#default_value' => variable_get('devshop_bitbucket_token', ''),
     '#element_validate' => array(
