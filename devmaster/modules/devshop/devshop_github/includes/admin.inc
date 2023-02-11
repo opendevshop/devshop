@@ -234,7 +234,6 @@ function devshop_github_settings_form_validate_token($element, &$form_state, $fo
 
   try {
     $gh_user = $client->currentUser()->show();
-    form_set_value($element, $token, $form_state);
     drupal_set_message(t('Successully connected to GitHub API as !link.', array(
       '!link' => l($gh_user['login'], $gh_user['url']),
     )));

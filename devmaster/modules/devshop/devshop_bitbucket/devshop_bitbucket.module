@@ -231,6 +231,7 @@ function devshop_bitbucket_form_devshop_projects_settings_form_alter(&$form, &$f
   );
 
   $form['bitbucket']['features']  = array(
+    '#weight' => -10,
     '#type' => 'container',
     '#attributes' => array(
       'class' => array(
@@ -348,58 +349,10 @@ function devshop_bitbucket_form_devshop_projects_settings_form_alter(&$form, &$f
     $access_icon = 'check';
     $access_note = t('Connected to BitBucket API, with access to !repo_access. Scopes: %scopes.', $t);
   }
-  $form['bitbucket']['token_status'] = array(
-    '#type' => 'container',
-    'status' => array(
-      '#type' => 'item',
-      '#title' => $access_message,
-      '#prefix' => "<div class='alert alert-$access_class'><i class='fa fa-$access_icon pull-left'></i>",
-      '#description' => $access_note,
-      '#suffix' => '</div>',
-    ),
-  );
 
-  // SSH Key access
-  if (empty($ssh_key)) {
-    $access_message = t('Unknown Public Key');
-    $access_class = 'warning';
-    $access_icon = 'check';
-    $access_note = t("DevShop does not know the server's public key. See !devshop_settings.", $t);
-  }
-  elseif (empty($token)) {
-    $access_message = t('Public Key: not set up.');
-    $access_class = 'warning';
-    $access_icon = 'warning';
-    $access_note = t('Enter a token to check SSH access to your repositories.');
-  }
-  elseif (!$token_valid) {
-    $access_message = t('Public Key: Invalid token.');
-    $access_class = 'danger';
-    $access_icon = 'warning';
-    $access_note = t('Unable to check for SSH access without a valid token.');
-  }
-  elseif (!devshop_bitbucket_check_key()) {
-    $access_message = t('Public Key: Not Found');
-    $access_class = 'warning';
-    $access_icon = 'warning';
-    $access_note = t("The !devshop_settings was not found in account !user. You can: ", $t);
-    $access_note .= theme('item_list', array(
-      'type' => 'ol',
-      'items' => array(
-        t('Automatically !devshop_add_key.', $t),
-        t('Manually add the !devshop_settings to your BitBucket account on the !bitbucket_keys page.', $t),
-        t('Add the !devshop_settings to each repository as a Deploy Key.', $t),
-        t('Configure SSH manually on the server.', $t),
-      )));
-  }
-  else {
-    $access_message = t('Public Key has access.');
-    $access_class = 'success';
-    $access_icon = 'check';
-    $access_note = t("The DevShop Public Key was found in !user's account.", $t);
-  }
   $form['bitbucket']['key_status'] = array(
     '#type' => 'item',
+    '#weight' => -1,
     '#title' => $access_message,
     '#prefix' => "<div class='alert alert-$access_class'><i class='fa fa-$access_icon pull-left'></i>",
     '#description' => $access_note,
@@ -431,32 +384,6 @@ function devshop_bitbucket_token() {
   }
 
   return $token;
-}
-
-/**
- * Check if a token is valid. Checks the stored token if none is passed in.
- *
- * @param null $token
- *   A specific token to check.
- *
- * @return bool|\Exception
- */
-function devshop_bitbucket_token_is_valid($token = NULL) {
-
-  if (empty($token)) {
-    $token = devshop_bitbucket_token();
-  }
-
-  $client = new \Bitbucket\Client();
-  $client->authenticate($token, bitbucket\Client::AUTH_OAUTH_TOKEN);
-
-  try {
-    $user = $client->currentUser();
-    return TRUE;
-  }
-  catch (Exception $e) {
-    return FALSE;
-  }
 }
 
 /**
@@ -1078,33 +1005,6 @@ function devshop_bitbucket_webhook($project_node) {
 }
 
 /**
- * Check the bitbucket account for an SSH key.
- *
- * @return bool
- */
-function devshop_bitbucket_check_key() {
-//  $devshop_key = variable_get('devshop_public_key', '');
-//  $token = variable_get('devshop_bitbucket_token', '');
-//
-//  $client = new \bitbucket\Client();
-//  $client->authenticate($token, bitbucket\Client::AUTH_HTTP_TOKEN);
-//
-//  try {
-//    $keys = $client->currentUser()->keys()->all();
-//  }
-//    // Happens when user has no public keys.
-//  catch (\bitbucket\Exception\RuntimeException $e) {
-//    return FALSE;
-//  }
-//
-//  foreach ($keys as $key) {
-//    if (strpos($devshop_key, $key['key']) === 0) {
-//      return TRUE;
-//    }
-//  }
-}
-
-/**
  * Element validation for app password.
  *
  * @param $element
@@ -1132,7 +1032,7 @@ function devshop_bitbucket_settings_form_validate_api($element, &$form_state, $f
   }
   $password = $form_state['values']['devshop_bitbucket_app_password'];
   if (empty($password)) {
-    form_set_value($element, variable_get('devshop_bitbucket_app_password'), $form_state);
+    form_set_value($form['bitbucket']['passwords']['devshop_bitbucket_app_password'], variable_get('devshop_bitbucket_app_password'), $form_state);
   }
 
   $client = devshop_bitbucket_client();
@@ -1161,7 +1061,6 @@ function devshop_bitbucket_settings_form_validate_api($element, &$form_state, $f
       $data = $client->repositories()->list([
         'role' => 'member'
       ]);
-      form_set_value($form, $token, $form_state);
       $scopes = $client->getLastResponse()->getHeader('X-Oauth-Scopes');
       drupal_set_message(t('Successully connected to BitBucket API with scopes: %scopes', array(
         '%scopes' => implode(', ', $scopes),
