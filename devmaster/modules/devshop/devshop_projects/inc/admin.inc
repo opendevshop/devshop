@@ -1,23 +1,6 @@
 <?php
 
 /**
- * @param $element
- */
-function devshop_element_validate_explode_array($element, &$form_state, &$form) {
-  $lines = explode(PHP_EOL, $element['#value']);
-  foreach ($lines as $line) {
-    $line = explode('|', $line);
-    if (count($line) > 1) {
-      $options[$line[0]] = $line[1];
-    }
-    else {
-      $options[] = $line[0];
-    }
-  }
-  form_set_value($element, array_filter($options),$form_state);
-}
-
-/**
  * Projects Settings Page
  *
  * All code for admin interface.
@@ -59,10 +42,7 @@ function devshop_projects_settings_form($form, &$form_state) {
   $form['create']['options']['devshop_project_create_choice_options'] = array(
     '#description' => t('Enter the Git repositories to make available to users, one per line.'),
     '#type' => 'textarea',
-    '#default_value' => implode(PHP_EOL, variable_get('devshop_project_create_choice_options', array(
-      'git@github.com:opendevshop/drupal-project.git'
-    ))),
-    '#element_validate' => array('devshop_element_validate_explode_array'),
+    '#default_value' => variable_get('devshop_project_create_choice_options', 'git@github.com:opendevshop/drupal-project.git'),
     '#states' => array(
       'visible' => array(
         ':input[name="devshop_project_create_choice"]' => array('checked' => TRUE),

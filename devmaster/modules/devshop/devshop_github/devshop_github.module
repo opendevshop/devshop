@@ -466,45 +466,45 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
   unset($form['source']['git_source']['#options']['custom']);
   $form['source']['git_source']['#options']['custom'] = t('Custom Git repository URL');
 
-  if (empty($options)) {
-    $form['source']['github_repos'] = array(
-      '#title' => t('Use an existing GitHub repository'),
-      '#description' => t('No GitHub repositories found. !link', array(
-        '!link' => l(t('Refresh GitHub Repos'), 'admin/hosting/github/load-repos', array(
-          'query' => drupal_get_destination(),
-          'attributes' => array(
-            'class' => array('btn btn-primary'),
-          ),
-        )))),
-      '#type' => 'item',
-      '#states' => array(
-        'visible' => array(
-          ':input[name="git_source"]' => array(
-            'value' => 'github_existing'
-          ),
-        ),
-      ),
-    );
-  }
-  else {
-
-  $form['source']['github_repos'] = array(
-    '#title' => t('Use an existing GitHub repository'),
-    '#type' => 'select',
-    '#options' => $options,
-    '#default_value' => $form['source']['git_url']['#default_value'],
-    '#description' => t('Select the GitHub repository to use for this project. Remember, it must contain a Drupal site.') . ' ' .  l(t('Refresh GitHub Repos List'), 'admin/hosting/github/load-repos', array('query' => drupal_get_destination())),
-    '#bootstrap_ignore_pre_render' => TRUE,
-    '#states' => array(
-      'visible' => array(
-        ':input[name="git_source"]' => array(
-          'value' => 'github_existing'
-        ),
-      ),
-    ),
-  );
-
-  }
+//  if (empty($options)) {
+//    $form['source']['github_repos'] = array(
+//      '#title' => t('Use an existing GitHub repository'),
+//      '#description' => t('No GitHub repositories found. !link', array(
+//        '!link' => l(t('Refresh GitHub Repos'), 'admin/hosting/github/load-repos', array(
+//          'query' => drupal_get_destination(),
+//          'attributes' => array(
+//            'class' => array('btn btn-primary'),
+//          ),
+//        )))),
+//      '#type' => 'item',
+//      '#states' => array(
+//        'visible' => array(
+//          ':input[name="git_source"]' => array(
+//            'value' => 'github_existing'
+//          ),
+//        ),
+//      ),
+//    );
+//  }
+//  else {
+//
+//  $form['source']['github_repos'] = array(
+//    '#title' => t('Use an existing GitHub repository'),
+//    '#type' => 'select',
+//    '#options' => $options,
+//    '#default_value' => $form['source']['git_url']['#default_value'],
+//    '#description' => t('Select the GitHub repository to use for this project. Remember, it must contain a Drupal site.') . ' ' .  l(t('Refresh GitHub Repos List'), 'admin/hosting/github/load-repos', array('query' => drupal_get_destination())),
+//    '#bootstrap_ignore_pre_render' => TRUE,
+//    '#states' => array(
+//      'visible' => array(
+//        ':input[name="git_source"]' => array(
+//          'value' => 'github_existing'
+//        ),
+//      ),
+//    ),
+//  );
+//
+//  }
   $form['source']['github_create'] = array(
     '#type' => 'container',
     '#tree' => TRUE,
@@ -589,25 +589,28 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
       'settings',
       'github_repository_source',
     ),
+    '#access' => variable_get('devshop_allow_create_repo_github', false),
   );
 
 
-  $form['github_repository_source']['populate_choice'] = array(
-//    '#prefix' => '<div class="well">',
-    '#type' => 'radios',
-    '#default_value' => 'create',
-    '#title' => t('Choose what to put into your new Git repository'),
-    '#options' => array(
-      'create' => t('Create project using composer'),
-      'import' => t('Import from another Git URL'),
-    ),
-  );
-
-  $suggested_repos = variable_get('devshop_git_repo_options', array(
-    'git@github.com:opendevshop/devshop-composer-template.git',
-  ));
-  $options = array_combine(array_values($suggested_repos),array_values($suggested_repos));
-  $options['custom'] = t('Enter a custom Git URL');
+//  $form['github_repository_source']['populate_choice'] = array(
+////    '#prefix' => '<div class="well">',
+//    '#type' => 'radios',
+//    '#default_value' => 'create',
+//    '#title' => t('Choose what to put into your new Git repository'),
+//    '#options' => array(
+//      'create' => t('Create project using composer'),
+//      'import' => t('Import from another Git URL'),
+//    ),
+//    //'#access' => !empty($form[''['custom']),
+//  );
+//  dsm($form);
+//
+//  $suggested_repos = variable_get('devshop_project_create_choice_options', array(
+//    'git@github.com:opendevshop/devshop-composer-template.git',
+//  ));
+//  $options = array_combine(array_values($suggested_repos),array_values($suggested_repos));
+//  $options['custom'] = t('Enter a custom Git URL');
 
   $form['github_repository_source']['import'] = array(
     '#type' => 'textfield',
@@ -650,14 +653,10 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
     ),
   );
 
+  $suggested_projects = variable_get('devshop_composer_project_suggestions', "devshop/composer-template:8.x-dev\ndevshop/composer-template:7.x-dev");
 
-  $suggested_projects = variable_get('devshop_composer_project_suggestions', array(
-    'devshop/composer-template:8.x-dev',
-    'devshop/composer-template:7.x-dev',
-//    'acquia/lightning-project',
-  ));
-
-  $options = array_combine(array_values($suggested_projects),array_values($suggested_projects));
+//  $options = array_combine(array_values($suggested_projects),array_values($suggested_projects));
+  $options = [];
   $options['custom'] = t('Enter custom project');
 
   $form['github_repository_source']['composer_project_suggestions'] = array(
@@ -738,7 +737,6 @@ function devshop_github_devshop_project_git_repo_options() {
   if (devshop_github_token_is_valid()) {
     return array(
       'github_create' => t('Create a new GitHub repository'),
-      'github_existing' => t('An existing GitHub repository'),
     );
   }
 }

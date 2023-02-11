@@ -136,13 +136,14 @@ function devshop_project_create_step_git($form, $form_state) {
   );
   $form['source']['git_source'] = array(
     '#title' => t('Choose the source of your code'),
-    '#type' => 'radios',
+    '#type' => count($options) == 1? 'value': 'radios',
     '#options' => $options,
     '#description' => t(''),
-    '#default_value'=> 'custom',
+    '#default_value'=> key($options),
   );
 
   $form['source']['git_url'] = array(
+    '#access' => !empty($options['custom']),
     '#type' => 'textfield',
     '#required' => 1,
     '#title' => t('Git Repository URL'),
@@ -160,6 +161,24 @@ function devshop_project_create_step_git($form, $form_state) {
     ),
   );
 
+  $repos = explode(PHP_EOL, variable_get('devshop_project_create_choice_options', 'git@github.com:opendevshop/drupal-project.git'));
+  foreach ($repos as $repo_name => $remote) {
+    $repo_options[$remote] = $remote;
+  }
+
+  $form['source']['choice'] = array(
+    '#access' => !empty($options['custom']),
+    '#type' => 'select',
+    '#title' => t('Select a git repository.'),
+    '#options' => $repo_options,
+    '#states' => array(
+      'visible' => array(
+        ':input[name="git_source"]' => array(
+          'value' => 'choice'
+        ),
+      ),
+    ),
+  );
 
   // We have to tell the front-end what type of field so we can assign the right event.
   drupal_add_js(array(
@@ -194,6 +213,7 @@ function devshop_project_create_step_git($form, $form_state) {
 function devshop_projects_devshop_project_git_repo_options() {
   return array(
     'custom' => t('Git repository URL'),
+    'choice' => t('Choose a repository'),
   );
 }
 
