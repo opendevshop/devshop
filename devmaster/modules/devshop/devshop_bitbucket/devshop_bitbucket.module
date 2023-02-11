@@ -214,9 +214,7 @@ function devshop_bitbucket_form_devshop_projects_settings_form_alter(&$form, &$f
   elseif ($repo_count < 10) {
     $t['!repo_access'] = t('!first and @other', array(
       '!first' => $repo_link,
-      '!other' => format_plural($repo_count - 1, t('1 other repository'), t('@count other repositories', array(
-        '@count' => $repo_count - 1,
-      ))),
+      '@other' => format_plural($repo_count - 1, t('1 other repository'), t('@count other repositories')),
     ));
   }
   else {
@@ -269,9 +267,7 @@ function devshop_bitbucket_form_devshop_projects_settings_form_alter(&$form, &$f
     '#default_value' => variable_get('devshop_bitbucket_authentication_method', 'token'),
   );
   $form['bitbucket']['tokens'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('Access Token'),
-    '#description' => t('Access Tokens can be created for Repositories, Projects, or Workspaces. To create a new token, visit your repository, project, or workspace settings page, then click "Access tokens". <p>See !docs_tokens for more information.', $t),
+    '#type' => 'container',
     '#states' => array(
       'visible' => array(
         ':input[name=devshop_bitbucket_authentication_method]' => array(
@@ -279,6 +275,11 @@ function devshop_bitbucket_form_devshop_projects_settings_form_alter(&$form, &$f
         )
       )
     )
+  );
+
+  $form['bitbucket']['tokens']['help'] = array(
+    '#type' => 'item',
+    '#description' => t('Access Tokens can be created for Repositories, Projects, or Workspaces. To create a new token, visit your repository, project, or workspace settings page, then click "Access tokens".', $t),
   );
   $form['bitbucket']['tokens']['devshop_bitbucket_token'] = array(
     '#type' => 'password',
@@ -294,21 +295,23 @@ function devshop_bitbucket_form_devshop_projects_settings_form_alter(&$form, &$f
     ),
   );
   $form['bitbucket']['passwords'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('App Password'),
-    '#description' => t('Using an app password allows DevShop to make API calls as your Bitbucket account. See !docs_app_passwords for more information.', $t),
+    '#type' => 'container',
     '#states' => array(
       'visible' => array(
         ':input[name=devshop_bitbucket_authentication_method]' => array(
           'value' => 'password',
         )
       )
-    )
+    ),
+  );
+  $form['bitbucket']['passwords']['help'] = array(
+    '#type' => 'item',
+    '#description' => t('Using an app password allows DevShop to make API calls as your Bitbucket account to all repositories the user can access.'),
   );
   $form['bitbucket']['passwords']['devshop_bitbucket_app_username'] = array(
     '#title' => t('BitBucket Username'),
-    '#type' => 'textfield',
     '#description' => t('The username to use when connecting to the BitBucket API.'),
+    '#type' => 'textfield',
     '#default_value' => variable_get('devshop_bitbucket_app_username', ''),
     '#attributes' => array(
       'placeholder' => t('Enter a BitBucket username.'),
@@ -334,16 +337,16 @@ function devshop_bitbucket_form_devshop_projects_settings_form_alter(&$form, &$f
     $access_note = t('Enter a token to connect this DevShop to your BitBucket repositories.');
   }
   elseif (!$token_valid) {
-    $access_message = t('Token is invalid.');
+    $access_message = t('Connection Unsuccessful.');
     $access_class = 'danger';
     $access_icon = 'warning';
-    $access_note = t('The stored BitBucket token is invalid or has expired. Enter a new one to continue.');
+    $access_note = t('The BitBucket credentials are invalid or has expired.');
   }
   else {
-    $access_message = t('Token is valid.');
+    $access_message = t('Connection Successful');
     $access_class = 'success';
     $access_icon = 'check';
-    $access_note = t('Connected to BitBucket API for !repo_access. Scopes: %scopes.', $t);
+    $access_note = t('Connected to BitBucket API, with access to !repo_access. Scopes: %scopes.', $t);
   }
   $form['bitbucket']['token_status'] = array(
     '#type' => 'container',
