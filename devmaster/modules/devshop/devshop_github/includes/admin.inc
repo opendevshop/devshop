@@ -21,9 +21,9 @@ function devshop_github_form_devshop_projects_settings_form_alter(&$form, &$form
   }
 
   $t = array(
-    '!user' => l($gh_user['login'], $gh_user['html_url'], array(
+    '!user' => $gh_user? l($gh_user['login'], $gh_user['html_url'], array(
       'attributes' => array(
-        'target' => '_blank'))),
+        'target' => '_blank'))): '',
     '!create_token' => l(t('Create new token'), 'https://github.com/settings/tokens/new?scopes=repo,admin:public_key,admin:repo_hook&description=' . $_SERVER['HTTP_HOST'], array(
       'attributes' => array(
         'target' => '_blank'))),
