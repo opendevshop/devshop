@@ -7,6 +7,46 @@
 //require_once 'vendor/autoload.php';
 
 /**
+ * Get a GitHub client.
+ *
+ * If a devshop_github_token is not found, it will attempt to use the Public API.
+ *
+ * @param bool $must_authenticate
+ *   Set to TRUE if the client must authenticate with a token. If TRUE and token
+ *   is not present, an Exception will be thrown.
+ *
+ * @return \Bitbucket\Client
+ * @throws Exception
+ */
+function devshop_bitbucket_client($must_authenticate = FALSE) {
+  $client = new Bitbucket\Client();
+
+  $bitbucket_token = devshop_bitbucket_token();
+
+  // If caller requires authentication, throw exception if token is missing.
+  if ($must_authenticate && empty($bitbucket_token)) {
+    throw new \Exception(t('There is no Bitbucket Token set, but is required for this action.'));
+  }
+
+  // If a token is found, authenticate.
+  if (!empty($bitbucket_token)) {
+
+    // Set token in client.
+    try {
+      $client->authenticate(Bitbucket\Client::AUTH_OAUTH_TOKEN, $bitbucket_token);
+      return $client;
+    }
+    catch (Exception $e) {
+      // If error, set_message and throw the exception upstream.
+      drupal_set_message(t('Error validating GitHub token: ') . $e->getMessage(), 'error');
+      throw $e;
+    }
+  }
+
+  return $client;
+}
+
+/**
  * Implements hook_menu().
  */
 function devshop_bitbucket_menu() {
@@ -105,13 +145,77 @@ function devshop_bitbucket_form_project_node_form_alter(&$form, &$form_state, $f
 function devshop_bitbucket_form_devshop_projects_settings_form_alter(&$form, &$form_state, $form_id) {
 
   $token = devshop_bitbucket_token();
-  $token_valid = $token? devshop_bitbucket_token_is_valid($token): FALSE;
+  $client = devshop_bitbucket_client();
+
+  try {
+    $repos = $client->repositories()->list(array('role' => 'member'));
+    $repo = current($repos['values']);
+    $repo_count = count($repos['values']);
+    $repo_link = l($repo['full_name'], $repo['links']['html']['href'], array(
+      'attributes' => array(
+        'target' => '_blank')));
+
+    $token_valid = $client->getLastResponse()->getStatusCode() == 200;
+    $scopes = $client->getLastResponse()->getHeader('X-Oauth-Scopes');
+    $api_error = NULL;
+  }
+  catch (Exception $e) {
+    $api_error = $e->getMessage();
+  }
 
   $ssh_key = variable_get('devshop_public_key', '');
 
+  $t = array(
+    '%scopes' => implode(', ', $scopes),
+    '!create_token' => l(t('Create new token'), 'https://id.atlassian.com/manage-profile/security/api-tokens', array(
+      'attributes' => array(
+        'target' => '_blank'))),
+    '!create_password' => l(t('Create new app password'), 'https://bitbucket.org/account/settings/app-passwords/', array(
+      'attributes' => array(
+        'target' => '_blank'))),
+    '!docs_auth' => l(t('BitBucket Authorization Documentation'), 'https://developer.atlassian.com/cloud/bitbucket/rest/intro/', array(
+      'attributes' => array(
+        'target' => '_blank'))),
+    '!docs_app_password' => l(t('BitBucket App Passwords Documentation'), 'https://developer.atlassian.com/cloud/bitbucket/rest/intro/#app-passwords', array(
+      'attributes' => array(
+        'target' => '_blank'))),
+    '!docs_tokens' => l(t('BitBucket Access Tokens Documentation'), 'https://developer.atlassian.com/cloud/bitbucket/rest/intro/#access-tokens', array(
+      'attributes' => array(
+        'target' => '_blank'))),
+    '!manage_keys' => l(t('BitBucket SSH Keys'), 'https://bitbucket.org/account/settings/ssh-keys/', array(
+      'attributes' => array(
+        'target' => '_blank'))),
+    '!manage_passwords' => l(t('BitBucket App Passwords'), 'https://bitbucket.org/account/settings/ssh-keys/', array(
+      'attributes' => array(
+        'target' => '_blank'))),
+    '!devshop_settings' => l(t('DevShop Public Key'), current_path(), array(
+      'fragment' => 'edit-server')),
+    '!devshop_add_key' => l(t('Add DevShop Public Key to BitBucket'), 'admin/hosting/bitbucket/add-key', array(
+      'attributes' => array(
+      ),
+      'query' => array('destination' => current_path()))),
+  );
+
+  if ($repo_count == 1) {
+    $t['!repo_access'] = $repo_link;
+  }
+  elseif ($repo_count < 10) {
+    $t['!repo_access'] = t('!first and @other', array(
+      '!first' => $repo_link,
+      '!other' => format_plural($repo_count - 1, t('1 other repository'), t('@count other repositories', array(
+        '@count' => $repo_count - 1,
+      ))),
+    ));
+  }
+  else {
+    $t['!repo_access'] = t('!first and more than 10 other repositories', array(
+      '!first' => $repo_link,
+    ));
+  }
+
   $form['bitbucket'] = array(
-    '#type' => 'fieldset',
     '#title' => t('BitBucket Integration'),
+    '#type' => 'fieldset',
     '#group' => 'settings',
     '#weight' => -2,
   );
@@ -138,23 +242,59 @@ function devshop_bitbucket_form_devshop_projects_settings_form_alter(&$form, &$f
     )
   );
 
-  $bitbucket_url = "https://bitbucket.com/settings/tokens";
-  $form['bitbucket']['devshop_bitbucket_token'] = array(
+  $form['bitbucket']['help'] = array(
+    '#title' => t('API Access'),
+    '#description' => t('DevShop can connect to BitBucket with one of 2 methods: App Passwords and Access Tokens. View !docs_auth for more information.', $t),
+    '#type' => 'item',
+  );
+  $form['bitbucket']['authentication'] = array(
+    '#type' => 'vertical_tabs',
+  );
+  $form['bitbucket']['tokens'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Access Token'),
+    '#description' => t(' A repository token will only be able to connect to a single repository. If you want to use this DevShop for more than one repository, you must use a Project or Workspace token, which requires a Premium BitBucket account. See !docs_tokens for more information.', $t),
+    '#group' => 'authentication',
+  );
+  $form['bitbucket']['tokens']['devshop_bitbucket_token'] = array(
     '#type' => 'password',
-    '#title' => t('BitBucket Token'),
-    '#description' => t('Enter a BitBucket token to connect this DevShop to your code repositories. !link. Be sure to select the following Oauth Scopes: <em>repo, repo:status, repo:deployment, public_repo, write:public_key, write_repo_hook</em>', [
-      '!link' => l(t('Create a new token'), $bitbucket_url, array(
-        'attributes' => array(
-          'target' => '_blank',
-        )
-      ))
-    ]),
+    '#title' => t('Bitbucket Access Token'),
+    '#description' => t('The access token to use when connecting to BitBucket. !create_token', $t),
+    '#maxlength' => '1024',
     '#default_value' => variable_get('devshop_bitbucket_token', ''),
     '#element_validate' => array(
-      'devshop_bitbucket_settings_form_validate_token',
+      'devshop_bitbucket_settings_form_validate_api',
     ),
     '#attributes' => array(
-      'placeholder' => $token? t('Replace the current BitBucket Token'): t('Enter a BitBucket Token'),
+      'placeholder' => $token? t('Replace the current BitBucket Token'): t('Enter a BitBucket Access Token'),
+    ),
+  );
+
+  $form['bitbucket']['passwords'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('App Password'),
+    '#description' => t('Using an app password allows DevShop to make API calls as your Bitbucket account. See !docs_app_passwords for more information.', $t),
+    '#group' => 'authentication',
+  );
+  $form['bitbucket']['passwords']['devshop_bitbucket_app_username'] = array(
+    '#title' => t('BitBucket Username'),
+    '#type' => 'textfield',
+    '#description' => t('The username to use when connecting to the BitBucket API.'),
+    '#default_value' => variable_get('devshop_bitbucket_app_username', ''),
+    '#attributes' => array(
+      'placeholder' => t('Enter a BitBucket username.'),
+    ),
+  );
+  $form['bitbucket']['passwords']['devshop_bitbucket_app_password'] = array(
+    '#type' => 'password',
+    '#title' => t('App Password'),
+    '#description' => t('An app password for this user. !create_password', $t),
+    '#default_value' => variable_get('devshop_bitbucket_app_password', ''),
+    '#element_validate' => array(
+      'devshop_bitbucket_settings_form_validate_app_password',
+    ),
+    '#attributes' => array(
+      'placeholder' => $token? t('Replace the current BitBucket App Password'): t('Enter a BitBucket App Password'),
     ),
   );
   // Test for public key access.
@@ -174,7 +314,7 @@ function devshop_bitbucket_form_devshop_projects_settings_form_alter(&$form, &$f
     $access_message = t('Token is valid.');
     $access_class = 'success';
     $access_icon = 'check';
-    $access_note = t('Successfully connected to BitBucket API as !user.', $t);
+    $access_note = t('Connected to BitBucket API for !repo_access. Scopes: %scopes.', $t);
   }
   $form['bitbucket']['token_status'] = array(
     '#type' => 'item',
@@ -231,32 +371,10 @@ function devshop_bitbucket_form_devshop_projects_settings_form_alter(&$form, &$f
     '#suffix' => '</div>',
   );
 
-  $repos = variable_get('devshop_bitbucket_available_repositories', array());
-  $count = count($repos);
-  $form['bitbucket']['repos'] = array(
-    '#type' => 'container',
-    '#weight' => 5,
-    '#access' => !empty(variable_get('devshop_bitbucket_token')),
-  );
-
   $form['bitbucket']['message'] = array(
     '#prefix' => "<div class='alert alert-success'><i class='fa fa-check'></i> ",
     '#suffix' => '</div>',
-    '#markup' =>  format_plural($count, t('1 repository found'), t('DevShop can access @count repositories.')));
-
-  $orgs = variable_get('devshop_bitbucket_available_organizations', array());
-  $count = count($orgs);
-  $form['bitbucket']['message_orgs'] = array(
-    '#prefix' => "<div class='alert alert-success'><i class='fa fa-check'></i> ",
-    '#suffix' => '</div>',
-    '#markup' =>  t('DevShop can create repositories in @count_string.', array(
-      '@count_string' => format_plural($count, t('1 BitBucket organization'), t('@count BitBucket organizations'))
-    )));
-  $form['bitbucket']['button'] = array(
-    '#access' => $token_valid,
-    '#markup' => l(t('Reload BitBucket Projects'),'admin/hosting/bitbucket/load-repos', array('attributes' => array(
-      'class' => array('btn btn-info'),
-    ))));
+    '#markup' =>  format_plural($repo_count, t('DevShop can access 1 BitBucket Repository'), t('DevShop can access @count BitBucket repositories.')));
 
   return system_settings_form($form);
 }
@@ -294,7 +412,7 @@ function devshop_bitbucket_token_is_valid($token = NULL) {
     $token = devshop_bitbucket_token();
   }
 
-  $client = new \bitbucket\Client();
+  $client = new \Bitbucket\Client();
   $client->authenticate($token, bitbucket\Client::AUTH_OAUTH_TOKEN);
 
   try {
@@ -952,14 +1070,27 @@ function devshop_bitbucket_check_key() {
 }
 
 /**
- * Element validation for License Key. Pings devshop.support
+ * Element validation for app password.
  *
  * @param $element
  * @param $form_state
  * @param $form
  */
-function devshop_bitbucket_settings_form_validate_token($element, &$form_state, $form) {
+function devshop_bitbucket_settings_form_validate_app_password($element, &$form_state, $form)
+{
 
+}
+
+/**
+ * Element validation for access token.
+ *
+ * @param $element
+ * @param $form_state
+ * @param $form
+ */
+function devshop_bitbucket_settings_form_validate_api($element, &$form_state, $form) {
+
+  // If no token in form element, keep the existing variable.
   $token = $form_state['values']['devshop_bitbucket_token'];
   if (empty($token)) {
     form_set_value($element, variable_get('devshop_bitbucket_token'), $form_state);
@@ -967,19 +1098,23 @@ function devshop_bitbucket_settings_form_validate_token($element, &$form_state, 
   }
 
   $client = new Bitbucket\Client();
-  $client->authenticate(Bitbucket\Client::AUTH_OAUTH_TOKEN,$token);
-
+  $client->authenticate(
+    Bitbucket\Client::AUTH_OAUTH_TOKEN,
+    $token
+  );
   try {
-    $user = $client->currentUser()->show();
+    // Get all repos where key owner is a member.
+    $data = $client->repositories()->list([
+      'role' => 'member'
+    ]);
     form_set_value($element, $token, $form_state);
-    drupal_set_message(t('Successully connected to GitHub API as !link.', array(
-      '!link' => l($user['login'], $user['url']),
+    $scopes = $client->getLastResponse()->getHeader('X-Oauth-Scopes');
+    drupal_set_message(t('Successully connected to BitBucket API with scopes: %scopes', array(
+      '%scopes' => implode(', ', $scopes),
     )));
-    return TRUE;
   }
-    // Happens when user has no public keys.
   catch (Exception $e) {
-    form_error($element,  t('GitHub Token was rejected: %message', array(
+    form_error($element,  t('BitBucket Token was rejected: %message', array(
       '%message' => $e->getMessage(),
     )));
   }
