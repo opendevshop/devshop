@@ -211,6 +211,28 @@ function devshop_github_form_devshop_projects_settings_form_alter(&$form, &$form
     '#markup' => l(t('Reload GitHub Projects'),'admin/hosting/github/load-repos', array('attributes' => array(
     'class' => array('btn btn-info'),
   ))));
+
+  $form['create']['options']['devshop_allow_create_repo_github'] = array(
+    '#title' => t('Allow creation of new repositories on GitHub.'),
+    '#description' => t('Allow users to create new git repositories when starting a new project.'),
+    '#type' => 'checkbox',
+    '#default_value' => variable_get('devshop_allow_create_repo_github', TRUE),
+  );
+  $form['create']['devshop_composer_project_suggestions'] = array(
+    '#title' => t('Available Composer Projects'),
+    '#description' => t('When creating a new git repository, allow users to choose from these composer projects.'),
+    '#type' => 'textarea',
+    '#default_value' => implode(PHP_EOL, variable_get('devshop_composer_project_suggestions', array(
+      'devshop/composer-template:8.x-dev'
+    ))),
+    '#element_validate' => array('devshop_element_validate_explode_array'),
+    '#states' => array(
+      'visible' => array(
+        ':input[name="devshop_allow_create_repo_github"]' => array('checked' => TRUE)
+      ),
+    ),
+  );
+
   return $form;
 }
 
