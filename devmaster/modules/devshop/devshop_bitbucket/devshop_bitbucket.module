@@ -7,9 +7,9 @@
 //require_once 'vendor/autoload.php';
 
 /**
- * Get a GitHub client.
+ * Get a BitBucket client.
  *
- * If a devshop_github_token is not found, it will attempt to use the Public API.
+ * If a devshop_bucket_token is not found, it will attempt to use the Public API.
  *
  * @param bool $must_authenticate
  *   Set to TRUE if the client must authenticate with a token. If TRUE and token
@@ -59,26 +59,14 @@ function devshop_bitbucket_client($must_authenticate = FALSE) {
  */
 function devshop_bitbucket_menu() {
   $items = array();
-//
-//  $items['admin/hosting/bitbucket'] = array(
-//    'title' => 'BitBucket',
-//    'description' => 'DevShop BitBucket Integration Settings',
-//    'page callback' => 'drupal_get_form',
-//    'page arguments' => array('devshop_bitbucket_settings_form'),
-//    'access arguments' => array('administer projects'),
-//    'file' => 'admin.inc',
-//    'file path' => drupal_get_path('module', 'devshop_bitbucket') . '/includes',
-//    'type' => MENU_LOCAL_TASK,
-//  );
-//  $items['admin/hosting/bitbucket/add-key'] = array(
-//    'title' => 'Add public key to bitbucket Account',
-//    'page callback' => 'drupal_get_form',
-//    'page arguments' => array('devshop_bitbucket_add_key_to_account'),
-//    'access arguments' => array('administer projects'),
-//    'file' => 'add-key.inc',
-//    'file path' => drupal_get_path('module', 'devshop_bitbucket') . '/includes',
-//    'type' => MENU_CALLBACK,
-//  );
+  $items['admin/hosting/bitbucket/load-repos'] = array(
+    'title' => 'Load all repos that the user has access to.',
+    'page callback' => 'devshop_bitbucket_get_repositories_page',
+    'access arguments' => array('administer projects'),
+    'file' => 'admin.inc',
+    'file path' => drupal_get_path('module', 'devshop_bitbucket') . '/includes',
+    'type' => MENU_CALLBACK,
+  );
   return $items;
 }
 
@@ -152,18 +140,20 @@ function devshop_bitbucket_form_project_node_form_alter(&$form, &$form_state, $f
  */
 function devshop_bitbucket_form_devshop_projects_settings_form_alter(&$form, &$form_state, $form_id) {
 
-  $token = devshop_bitbucket_token();
+  $token = devshop_bitbucket_token() ? : variable_get('devshop_bitbucket_app_username', '');
+  $app_username = variable_get('devshop_bitbucket_app_username', '');
+  $app_password = variable_get('devshop_bitbucket_app_password', '');
+
   $client = devshop_bitbucket_client();
+  $token_valid = !empty($client->repositories()->list());
 
   try {
-    $repos = $client->repositories()->list(array('role' => 'member'));
-    $repo = current($repos['values']);
-    $repo_count = count($repos['values']);
+    $repos = variable_get('devshop_bitbucket_available_repositories', array());
+    $repo = current($repos);
+    $repo_count = count($repos);
     $repo_link = l($repo['full_name'], $repo['links']['html']['href'], array(
       'attributes' => array(
         'target' => '_blank')));
-
-    $token_valid = $client->getLastResponse()->getStatusCode() == 200;
     $scopes = $client->getLastResponse()->getHeader('X-Oauth-Scopes');
     $api_error = NULL;
   }
@@ -174,7 +164,6 @@ function devshop_bitbucket_form_devshop_projects_settings_form_alter(&$form, &$f
     $scopes = array();
   }
 
-  $app_password = variable_get('devshop_bitbucket_app_password', '');
   $ssh_key = variable_get('devshop_public_key', '');
 
   $t = array(
@@ -363,6 +352,15 @@ function devshop_bitbucket_form_devshop_projects_settings_form_alter(&$form, &$f
     '#prefix' => "<div class='alert alert-success'><i class='fa fa-check'></i> ",
     '#suffix' => '</div>',
     '#markup' =>  format_plural($repo_count, t('DevShop can access 1 BitBucket Repository'), t('DevShop can access @count BitBucket repositories.')));
+
+  $form['bitbucket']['refresh'] = array(
+    '#access' => $token_valid,
+    '#markup' => l(t('Refresh Repositories'), 'admin/hosting/bitbucket/load-repos', array(
+      'query' => drupal_get_destination(),
+      'attributes' => array(
+        'class' => array('btn btn-default'),
+      ))),
+  );
 
   return system_settings_form($form);
 }

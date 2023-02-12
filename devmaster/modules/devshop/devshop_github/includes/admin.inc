@@ -208,9 +208,12 @@ function devshop_github_form_devshop_projects_settings_form_alter(&$form, &$form
   )));
   $form['github']['button'] = array(
     '#access' => $token_valid,
-    '#markup' => l(t('Reload GitHub Projects'),'admin/hosting/github/load-repos', array('attributes' => array(
-    'class' => array('btn btn-info'),
-  ))));
+    '#markup' => l(t('Refresh Repositories'), 'admin/hosting/github/load-repos', array(
+      'query' => drupal_get_destination(),
+      'attributes' => array(
+        'class' => array('btn btn-default'),
+      ))),
+  );
   return $form;
 }
 
