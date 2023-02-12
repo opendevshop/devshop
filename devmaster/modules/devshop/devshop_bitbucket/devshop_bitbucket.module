@@ -362,6 +362,21 @@ function devshop_bitbucket_form_devshop_projects_settings_form_alter(&$form, &$f
       ))),
   );
 
+  $options = [];
+  foreach ($repos as $repo) {
+    $url = $repo['links']['clone'][1]['href'];
+    $options[$url] = $url;
+  }
+  $form['bitbucket']['bitbucket_available_repos'] = array(
+    '#title' => t('Available BitBucket Repositories'),
+    '#description' => t('Select the repos to make available to users when creating projects.'),
+    '#type' => 'select',
+    '#multiple' => true,
+    '#options' => $options,
+    '#default_value' => variable_get('bitbucket_available_repos', array()),
+    '#bootstrap_ignore_pre_render' => TRUE,
+  );
+
   return system_settings_form($form);
 }
 

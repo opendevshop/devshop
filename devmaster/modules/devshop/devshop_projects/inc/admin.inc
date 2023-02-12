@@ -61,6 +61,7 @@ function devshop_projects_settings_form($form, &$form_state) {
     ),
   );
 
+  // @TODO: Move to github
   $form['create']['devshop_allow_create_repo_github'] = array(
     '#title' => t('Allow creation of new git repositories'),
     '#description' => t('Allow users to create new git repositories when starting a new project.'),
