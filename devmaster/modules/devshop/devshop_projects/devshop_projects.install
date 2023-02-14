@@ -498,6 +498,6 @@ function devshop_projects_update_7011 () {
  * Use a primary key for environments table.
  */
 function devshop_projects_update_7100() {
-  db_drop_unique_key('hosting_devshop_project_environment', 'project_site');
+  db_drop_unique_key('hosting_devshop_project_environment', 'project_nid_name');
   db_add_primary_key('hosting_devshop_project_environment', array('site'));
 }
