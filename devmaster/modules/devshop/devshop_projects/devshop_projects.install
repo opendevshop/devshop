@@ -131,12 +131,7 @@ function devshop_projects_schema() {
         'description' => 'The NID of the last task that should be displayed on an environment.',
       ),
     ),
-    'unique keys' => array(
-      'project_nid_name' => array(
-        'project_nid',
-        'name',
-      ),
-    ),
+    'primary key' => array('site'),
   );
   return $schema;
 }
@@ -497,4 +492,12 @@ function devshop_projects_update_7011 () {
   variable_set('menu_options_platform', []);
   variable_set('menu_options_server', []);
   variable_set('menu_options_project', []);
+}
+
+/**
+ * Use a primary key for environments table.
+ */
+function devshop_projects_update_7100() {
+  db_drop_unique_key('hosting_devshop_project_environment', 'project_site');
+  db_add_primary_key('hosting_devshop_project_environment', array('site'));
 }

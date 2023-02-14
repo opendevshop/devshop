@@ -382,7 +382,7 @@ function devshop_environment_save(stdClass &$environment) {
     ->fetchField()
   ;
 
-  $keys = $result? array('project_nid', 'name'): array();
+  $keys = $result? array('site'): array();
 
   // Save environment record.
   if (drupal_write_record('hosting_devshop_project_environment', $info, $keys)) {
@@ -404,7 +404,6 @@ function devshop_environment_save_last_task($environment) {
     ->fields(array(
       'last_task' => $environment->last_task,
     ))
-    ->condition('name', $environment->name)
-    ->condition('project_nid', $environment->project_nid)
+    ->condition('site', $environment->site)
     ->execute();
 }

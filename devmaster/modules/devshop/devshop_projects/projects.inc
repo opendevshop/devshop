@@ -172,11 +172,24 @@ function devshop_project_load($node) {
         LEFT JOIN {node} pn ON e.project_nid = pn.nid
         LEFT JOIN {hosting_site_alias} a ON a.vid = s.vid
         WHERE project_nid = :nid 
-          AND e.name != '' 
+          AND e.name != ''
+          AND s.status IN (:site_status)
         ORDER BY
           name;   ", array(
     ':nid' => $node->nid,
+
+    // Query includes sites that are either enabled, disabled, queued, unverified, or have no site NID.
+    ':site_status' => [
+      HOSTING_SITE_DISABLED,
+      HOSTING_SITE_QUEUED,
+      HOSTING_SITE_ENABLED
+    ]
   ));
+  if ($node->load_deleted) {
+    
+  }
+  
+  
   foreach ($environment_data as $environment) {
 
     $environment->install_profile = $project->install_profile? : 'standard';

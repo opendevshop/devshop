@@ -1649,7 +1649,7 @@ function devshop_projects_environment_settings_submit($form, &$form_state) {
   // If environment already exists, set primary keys.
   $project = node_load($environment->project_nid);
   if (isset($project->project->environments[$environment->name])) {
-    $primary_keys = array('project_nid', 'name');
+    $primary_keys = array('site');
   }
   else {
     $primary_keys = array();
