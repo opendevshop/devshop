@@ -84,7 +84,11 @@ function boots_preprocess_environment(&$vars) {
   // Determine the CSS classes to use.
 
   // Determine environment status
-  if ($environment->site_status == HOSTING_SITE_DISABLED) {
+  if ($environment->site_status == HOSTING_SITE_DELETED) {
+    $environment->class = 'deleted';
+    $environment->list_item_class = 'deleted';
+  }
+  elseif ($environment->site_status == HOSTING_SITE_DISABLED) {
     $environment->class = 'disabled';
     $environment->list_item_class = 'disabled';
   }
@@ -281,28 +285,12 @@ function boots_preprocess_environment(&$vars) {
   }
 
   // State: Site Delete initiated.
-  elseif (!empty($environment->tasks['delete'])) {
-    foreach ($environment->tasks['delete'] as $task) {
-      if ($environment->site == $task->rid) {
-        $site_delete_task = $task;
-        $site_delete_status = l($site_delete_task->status_name, "node/{$site_delete_task->nid}");
-      }
-      elseif ($environment->platform == $task->rid) {
-        $platform_delete_task = $task;
-        $platform_delete_status = l($platform_delete_task->status_name, "node/{$platform_delete_task->nid}");
-      }
-    }
-
+  elseif (!empty($environment->tasks['delete']) || $environment->site_status == HOSTING_SITE_DELETED) {
+    $site_delete_task = current($environment->tasks['delete']);
     if (isset($site_delete_task)) {
       $vars['warnings'][] = array(
-        'text' => t('Site Destroy') . ': ' . $site_delete_status,
-        'type' => 'warning',
-      );
-    }
-    if (isset($platform_delete_task)) {
-      $vars['warnings'][] = array(
-        'text' => t('Platform Destroy') . ': ' . $platform_delete_status,
-        'type' => 'warning',
+        'text' => t('Site Destroyed'),
+        'type' => 'info',
       );
     }
   }
@@ -341,6 +329,15 @@ function boots_preprocess_environment(&$vars) {
       'text' => t('Environment is disabled.'),
       'type' => 'info',
       'buttons' => $buttons,
+    );
+  }
+
+  // State: Site is Deleted
+  elseif ($environment->site_status == HOSTING_SITE_DELETED) {
+    $buttons = '';
+    $vars['warnings']['disabled'] = array(
+      'text' => t('Environment was destroyed.'),
+      'type' => 'info',
     );
   }
 
