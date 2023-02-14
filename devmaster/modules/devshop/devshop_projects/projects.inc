@@ -185,10 +185,6 @@ function devshop_project_load($node) {
       HOSTING_SITE_ENABLED
     ]
   ));
-  if ($node->load_deleted) {
-    
-  }
-  
   
   foreach ($environment_data as $environment) {
 
