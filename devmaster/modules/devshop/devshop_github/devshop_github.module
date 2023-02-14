@@ -1820,8 +1820,9 @@ function devshop_github_save_pr_env_data($pr, $environment) {
 
   // Save environment record.
   try {
-    watchdog('debug', 'environment:' .print_r($environment,1));
-    watchdog('debug', 'PR Save:' .print_r($info,1));
+    watchdog('devshop_github', t('Pull Request saved for environment !env.', array(
+      '!env' => l($environment->uri, "node/{$info->site_nid}"),
+    )));
     drupal_write_record('hosting_devshop_github_pull_requests', $info, $update);
     return TRUE;
   }
