@@ -172,22 +172,10 @@ function devshop_project_load($node) {
         LEFT JOIN {node} pn ON e.project_nid = pn.nid
         LEFT JOIN {hosting_site_alias} a ON a.vid = s.vid
         WHERE project_nid = :nid 
-          AND e.name != ''
-          AND (
-            s.status IN (:site_status)
-            OR s.verified = 0 
-            OR s.nid IS NULL
-          ) 
+          AND e.name != '' 
         ORDER BY
           name;   ", array(
     ':nid' => $node->nid,
-
-    // Query includes sites that are either enabled, disabled, queued, unverified, or have no site NID.
-    ':site_status' => [
-      HOSTING_SITE_DISABLED,
-      HOSTING_SITE_QUEUED,
-      HOSTING_SITE_ENABLED
-    ]
   ));
   foreach ($environment_data as $environment) {
 
@@ -413,12 +401,7 @@ function devshop_project_load($node) {
     drupal_alter('devshop_environment', $environment, $project);
 
     // Only add to project if not deleted
-    if ($environment->site_status != HOSTING_SITE_DELETED) {
-      // @TODO: Finish up the classes!
-      // $environments[$environment->name] = new \DevShop\Environment\Environment($environment);
-
-      $environments[$environment->name] = $environment;
-    }
+    $environments[$environment->name] = $environment;
   }
 
   // Put live environment at the top.
