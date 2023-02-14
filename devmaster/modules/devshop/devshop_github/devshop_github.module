@@ -1902,11 +1902,11 @@ function devshop_github_create_all_pr_environments($project_node) {
       }
       
       // Reinstall environment unless already queued to install.
-      $install_exists = array_filter($environment->tasks['install'], function($value, $key) {
+      $install_tasks_running = array_filter($environment->tasks['install'], function($value, $key) {
         return $value->task_status == HOSTING_TASK_QUEUED || $value->task_status == HOSTING_TASK_PROCESSING;
       }, ARRAY_FILTER_USE_BOTH);
 
-      if ($install_exists) {
+      if ($install_tasks_running) {
         drush_log('Install task already exists', 'ok');
       }
       else {
@@ -1927,21 +1927,25 @@ function devshop_github_create_all_pr_environments($project_node) {
         unset($prs_to_create_environments_for[$environment_pr_slug]);
       }
     }
-
-    // If there IS PR data on this environment but the PR does NOT exist, queue the site for deletion.
-    elseif ($environment_pr_number && empty($prs[$environment_pr_slug])) {
+    // If there IS PR data on stored this environment but the PR does NOT exist, 
+    elseif ($environment_pr_number && empty($prs[$environment_pr_slug]) && $environment->site_status == HOSTING_SITE_DELETED) {
+      drush_log("PR environment already deleted: $environment->name [$site_url]", "ok");
+    }
+    
+    // If there IS PR data stored on this environment but the PR does NOT exist, queue the site for deletion.
+    elseif ($environment_pr_number && empty($prs[$environment_pr_slug]) && $environment->site_status != HOSTING_SITE_DELETED) {
       drush_log("PR $environment_pr_number environment $environment->name exists but PR has been closed. [$site_url] [PR Slug $environment_pr_slug]", "ok");
 
-      $delete_exists = array_filter($environment->tasks['delete'], function($value) {
+      $delete_tasks_running = array_filter($environment->tasks['delete'], function($value) {
         return $value->task_status == HOSTING_TASK_QUEUED || $value->task_status == HOSTING_TASK_PROCESSING;
       });
       
-      if ($project->settings->github['pull_request_environments_delete'] && !$delete_exists) {
+      if ($project->settings->github['pull_request_environments_delete'] && !empty($delete_tasks_running)) {
         drush_log("PR environment scheduled for deletion: $environment->name [$site_url]", "ok");
         hosting_add_task($environment->site, 'delete', array('force' => 1));
         $deleted_environments++;
       }
-      elseif ($delete_exists) {
+      elseif ($delete_tasks_running) {
         drush_log("PR environment already scheduled for deletion: $environment->name [$site_url]", "ok");
       }
 
@@ -1955,41 +1959,43 @@ function devshop_github_create_all_pr_environments($project_node) {
     $environment->git_sha = file_exists($environment->repo_path)? trim(shell_exec("cd {$environment->repo_path}; git rev-parse HEAD  2> /dev/null")): NULL;
 
     // If Site was installed properly and is still enabled, and repo_path is a real folder, and environment git_sha is not empty, and local git_sha does not match github PR sha...
-    $pr_object = $prs[$environment_pr_slug];
-    if (file_exists($environment->repo_path) && !empty($environment->git_sha) &&  $environment->git_sha != $pr_object->head->sha) {
-      drush_log(dt("Environment @name SHA (@e) and PR SHA (@p) are different. Preparing a deploy task... [@url] ", array(
-        '@name' => $environment->name,
-        '@e' => $environment->git_sha,
-        '@p' => $pr_object->head->sha,
-        '@url' => $site_url,
-      )), "ok");
+    if (isset($prs[$environment_pr_slug])) {
+      $pr_object = $prs[$environment_pr_slug];
+      if (file_exists($environment->repo_path) && !empty($environment->git_sha) &&  $environment->git_sha != $pr_object->head->sha) {
+        drush_log(dt("Environment @name SHA (@e) and PR SHA (@p) are different. Preparing a deploy task... [@url] ", array(
+          '@name' => $environment->name,
+          '@e' => $environment->git_sha,
+          '@p' => $pr_object->head->sha,
+          '@url' => $site_url,
+        )), "ok");
 
 
-      // Check for queued deploy tasks. If there are none, create one.
-      $queued_deploy_tasks = hosting_get_new_tasks(1, $environment->site, 'deploy');
-      if (count($queued_deploy_tasks) == 0) {
+        // Check for queued deploy tasks. If there are none, create one.
+        $queued_deploy_tasks = hosting_get_new_tasks(1, $environment->site, 'deploy');
+        if (count($queued_deploy_tasks) == 0) {
 
-        // Trigger deploy task to get latest code.
-        // Pass no args to skip DB updates, cache clearing, etc.
-        drush_log("PR environment scheduled for deployment: $environment->name $environment->git_ref [$site_url]", "ok");
-        hosting_add_task($environment->site, 'deploy', array(
-          'git_ref' => $environment->git_ref,
-        ));
-        $deployed_environments++;
-      }
-      else {
-        drush_log("PR environment deployment skipped: $environment->name $environment->git_ref [$site_url]", "ok");
-      }
-
-      // If site is set to rebuild, trigger "install" with force-reinstall
-      if ($project->settings->github['pull_request_reinstall']) {
-        drush_log("PR environment scheduled for reinstallation: $environment->name [$site_url]", "ok");
-        $queued_install_tasks = hosting_get_new_tasks(1, $environment->site, 'install');
-        if (count($queued_install_tasks) == 0) {
-          hosting_add_task($environment->site, 'install', array('force-reinstall' => 1));
+          // Trigger deploy task to get latest code.
+          // Pass no args to skip DB updates, cache clearing, etc.
+          drush_log("PR environment scheduled for deployment: $environment->name $environment->git_ref [$site_url]", "ok");
+          hosting_add_task($environment->site, 'deploy', array(
+            'git_ref' => $environment->git_ref,
+          ));
+          $deployed_environments++;
         }
         else {
-          drush_log("PR install task skipped: there is already a task in the queue.", "ok");
+          drush_log("PR environment deployment skipped: $environment->name $environment->git_ref [$site_url]", "ok");
+        }
+
+        // If site is set to rebuild, trigger "install" with force-reinstall
+        if ($project->settings->github['pull_request_reinstall']) {
+          drush_log("PR environment scheduled for reinstallation: $environment->name [$site_url]", "ok");
+          $queued_install_tasks = hosting_get_new_tasks(1, $environment->site, 'install');
+          if (count($queued_install_tasks) == 0) {
+            hosting_add_task($environment->site, 'install', array('force-reinstall' => 1));
+          }
+          else {
+            drush_log("PR install task skipped: there is already a task in the queue.", "ok");
+          }
         }
       }
     }
