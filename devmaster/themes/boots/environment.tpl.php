@@ -235,6 +235,10 @@
             <a class="environment-meta-data btn btn-text">Disabled</a>
         <?php endif; ?>
 
+        <?php if ($environment->site_status == HOSTING_SITE_DELETED): ?>
+            <a class="environment-meta-data btn btn-text">Deleted</a>
+        <?php endif; ?>
+
         <?php if (isset($environment->settings->locked) && $environment->settings->locked): ?>
             <a class="environment-meta-data btn btn-text" title="<?php print t('This database is locked.'); ?>">
           <i class="fa fa-lock"></i><?php print t('Locked') ?>
