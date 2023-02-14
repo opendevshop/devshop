@@ -1820,7 +1820,8 @@ function devshop_github_save_pr_env_data($pr, $environment) {
 
   // Save environment record.
   try {
-    watchdog('devshop_github', t('Pull Request saved for environment !env.', array(
+    watchdog('devshop_github', t('Pull Request saved for environment !nid !env.', array(
+      '!nid' => $environment->site,
       '!env' => l($environment->uri, "node/{$info->site_nid}"),
     )));
     drupal_write_record('hosting_devshop_github_pull_requests', $info, $update);
@@ -1871,8 +1872,7 @@ function devshop_github_create_all_pr_environments($project_node) {
       $environment_pr_slug = NULL;
     }
 
-
-    drush_log("Checking $environment->name... [$site_url]");
+    drush_log("Checking $environment->name... [$site_url]", 'ok');
 
     // If no PR data in environment and no PR exists with this environments name, it is not a PR environment. Move on.
     if (empty($prs[$environment->name]) && $environment->site_status != HOSTING_SITE_DELETED && empty($environment->github_pull_request)) {
@@ -1906,21 +1906,21 @@ function devshop_github_create_all_pr_environments($project_node) {
         unset($prs_to_create_environments_for[$environment_pr_slug]);
       }
     }
-    // If there IS PR data on stored this environment but the PR does NOT exist, 
+    // If there IS PR data stored on this environment but the PR does NOT exist, 
     elseif ($environment_pr_number && empty($prs[$environment_pr_slug]) && $environment->site_status == HOSTING_SITE_DELETED) {
       drush_log("PR environment already deleted: $environment->name [$site_url]", "ok");
     }
     
-    // If there IS PR data stored on this environment but the PR does NOT exist, queue the site for deletion.
+    // If there IS PR data stored on this environment but the PR does NOT exist, and the site isn't already deleted, queue delete task.
     elseif ($environment_pr_number && empty($prs[$environment_pr_slug]) && $environment->site_status != HOSTING_SITE_DELETED) {
       drush_log("PR $environment_pr_number environment $environment->name exists but PR has been closed. [$site_url] [PR Slug $environment_pr_slug]", "ok");
 
-      $delete_tasks_running = array_filter($environment->tasks['delete'], function($value) {
+      $delete_tasks_running = isset($environment->tasks['delete']) && array_filter($environment->tasks['delete'], function($value) {
         return $value->task_status == HOSTING_TASK_QUEUED || $value->task_status == HOSTING_TASK_PROCESSING;
       });
       
-      if ($project->settings->github['pull_request_environments_delete'] && !empty($delete_tasks_running)) {
-        drush_log("PR environment scheduled for deletion: $environment->name [$site_url]", "ok");
+      if ($project->settings->github['pull_request_environments_delete'] && empty($delete_tasks_running)) {
+        drush_log("PR environment scheduled for deletion: $environment->name [$site_url]","ok");
         hosting_add_task($environment->site, 'delete', array('force' => 1));
         $deleted_environments++;
       }
