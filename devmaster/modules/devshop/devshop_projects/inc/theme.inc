@@ -169,6 +169,7 @@ function devshop_projects_preprocess_node(&$vars) {
 
       // If "install" task, change name and add "force" task arg.
       $form = drupal_get_form('hosting_task_retry_form', $vars['node']->nid);
+      $vars['retry'] = $form;
 
       if ($vars['node']->task_type == 'install' && !$vars['node']->environment->settings->locked) {
         $vars['retry'] = $form;
