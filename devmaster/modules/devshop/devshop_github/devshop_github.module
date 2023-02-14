@@ -1895,27 +1895,6 @@ function devshop_github_create_all_pr_environments($project_node) {
       
       // Save data
       devshop_github_save_pr_env_data($prs[$environment_pr_slug], $environment);
-      
-      // remove from list to create.
-      if ($environment_pr_slug == $environment->name) {
-        unset($prs_to_create_environments_for[$environment_pr_slug]);
-      }
-      
-      // Reinstall environment unless already queued to install.
-      $install_tasks_running = array_filter($environment->tasks['install'], function($value, $key) {
-        return $value->task_status == HOSTING_TASK_QUEUED || $value->task_status == HOSTING_TASK_PROCESSING;
-      }, ARRAY_FILTER_USE_BOTH);
-
-      if ($install_tasks_running) {
-        drush_log('Install task already exists', 'ok');
-      }
-      else {
-        drush_log('Creating install task...', 'ok');
-        hosting_add_task($environment->site, 'install', array(
-          'force-reinstall' => true,
-        ));
-      }
-      
     }
     // If there IS PR data in the environment and the PR exists on GitHub, update the PR data.
     elseif ($environment_pr_number && !empty($prs[$environment_pr_slug])) {
