@@ -660,8 +660,8 @@ function boots_preprocess_page(&$vars){
       $project_node = node_load($vars['node']->project);
       $vars['node']->project = $project_node->project;
 
-      if (!empty($vars['node']->environment)) {
-        $vars['node']->environment = $project_node->project->environments[$vars['node']->environment];
+      if (!empty($vars['node']->rid) && isset($project_node->project->environment_nids[$vars['node']->rid])) {
+        $vars['node']->environment = $project_node->project->environment_nids[$vars['node']->rid];
       }
     }
 

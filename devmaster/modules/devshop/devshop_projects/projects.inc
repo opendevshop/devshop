@@ -35,7 +35,7 @@ function devshop_projects_entity_load($entities, $type) {
 
         $query = db_query("
 SELECT
-  project_nid, name, n.title as project_name FROM {hosting_devshop_project_environment} e
+  project_nid, site, name, n.title as project_name FROM {hosting_devshop_project_environment} e
   LEFT JOIN {node} n ON e.project_nid = n.nid
   WHERE site  = :site
     OR platform = :platform
@@ -52,13 +52,12 @@ SELECT
         if ($entity->type == 'task' && !empty($result)) {
           $entity->project = $result->project_nid;
           $entity->project_name = $result->project_name;
-          $entity->environment = $result->name;
         }
         else if (isset($result->project_nid)) {
           $project_node = node_load($result->project_nid);
           if (!empty($project_node->project)) {
-            if (isset($project_node->project->environments[$result->name])) {
-              $entity->environment = $project_node->project->environments[$result->name];
+            if (isset($project_node->project->environment_nids[$result->site])) {
+              $entity->environment = $project_node->project->environment_nids[$result->site];
             }
             $entity->project = $project_node->project;
           }
@@ -175,17 +174,20 @@ function devshop_project_load($node) {
           AND e.name != ''
           AND s.status IN (:site_status)
         ORDER BY
-          name;   ", array(
+          name, sn.created DESC;   ", array(
     ':nid' => $node->nid,
 
     // Query includes sites that are either enabled, disabled, queued, unverified, or have no site NID.
     ':site_status' => [
       HOSTING_SITE_DISABLED,
       HOSTING_SITE_QUEUED,
-      HOSTING_SITE_ENABLED
+      HOSTING_SITE_ENABLED,
+      HOSTING_SITE_DELETED
     ]
   ));
-  
+  $environments = [];
+  $environment_nids = [];
+  $deleted_environments = [];
   foreach ($environment_data as $environment) {
 
     $environment->install_profile = $project->install_profile? : 'standard';
@@ -409,8 +411,21 @@ function devshop_project_load($node) {
     // Save to project environments collection.
     drupal_alter('devshop_environment', $environment, $project);
 
-    // Only add to project if not deleted
-    $environments[$environment->name] = $environment;
+    // Save environments to project.
+    if ($environment->site_status == HOSTING_SITE_DELETED) {
+      $deleted_environments[$environment->site] = $environment;
+    }
+    else {
+      if (isset($environments[$environment->name])) {
+        watchdog('devshop_projects', t('There are two enabled environments named %name in project %nid (Sites %nids)', array(
+          '%nid' => $environment->project_nid,
+          '%name' => $environment->name,
+          '%nids' => $environment->site . ' and ' , $environments[$environment->name]->site,
+        )));
+      }
+      $environments[$environment->name] = $environment;
+    }
+    $environment_nids[$environment->site] = $environment;
   }
 
   // Put live environment at the top.
@@ -421,12 +436,13 @@ function devshop_project_load($node) {
     unset($environments[$live_env]);
     $project->environments += $environments;
   }
-  elseif (!empty($environments)) {
-    $project->environments = $environments;
-  }
   elseif (!empty($node->title)) {
     $project->environments = array();
   }
+
+  $project->environments = $environments;
+  $project->environment_nids = $environment_nids;
+  $project->environments_deleted = $deleted_environments;
 
   // Make project name and status available.
   $project->name = $node->title;
