@@ -32,6 +32,17 @@ function hosting_create_environment($project, $new_environment_name, $new_enviro
     $settings->db_server = key($servers);
   }
 
+  // Set web server to the project default, if none was set.
+  if (empty($settings->web_server) && !empty($project->settings->default_environment['web_server'])) {
+    $settings->web_server = $project->settings->default_environment['web_server'];
+  }
+  // If no web server is set and there is no default set.
+  elseif (empty($settings->web_server)) {
+    $servers = hosting_get_servers('web', FALSE);
+    reset($servers);
+    $settings->web_server = key($servers);
+  }
+
   // If "force servers" is set for the project, force them.
   if ($project->settings->default_environment['force_default_servers']) {
     $settings->db_server = $project->settings->default_environment['db_server'];
@@ -134,12 +145,12 @@ function hosting_create_environment($project, $new_environment_name, $new_enviro
   }
 
   // Get platform verify task
+  $environment->last_task = 0;
   if (isset($site->nid)) {
     $tasks = hosting_get_tasks('rid', $site->nid);
-    $environment->last_task = current($tasks)->nid;
-  }
-  else {
-    $environment->last_task = 0;
+    if (is_array($tasks)) {
+      $environment->last_task = current($tasks)->nid;
+    }
   }
 
   $environment->project_nid = $project->nid;
