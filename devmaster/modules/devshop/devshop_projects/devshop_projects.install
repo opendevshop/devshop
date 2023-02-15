@@ -106,7 +106,7 @@ function devshop_projects_schema() {
       ),
       'site' => array(
         'type' => 'int',
-        'not null' => FALSE,
+        'not null' => TRUE,
         'default' => 0,
         'unsigned' => TRUE,
         'description' => 'The node ID of the site for this environment.',
