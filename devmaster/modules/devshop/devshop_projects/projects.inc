@@ -34,13 +34,16 @@ function devshop_projects_entity_load($entities, $type) {
         }
 
         $query = db_query("
-SELECT
-  project_nid, site, name, n.title as project_name FROM {hosting_devshop_project_environment} e
+SELECT project_nid, site, name, n.title as project_name 
+  FROM {hosting_devshop_project_environment} e
+  LEFT JOIN {hosting_site} s ON s.nid = e.site
   LEFT JOIN {node} n ON e.project_nid = n.nid
   WHERE site  = :site
     OR project_nid = :project
+    OR s.platform = :platform
 ", array(
           ':site' => $nid,
+          ':platform' => $nid,
           ':project' => $nid,
         ));
 
