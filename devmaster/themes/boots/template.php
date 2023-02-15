@@ -1064,6 +1064,9 @@ HTML;
     unset($remaining[$project->settings->live['live_environment']]);
     $environments += $remaining;
   }
+  else {
+    $environments = $vars['node']->project->environments;
+  }
   foreach ($environments as $environment) {
 
     // Render each environment.
