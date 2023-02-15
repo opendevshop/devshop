@@ -10,6 +10,9 @@ function devshop_github_form_devshop_projects_settings_form_alter(&$form, &$form
   $client = new \Github\Client();
   $client->authenticate($token, \Github\AuthMethod::ACCESS_TOKEN);
 
+  $repos = variable_get('devshop_github_available_repositories', array());
+  $count = count($repos);
+
   try {
     $gh_user = $client->currentUser()->show();
     $token_valid = TRUE;
@@ -86,6 +89,21 @@ function devshop_github_form_devshop_projects_settings_form_alter(&$form, &$form
       'placeholder' => $token? t('Replace the current GitHub Token'): t('Enter a GitHub Token'),
     ),
   );
+  $options = [];
+  foreach ($repos as $repo) {
+    $url = $repo['url'];
+    $options[$repo['org']][$url] = $url;
+  }
+  $form['github']['github_available_repos'] = array(
+    '#title' => t('Available GitHub Repositories'),
+    '#description' => t('Select the repos to make available to users when creating projects.'),
+    '#type' => 'select',
+    '#multiple' => true,
+    '#options' => $options,
+    '#default_value' => variable_get('github_available_repos', array()),
+    '#bootstrap_ignore_pre_render' => TRUE,
+  );
+
   if (empty($token)) {
     $access_message = t('Token: not set up.');
     $access_class = 'warning';
@@ -185,8 +203,6 @@ function devshop_github_form_devshop_projects_settings_form_alter(&$form, &$form
 //    $access_class = 'danger';
 //  }
 
-  $repos = variable_get('devshop_github_available_repositories', array());
-  $count = count($repos);
   $form['projects']['repos'] = array(
     '#type' => 'container',
     '#weight' => 5,
@@ -208,9 +224,12 @@ function devshop_github_form_devshop_projects_settings_form_alter(&$form, &$form
   )));
   $form['github']['button'] = array(
     '#access' => $token_valid,
-    '#markup' => l(t('Reload GitHub Projects'),'admin/hosting/github/load-repos', array('attributes' => array(
-    'class' => array('btn btn-info'),
-  ))));
+    '#markup' => l(t('Refresh Repositories'), 'admin/hosting/github/load-repos', array(
+      'query' => drupal_get_destination(),
+      'attributes' => array(
+        'class' => array('btn btn-default'),
+      ))),
+  );
 
   $form['create']['options']['devshop_allow_create_repo_github'] = array(
     '#title' => t('Allow creation of new repositories on GitHub.'),
