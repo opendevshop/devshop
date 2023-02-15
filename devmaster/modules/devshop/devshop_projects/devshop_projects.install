@@ -111,13 +111,6 @@ function devshop_projects_schema() {
         'unsigned' => TRUE,
         'description' => 'The node ID of the site for this environment.',
       ),
-      'platform' => array(
-        'type' => 'int',
-        'not null' => FALSE,
-        'default' => 0,
-        'unsigned' => TRUE,
-        'description' => 'The node ID of the platform for this environment.',
-      ),
       'settings' => array(
         'type' => 'text',
         'not null' => FALSE,
@@ -500,4 +493,11 @@ function devshop_projects_update_7011 () {
 function devshop_projects_update_7100() {
   db_drop_unique_key('hosting_devshop_project_environment', 'project_nid_name');
   db_add_primary_key('hosting_devshop_project_environment', array('site'));
+}
+
+/**
+ * Drop redundant platform column from projects table.
+ */
+function devshop_projects_update_7101() {
+  db_drop_field('hosting_devshop_project_environment', 'platform');
 }
