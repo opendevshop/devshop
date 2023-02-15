@@ -1056,7 +1056,15 @@ HTML;
   $vars['target_environments'] = $project->environments;
 
   // Prepare environments output
-  foreach ($vars['node']->project->environments as $environment) {
+  // Render live environment first.
+  if (isset($project->settings->live) && $project->settings->live['live_environment'] && isset($project->environments[$project->settings->live['live_environment']])) {
+    $environments = [$project->environments[$project->settings->live['live_environment']]];
+    
+    $remaining = $vars['node']->project->environments;
+    unset($remaining[$project->settings->live['live_environment']]);
+    $environments += $remaining;
+  }
+  foreach ($environments as $environment) {
 
     // Render each environment.
     $vars['environments'][] = theme('environment', array(

@@ -425,18 +425,6 @@ function devshop_project_load($node) {
     $environment_nids[$environment->site] = $environment;
   }
 
-  // Put live environment at the top.
-  if (!empty($environments) && isset($project->settings->live) && $project->settings->live['live_environment'] && isset($environments[$project->settings->live['live_environment']])) {
-    $project->environments = array();
-    $live_env = $project->settings->live['live_environment'];
-    $project->environments[$live_env] = $environments[$live_env];
-    unset($environments[$live_env]);
-    $project->environments += $environments;
-  }
-  elseif (!empty($node->title)) {
-    $project->environments = array();
-  }
-
   $project->environments = $environments;
   $project->environment_nids = $environment_nids;
   $project->environments_deleted = $deleted_environments;
