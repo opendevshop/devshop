@@ -1631,7 +1631,6 @@ function devshop_projects_environment_settings_submit($form, &$form_state) {
     $environment->project_nid = $form_state['values']['project_nid'];
     $environment->name = $form_state['values']['environment_name'];
     $environment->site = $site->nid;
-    $environment->platform = $site->platform;
   }
   else {
     $environment = (object) $form_state['values']['environment'];

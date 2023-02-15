@@ -369,7 +369,6 @@ function devshop_environment_save(stdClass &$environment) {
   $info->project_nid = $environment->project_nid;
   $info->name = $environment->name;
   $info->site = $environment->site;
-  $info->platform = $environment->platform;
   $info->settings = serialize($environment->settings);
   $info->last_task = $environment->last_task;
 
