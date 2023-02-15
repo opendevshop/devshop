@@ -95,14 +95,21 @@ function devshop_github_form_devshop_projects_settings_form_alter(&$form, &$form
     $options[$repo['org']][$url] = $url;
   }
   $form['github']['github_available_repos'] = array(
-    '#title' => t('Available GitHub Repositories'),
-    '#description' => t('Select the repos to make available to users when creating projects.'),
+    '#title' => t('Available Repositories'),
+    '#description' => t('Select the repos to make available to users when creating projects. If none are selected, all options will be displayed.'),
     '#type' => 'select',
     '#multiple' => true,
     '#options' => $options,
     '#default_value' => variable_get('github_available_repos', array()),
     '#bootstrap_ignore_pre_render' => TRUE,
   );
+
+  if (empty($options)) {
+    $form['github']['github_available_repos']['#type'] = 'item';
+    $form['github']['github_available_repos']['#markup'] = $token_valid?
+      t('No repositories were loaded. Click "Refresh Repositories"'):
+      t('Add a token to get started.');
+  }
 
   if (empty($token)) {
     $access_message = t('Token: not set up.');
@@ -209,14 +216,21 @@ function devshop_github_form_devshop_projects_settings_form_alter(&$form, &$form
     '#access' => !empty(variable_get('devshop_github_token')),
   );
 
+  $class = $count? 'success': 'warning';
+  $icon = $count? 'check': 'warning';
   $form['github']['message'] = array(
-    '#prefix' => "<div class='alert alert-success'><i class='fa fa-check'></i> ",
+    '#access'=> $token_valid,
+    '#prefix' => "<div class='alert alert-{$class}'><i class='fa fa-$icon'></i> ",
     '#suffix' => '</div>',
-    '#markup' =>  format_plural($count, t('1 repository found'), t('DevShop can access @count repositories.')));
+    '#markup' => $count == 0 ?
+      t('DevShop cannot access any repositories. Click "Refresh Repositories" to make them available in DevShop.'):
+      format_plural($count, t('DevShop can access 1 repository.'), t('DevShop can access @count repositories.'))
+  );
 
   $orgs = variable_get('devshop_github_available_organizations', array());
   $count = count($orgs);
   $form['github']['message_orgs'] = array(
+    '#access'=> $count,
     '#prefix' => "<div class='alert alert-success'><i class='fa fa-check'></i> ",
     '#suffix' => '</div>',
     '#markup' =>  t('DevShop can create repositories in @count_string.', array(
