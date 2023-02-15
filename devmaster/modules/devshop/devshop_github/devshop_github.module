@@ -454,17 +454,19 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
   }
 
   $options = [];
-  $repos = variable_get('devshop_github_available_repositories', array());
+  $repos = variable_get('devshop_github_available_repositories', variable_get('devshop_github_all_repositories', array()));
   foreach ($repos as $repo_name => $repo) {
-    $options[$repo['org']][$repo['url']] = $repo_name;
+    $form['source']['choice']['#options'][$repo['org']][$repo['url']] = $repo_name;
   }
 
-  if (count($options) && empty($form['source']['git_url']['#default_value'])) {
-    $form['source']['git_source']['#default_value'] = 'github_existing';
-  }
+  //$form['source']['git_source']['#options'] = $options;
 
-  unset($form['source']['git_source']['#options']['custom']);
-  $form['source']['git_source']['#options']['custom'] = t('Custom Git repository URL');
+//  if (count($options) && empty($form['source']['git_url']['#default_value'])) {
+//    $form['source']['git_source']['#default_value'] = 'github_existing';
+//  }
+
+//  unset($form['source']['git_source']['#options']['custom']);
+//  $form['source']['git_source']['#options']['custom'] = t('Custom Git repository URL');
 
 //  if (empty($options)) {
 //    $form['source']['github_repos'] = array(

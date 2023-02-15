@@ -10,7 +10,7 @@ function devshop_github_form_devshop_projects_settings_form_alter(&$form, &$form
   $client = new \Github\Client();
   $client->authenticate($token, \Github\AuthMethod::ACCESS_TOKEN);
 
-  $repos = variable_get('devshop_github_available_repositories', array());
+  $repos = variable_get('devshop_github_all_repositories', array());
   $count = count($repos);
 
   try {
@@ -94,13 +94,13 @@ function devshop_github_form_devshop_projects_settings_form_alter(&$form, &$form
     $url = $repo['url'];
     $options[$repo['org']][$url] = $url;
   }
-  $form['github']['github_available_repos'] = array(
+  $form['github']['devshop_github_available_repositories'] = array(
     '#title' => t('Available Repositories'),
     '#description' => t('Select the repos to make available to users when creating projects. If none are selected, all options will be displayed.'),
     '#type' => 'select',
     '#multiple' => true,
     '#options' => $options,
-    '#default_value' => variable_get('github_available_repos', array()),
+    '#default_value' => variable_get('devshop_github_available_repositories', array()),
     '#bootstrap_ignore_pre_render' => TRUE,
     '#attributes' => array(
       'data-placeholder' => t('Select some repositories.'),
@@ -108,8 +108,8 @@ function devshop_github_form_devshop_projects_settings_form_alter(&$form, &$form
   );
 
   if (empty($options)) {
-    $form['github']['github_available_repos']['#type'] = 'item';
-    $form['github']['github_available_repos']['#markup'] = $token_valid?
+    $form['github']['devshop_github_available_repositories']['#type'] = 'item';
+    $form['github']['devshop_github_available_repositories']['#markup'] = $token_valid?
       t('No repositories were loaded. Click "Refresh Repositories"'):
       t('Add a token to get started.');
   }
@@ -345,7 +345,7 @@ function devshop_github_refresh_repositories() {
       '@count' => $count,
     );
 
-    variable_set('devshop_github_available_repositories', $available_repos);
+    variable_set('devshop_github_all_repositories', $available_repos);
     drupal_set_message(t('Found @count_string associated with that GitHub token.', array(
       '@count_string' => format_plural($count, '1 repository', t('@count repositories', $r)),
     )));
