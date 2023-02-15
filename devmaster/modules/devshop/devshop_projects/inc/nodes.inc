@@ -334,9 +334,9 @@ function devshop_projects_node_delete($node) {
 
   // When a platform or site node is FULLY deleted, remove the environment record.
   // This should never happen, site and platform nodes are never fully deleted.
-  if (($node->type == 'site' || $node->type == 'platform') && !empty($node->project)) {
+  if (($node->type == 'site') && !empty($node->project)) {
     db_delete('hosting_devshop_project_environment')
-      ->condition($node->type, $node->nid)
+      ->condition('site', $node->nid)
       ->execute();
   }
 }

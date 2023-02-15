@@ -38,11 +38,9 @@ SELECT
   project_nid, site, name, n.title as project_name FROM {hosting_devshop_project_environment} e
   LEFT JOIN {node} n ON e.project_nid = n.nid
   WHERE site  = :site
-    OR platform = :platform
     OR project_nid = :project
 ", array(
           ':site' => $nid,
-          ':platform' => $nid,
           ':project' => $nid,
         ));
 
