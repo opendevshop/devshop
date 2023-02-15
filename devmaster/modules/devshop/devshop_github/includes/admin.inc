@@ -102,6 +102,9 @@ function devshop_github_form_devshop_projects_settings_form_alter(&$form, &$form
     '#options' => $options,
     '#default_value' => variable_get('github_available_repos', array()),
     '#bootstrap_ignore_pre_render' => TRUE,
+    '#attributes' => array(
+      'data-placeholder' => t('Select some repositories.'),
+    ),
   );
 
   if (empty($options)) {
