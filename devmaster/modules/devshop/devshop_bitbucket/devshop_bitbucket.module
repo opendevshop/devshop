@@ -4,6 +4,8 @@
  * @file devshop_bitbucket.module
  */
 
+require_once('includes/queue.inc');
+
 //require_once 'vendor/autoload.php';
 
 /**
