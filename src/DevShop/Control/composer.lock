@@ -883,12 +883,12 @@
             "dist": {
                 "type": "path",
                 "url": "../../../devmaster",
-                "reference": "13ceff6dd3b4faf64a826804e948a2341d57d4f2"
+                "reference": "5e86fd0fcf1ed80e5689ab85c6534ddab80df618"
             },
             "require": {
                 "bitbucket/client": "^4.1",
                 "guzzlehttp/guzzle": "^6",
-                "knplabs/github-api": "^3.0||^1.0",
+                "knplabs/github-api": "^3.9||^1.0",
                 "sensiolabs/ansi-to-html": "^1.1",
                 "symfony/yaml": "^4.4",
                 "toin0u/digitalocean-v2": "^2.3"
@@ -2254,7 +2254,7 @@
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/hosting.git",
-                "reference": "13561483dbdcaddbed5714ebfad289b69e7d1969"
+                "reference": "ca417958e963d5fb305b4e7db8837484f00372b2"
             },
             "require": {
                 "drupal/drupal": "~7.0",
@@ -2279,8 +2279,8 @@
                     "dev-4.x": "4.x-dev"
                 },
                 "drupal": {
-                    "version": "7.x-4.0-beta1+2-dev",
-                    "datestamp": "1675212675",
+                    "version": "7.x-4.0-beta1+3-dev",
+                    "datestamp": "1676420056",
                     "security-coverage": {
                         "status": "not-covered",
                         "message": "Dev releases are not covered by Drupal security advisories."
