@@ -433,17 +433,18 @@ function devshop_bitbucket_authenticated() {
  */
 function devshop_bitbucket_form_devshop_project_create_step_git_alter(&$form, &$form_state, $form_id) {
 
+  $key_exists = devshop_bitbucket_token();
   $key_valid = devshop_bitbucket_authenticated();
 
   if (!$key_valid && drupal_valid_path('admin/hosting')) {
+    drupal_set_message(t('Your BitBucket API Token is invalid. Check !settings.', [
+      '!settings' => l(t('DevShop Settings'), 'admin/hosting'),
+    ]), 'error');
+  } 
+  elseif (!$key_exists && drupal_valid_path('admin/hosting')) {
     drupal_set_message(t('BitBucket API Integration has not been enabled. You can still add public git repositories. Check !settings to enable additional features.', [
       '!settings' => l(t('DevShop Settings'), 'admin/hosting'),
     ]), 'warning');
-  }
-  elseif (!$key_valid && drupal_valid_path('admin/hosting')) {
-    drupal_set_message(t('Your BitBucket API Token is invalid. Check !settings to add a new one.', [
-      '!settings' => l(t('DevShop Settings'), 'admin/hosting'),
-    ]), 'error');
   }
 
   $options = [];
