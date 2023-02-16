@@ -28,7 +28,7 @@ function devshop_bitbucket_refresh_repositories() {
       '@count' => $count,
     );
 
-    variable_set('devshop_bitbucket_available_repositories', $available_repos);
+    variable_set('devshop_bitbucket_all_repositories', $available_repos);
     drupal_set_message(t('Found @count_string.', array(
       '@count_string' => format_plural($count, '1 repository', t('@count repositories', $r)),
     )));
