@@ -720,6 +720,12 @@ function devshop_github_create_project_form_set_values($element, &$form_state, &
 function devshop_github_form_devshop_project_create_step_environments_alter(&$form, &$form_state, $form_id) {
 
   $project = &$form_state['project'];
+
+  // Return if provider is not github.
+  if ($project->git_provider != 'github') {
+    return;
+  }
+
   $prs_url = $project->git_repo_url . '/pulls';
 
   // Load the PRs.
@@ -872,6 +878,20 @@ function devshop_github_form_devshop_project_create_step_environments_alter(&$fo
   $form['pr_environments']['help'] = $help_display;
   $form['pr_environments']['help']['#weight'] = -1;
 
+
+  // @TODO: Check that the API key has write access before offering to do this.
+  $form['github_webhook'] = array(
+    '#title' => t('Setup GitHub Webhook'),
+    '#description' => t('Leave this box checked to automatically add a webhook to your GitHub Repository !link. Your server must be reachable by the !servers', array(
+      '!link' => l($repo, $repo_url, $l_options),
+      '!servers' => l(t('GitHub Servers listed under "hooks" in the API'), 'https://api.github.com/meta', $l_options),
+      '#type' => 'checkbox',
+      '#default_value' => variable_get('devshop_github_webhook_setup_default', 0),
+    )));
+
+  $form['#validate'][] = 'devshop_github_project_create_webhook';
+  $form['#submit'][] = 'devshop_github_project_create_webhook';
+
 }
 
 /**
@@ -942,15 +962,12 @@ function devshop_github_create_repository($element, &$form_state, &$form) {
  */
 function devshop_github_form_devshop_project_create_step_sites_alter(&$form, &$form_state) {
 
-  // Return if project isn't ready.
-  if (empty($form['install_profile'])) {
-    return;
-  }
-
   // Load project and github
   $project_node = node_load($form['nid']['#value']);
   $project = $project_node->project;
-
+  
+  dsm($form_state['project']);
+  
   // Return if provider is not github.
   if ($project->git_provider != 'github') {
     return;
