@@ -104,6 +104,7 @@ function devshop_project_load($node) {
   }
 
   // Git Repo Host
+  // @TODO: Allow other github URLs (ie for enterprise)
   if (isset($project->git_url) && strpos($project->git_url, 'github.com') !== FALSE) {
     $project->git_provider = 'github';
     $project->git_repo_url = strtr($project->git_url, array(
@@ -118,13 +119,18 @@ function devshop_project_load($node) {
     $project->github_repo = $parts[2];
 
   }
-  elseif (isset($project->git_url) && strpos($project->git_url, variable_get('bitbucket_repo_url_trigger_word', 'bitbucket.org')) !== FALSE) {
+  elseif (isset($project->git_url) && strpos($project->git_url, 'bitbucket.org') !== FALSE) {
     $project->git_provider = 'bitbucket';
     $project->git_repo_url = strtr($project->git_url, array(
-      'git@bitbucket.com:' => 'http://bitbucket',
+      'git@bitbucket.org:' => 'http://bitbucket.org/',
       'git://' => 'http://',
       '.git' => '',
     ));
+    $parts = explode('/', parse_url($project->git_repo_url, PHP_URL_PATH));
+    if ($parts[1] && $parts[2]) {
+      $project->bitbucket_owner = $parts[1];
+      $project->bitbucket_repo = $parts[2];
+    }
   }
   else {
     $project->git_provider = 'git';
