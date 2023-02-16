@@ -586,7 +586,7 @@ function devshop_bitbucket_project_create_webhook($form, $form_state) {
  */
 function devshop_bitbucket_node_load($nodes, $types) {
   foreach ($nodes as $nid => &$node) {
-    if ($node->type == 'project') {
+    if ($node->type == 'project' && $node->project->git_provider == 'bitbucket') {
 
       // Look for a pull request object.
       $pull_requests = db_query('SELECT * FROM {hosting_devshop_bitbucket_pull_requests} prs
@@ -668,7 +668,7 @@ function devshop_bitbucket_node_update($node) {
  * When submitting from the Site form, and user selects a PR branch, "pull_request" is populated with the PR object.
  */
 function devshop_bitbucket_node_insert($node) {
-  if ($node->type == 'site' && $node->git_provider == 'bitbucket' && (!empty($node->pull_request) || !empty($node->settings->pull_request))) {
+  if ($node->type == 'site' && $node->project->git_provider == 'bitbucket' && (!empty($node->pull_request) || !empty($node->settings->pull_request))) {
     $environment = new stdClass();
     $environment->name = $node->environment_name;
     $environment->site = $node->nid;
