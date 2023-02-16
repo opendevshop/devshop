@@ -585,30 +585,25 @@ function devshop_bitbucket_project_create_webhook($form, $form_state) {
  * Implements hook_node_load().
  */
 function devshop_bitbucket_node_load($nodes, $types) {
-  if (count(array_intersect(array('project'), $types))) {
-    foreach ($nodes as $nid => $node) {
+  foreach ($nodes as $nid => &$node) {
+    if ($node->type == 'project') {
 
       // Look for a pull request object.
-      $pull_requests = db_query('SELECT * FROM {hosting_devshop_bitbucket_pull_requests} WHERE project_nid = :project_nid', array(':project_nid' => $nid));
+      $pull_requests = db_query('SELECT * FROM {hosting_devshop_bitbucket_pull_requests} prs
+        LEFT JOIN {hosting_devshop_project_environment} e ON prs.site_nid = e.site 
+        WHERE e.project_nid = :project_nid', [':project_nid' => $nid]);
       foreach ($pull_requests as $pull_request) {
         if (!empty($pull_request->pull_request_object)) {
           $pull_request->pull_request_object = unserialize($pull_request->pull_request_object);
           if (isset($node->project->environments[$pull_request->environment_name])) {
             $node->project->environments[$pull_request->environment_name]->bitbucket_pull_request = $pull_request;
+
+            $node->project->environments[$pull_request->environment_name]->image = $pull_request->pull_request_object->author->links->avatar->href;
           }
         }
       }
-
-      // Parse bitbucket owner and repo.
-      if (isset($node->project) && $node->project->git_provider == 'bitbucket') {
-        $node->project->bitbucket_owner =
-          $parts = explode('/', parse_url($node->project->git_repo_url, PHP_URL_PATH));
-        $node->project->bitbucket_owner = $parts[1];
-        $node->project->bitbucket_repo = $parts[2];
-      }
     }
   }
-
 }
 
 /**
@@ -666,6 +661,71 @@ function devshop_bitbucket_node_update($node) {
 //  }
 }
 
+
+/**
+ * Implements hook_node_insert().
+ *
+ * When submitting from the Site form, and user selects a PR branch, "pull_request" is populated with the PR object.
+ */
+function devshop_bitbucket_node_insert($node) {
+  if ($node->type == 'site' && $node->git_provider == 'bitbucket' && (!empty($node->pull_request) || !empty($node->settings->pull_request))) {
+    $environment = new stdClass();
+    $environment->name = $node->environment_name;
+    $environment->site = $node->nid;
+    $environment->project_nid = $node->project_nid;
+
+    if (!empty($node->pull_request)) {
+      $pr_data = convert_to_object($node->pull_request);
+    }
+    elseif (!empty($node->settings->pull_request)) {
+      $pr_data = convert_to_object($node->settings->pull_request);
+    }
+    else {
+      return;
+    }
+    devshop_bitbucket_save_pr_env_data($pr_data, $environment);
+  }
+}
+
+/**
+ * @param $pr
+ * @param $environment
+ */
+function devshop_bitbucket_save_pr_env_data($pr, $environment) {
+  $info = new stdClass();
+  $info->site_nid = $environment->site;
+  $info->id = $pr->id;
+  $info->number = $pr->number;
+  $info->pull_request_object = serialize($pr);
+
+  // Last minute check for existing PR info
+  $results = db_select('hosting_devshop_bitbucket_pull_requests', 'pr')
+    ->condition('id', $pr->id)
+    ->fields('pr', array('id'))
+    ->execute()
+    ->fetchAssoc();
+
+  // If there are results, save $update param for drupal_write_record().
+  if (empty($results)) {
+    $update = array();
+  }
+  else {
+    $update = array('id');
+  }
+
+  // Save environment record.
+  try {
+    watchdog('devshop_bitbucket', t('Pull Request saved for environment !nid !env.', array(
+      '!nid' => $environment->site,
+      '!env' => l($environment->uri, "node/{$info->site_nid}"),
+    )));
+    drupal_write_record('hosting_devshop_bitbucket_pull_requests', $info, $update);
+    return TRUE;
+  }
+  catch (\PDOException $e) {
+    return FALSE;
+  }
+}
 
 /**
  *
