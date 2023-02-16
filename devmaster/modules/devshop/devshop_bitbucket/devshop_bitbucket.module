@@ -473,13 +473,7 @@ function devshop_bitbucket_form_devshop_project_create_step_git_alter(&$form, &$
   }
   
   foreach ($repos as $repo_name => $repo) {
-    if (isset($repo['org']) && isset($repo['url'])) {
-      $form['source']['choice']['#options']['BitBucket: ' . $repo['org']][$repo['url']] = $repo_name;
-    }
-    else {
-      dsm($repo, 'fix me.');
-      return;
-    }
+    $form['source']['choice']['#options']['BitBucket: ' . $repo['org']][$repo['url']] = $repo_name;
   }
 }
 
@@ -1135,5 +1129,149 @@ function devshop_bitbucket_settings_form_validate_api($element, &$form_state, $f
     form_error($element,  t('BitBucket Token was rejected: %message', array(
       '%message' => $e->getMessage(),
     )));
+  }
+}
+
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ *
+ * Alters devshop_project_create_step_environments form.
+ */
+function devshop_bitbucket_form_devshop_project_create_step_environments_alter(&$form, &$form_state, $form_id) {
+
+  $project = &$form_state['project'];
+
+  // Return if provider is not bitbucket.
+  if ($project->git_provider != 'bitbucket' || !$project->settings->bitbucket['pull_request_environments']) {
+    return;
+  }
+  
+  $client = devshop_bitbucket_client();
+  
+  $prs = $client->repositories()
+    ->workspaces($project->bitbucket_owner)
+    ->pullRequests($project->bitbucket_repo)
+    ->list()
+  ;
+
+  $prs_url = $project->git_repo_url . '/pull-requests';
+
+  foreach ($prs['values'] as $pr) {
+    // Prepare environment objects
+    $env_name = "pr{$pr['id']}";
+    // If PR environment already exists, load it.
+    if (isset($project->environments[$env_name])) {
+      $environment = convert_to_object($project->environments[$env_name]);
+    }
+    else {
+      $environment = new stdClass();
+      $environment->name = "pr{$pr['id']}";
+      $environment->git_ref = $pr['source']['branch']['name'];
+      $project->environments[$environment->name] = $environment;
+    }
+
+    // Use NEW form elements as the template.
+    $environment_forms[$environment->name] = $form['project']['environments']['NEW'];
+    //        $environment_forms[$environment->name]['platform']['#value'] = $environment->platform;
+
+    // Create a disabled textfield for display to user, and convert original element to "value" type so the info is passed.
+    $environment_forms[$environment->name]['name']['#default_value'] = $environment->name;
+    $environment_forms[$environment->name]['name']['#attributes']['disabled'] = true;
+
+    $environment_forms[$environment->name]['git_ref']['#value'] = $environment->git_ref;
+    $environment_forms[$environment->name]['git_ref']['#type'] = 'value';
+    $icon = $project->settings->git['refs'][$environment->git_ref] == 'branch' ? 'code-fork': 'tag';
+
+    $environment_forms[$environment->name]['git_ref']['info']['ref'] = array(
+      '#theme' => 'link',
+      '#text' => "<em class='fa fa-$icon'></em> " . $environment->git_ref,
+      '#path' => $pr['links']['html']['href'],
+      '#options' => array(
+        'html' => true,
+        'attributes' => array(
+          'target' => '_blank',
+          'class' => array(
+            'btn btn-default btn-sm'
+          ),
+        ),
+      ),
+    );
+    $environment_forms[$environment->name]['git_ref']['info']['pr'] = array(
+      '#theme' => 'link',
+      '#text' => "<img src='{$pr['author']['links']['avatar']['href']}' width='28' class='img-responsive img-thumbnail'> PR" . $pr['id'] . htmlentities($pr['title']),
+      '#path' => $pr['links']['html']['href'],
+      '#options' => array(
+        'html' => true,
+        'attributes' => array(
+          'target' => '_blank',
+          'class' => array(
+            'btn btn-text'
+          ),
+        ),
+      ),
+    );
+
+    // If PR has different remote URL, set it.
+    $source_name = $pr['source']['repository']['full_name'];
+    $destination_name = $pr['destination']['repository']['full_name'];
+    if ($source_name != $destination_name) {
+      $remote_url = str_replace($destination_name, $source_name, $project->git_url);
+    }
+    else {
+      $remote_url = $project->git_url;
+    }
+
+    $environment_forms[$environment->name]['settings']['git_remote'] = array(
+      '#type' => 'value',
+      '#value' => $remote_url,
+    );
+
+    // Save data for devshop_github_node_insert() to process.
+    $environment_forms[$environment->name]['settings']['pull_request'] = array(
+      '#type' => 'value',
+      '#value' => $pr,
+    );
+  }
+
+  // Merge environments fields together to put PRs on top.
+  $form['project']['environments'] = array_merge($form['project']['environments'], $environment_forms);
+  
+  $settings_link = l(t('Change Project Settings'), 'projects/add/settings', array(
+    'fragment' => 'edit-project-settings-github',
+  ));
+  
+  $prs_link = l(t('Pull Requests for @repo: @count', array(
+    '@repo' => $project->bitbucket_owner . '/' . $project->bitbucket_repo,
+    '@count' => count($prs),
+  )), $prs_url, array(
+    'attributes' => array('target' => '_blank')
+  ));
+  
+  // Project with PR environments disabled.
+  if (empty($project->settings->github['pull_request_environments'])) {
+    $help_display['help'] = array(
+      '#theme' => 'item_list',
+      '#items' => array(
+        t('Pull Request environments are disabled for this project.'),
+        $prs_link,
+        $settings_link,
+      ),
+      '#prefix' => '<div class="alert alert-warning">',
+      '#suffix' => '</div>',
+    );
+  }
+  // Project configured to maintain all PR environments.
+  elseif (!empty($project->settings->github['pull_request_environments'])) {
+    $help_display['help'] = array(
+      '#theme' => 'item_list',
+      '#items' => array(
+        t('Project is configured to create environments for every open Pull Request.'),
+        $prs_link,
+        $settings_link,
+      ),
+      '#prefix' => '<div class="alert alert-info">',
+      '#suffix' => '</div>',
+    );
   }
 }
