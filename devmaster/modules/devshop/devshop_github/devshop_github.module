@@ -441,72 +441,24 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
   module_load_include('inc', 'devshop_github', 'includes/admin');
   $key_exists = devshop_github_token();
   $key_valid = devshop_github_token_is_valid();
-
-  if (!$key_exists && drupal_valid_path('admin/hosting')) {
-    drupal_set_message(t('GitHub API Integration has not been enabled. You can still add public git repositories. Check !settings to enable additional features.', [
-      '!settings' => l(t('DevShop GitHub Settings'), 'admin/hosting'),
-    ]), 'warning');
-  }
-  elseif (!$key_valid && drupal_valid_path('admin/hosting')) {
+  
+  if (!$key_valid && drupal_valid_path('admin/hosting')) {
     drupal_set_message(t('Your GitHub API Token is invalid. Check !settings to add a new one.', [
       '!settings' => l(t('DevShop GitHub Settings'), 'admin/hosting'),
     ]), 'error');
   }
-
+  elseif (!$key_exists && drupal_valid_path('admin/hosting')) {
+    drupal_set_message(t('GitHub API Integration has not been enabled. You can still add public git repositories. Check !settings to enable additional features.', [
+      '!settings' => l(t('DevShop GitHub Settings'), 'admin/hosting'),
+    ]), 'warning');
+  }
+  
   $options = [];
   $repos = variable_get('devshop_github_available_repositories', variable_get('devshop_github_all_repositories', array()));
   foreach ($repos as $repo_name => $repo) {
     $form['source']['choice']['#options'][$repo['org']][$repo['url']] = $repo_name;
   }
 
-  //$form['source']['git_source']['#options'] = $options;
-
-//  if (count($options) && empty($form['source']['git_url']['#default_value'])) {
-//    $form['source']['git_source']['#default_value'] = 'github_existing';
-//  }
-
-//  unset($form['source']['git_source']['#options']['custom']);
-//  $form['source']['git_source']['#options']['custom'] = t('Custom Git repository URL');
-
-//  if (empty($options)) {
-//    $form['source']['github_repos'] = array(
-//      '#title' => t('Use an existing GitHub repository'),
-//      '#description' => t('No GitHub repositories found. !link', array(
-//        '!link' => l(t('Refresh GitHub Repos'), 'admin/hosting/github/load-repos', array(
-//          'query' => drupal_get_destination(),
-//          'attributes' => array(
-//            'class' => array('btn btn-primary'),
-//          ),
-//        )))),
-//      '#type' => 'item',
-//      '#states' => array(
-//        'visible' => array(
-//          ':input[name="git_source"]' => array(
-//            'value' => 'github_existing'
-//          ),
-//        ),
-//      ),
-//    );
-//  }
-//  else {
-//
-//  $form['source']['github_repos'] = array(
-//    '#title' => t('Use an existing GitHub repository'),
-//    '#type' => 'select',
-//    '#options' => $options,
-//    '#default_value' => $form['source']['git_url']['#default_value'],
-//    '#description' => t('Select the GitHub repository to use for this project. Remember, it must contain a Drupal site.') . ' ' .  l(t('Refresh GitHub Repos List'), 'admin/hosting/github/load-repos', array('query' => drupal_get_destination())),
-//    '#bootstrap_ignore_pre_render' => TRUE,
-//    '#states' => array(
-//      'visible' => array(
-//        ':input[name="git_source"]' => array(
-//          'value' => 'github_existing'
-//        ),
-//      ),
-//    ),
-//  );
-//
-//  }
   $form['source']['github_create'] = array(
     '#type' => 'container',
     '#tree' => TRUE,
