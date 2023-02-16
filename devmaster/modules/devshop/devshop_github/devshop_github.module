@@ -678,7 +678,7 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
   drupal_add_js(array(
     'devshop' => array(
       'projectNameSourceElements' => array(
-        '#edit-github-repos',
+        '#edit-choice',
         '#edit-github-create-github-repository-name',
       ),
     ),
