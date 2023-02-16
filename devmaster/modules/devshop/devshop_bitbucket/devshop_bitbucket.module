@@ -149,7 +149,6 @@ function devshop_bitbucket_form_devshop_projects_settings_form_alter(&$form, &$f
     ]);
     $token_valid = !empty($latest_repos['values']);
 
-    $repos = variable_get('devshop_devshop_bitbucket_available_repositories', array());
     $latest_repo = current($latest_repos['values']);
     $repo_count = count($latest_repos['values']);
     $repo_link = l($latest_repo['full_name'], $latest_repo['links']['html']['href'], array(
@@ -160,7 +159,6 @@ function devshop_bitbucket_form_devshop_projects_settings_form_alter(&$form, &$f
   }
   catch (Exception $e) {
     $api_error = $e->getMessage();
-    $repos = array();
     $repo_count = 0;
     $scopes = array();
     $token_valid = false;
@@ -352,7 +350,8 @@ function devshop_bitbucket_form_devshop_projects_settings_form_alter(&$form, &$f
     '#description' => $access_note,
     '#suffix' => '</div>',
   );
-
+  
+  $repos = variable_get('devshop_bitbucket_all_repositories', array());
   $count = count($repos);
   $class = $count? 'success': 'warning';
   $icon = $count? 'check': 'warning';

@@ -22,7 +22,13 @@ function devshop_bitbucket_refresh_repositories() {
       'pagelen' => 1000,
     );
     $repos = $api->list($params);
-    $available_repos = $repos['values'];
+    foreach ($repos['values'] as $repo) {
+      $available_repos[$repo['full_name']] = array(
+        'url'  => $repo['links']['clone'][1]['href'],
+        'org' => $repo['workspace']['slug'],
+      );
+    }
+    
     $count = count($available_repos);
     $r = array(
       '@count' => $count,
