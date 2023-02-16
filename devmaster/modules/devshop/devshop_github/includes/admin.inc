@@ -226,7 +226,7 @@ function devshop_github_form_devshop_projects_settings_form_alter(&$form, &$form
     '#prefix' => "<div class='alert alert-{$class}'><i class='fa fa-$icon'></i> ",
     '#suffix' => '</div>',
     '#markup' => $count == 0 ?
-      t('DevShop cannot access any repositories. Click "Refresh Repositories" to make them available in DevShop.'):
+      t('Click "Refresh Repositories" to load GitHub information into DevShop.'):
       format_plural($count, t('DevShop can access 1 repository.'), t('DevShop can access @count repositories.'))
   );
 
