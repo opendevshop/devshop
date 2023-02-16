@@ -20,12 +20,12 @@ require_once('includes/queue.inc');
  * @return \Bitbucket\Client
  * @throws Exception
  */
-function devshop_bitbucket_client($must_authenticate = FALSE) {
+function devshop_bitbucket_client($token = null, $must_authenticate = false) {
   $client = new Bitbucket\Client();
   $auth_method = variable_get('devshop_bitbucket_authentication_method', '');
   $user = variable_get('devshop_bitbucket_app_username');
   $password = variable_get('devshop_bitbucket_app_password');
-  $bitbucket_token = devshop_bitbucket_token();
+  $bitbucket_token = $token ? : devshop_bitbucket_token();
 
   // If caller requires authentication, throw exception if token is missing.
   if ($must_authenticate && empty($bitbucket_token)) {
@@ -49,7 +49,7 @@ function devshop_bitbucket_client($must_authenticate = FALSE) {
     }
     return $client;
   }
-  catch (Exception $e) {
+  catch (\Exception $e) {
     // If error, set_message and throw the exception upstream.
     drupal_set_message(t('Error validating BitBucket token: ') . $e->getMessage(), 'error');
     throw $e;
@@ -146,10 +146,14 @@ function devshop_bitbucket_form_devshop_projects_settings_form_alter(&$form, &$f
   $app_username = variable_get('devshop_bitbucket_app_username', '');
   $app_password = variable_get('devshop_bitbucket_app_password', '');
 
-  $client = devshop_bitbucket_client();
-  $token_valid = !empty($client->repositories()->list());
-
+  $token_valid = false;
+  
   try {
+    $client = devshop_bitbucket_client();
+    $repos = $client->repositories()->list();
+    
+    $token_valid = !empty($repos['value']);
+
     $repos = variable_get('devshop_bitbucket_available_repositories', array());
     $repo = current($repos);
     $repo_count = count($repos);
@@ -201,6 +205,9 @@ function devshop_bitbucket_form_devshop_projects_settings_form_alter(&$form, &$f
 
   if ($repo_count == 1) {
     $t['!repo_access'] = $repo_link;
+  }
+  elseif ($repo_count == 0) {
+    $t['!repo_access'] = t('no repositories');
   }
   elseif ($repo_count < 10) {
     $t['!repo_access'] = t('!first and @other', array(
@@ -401,36 +408,49 @@ function devshop_bitbucket_token() {
   return $token;
 }
 
+
+/**
+ * Check if a token is valid. Checks the stored token if none is passed in.
+ *
+ * @param null $token
+ *   A specific token to check.
+ *
+ * @return bool
+ */
+function devshop_bitbucket_authenticated() {
+  try {
+    $client = devshop_bitbucket_client();
+    $client->repositories()->list();
+    return true;
+  }
+  catch (\Exception $e) {
+    return false; 
+  }
+}
+
 /**
  * Implements hook_form_alter().
  */
 function devshop_bitbucket_form_devshop_project_create_step_git_alter(&$form, &$form_state, $form_id) {
 
-  // Look for Token
-//  $token = variable_get('devshop_bitbucket_token', '');
-//
-//  if (empty($token)) {
-//    $form['connect']['#description'] = ' <div class="alert alert-danger">' . t('bitbucket API Token was not found.') . ' ' . l(t('Configure DevShop bitbucket Settings'), 'admin/hosting/bitbucket') . '</div>';
-//    return;
-//  }
-//
-//  if (devshop_bitbucket_check_key()) {
-//    $form['connect']['#description'] = ' <div class="alert alert-success">' . t('The DevShop Public SSH Key has been found in your bitbucket account.') . '</div>';
-//  }
-//  else {
-//    $form['connect']['#description'] = t('The DevShop Public SSH Key was not found in your account.') . '  ';
-//
-//    $form['connect']['#description'] .= l(t('Add devshop public key to your bitbucket account'), 'admin/hosting/bitbucket/add-key', array(
-//            'query' => array(
-//              'destination' => $_GET['q'],
-//            ),
-//            'attributes' => array(
-//                'class' => 'btn btn-success'
-//            ),
-//        )) . '</div>';
-//    $form['connect']['#prefix'] = '<div class="alert alert-danger">';
-//    $form['connect']['#suffix'] = '</div>';
-//  }
+  $key_valid = devshop_bitbucket_authenticated();
+
+  if (!$key_valid && drupal_valid_path('admin/hosting')) {
+    drupal_set_message(t('BitBucket API Integration has not been enabled. You can still add public git repositories. Check !settings to enable additional features.', [
+      '!settings' => l(t('DevShop Settings'), 'admin/hosting'),
+    ]), 'warning');
+  }
+  elseif (!$key_valid && drupal_valid_path('admin/hosting')) {
+    drupal_set_message(t('Your BitBucket API Token is invalid. Check !settings to add a new one.', [
+      '!settings' => l(t('DevShop Settings'), 'admin/hosting'),
+    ]), 'error');
+  }
+
+  $options = [];
+  $repos = variable_get('devshop_bitbucket_available_repositories', variable_get('devshop_bitbucket_all_repositories', array()));
+  foreach ($repos as $repo_name => $repo) {
+    $form['source']['choice']['#options'][$repo['org']][$repo['url']] = $repo_name;
+  }
 }
 
 
