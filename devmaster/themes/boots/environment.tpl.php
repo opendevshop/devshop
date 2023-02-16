@@ -180,8 +180,8 @@
 
     <div class="environment-header list-group-item list-group-item-<?php print $environment->list_item_class ?>">
 
-      <?php  if (isset($environment->github_pull_request)): ?>
-        <img src="<?php print $environment->github_pull_request->pull_request_object->user->avatar_url ?>" width="32" height="32" class="environment-avatar">
+      <?php  if (isset($environment->image)): ?>
+        <img src="<?php print $environment->image ?>" width="32" height="32" class="environment-avatar">
       <?php endif; ?>
 
       <!-- Environment Name -->
