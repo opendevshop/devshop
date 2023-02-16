@@ -169,6 +169,7 @@ function devshop_project_create_step_git($form, $form_state) {
     '#access' => !empty($options['custom']),
     '#type' => 'select',
     '#options' => $repo_options,
+    '#default_value' => $project->git_url,
     '#states' => array(
       'visible' => array(
         ':input[name="git_source"]' => array(
