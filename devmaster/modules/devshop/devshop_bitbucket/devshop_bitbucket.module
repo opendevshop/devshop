@@ -402,7 +402,7 @@ function devshop_bitbucket_form_devshop_projects_settings_form_alter(&$form, &$f
 }
 
 /**
- * Retrieve the token from either environment variable or drupal variable.
+ * Retrieve the app password or token from either environment variable or drupal variable.
  * @return mixed
  */
 function devshop_bitbucket_token() {
@@ -411,10 +411,16 @@ function devshop_bitbucket_token() {
   if (!empty($_SERVER['BITBUCKET_TOKEN'])) {
     $token = $_SERVER['BITBUCKET_TOKEN'];
   }
-
-  // If no ENV var, load Drupal variable.
   else {
     $token = variable_get('devshop_bitbucket_token', '');
+  }
+
+  // If ENV var is set, use that instead
+  if (!empty($_SERVER['BITBUCKET_APP_PASSWORD'])) {
+    $token = $_SERVER['BITBUCKET_APP_PASSWORD'];
+  }
+  else {
+    $token = variable_get('devshop_bitbucket_app_password', '');
   }
 
   return $token;
@@ -461,10 +467,14 @@ function devshop_bitbucket_form_devshop_project_create_step_git_alter(&$form, &$
   }
 
   $options = [];
-  $repos = variable_get('devshop_devshop_bitbucket_available_repositories', variable_get('devshop_bitbucket_all_repositories', array()));
+  $repos = variable_get('devshop_bitbucket_available_repositories', array());
+  if (empty($repos)) {
+    $repos = variable_get('devshop_bitbucket_all_repositories', array());
+  }
+  
   foreach ($repos as $repo_name => $repo) {
     if (isset($repo['org']) && isset($repo['url'])) {
-      $form['source']['choice']['#options'][$repo['org']][$repo['url']] = $repo_name;
+      $form['source']['choice']['#options']['BitBucket: ' . $repo['org']][$repo['url']] = $repo_name;
     }
     else {
       dsm($repo, 'fix me.');

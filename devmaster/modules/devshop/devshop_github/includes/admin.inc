@@ -349,9 +349,6 @@ function devshop_github_refresh_repositories() {
     drupal_set_message(t('Found @count_string associated with that GitHub token.', array(
       '@count_string' => format_plural($count, '1 repository', t('@count repositories', $r)),
     )));
-
-
-    ;
     $params = array(
       'all'
     );
