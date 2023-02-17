@@ -143,12 +143,6 @@ function devshop_projects_node_presave($node) {
   if ($node->type == 'task' && $node->task_type == 'install' && $node->is_new) {
     $node->task_args['force-reinstall'] = 1;
   }
-  
-  // Make project data available to hook_node_insert.
-  if ($node->type == 'site' && !empty($node->project_nid)) {
-    $project_node = node_load($node->project_nid);
-    $node->project = $project_node->project;
-  }
 }
 
 /**
