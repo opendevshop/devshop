@@ -191,7 +191,9 @@ function devshop_github_form_project_node_form_alter(&$form, &$form_state, $form
         '@number' => $pr_count,
       )) . '</span>'
     ),
-    '#default_value' => $project->settings->github['pull_request_environments'],
+    '#default_value' => isset($project->settings->github) ?
+      $project->settings->github['pull_request_environments'] :
+      false,
   );
 
   // Delete Pull Request environments?
