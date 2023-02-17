@@ -1091,12 +1091,18 @@ function devshop_github_node_load($nodes, $types) {
  * When submitting from the Site form, and user selects a PR branch, "pull_request" is populated with the PR object.
  */
 function devshop_github_node_insert($node) {
-  if ($node->type == 'site' && $node->project->git_provider == 'github' && (!empty($node->pull_request) || !empty($node->settings->pull_request))) {
+  if ($node->type == 'site' && !empty($node->project_nid) && (!empty($node->pull_request) || !empty($node->settings->pull_request))) {
+    
+    $project = node_load($node->project_nid);
+    if ($project->project->git_provider != 'github') {
+      return;
+    }
+    
     $environment = new stdClass();
     $environment->name = $node->environment_name;
     $environment->site = $node->nid;
     $environment->project_nid = $node->project_nid;
-
+    
     if (!empty($node->pull_request)) {
       $pr_data = convert_to_object($node->pull_request);
     }
