@@ -29,14 +29,14 @@ function devshop_bitbucket_client($token = null) {
 
   // Set token in client.
   try {
-    if ($auth_method == 'password') {
+    if ($auth_method == 'password' && $user && $password) {
       $client->authenticate(
         Bitbucket\Client::AUTH_HTTP_PASSWORD,
         $user,
         $password
       );
     }
-    else {
+    elseif ($bitbucket_token) {
       $client->authenticate(
         Bitbucket\Client::AUTH_OAUTH_TOKEN,
         $bitbucket_token
@@ -668,7 +668,14 @@ function devshop_bitbucket_node_update($node) {
  * When submitting from the Site form, and user selects a PR branch, "pull_request" is populated with the PR object.
  */
 function devshop_bitbucket_node_insert($node) {
-  if ($node->type == 'site' && $node->project->git_provider == 'bitbucket' && (!empty($node->pull_request) || !empty($node->settings->pull_request))) {
+  
+  if ($node->type == 'site' && !empty($node->project_nid) && (!empty($node->pull_request) || !empty($node->settings->pull_request))) {
+
+    $project = node_load($node->project_nid);
+    if ($project->project->git_provider != 'github') {
+      return;
+    }
+    
     $environment = new stdClass();
     $environment->name = $node->environment_name;
     $environment->site = $node->nid;
@@ -1149,10 +1156,14 @@ function devshop_bitbucket_settings_form_validate_api($element, &$form_state, $f
   if (empty($token)) {
     form_set_value($element, variable_get('devshop_bitbucket_token'), $form_state);
   }
+  
+  // If no app password in form element, keep existing variable.
   $password = $form_state['values']['devshop_bitbucket_app_password'];
   if (empty($password)) {
     form_set_value($form['bitbucket']['passwords']['devshop_bitbucket_app_password'], variable_get('devshop_bitbucket_app_password'), $form_state);
   }
+  
+  // If App Password mthod
 
   $client = devshop_bitbucket_client();
 
