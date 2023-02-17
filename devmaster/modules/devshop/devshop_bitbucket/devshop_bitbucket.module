@@ -671,8 +671,9 @@ function devshop_bitbucket_node_insert($node) {
   
   if ($node->type == 'site' && !empty($node->project_nid) && (!empty($node->pull_request) || !empty($node->settings->pull_request))) {
 
+    
     $project = node_load($node->project_nid);
-    if ($project->project->git_provider != 'github') {
+    if ($project->project->git_provider != 'bitbucket') {
       return;
     }
     
