@@ -1408,7 +1408,7 @@ function devshop_bitbucket_preprocess_environment(&$vars) {
     $vars['warnings'][] = array(
       'type' => 'info',
       'icon' => 'bitbucket',
-      'text' => l($environment->bitbucket_pull_request->pull_request_object->title, $environment->bitbucket_pull_request->pull_request_object->html_url, array(
+      'text' => l($environment->bitbucket_pull_request->pull_request_object->title, $environment->bitbucket_pull_request->pull_request_object->links->html->href, array(
         'absolute' => TRUE,
         'attributes' => array(
           'target' => '_blank',
