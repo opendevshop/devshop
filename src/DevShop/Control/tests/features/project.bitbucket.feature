@@ -25,7 +25,7 @@ Feature: Create a bitbucket project
 
     # This repo is at root.
 #    Then I fill in "web" for "Document Root"
-    And I check the box "Pull Request Environments"
+    And I check the box "Create Pull Request Environments"
 
     When I press "Next"
     Then I should see "pr2"
