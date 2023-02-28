@@ -72,6 +72,7 @@ function devshop_bitbucket_menu() {
  */
 function devshop_bitbucket_form_project_node_form_alter(&$form, &$form_state, $form_id) {
   $node = $form['#node'];
+  $project = $node->project;
 
   if ($node->project->git_provider != 'bitbucket') {
     return;
@@ -87,13 +88,49 @@ function devshop_bitbucket_form_project_node_form_alter(&$form, &$form_state, $f
       '#weight' => -100,
   );
 
-  // Pull Requests create environments?
-  // $form['bitbucket']['pull_request_environments'] = array(
+  // If Pull Requests were found in the environment, enable PR environments by default.
+  $prs = [];
+  try {
+
+    $client = devshop_bitbucket_client();
+
+    $prs = $client->repositories()
+      ->workspaces($project->bitbucket_owner)
+      ->pullRequests($project->bitbucket_repo)
+      ->list()
+    ;
+  }
+  catch (\Exception $e) {
+    drupal_set_message(t("Something went wrong when looking up PRs: for the repo !link: %message", array(
+      '!link' => l("{$node->project->bitbucket_owner}/{$node->project->bitbucket_repo}", $node->project->git_repo_url),
+      '%message' => $e->getMessage(),
+    )), 'error');
+  }
+
+  $pr_count = count($prs['values']);
   $form['project']['settings']['bitbucket']['pull_request_environments'] = array(
       '#type' => 'checkbox',
       '#title' => t('Create Environments for Pull Requests'),
       '#default_value' => isset($node->project->settings->bitbucket) ? $node->project->settings->bitbucket['pull_request_environments'] : FALSE,
-      '#description' => t('If using bitbucket, create a new environment when a new Pull Request is created.'),
+      '#description' => t('Create a new environment when a new Pull Request is created.'),
+  );
+  
+  $form['project']['settings']['bitbucket']['pr_alert'] = array(
+    '#prefix' => '<div class="alert alert-info">',
+    '#suffix' => '</div>',
+    'note' => array(
+      '#markup' =>  format_plural($pr_count, t('There is 1 open Pull Request in your project.'), t('There are @count open Pull Requests in your project')),
+    ),
+    'link' => array(
+      '#prefix' => '<div>',
+      '#suffix' => '</div>',
+      '#type' => 'link',
+      '#href' => $project->git_repo_url . '/pull-requests',
+      '#title' => t('View Pull Requests'),
+      '#attributes' => array(
+        'target' => '_blank',
+      )
+    )
   );
 
   // Delete Pull Request environments?
