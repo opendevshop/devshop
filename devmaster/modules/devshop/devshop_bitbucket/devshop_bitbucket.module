@@ -1228,7 +1228,7 @@ function devshop_bitbucket_form_devshop_project_create_step_environments_alter(&
   ;
 
   $prs_url = $project->git_repo_url . '/pull-requests';
-
+  $environment_forms = [];
   foreach ($prs['values'] as $pr) {
     // Prepare environment objects
     $env_name = "pr{$pr['id']}";
@@ -1307,6 +1307,7 @@ function devshop_bitbucket_form_devshop_project_create_step_environments_alter(&
   }
 
   // Merge environments fields together to put PRs on top.
+  dsm($form['project']['environments']);
   $form['project']['environments'] = array_merge($form['project']['environments'], $environment_forms);
   
   $settings_link = l(t('Change Project Settings'), 'projects/add/settings', array(

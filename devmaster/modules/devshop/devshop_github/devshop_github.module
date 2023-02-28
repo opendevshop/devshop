@@ -444,7 +444,7 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
   $key_exists = devshop_github_token();
   $key_valid = devshop_github_token_is_valid();
   
-  if (!$key_valid && drupal_valid_path('admin/hosting')) {
+  if ($key_exists && !$key_valid && drupal_valid_path('admin/hosting')) {
     drupal_set_message(t('Your GitHub API Token is invalid. Check !settings to add a new one.', [
       '!settings' => l(t('DevShop GitHub Settings'), 'admin/hosting'),
     ]), 'error');
