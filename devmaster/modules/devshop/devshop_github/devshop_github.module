@@ -158,7 +158,7 @@ function devshop_github_form_project_node_form_alter(&$form, &$form_state, $form
 
   $pr_count = count($prs);
   if (!isset($node->project->settings->github) && $pr_count > 0) {
-    $node->project->settings->bitbucket = array(
+    $node->project->settings->github = array(
       'pull_request_environments' => true,
       'pull_request_environments_delete' => true,
     );
@@ -1077,6 +1077,7 @@ function devshop_github_node_load($nodes, $types) {
         FROM {hosting_devshop_github_pull_requests} prs 
         LEFT JOIN {hosting_devshop_project_environment} e ON prs.site_nid = e.site 
         WHERE project_nid = :project_nid', array(':project_nid' => $nid));
+      dsm($pull_requests->rowCount(), 'prs');
       foreach ($pull_requests as $pull_request) {
         if (!empty($pull_request->pull_request_object)) {
           $pull_request->pull_request_object = unserialize($pull_request->pull_request_object);
@@ -1096,13 +1097,9 @@ function devshop_github_node_load($nodes, $types) {
  * When submitting from the Site form, and user selects a PR branch, "pull_request" is populated with the PR object.
  */
 function devshop_github_node_insert($node) {
-  if ($node->type == 'site' && (!empty($node->pull_request) || !empty($node->settings->pull_request))) {
 
-    $project = node_load($node->project_nid);
-    if ($project->project->git_provider != 'github') {
-      return;
-    }
-    
+  if ($node->type == 'site' && !empty($node->settings->pull_request) && isset($node->settings->pull_request['node_id'])) {
+
     $environment = new stdClass();
     $environment->name = $node->environment_name;
     $environment->site = $node->nid;
@@ -1118,9 +1115,8 @@ function devshop_github_node_insert($node) {
     }
 
     if (!devshop_github_save_pr_env_data($pr_data, $environment)) {
-      drupal_set_message(t('Something went wrong when saving PR data: !data', array(
-        '!data' => $pr_data,
-      )));
+      throw new \Exception('Unable to save bitbucket PR data: ' . print_r($pr_data, 1));
+
     }
   }
 }
@@ -2091,4 +2087,28 @@ function devshop_github_devshop_post_environment_create($environment) {
  */
 function devshop_environment_get_git_sha($repo_path) {
   return trim(shell_exec("cd {$repo_path}; git rev-parse HEAD  2> /dev/null"));
+}
+
+
+/**
+ * Preprocessor for environment template.
+ */
+function devshop_github_preprocess_environment(&$vars) {
+
+  // Pull Request?
+  $environment = &$vars['environment'];
+  if (isset($environment->github_pull_request) && $environment->github_pull_request) {
+    $environment->class .= ' pull-request';
+    $vars['warnings'][] = array(
+      'type' => 'info',
+      'icon' => 'github',
+      'text' => l($environment->github_pull_request->pull_request_object->title, $environment->github_pull_request->pull_request_object->html_url, array(
+        'absolute' => TRUE,
+        'attributes' => array(
+          'target' => '_blank',
+          'title' => t('Visit this Pull Request on GitHub'),
+        ),
+      )),
+    );
+  }
 }

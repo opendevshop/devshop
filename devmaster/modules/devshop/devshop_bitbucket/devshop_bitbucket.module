@@ -645,10 +645,11 @@ function devshop_bitbucket_node_load($nodes, $types) {
       foreach ($pull_requests as $pull_request) {
         if (!empty($pull_request->pull_request_object)) {
           $pull_request->pull_request_object = unserialize($pull_request->pull_request_object);
-          if (isset($node->project->environments[$pull_request->environment_name])) {
-            $node->project->environments[$pull_request->environment_name]->bitbucket_pull_request = $pull_request;
-
-            $node->project->environments[$pull_request->environment_name]->image = $pull_request->pull_request_object->author->links->avatar->href;
+          
+          if (isset($node->project->environment_nids[$pull_request->site_nid])) {
+            $environment = &$node->project->environment_nids[$pull_request->site_nid];
+            $environment->bitbucket_pull_request = $pull_request;
+            $environment->image = $pull_request->pull_request_object->author->links->avatar->href;
           }
         }
       }
@@ -718,19 +719,12 @@ function devshop_bitbucket_node_update($node) {
  * When submitting from the Site form, and user selects a PR branch, "pull_request" is populated with the PR object.
  */
 function devshop_bitbucket_node_insert($node) {
-  
-  if ($node->type == 'site' && !empty($node->project_nid) && (!empty($node->pull_request) || !empty($node->settings->pull_request))) {
 
-    
-    $project = node_load($node->project_nid);
-    if ($project->project->git_provider != 'bitbucket') {
-      return;
-    }
-    
+  if ($node->type == 'site' && !empty($node->settings->pull_request) && isset($node->settings->pull_request['destination'])) {
+
     $environment = new stdClass();
     $environment->name = $node->environment_name;
     $environment->site = $node->nid;
-    $environment->project_nid = $node->project_nid;
 
     if (!empty($node->pull_request)) {
       $pr_data = convert_to_object($node->pull_request);
@@ -741,11 +735,9 @@ function devshop_bitbucket_node_insert($node) {
     else {
       return;
     }
+    
     if (!devshop_bitbucket_save_pr_env_data($pr_data, $environment)) {
-      drupal_set_message(t('Something went wrong when saving PR data: !data', array(
-        '!data' => $pr_data,
-      )));
-      
+      throw new \Exception('Unable to save bitbucket PR data: ' . print_r($pr_data, 1));
     }
   }
 }
@@ -757,14 +749,13 @@ function devshop_bitbucket_node_insert($node) {
 function devshop_bitbucket_save_pr_env_data($pr, $environment) {
   $info = new stdClass();
   $info->site_nid = $environment->site;
-  $info->id = $pr->id;
-  $info->number = $pr->number;
+  $info->number = $pr->id;
   $info->pull_request_object = serialize($pr);
 
   // Last minute check for existing PR info
   $results = db_select('hosting_devshop_bitbucket_pull_requests', 'pr')
-    ->condition('id', $pr->id)
-    ->fields('pr', array('id'))
+    ->condition('number', $pr->id)
+    ->fields('pr', array('number'))
     ->execute()
     ->fetchAssoc();
 
@@ -773,7 +764,7 @@ function devshop_bitbucket_save_pr_env_data($pr, $environment) {
     $update = array();
   }
   else {
-    $update = array('id');
+    $update = array('number');
   }
 
   // Save environment record.
@@ -1402,6 +1393,28 @@ function devshop_bitbucket_form_devshop_project_create_step_environments_alter(&
         $prs_link,
         $settings_link,
       ),
+    );
+  }
+}
+
+/**
+ * Preprocessor for environment template.
+ */
+function devshop_bitbucket_preprocess_environment(&$vars) {
+
+  $environment = &$vars['environment'];
+  if (isset($environment->bitbucket_pull_request)) {
+    $environment->class .= ' pull-request';
+    $vars['warnings'][] = array(
+      'type' => 'info',
+      'icon' => 'bitbucket',
+      'text' => l($environment->bitbucket_pull_request->pull_request_object->title, $environment->bitbucket_pull_request->pull_request_object->html_url, array(
+        'absolute' => TRUE,
+        'attributes' => array(
+          'target' => '_blank',
+          'title' => t('Visit this Pull Request on Bitbucket'),
+        ),
+      )),
     );
   }
 }
