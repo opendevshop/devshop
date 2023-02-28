@@ -106,8 +106,15 @@ function devshop_bitbucket_form_project_node_form_alter(&$form, &$form_state, $f
       '%message' => $e->getMessage(),
     )), 'error');
   }
-
+  
   $pr_count = count($prs['values']);
+  if (!isset($node->project->settings->bitbucket) && $pr_count > 0) {
+    $node->project->settings->bitbucket = array(
+      'pull_request_environments' => true,
+      'pull_request_environments_delete' => true,
+    );
+  }
+
   $form['project']['settings']['bitbucket']['pull_request_environments'] = array(
       '#type' => 'checkbox',
       '#title' => t('Create Environments for Pull Requests'),
@@ -136,10 +143,15 @@ function devshop_bitbucket_form_project_node_form_alter(&$form, &$form_state, $f
   // Delete Pull Request environments?
   // $form['bitbucket']['pull_request_environments_delete'] = array(
   $form['project']['settings']['bitbucket']['pull_request_environments_delete'] = array(
-      '#type' => 'checkbox',
-      '#title' => t('Delete Pull Request Environments'),
-      '#default_value' => isset($node->project->settings->bitbucket) ? $node->project->settings->bitbucket['pull_request_environments_delete'] : FALSE,
-      '#description' => t('When Pull Requests are closed, delete the environment.'),
+    '#type' => 'checkbox',
+    '#title' => t('Delete Environments for Closed Pull Requests'),
+    '#default_value' => isset($node->project->settings->bitbucket) ? $node->project->settings->bitbucket['pull_request_environments_delete'] : FALSE,
+    '#description' => t('When Pull Requests are closed, delete the environment.'),
+    '#states' => array(
+      'visible' => array(
+        ':input[name="project[settings][bitbucket][pull_request_environments]"]' => array('checked' => TRUE),
+      ),
+    ),
   );
 
   // Pull Request Environment method.

@@ -157,6 +157,13 @@ function devshop_github_form_project_node_form_alter(&$form, &$form_state, $form
   }
 
   $pr_count = count($prs);
+  if (!isset($node->project->settings->github) && $pr_count > 0) {
+    $node->project->settings->bitbucket = array(
+      'pull_request_environments' => true,
+      'pull_request_environments_delete' => true,
+    );
+  }
+  
   $form['found_prs'] = array(
     '#type' => 'markup',
     '#prefix' => '<div class="alert alert-success">',
@@ -199,10 +206,8 @@ function devshop_github_form_project_node_form_alter(&$form, &$form_state, $form
   // Delete Pull Request environments?
   $form['project']['settings']['github']['pull_request_environments_delete'] = array(
       '#type' => 'checkbox',
-      '#title' => t('Delete Pull Request Environments <div class="help-block">When Pull Requests are merged or closed, delete the environment.</div>'),
+      '#title' => t('Delete Environments for Closed Pull Requests'),
       '#default_value' => isset($node->project->settings->github) ? $node->project->settings->github['pull_request_environments_delete'] : 1,
-// @TODO: Putting description in "help-block" right after title looks MUCH better and has better UX because the description is clickable. Put this in the theme layer.
-//      '#description' => t('When Pull Requests are merged or closed, delete the environment.'),
       '#states' => array(
         'visible' => array(
           ':input[name="project[settings][github][pull_request_environments]"]' => array('checked' => TRUE),
