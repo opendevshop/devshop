@@ -297,7 +297,7 @@ function devshop_github_form_site_node_form_alter(&$form, &$form_state, $form_id
   $project = $form_state['project'];
 
   // Don't try to load PRs if there isn't even a token.
-  if (!empty(variable_get('devshop_github_token', '')) && arg(1) == 'add' && $project->git_provider == 'github'){
+  if (arg(1) == 'add' && $project->git_provider == 'github'){
     try {
       $prs = devshop_github_client()->pullRequests()->all($project->github_owner, $project->github_repo);
       $default_branch = devshop_github_client()->repo()->show($project->github_owner, $project->github_repo)['default_branch'];
