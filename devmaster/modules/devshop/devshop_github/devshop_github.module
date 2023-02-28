@@ -181,7 +181,7 @@ function devshop_github_form_project_node_form_alter(&$form, &$form_state, $form
   );
 
   $form['project']['settings']['github']['pull_request_environments'] = array(
-    '#title' => t('Pull Request Environments'),
+    '#title' => t('Create Pull Request Environments'),
     '#description' => t('Maintain an environment for every !open_pull_request.', array(
       '!open_pull_request' => l(t('open Pull Request (@count)', array(
         '@count' => $pr_count,

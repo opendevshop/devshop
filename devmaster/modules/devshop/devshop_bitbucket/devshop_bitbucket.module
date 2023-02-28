@@ -5,6 +5,7 @@
  */
 
 require_once('includes/queue.inc');
+require_once('includes/forms.inc');
 
 //require_once 'vendor/autoload.php';
 
@@ -117,7 +118,7 @@ function devshop_bitbucket_form_project_node_form_alter(&$form, &$form_state, $f
 
   $form['project']['settings']['bitbucket']['pull_request_environments'] = array(
       '#type' => 'checkbox',
-      '#title' => t('Create Environments for Pull Requests'),
+      '#title' => t('Create Pull Request Environments'),
       '#default_value' => isset($node->project->settings->bitbucket) ? $node->project->settings->bitbucket['pull_request_environments'] : FALSE,
       '#description' => t('Create a new environment when a new Pull Request is created.'),
   );
