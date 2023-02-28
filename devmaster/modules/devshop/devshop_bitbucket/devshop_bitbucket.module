@@ -1360,31 +1360,34 @@ function devshop_bitbucket_form_devshop_project_create_step_environments_alter(&
   $form['project']['environments'] = array_merge($form['project']['environments'], $environment_forms);
   
   $settings_link = l(t('Change Project Settings'), 'projects/add/settings', array(
-    'fragment' => 'edit-project-settings-github',
+    'fragment' => 'edit-project-settings-bitbucket',
   ));
   
-  $prs_link = l(t('Pull Requests for @repo: @count', array(
-    '@repo' => $project->bitbucket_owner . '/' . $project->bitbucket_repo,
-    '@count' => count($prs),
-  )), $prs_url, array(
+  $prs_link = l(t('View Pull Requests on BitBucket.org'), $prs_url, array(
     'attributes' => array('target' => '_blank')
   ));
   
   // Project with PR environments disabled.
-  if (empty($project->settings->github['pull_request_environments'])) {
-    $help_display['help'] = array(
+  if (empty($project->settings->bitbucket['pull_request_environments'])) {
+    $pr_count = count($prs);
+    $count_note = format_plural($pr_count, t('There is 1 open Pull Request in your project'), t('There are @count open Pull Requests in your project'));
+    
+    $form['pr_environments']['pr_alert'] = array(
+      '#prefix' => '<div class="alert alert-warning">',
+      '#suffix' => '</div>',
       '#theme' => 'item_list',
       '#items' => array(
-        t('Pull Request environments are disabled for this project.'),
+        t('@prs, but Pull Request Environments are not enabled for this project.', array(
+          '@prs' => $count_note,
+        )),
         $prs_link,
         $settings_link,
       ),
-      '#prefix' => '<div class="alert alert-warning">',
-      '#suffix' => '</div>',
     );
+
   }
   // Project configured to maintain all PR environments.
-  elseif (!empty($project->settings->github['pull_request_environments'])) {
+  elseif (!empty($project->settings->bitbucket['pull_request_environments'])) {
     $help_display['help'] = array(
       '#theme' => 'item_list',
       '#items' => array(
@@ -1396,4 +1399,7 @@ function devshop_bitbucket_form_devshop_project_create_step_environments_alter(&
       '#suffix' => '</div>',
     );
   }
+
+  $form['pr_environments']['help'] = $help_display;
+  $form['pr_environments']['help']['#weight'] = -1;
 }
