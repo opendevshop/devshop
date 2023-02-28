@@ -219,7 +219,7 @@ function devshop_bitbucket_form_devshop_projects_settings_form_alter(&$form, &$f
     '#title' => t('BitBucket Integration'),
     '#type' => 'fieldset',
     '#group' => 'settings',
-    '#weight' => -2,
+    '#weight' => $token? -10: -2,
   );
 
   $form['bitbucket']['features']  = array(
