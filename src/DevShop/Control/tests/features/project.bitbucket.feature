@@ -17,7 +17,7 @@ Feature: Create a bitbucket project
 
     # Step 2
     Then I should see "bitbucketrepo"
-    And I should see "git@bitbucket.org:jonpugh/drupal.git"
+    And I should see "https://bitbucket.org/jonpugh/drupal.git"
     Then I should see "Please wait while we connect and analyze your repository."
     When I run drush "hosting-tasks --force --fork=0 --strict=0"
     # Then print last drush output
