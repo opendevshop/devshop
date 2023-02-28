@@ -741,7 +741,12 @@ function devshop_bitbucket_node_insert($node) {
     else {
       return;
     }
-    devshop_bitbucket_save_pr_env_data($pr_data, $environment);
+    if (!devshop_bitbucket_save_pr_env_data($pr_data, $environment)) {
+      drupal_set_message(t('Something went wrong when saving PR data: !data', array(
+        '!data' => $pr_data,
+      )));
+      
+    }
   }
 }
 
@@ -1384,22 +1389,19 @@ function devshop_bitbucket_form_devshop_project_create_step_environments_alter(&
         $settings_link,
       ),
     );
-
   }
   // Project configured to maintain all PR environments.
   elseif (!empty($project->settings->bitbucket['pull_request_environments'])) {
-    $help_display['help'] = array(
+
+    $form['pr_environments']['pr_alert'] = array(
+      '#prefix' => '<div class="alert alert-info">',
+      '#suffix' => '</div>',
       '#theme' => 'item_list',
       '#items' => array(
         t('Project is configured to create environments for every open Pull Request.'),
         $prs_link,
         $settings_link,
       ),
-      '#prefix' => '<div class="alert alert-info">',
-      '#suffix' => '</div>',
     );
   }
-
-  $form['pr_environments']['help'] = $help_display;
-  $form['pr_environments']['help']['#weight'] = -1;
 }

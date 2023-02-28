@@ -1097,6 +1097,11 @@ function devshop_github_node_load($nodes, $types) {
  */
 function devshop_github_node_insert($node) {
   if ($node->type == 'site' && (!empty($node->pull_request) || !empty($node->settings->pull_request))) {
+
+    $project = node_load($node->project_nid);
+    if ($project->project->git_provider != 'github') {
+      return;
+    }
     
     $environment = new stdClass();
     $environment->name = $node->environment_name;
@@ -1111,7 +1116,12 @@ function devshop_github_node_insert($node) {
     else {
       return;
     }
-    devshop_github_save_pr_env_data($pr_data, $environment);
+
+    if (!devshop_github_save_pr_env_data($pr_data, $environment)) {
+      drupal_set_message(t('Something went wrong when saving PR data: !data', array(
+        '!data' => $pr_data,
+      )));
+    }
   }
 }
 
