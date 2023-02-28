@@ -1077,7 +1077,6 @@ function devshop_github_node_load($nodes, $types) {
         FROM {hosting_devshop_github_pull_requests} prs 
         LEFT JOIN {hosting_devshop_project_environment} e ON prs.site_nid = e.site 
         WHERE project_nid = :project_nid', array(':project_nid' => $nid));
-      dsm($pull_requests->rowCount(), 'prs');
       foreach ($pull_requests as $pull_request) {
         if (!empty($pull_request->pull_request_object)) {
           $pull_request->pull_request_object = unserialize($pull_request->pull_request_object);
