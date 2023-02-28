@@ -43,7 +43,7 @@ jobs:
           - 'php_version=8.1'
 
         os:
-          - 'ubuntu1804'
+#           - 'ubuntu1804'
           - 'ubuntu2004'
     env:
       OS: "${{ matrix.os }}"

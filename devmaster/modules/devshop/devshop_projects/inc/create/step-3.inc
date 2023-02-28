@@ -27,6 +27,11 @@ function devshop_project_create_step_environments($form, &$form_state) {
     '#type' => 'value',
     '#value' => $project->nid,
   );
+  $form['message'] = array(
+    '#prefix' => "<div class='alert alert-info'>",
+    '#suffix' => '</div>',
+    '#markup' => t('Create as many new environments as you would like. You can create and destroy environments at any time.'),
+  );
   $form['project'] = array(
     '#tree' => TRUE,
   );
@@ -34,7 +39,7 @@ function devshop_project_create_step_environments($form, &$form_state) {
     '#theme' => 'devshop_projects_create_settings_form',
     '#tree' => TRUE,
     '#prefix' => '<div id="environments-wrapper">',
-    '#suffix' => '<p>' . t('Create as many new environments as you would like. For example: "dev", "test", and "live". You can create more later on if needed.') . '</p></div>',
+    '#suffix' => '</div>',
   );
 
   // If there was a problem with loading branches or tags, hide the form and show a link to re-verify.
@@ -72,6 +77,13 @@ function devshop_project_create_step_environments($form, &$form_state) {
       '#name' => 'add_environment',
       '#prefix' => '<div class="project-add-environment-button">',
       '#suffix' => '</div>',
+      '#states' => array(
+        'visible' => array(
+          ':input[name="project[environments][NEW][name]"]' => array(
+            'filled' => true,
+          )
+        )
+      )
     );
   }
   $form['project']['environments']['NEW']['name']['#attributes']['autofocus'] = 'autofocus';

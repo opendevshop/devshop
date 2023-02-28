@@ -10,6 +10,9 @@ function devshop_github_form_devshop_projects_settings_form_alter(&$form, &$form
   $client = new \Github\Client();
   $client->authenticate($token, \Github\AuthMethod::ACCESS_TOKEN);
 
+  $repos = variable_get('devshop_github_all_repositories', array());
+  $count = count($repos);
+
   try {
     $gh_user = $client->currentUser()->show();
     $token_valid = TRUE;
@@ -21,9 +24,9 @@ function devshop_github_form_devshop_projects_settings_form_alter(&$form, &$form
   }
 
   $t = array(
-    '!user' => l($gh_user['login'], $gh_user['html_url'], array(
+    '!user' => $gh_user? l($gh_user['login'], $gh_user['html_url'], array(
       'attributes' => array(
-        'target' => '_blank'))),
+        'target' => '_blank'))): '',
     '!create_token' => l(t('Create new token'), 'https://github.com/settings/tokens/new?scopes=repo,admin:public_key,admin:repo_hook&description=' . $_SERVER['HTTP_HOST'], array(
       'attributes' => array(
         'target' => '_blank'))),
@@ -86,6 +89,31 @@ function devshop_github_form_devshop_projects_settings_form_alter(&$form, &$form
       'placeholder' => $token? t('Replace the current GitHub Token'): t('Enter a GitHub Token'),
     ),
   );
+  $options = [];
+  foreach ($repos as $repo) {
+    $url = $repo['url'];
+    $options[$repo['org']][$url] = $url;
+  }
+  $form['github']['devshop_github_available_repositories'] = array(
+    '#title' => t('Available Repositories'),
+    '#description' => t('Select the repos to make available to users when creating projects. If none are selected, all options will be displayed.'),
+    '#type' => 'select',
+    '#multiple' => true,
+    '#options' => $options,
+    '#default_value' => variable_get('devshop_github_available_repositories', array()),
+    '#bootstrap_ignore_pre_render' => TRUE,
+    '#attributes' => array(
+      'data-placeholder' => t('Select some repositories.'),
+    ),
+  );
+
+  if (empty($options)) {
+    $form['github']['devshop_github_available_repositories']['#type'] = 'item';
+    $form['github']['devshop_github_available_repositories']['#markup'] = $token_valid?
+      t('No repositories were loaded. Click "Refresh Repositories"'):
+      t('Add a token to get started.');
+  }
+
   if (empty($token)) {
     $access_message = t('Token: not set up.');
     $access_class = 'warning';
@@ -185,22 +213,27 @@ function devshop_github_form_devshop_projects_settings_form_alter(&$form, &$form
 //    $access_class = 'danger';
 //  }
 
-  $repos = variable_get('devshop_github_available_repositories', array());
-  $count = count($repos);
   $form['projects']['repos'] = array(
     '#type' => 'container',
     '#weight' => 5,
     '#access' => !empty(variable_get('devshop_github_token')),
   );
 
+  $class = $count? 'success': 'warning';
+  $icon = $count? 'check': 'warning';
   $form['github']['message'] = array(
-    '#prefix' => "<div class='alert alert-success'><i class='fa fa-check'></i> ",
+    '#access'=> $token_valid,
+    '#prefix' => "<div class='alert alert-{$class}'><i class='fa fa-$icon'></i> ",
     '#suffix' => '</div>',
-    '#markup' =>  format_plural($count, t('1 repository found'), t('DevShop can access @count repositories.')));
+    '#markup' => $count == 0 ?
+      t('Click "Refresh Repositories" to load GitHub information into DevShop.'):
+      format_plural($count, t('DevShop can access 1 repository.'), t('DevShop can access @count repositories.'))
+  );
 
   $orgs = variable_get('devshop_github_available_organizations', array());
   $count = count($orgs);
   $form['github']['message_orgs'] = array(
+    '#access'=> $count,
     '#prefix' => "<div class='alert alert-success'><i class='fa fa-check'></i> ",
     '#suffix' => '</div>',
     '#markup' =>  t('DevShop can create repositories in @count_string.', array(
@@ -208,9 +241,31 @@ function devshop_github_form_devshop_projects_settings_form_alter(&$form, &$form
   )));
   $form['github']['button'] = array(
     '#access' => $token_valid,
-    '#markup' => l(t('Reload GitHub Projects'),'admin/hosting/github/load-repos', array('attributes' => array(
-    'class' => array('btn btn-info'),
-  ))));
+    '#markup' => l(t('Refresh Repositories'), 'admin/hosting/github/load-repos', array(
+      'query' => drupal_get_destination(),
+      'attributes' => array(
+        'class' => array('btn btn-default'),
+      ))),
+  );
+
+  $form['create']['options']['devshop_allow_create_repo_github'] = array(
+    '#title' => t('Allow creation of new repositories on GitHub.'),
+    '#description' => t('Allow users to create new git repositories when starting a new project.'),
+    '#type' => 'checkbox',
+    '#default_value' => variable_get('devshop_allow_create_repo_github', TRUE),
+  );
+  $form['create']['devshop_composer_project_suggestions'] = array(
+    '#title' => t('Available Composer Projects'),
+    '#description' => t('When creating a new git repository, allow users to choose from these composer projects.'),
+    '#type' => 'textarea',
+    '#default_value' => variable_get('devshop_composer_project_suggestions', 'devshop/composer-template:8.x-dev', ''),
+    '#states' => array(
+      'visible' => array(
+        ':input[name="devshop_allow_create_repo_github"]' => array('checked' => TRUE)
+      ),
+    ),
+  );
+
   return $form;
 }
 
@@ -234,7 +289,6 @@ function devshop_github_settings_form_validate_token($element, &$form_state, $fo
 
   try {
     $gh_user = $client->currentUser()->show();
-    form_set_value($element, $token, $form_state);
     drupal_set_message(t('Successully connected to GitHub API as !link.', array(
       '!link' => l($gh_user['login'], $gh_user['url']),
     )));
@@ -291,13 +345,10 @@ function devshop_github_refresh_repositories() {
       '@count' => $count,
     );
 
-    variable_set('devshop_github_available_repositories', $available_repos);
+    variable_set('devshop_github_all_repositories', $available_repos);
     drupal_set_message(t('Found @count_string associated with that GitHub token.', array(
       '@count_string' => format_plural($count, '1 repository', t('@count repositories', $r)),
     )));
-
-
-    ;
     $params = array(
       'all'
     );

@@ -98,6 +98,7 @@ function devshop_projects_create_wizard($step = NULL) {
   if ($project->verify_task_status == HOSTING_TASK_ERROR && !empty($project_node->nid)) {
     $messages = db_query("SELECT * FROM {hosting_task_log} WHERE nid = :nid AND type LIKE :type ORDER BY vid, lid", array(':nid' => $project->verify_task_nid, ':type' => 'p_%'));
 
+    $messages_to_user = [];
     foreach ($messages as $message) {
       if ($message->type == 'p_info') {
         $messages_to_user[] = $message->message;

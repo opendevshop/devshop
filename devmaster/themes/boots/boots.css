@@ -77,6 +77,19 @@ body.admin-menu .navbar-static-top {
   background-color: whitesmoke !important;
 }
 
+.environment.deleted {
+  border: dashed 1px #e5e5e5;
+}
+
+.environment.deleted .list-group-item-disabled {
+  background-color: white !important;
+  border: none;
+}
+.environment.deleted .list-group-item-info {
+  background-color: white !important;
+  border: none;
+}
+
 .table-controls {
   border: 1px solid #ddd;
   margin: 0px;
