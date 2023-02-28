@@ -344,11 +344,6 @@ function devshop_github_form_site_node_form_alter(&$form, &$form_state, $form_id
     $form['git_ref']['#element_validate'] = array(
       'devshop_github_form_site_node_form_validate_pr'
     );
-
-    // Add our own submit handler.
-    if (empty($form_state['node']->nid)) {
-      $form['actions']['submit']['#submit'][] = 'devshop_github_environment_create_submit';
-    }
   }
 }
 
@@ -391,17 +386,6 @@ function devshop_github_pr_options($project, $key = 'id', $prs = array()) {
     $pr_options[$option_name] = $pr_description;
   }
   return $pr_options;
-}
-
-/**
- * Submit handler for site/environment settings page.
- */
-function devshop_github_environment_create_submit($form, &$form_state) {
-//
-//  // Save the environment record.
-//  $site = node_load($form_state['node']->nid, null, true);
-//  DevShopGitHubApi::createDeployment($site->environment, 'pending', t('Environment Settings Submit'));
-
 }
 
 /**
