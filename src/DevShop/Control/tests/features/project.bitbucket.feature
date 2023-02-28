@@ -12,7 +12,7 @@ Feature: Create a bitbucket project
     And I click "Start a new Project"
     Then I fill in "bitbucketrepo" for "Project Code Name"
     And I select the radio button "Enter a git repository URL" with the id "edit-git-source-custom"
-    And I fill in "git@bitbucket.org:jonpugh/drupal.git" for "Git Repository URL"
+    And I fill in "https://bitbucket.org/jonpugh/drupal.git" for "Git Repository URL"
     When I press "Next"
 
     # Step 2
