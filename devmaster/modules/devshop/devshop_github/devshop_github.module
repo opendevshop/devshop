@@ -139,7 +139,7 @@ function devshop_github_form_project_node_form_alter(&$form, &$form_state, $form
       '#collapsible' => TRUE,
       '#collapsed' => arg(1) != $node->nid,
       '#title' => t('GitHub Integration'),
-      '#weight' => -100,
+      '#weight' => -10,
   );
   $form['project']['settings']['deploy']['default_hooks']['#weight'] = -9;
 

@@ -85,7 +85,7 @@ function devshop_bitbucket_form_project_node_form_alter(&$form, &$form_state, $f
       '#collapsible' => TRUE,
       '#collapsed' => arg(1) != $node->nid,
       '#title' => t('BitBucket Integration'),
-      '#weight' => -100,
+      '#weight' => -11,
   );
 
   // If Pull Requests were found in the environment, enable PR environments by default.
