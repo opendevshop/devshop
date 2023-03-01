@@ -37,5 +37,6 @@ docker run \
   ubuntu/container
 
 docker exec \
+  --tty \
   install-server-test \
   bash /tmp/devshop-install.sh --hostname=$DEVSHOP_SERVER_HOSTNAME \
