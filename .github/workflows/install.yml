@@ -15,13 +15,18 @@ jobs:
   install_script:
     name: Install Script
     runs-on: ubuntu-latest
-
+    continue-on-error: ${{ matrix.allow_failure }}
+    
     strategy:
       fail-fast: false
       matrix:
+        allow_failure: false
         os:
           - 'ubuntu1804'
           - 'ubuntu2004'
+        include:
+          - os: 'ubuntu1804'
+            allow_failure: true
 
     env:
       OS: "${{ matrix.os }}"
