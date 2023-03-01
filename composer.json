@@ -28,7 +28,7 @@
         "devshop/bin-tools": "1.x-dev",
         "php-http/httplug": "^2.3",
         "devshop/git-traits": "1.x-dev",
-        "drush/drush-launcher": "^0.10.2"
+        "drush/drush": "^10.6"
     },
     "replace": {
         "drupal/drupal": "*"
