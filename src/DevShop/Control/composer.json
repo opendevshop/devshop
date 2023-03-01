@@ -98,7 +98,10 @@
         "drupal/drupal-extension": "^4.2",
         "symfony/dependency-injection": "^4.4",
         "symfony/process": "^4.4",
-        "bitbucket/client": "^4.1"
+        "bitbucket/client": "^4.1",
+        "drush/drush": "^8.4",
+        "http-interop/http-factory-guzzle": "^1.2",
+        "drupal/provision": "dev-4.x"
     },
     "conflict": {
         "drupal/core": "8.*"
