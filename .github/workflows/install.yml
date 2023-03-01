@@ -20,14 +20,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        allow_failure: 
-          - false
-        os:
-          - 'ubuntu1804'
-          - 'ubuntu2004'
         include:
           - os: 'ubuntu1804'
             allow_failure: true
+          - os: 'ubuntu2004'
+            allow_failure: false
 
     env:
       OS: "${{ matrix.os }}"
