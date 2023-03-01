@@ -20,7 +20,8 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - 'ubuntu1804'
+# @TODO: Put back if it works.
+#          - 'ubuntu1804'
           - 'ubuntu2004'
 
     env:
