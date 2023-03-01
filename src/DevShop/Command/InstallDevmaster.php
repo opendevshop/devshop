@@ -679,11 +679,12 @@ PHP;
    */
   private function finalize() {
     $drush_path = $this->input->getOption('drush-path');
+    $root = $this->input->getOption('root');
 
     // Run `drush @hostmaster hosting-setup`
     // @see install.hostmaster.inc: 275
     $master_drush_alias = $this->input->getOption('master_drush_alias');
-    if ($this->runProcess(new Process("{$drush_path} @{$master_drush_alias} hosting-setup -y"))) {
+    if ($this->runProcess(new Process("{$drush_path} --root={$root} @{$master_drush_alias} hosting-setup -y"))) {
       $this->output->writeln("");
       $this->output->writeln("Running <comment>drush @{$master_drush_alias} hosting-setup</comment>: <info>Done</info>");
       $this->output->writeln("");
