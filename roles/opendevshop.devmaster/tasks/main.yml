@@ -214,13 +214,16 @@
     - "{{ devshop_control_git_root }}"
     - "{{ devshop_cli_path }}/devmaster"
 
-- name: Create /var/aegir/.drush
+- name: Create home subfolders
   file:
-    path: "{{ aegir_user_home }}/.drush/commands"
+    path: "{{ item }}"
     owner: "{{ aegir_user_name }}"
     group: "{{ aegir_user_name }}"
     mode: 0744
     state: directory
+  with_items:
+    - "{{ aegir_user_home }}/.drush/commands"
+    - "{{ aegir_user_home }}/.drush/sites"
 
 #- name: Install required drush packages.
 #  command: |
@@ -232,12 +235,13 @@
 #  become_user: "{{ aegir_user_name }}"
 #  become_method: "{{ ansible_become_method_aegir }}"
 #
-#- name: Setup Drush Bash Enhancements
-#  command: "{{ drush_executable_path }} init --yes"
-#  changed_when: true
-#  become: true
-#  become_user: "{{ aegir_user_name }}"
-#  become_method: "{{ ansible_become_method_aegir }}"
+
+- name: Setup Drush Bash Enhancements
+  command: "{{ drush_executable_path }} init --yes"
+  changed_when: true
+  become: true
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
 
 - name: "Remove existing DevShop Control Source Code from {{ devshop_control_git_root }} before installing, if requested."
   when: devshop_danger_remove_devmaster
