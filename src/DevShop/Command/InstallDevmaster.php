@@ -657,6 +657,7 @@ PHP;
     // Set to --verbose or use other options to see provision-verify logs when running devmaster:install (for debugging).
     $provision_verify_options = '--verbose';
     $process = $this->getProcess("{$drush_path} --root={$devshop_control_root} @{$name} provision-verify $provision_verify_options");
+    $process->setWorkingDirectory($devshop_control_root);
     $process->setTimeout(NULL);
 
     if ($this->runProcess($process)) {
