@@ -398,8 +398,8 @@ function devshop_projects_preprocess_node_project(&$vars){
     $vars['webhook_ago'] = t('@time ago', array('@time' => $interval));
   }
 
-  if (!empty($project->settings->deploy['queue'])) {
-    $vars['queued_ago'] = hosting_format_interval(variable_get('hosting_queue_tasks_last_run', FALSE));
+  if ($project->settings->deploy['method'] == 'queue') {
+    $vars['queued_ago'] = hosting_format_interval(variable_get('hosting_queue_pull_last_run', FALSE));
   }
 
   // Webhook status output.
@@ -846,10 +846,18 @@ function devshop_projects_preprocess_environment(&$vars) {
   $environment = &$vars['environment'];
   $project = &$vars['project'];
 
-  // Load last task node.
-  if (isset($environment->last_task_nid)) {
-    $environment->last_task_node = node_load($environment->last_task_nid);
+  // Create tasks list, keyed by VID
+  $tasks_list = array();
+  foreach ($environment->tasks as $task_type => $tasks) {
+    foreach ($tasks as $task_nid => $task) {
+      $tasks_list[$task_nid] = $task;
+    }
   }
+  krsort($tasks_list);
+  
+  $environment->tasks_list = $tasks_list;
+  reset($environment->tasks_list);
+  $environment->last_task_node = current($environment->tasks_list);
 
   if (!isset($environment->git_ref_type)) {
     $environment->git_ref_type = '';

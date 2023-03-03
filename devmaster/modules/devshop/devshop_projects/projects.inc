@@ -34,7 +34,7 @@ function devshop_projects_entity_load($entities, $type) {
         }
 
         $query = db_query("
-SELECT project_nid, site, name, n.title as project_name 
+SELECT project_nid, site, name as environment, n.title as project_name 
   FROM {hosting_devshop_project_environment} e
   LEFT JOIN {hosting_site} s ON s.nid = e.site
   LEFT JOIN {node} n ON e.project_nid = n.nid
@@ -53,6 +53,7 @@ SELECT project_nid, site, name, n.title as project_name
         if ($entity->type == 'task' && !empty($result)) {
           $entity->project = $result->project_nid;
           $entity->project_name = $result->project_name;
+          $entity->environment = $result->environment;
         }
         else if (isset($result->project_nid)) {
           $project_node = node_load($result->project_nid);
@@ -164,8 +165,7 @@ function devshop_project_load($node) {
           sn.created as created,
           s.vid,
           sn.title as system_domain,
-          a.redirection as redirect_domain,
-          e.last_task as last_task_nid
+          a.redirection as redirect_domain
         FROM {hosting_devshop_project_environment} e
         LEFT JOIN {hosting_site} s ON e.site = s.nid
         LEFT JOIN {hosting_context} cs ON s.nid = cs.nid
@@ -210,19 +210,10 @@ function devshop_project_load($node) {
     $environment->settings = (object) unserialize($environment->settings);
 
     // Get last task
-    $environment->last_task_node = node_load($environment->last_task_nid);
+//    $environment->last_task_node = node_load($environment->last_task_nid);
 
     // Get all tasks, keyed by type.
     $environment->tasks = devshop_get_tasks($environment);
-
-    // Create tasks list, keyed by VID
-    $environment->tasks_list = array();
-    foreach ($environment->tasks as $task_type => $tasks) {
-      foreach ($tasks as $task) {
-        $environment->tasks_list[$task->nid] = $task;
-      }
-    }
-    krsort($environment->tasks_list);
 
     // The URL that the branch or tag links to.
     if ($project->git_provider == 'github') {

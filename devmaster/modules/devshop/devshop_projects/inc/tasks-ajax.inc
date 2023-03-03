@@ -11,12 +11,14 @@ function devshop_projects_tasks_status_json() {
 
   $sql = '
         SELECT
-            last_task
-        FROM {hosting_devshop_project_environment} e
-        LEFT JOIN {node} n ON e.project_nid = n.nid
-        LEFT JOIN {hosting_site} s ON e.site = s.nid
+            t.nid as last_task
+        FROM {hosting_devshop_project_environment} d
+        LEFT JOIN {node} n ON n.nid = d.site
+        LEFT JOIN {hosting_site} s ON n.nid = s.nid
+        LEFT JOIN {hosting_task} t ON t.rid = s.nid
           WHERE n.status = 1
           AND s.status != -2
+          ORDER BY t.nid DESC
         ';
 
   $results = db_query($sql);

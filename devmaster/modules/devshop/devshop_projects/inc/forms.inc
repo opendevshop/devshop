@@ -835,11 +835,6 @@ function devshop_projects_form_site_node_form_alter(&$form, &$form_state, $form_
       '#value' => $environment->platform,
       '#type' => 'value',
     );
-
-    $form['environment']['last_task'] = array(
-      '#type' => 'value',
-      '#value' => $environment->last_task,
-    );
     $form['form_title'] = array(
       '#markup' => t('Environment Settings'),
       '#prefix' => '<h3>',

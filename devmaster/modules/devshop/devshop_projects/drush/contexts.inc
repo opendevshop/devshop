@@ -120,7 +120,6 @@ function devshop_projects_hosting_project_context_options(&$task) {
     foreach ($project->environments as &$environment) {
       unset($environment->tasks);
       unset($environment->tasks_list);
-      unset($environment->last_task_node);
     }
 
     $task->context_options['project'] = $project;
@@ -294,8 +293,6 @@ function devshop_projects_drush_context_import($context, &$node) {
         drush_log(dt('Site property "project" is set to "!project", but there is no project node or context by that name.'), 'warning');
       }
     }
-
-    devshop_reset_last_tasks();
   }
 }
 
