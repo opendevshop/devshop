@@ -41,7 +41,8 @@ Feature: Create a project and check settings
     When I fill in "dev" for "project[environments][NEW][name]"
 
     # drushdrush branch has drush 11.
-    And I select "drushdrush" from "project[environments][NEW][git_ref]"
+#    And I select "drushdrush" from "project[environments][NEW][git_ref]"
+    And I select "9.x" from "project[environments][NEW][git_ref]"
 
     And I press "Add environment"
     And I fill in "live" for "project[environments][NEW][name]"
