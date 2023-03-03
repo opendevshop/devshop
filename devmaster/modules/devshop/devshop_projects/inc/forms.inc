@@ -1111,7 +1111,8 @@ function devshop_projects_create_environment_form_validate_name($element, &$form
     form_set_value($form['title'], devshop_environment_url($project, $element['#value']), $form_state);
 
     // Attach a new platform node.
-    $platform_node = devshop_prepare_platform_node($project, $element['#value'], $form_state['values']['git_ref'], $form_state['values']['web_server'], $form_state['values']['git']['repo_url']);
+    $platform_node = devshop_prepare_platform_node($project, $element['#value'], $form_state['values']['git_ref'], $form_state['values']['web_server']);
+    $platform_node->no_verify = TRUE;
 
     // Set value in form_state.
     form_set_value($form['platform_node'], $platform_node, $form_state);
@@ -1389,44 +1390,6 @@ function devshop_environment_install_method_form($project, $values = array(), $p
   $form['profile']['#access'] = FALSE;
   $form['git']['#access'] = FALSE;
 
-}
-
-/**
- * Validator for the domain name field: Sets domain according to pattern.
- * @param $element
- * @param $form_state
- * @param $form
- */
-function devshop_projects_create_environment_form_validate_name($element, &$form_state, $form) {
-
-  if (!empty($element['#value'])) {
-    $project_node = node_load($form_state['values']['project_nid']);
-    $project = $project_node->project;
-
-    // Check existence of the environment name
-    if (!empty($project->environments[$element['#value']])) {
-      form_set_error('environment_name', t('There is already an environment named %name in this project. Please choose a different name.', array('%name' => $form_state['values']['environment_name'])));
-    }
-
-    // Check for illegal chars
-    if (!preg_match('!^[a-z0-9_]+$!', $element['#value'])) {
-      form_set_error('environment_name', t('The environment name must contain only lowercase letters, numbers, and underscores.'));
-    }
-
-    // Generate field prefix and suffix using domain name pattern.
-    $form_state['environment_name'] = $element['#value'];
-    form_set_value($form['title'], devshop_environment_url($project, $element['#value']), $form_state);
-
-    // Attach a new platform node.
-    $platform_node = devshop_prepare_platform_node($project, $element['#value'], $form_state['values']['git_ref'], $form_state['values']['web_server']);
-    $platform_node->no_verify = TRUE;
-
-    // Set value in form_state.
-    form_set_value($form['platform_node'], $platform_node, $form_state);
-    form_set_value($form['profile'], 0, $form_state);
-    form_set_value($form['platform'], 0, $form_state);
-
-  }
 }
 
 /**
