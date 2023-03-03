@@ -135,7 +135,7 @@ function theme_devshop_projects_create_settings_form($vars) {
  * Preprocess page
  */
 function devshop_projects_preprocess_node(&$vars) {
-
+  global $user;
   $node = $vars['node'];
 
   // On project node edit page
@@ -181,8 +181,16 @@ function devshop_projects_preprocess_node(&$vars) {
       $vars['retry'] = $form;
 
       if ($vars['node']->task_type == 'install' && !$vars['node']->environment->settings->locked && $vars['node']->task_status == HOSTING_TASK_SUCCESS || $vars['node']->task_status == HOSTING_TASK_WARNING) {
-        $vars['retry'] = $form;
-        $vars['retry']['retry']['#value'] = t('Reinstall');
+          $vars['retry'] = [
+            '#type' => 'link',
+            '#title' => t('Reinstall'),
+            '#href' => "hosting_confirm/{$vars['node']->rid}/site_install",
+            '#options' => array(
+              'query' => array(
+                'token' => drupal_get_token($user->uid)
+              ),
+            ),
+          ];
       }
       elseif ($vars['node']->task_type == 'install' && $vars['node']->environment->settings->locked) {
         $vars['retry'] = array(
@@ -200,10 +208,9 @@ function devshop_projects_preprocess_node(&$vars) {
       elseif ($vars['node']->task_type != 'install' && $vars['node']->task_type != 'delete' || ($vars['node']->task_type != 'delete' && $vars['node']->task_status == HOSTING_TASK_ERROR)) {
         $vars['retry'] = $form;
       }
-
-      // Change the name of the form button to "Run Again" if the task ended ok.
-      if ($vars['node']->task_status == HOSTING_TASK_WARNING || $vars['node']->task_status == HOSTING_TASK_SUCCESS) {
-        $vars['retry']['retry']['#value'] = t('Run Again');
+      elseif ($vars['node']->task_status == HOSTING_TASK_WARNING || $vars['node']->task_status == HOSTING_TASK_SUCCESS) {
+          // Change the name of the form button to "Run Again" if the task ended ok.
+          $vars['retry']['retry']['#value'] = t('Run Again');
       }
     }
 
