@@ -135,7 +135,7 @@ function theme_devshop_projects_create_settings_form($vars) {
  * Preprocess page
  */
 function devshop_projects_preprocess_node(&$vars) {
-
+  global $user;
   $node = $vars['node'];
 
   // On project node edit page
@@ -180,9 +180,17 @@ function devshop_projects_preprocess_node(&$vars) {
       $form = drupal_get_form('hosting_task_retry_form', $vars['node']->nid);
       $vars['retry'] = $form;
 
-      if ($vars['node']->task_type == 'install' && !$vars['node']->environment->settings->locked) {
-        $vars['retry'] = $form;
-        $vars['retry']['retry']['#value'] = t('Reinstall');
+      if ($vars['node']->task_type == 'install' && !$vars['node']->environment->settings->locked && ($vars['node']->task_status == HOSTING_TASK_SUCCESS || $vars['node']->task_status == HOSTING_TASK_WARNING)) {
+          $vars['retry'] = [
+            '#type' => 'link',
+            '#title' => t('Reinstall'),
+            '#href' => "hosting_confirm/{$vars['node']->rid}/site_install",
+            '#options' => array(
+              'query' => array(
+                'token' => drupal_get_token($user->uid)
+              ),
+            ),
+          ];
       }
       elseif ($vars['node']->task_type == 'install' && $vars['node']->environment->settings->locked) {
         $vars['retry'] = array(
@@ -200,10 +208,9 @@ function devshop_projects_preprocess_node(&$vars) {
       elseif ($vars['node']->task_type != 'install' && $vars['node']->task_type != 'delete' || ($vars['node']->task_type != 'delete' && $vars['node']->task_status == HOSTING_TASK_ERROR)) {
         $vars['retry'] = $form;
       }
-
-      // Change the name of the form button to "Run Again" if the task ended ok.
-      if ($vars['node']->task_status == HOSTING_TASK_WARNING || $vars['node']->task_status == HOSTING_TASK_SUCCESS) {
-        $vars['retry']['retry']['#value'] = t('Run Again');
+      elseif ($vars['node']->task_status == HOSTING_TASK_WARNING || $vars['node']->task_status == HOSTING_TASK_SUCCESS) {
+          // Change the name of the form button to "Run Again" if the task ended ok.
+          $vars['retry']['retry']['#value'] = t('Run Again');
       }
     }
 
@@ -1188,7 +1195,8 @@ function devshop_projects_preprocess_environment(&$vars) {
 
     // Get the actual tag or branch. If a branch and tag have the same SHA, the tag will be output here.
     // "2> /dev/null" ensures errors don't get printed like "fatal: no tag exactly matches".
-    $environment->git_ref = trim(str_replace('refs/heads/', '', shell_exec("cd {$environment->repo_path}; git describe --tags --exact-match 2> /dev/null || git symbolic-ref -q HEAD 2> /dev/null")));
+    // @TODO: I removed this because it stopped working.
+    // $environment->git_ref = trim(str_replace('refs/heads/', '', shell_exec("cd {$environment->repo_path}; git describe --tags --exact-match 2> /dev/null || git symbolic-ref -q HEAD 2> /dev/null")));
 
     $environment->git_ref_type = !empty($project->settings->git['refs'][$environment->git_ref])
       ? $project->settings->git['refs'][$environment->git_ref]
