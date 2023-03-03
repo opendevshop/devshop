@@ -249,13 +249,6 @@
     path: "{{ devshop_control_git_root }}"
     state: absent
 
-#- name: Clear the drush cache.
-#  command: "{{ drush_executable_path }} cc drush"
-#  changed_when: true
-#  become: true
-#  become_user: "{{ aegir_user_name }}"
-#  become_method: "{{ ansible_become_method_aegir }}"
-
 - name: "Install DevShop Web Interface"
   include_tasks: "install-devmaster.yml"
   # Skip this step if "buildtime" tag is specified.
