@@ -28,33 +28,33 @@ function devshop_bitbucket_hosting_queues() {
  * This is run by cron, via the hosting queues system.
  */
 function hosting_bitbucket_queue($count) {
-
-  // Load all published projects.
-  $query = db_select('hosting_devshop_project', 'p');
-  $query->join('node', 'n', 'p.nid = n.nid');
-  $query
-    ->fields('p', array('nid'))
-    ->condition('n.status', NODE_PUBLISHED)
-    ->execute();
-
-  $projects = $query->execute()->fetchAll();
-
-  // Look through all projects...
-  foreach ($projects as $project) {
-    $project_node = node_load($project->nid);
-    $project = $project_node->project;
-
-    drush_log("Checking project {$project->name}...", "success");
-
-    // Check ones that have PR envs enabled
-    if (!empty($project->settings->bitbucket['pull_request_environments'])) {
-      drush_log("Project {$project->name} is configured to maintain environments for all pull requests. Preparing environments...", "success");
-      $message = devshop_bitbucket_create_all_pr_environments($project_node);
-      drush_log($message, "success");
-    }
-  }
-
-  print "Queue done: \n";
-  return TRUE;
+//
+//  // Load all published projects.
+//  $query = db_select('hosting_devshop_project', 'p');
+//  $query->join('node', 'n', 'p.nid = n.nid');
+//  $query
+//    ->fields('p', array('nid'))
+//    ->condition('n.status', NODE_PUBLISHED)
+//    ->execute();
+//
+//  $projects = $query->execute()->fetchAll();
+//
+//  // Look through all projects...
+//  foreach ($projects as $project) {
+//    $project_node = node_load($project->nid);
+//    $project = $project_node->project;
+//
+//    drush_log("Checking project {$project->name}...", "success");
+//
+//    // Check ones that have PR envs enabled
+//    if (!empty($project->settings->bitbucket['pull_request_environments'])) {
+//      drush_log("Project {$project->name} is configured to maintain environments for all pull requests. Preparing environments...", "success");
+//      $message = devshop_bitbucket_create_all_pr_environments($project_node);
+//      drush_log($message, "success");
+//    }
+//  }
+//
+//  print "Queue done: \n";
+//  return TRUE;
 }
 
