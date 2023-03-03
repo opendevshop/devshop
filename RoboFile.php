@@ -723,7 +723,7 @@ class RoboFile extends \Robo\Tasks {
 
     // Don't run when -n is specified,
     if (!$this->input()->isInteractive() || $this->confirm("Destroy devshop.server home directory? (aegir-home)")) {
-      if ($this->_exec("rm -rf aegir-home")->wasSuccessful()) {
+      if ($this->_exec("sudo rm -rf aegir-home")->wasSuccessful()) {
         $this->say("Entire aegir-home folder deleted.");
       }
     }
