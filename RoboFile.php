@@ -174,9 +174,9 @@ class RoboFile extends \Robo\Tasks {
    * @var string[]
    */
   private $writeRepos = [
-    '.',
-    'vendor/drupal/provision',
-    'src/DevShop/Control/web/sites/all/modules/contrib/hosting'
+    '.' => '',
+    'src/DevShop/Control/web/sites/all/drush/provision' => '7.x-4.x',
+    'src/DevShop/Control/web/sites/all/modules/contrib/hosting' => '7.x-4.x',
   ];
 
   /**
@@ -439,29 +439,36 @@ class RoboFile extends \Robo\Tasks {
 
     // Offer to set git URLs to SSH so developers can push.
     if ($opts['no-dev'] == FALSE) {
-      foreach ($this->writeRepos as $path) {
-        $path = realpath($path);
+      foreach ($this->writeRepos as $repo_path => $repo_branch) {
+        $path = realpath($repo_path);
         if (file_exists($path . '/.git')) {
           $repo = GitRepository::open($path);
           if ($this->io()->isVerbose()){
             $this->say($repo->getRepositoryPath());
           }
-          if ($repo->isDetached()) {
-            $this->io()->text("<comment>$path</comment> is detached at <comment>{$repo->getLocalSha()}</comment>");
+          $url = $repo->getCurrentRemoteUrl();
+          if (strpos($url, 'drupal') !== FALSE) {
+            $parts = explode('/', $repo->getCurrentRemoteUrl());
+            $project = array_pop($parts);
+            $push_url = "git@git.drupal.org:project/$project";
           }
-          elseif ($repo->isCurrentRemoteHttp()){
-            #TODO: Create GitHubRepositry so we can get owner/name.
-            $url = $repo->getCurrentRemoteUrl();
-            if (strpos($url, 'drupal') !== FALSE) {
-              $parts = explode('/', $repo->getCurrentRemoteUrl());
-              $project = array_pop($parts);
-              $push_url = "git@git.drupal.org:project/$project";
+          else {
+            
+            if ($repo->isCurrentRemoteHttp()) {
+              [$pre, $slug] = explode('.com/', $repo->getCurrentRemoteUrl());
+              $push_url = "git@github.com:$slug";  
             }
             else {
-              [$pre, $slug] = explode('.com/', $repo->getCurrentRemoteUrl());
-              $push_url = "git@github.com:$slug";
+              $push_url = $repo->getCurrentBranch();
             }
-
+          }
+          if ($repo->isDetached()) {
+            if ($branch = $this->io()->ask("<comment>$path</comment> git repo is detached. Would you like to check out a different branch?", $repo_branch)) {
+              $repo->callGit('checkout', $repo_branch);
+            }
+            
+          }
+          elseif ($repo->isCurrentRemoteHttp()){
             if ($this->io()->confirm("<comment>$path</comment> is using an HTTP remote. Would you like to change it to use $push_url?")) {
               $repo->callGit('remote', ['set-url', $repo->getCurrentRemoteName(), $push_url]);
             }
@@ -471,7 +478,7 @@ class RoboFile extends \Robo\Tasks {
           }
         }
         else {
-          $this->io()->text("Path $path is not a git repository.");
+          $this->io()->text("Path $repo_path does not exist. Might need to wait for composer install.");
         }
       }
     }
@@ -570,7 +577,7 @@ class RoboFile extends \Robo\Tasks {
         $test_command = "/usr/share/devshop/tests/devshop-tests-upgrade.sh";
       }
       else {
-        $cmd[] = "docker compose up --detach --force-recreate devshop.server";
+        $cmd[] = "docker compose up --detach devshop.server";
         if (!$opts['no-follow']) {
           $cmd[] = "docker-compose logs -f";
         }

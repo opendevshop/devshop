@@ -180,7 +180,7 @@ function devshop_projects_preprocess_node(&$vars) {
       $form = drupal_get_form('hosting_task_retry_form', $vars['node']->nid);
       $vars['retry'] = $form;
 
-      if ($vars['node']->task_type == 'install' && !$vars['node']->environment->settings->locked && ($vars['node']->task_status == HOSTING_TASK_SUCCESS || $vars['node']->task_status == HOSTING_TASK_WARNING)) {
+      if ($vars['node']->task_type == 'install' && !$vars['node']->environment->settings->locked && $vars['node']->task_status == HOSTING_TASK_SUCCESS || $vars['node']->task_status == HOSTING_TASK_WARNING) {
           $vars['retry'] = [
             '#type' => 'link',
             '#title' => t('Reinstall'),
@@ -1195,8 +1195,7 @@ function devshop_projects_preprocess_environment(&$vars) {
 
     // Get the actual tag or branch. If a branch and tag have the same SHA, the tag will be output here.
     // "2> /dev/null" ensures errors don't get printed like "fatal: no tag exactly matches".
-    // @TODO: I removed this because it stopped working.
-    // $environment->git_ref = trim(str_replace('refs/heads/', '', shell_exec("cd {$environment->repo_path}; git describe --tags --exact-match 2> /dev/null || git symbolic-ref -q HEAD 2> /dev/null")));
+    $environment->git_ref = trim(str_replace('refs/heads/', '', shell_exec("cd {$environment->repo_path}; git describe --tags --exact-match 2> /dev/null || git symbolic-ref -q HEAD 2> /dev/null")));
 
     $environment->git_ref_type = !empty($project->settings->git['refs'][$environment->git_ref])
       ? $project->settings->git['refs'][$environment->git_ref]

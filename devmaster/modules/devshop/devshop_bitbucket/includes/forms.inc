@@ -26,8 +26,6 @@ function devshop_bitbucket_form_site_node_form_alter(&$form, &$form_state, $form
         ->workspaces($project->bitbucket_owner)
         ->show($project->bitbucket_repo)
       ;
-      dsm($repo);
-        
     }
     catch (\Exception $e) {
       drupal_set_message(t('Unable to load pull request [Error: %error]', array(
