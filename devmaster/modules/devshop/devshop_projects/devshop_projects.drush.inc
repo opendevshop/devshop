@@ -158,11 +158,6 @@ function devshop_projects_post_hosting_delete_task($task, $data) {
 
   // When a platform is deleted (if it is in a project), delete the environment record.
   if ($task->ref->type == 'platform' && !empty($task->ref->project)) {
-    db_delete('hosting_devshop_project_environment')
-      ->condition('project_nid', $task->ref->project->nid)
-      ->condition('platform', $task->ref->platform)
-      ->execute();
-
     // If drupal root is not repo root, delete folder at code_path.
     $repo_path = str_replace($task->ref->project->drupal_path, '', $task->ref->publish_path);
     if (file_exists($repo_path) ) {

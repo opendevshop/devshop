@@ -135,14 +135,15 @@ function devshop_project_create_step_git($form, $form_state) {
     ),
   );
   $form['source']['git_source'] = array(
-    '#title' => t('Choose the source of your code'),
-    '#type' => 'radios',
+    '#type' => count($options) == 1? 'value': 'radios',
     '#options' => $options,
     '#description' => t(''),
-    '#default_value'=> 'custom',
+//    '#default_value'=> key($options),
+    '#default_value' => 'choice',
   );
 
   $form['source']['git_url'] = array(
+    '#access' => !empty($options['custom']),
     '#type' => 'textfield',
     '#required' => 1,
     '#title' => t('Git Repository URL'),
@@ -159,7 +160,24 @@ function devshop_project_create_step_git($form, $form_state) {
       ),
     ),
   );
-
+  $repos = explode(PHP_EOL, variable_get('devshop_project_create_choice_options', 'git@github.com:opendevshop/drupal-project.git'));
+  $default_group = t('Choose a repository...');
+  foreach ($repos as $repo_name => $remote) {
+    $repo_options[$default_group][$remote] = $remote;
+  }
+  $form['source']['choice'] = array(
+    '#access' => !empty($options['custom']),
+    '#type' => 'select',
+    '#options' => $repo_options,
+    '#default_value' => $project->git_url,
+    '#states' => array(
+      'visible' => array(
+        ':input[name="git_source"]' => array(
+          'value' => 'choice'
+        ),
+      ),
+    ),
+  );
 
   // We have to tell the front-end what type of field so we can assign the right event.
   drupal_add_js(array(
@@ -185,6 +203,7 @@ function devshop_project_create_step_git($form, $form_state) {
       '#suffix' => '</div>',
     '#weight' => 10,
   );
+
   return $form;
 }
 
@@ -193,7 +212,8 @@ function devshop_project_create_step_git($form, $form_state) {
  */
 function devshop_projects_devshop_project_git_repo_options() {
   return array(
-    'custom' => t('Git repository URL'),
+    'choice' => t('Select a git repository'),
+    'custom' => t('Enter a git repository URL'),
   );
 }
 
@@ -242,26 +262,11 @@ function devshop_project_create_step_git_validate(&$form, &$form_state) {
       )));
     }
   }
-  
-//
-//  // CODE PATH & BASE URL
-//  // Code path and base url must be unique
-//  if (db_query('SELECT n.nid FROM {hosting_devshop_project} d LEFT JOIN {node} n ON d.nid = n.nid WHERE status = :status AND code_path = :code_path;', array(':status' => 1, ':code_path' => $form_state['values']['code_path']))->fetchField()) {
-//    form_set_error('code_path', t('Another project already has this code path.  Code path must be unique.'));
-//  }
-//  if (db_query('SELECT n.nid FROM {hosting_devshop_project} d LEFT JOIN {node} n ON d.nid = n.nid WHERE status = :status AND base_url = :base_url;', array(':status' => 1, ':base_url' => $form_state['values']['base_url']))->fetchField()) {
-//    form_set_error('base_url', t('Another project already has this base url.  Base URL must be unique.'));
-//  }
-//
-//  // If custom code paths are not allowed, set the value here using the project name.
-//  if (!variable_get('devshop_projects_allow_custom_code_path', FALSE)) {
-//    form_set_value($form['code_path'], variable_get('devshop_project_base_path', '/var/aegir/projects') . '/' . $project_name, $form_state);
-//  }
-//
-//  // If custom base URLs are not allowed, set the value here using the project name.
-//  if (!variable_get('devshop_projects_allow_custom_base_url', FALSE)) {
-//    form_set_value($form['base_url'], devshop_projects_url($project_name), $form_state);
-//  }
+
+  // Set git_url from choice.
+  if ($form_state['values']['git_source'] == 'choice' && !empty($form_state['values']['choice'])) {
+    form_set_value($form['source']['git_url'], $form_state['values']['choice'], $form_state);
+  }
 }
 
 /**

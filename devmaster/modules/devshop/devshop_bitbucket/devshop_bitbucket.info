@@ -1,5 +1,5 @@
 name = DevShop BitBucket
-description = Support for BitBucket Webhooks
+description = Support for BitBucket.
 core = 7.x
 package = DevShop
 files[] = includes/add-key.inc

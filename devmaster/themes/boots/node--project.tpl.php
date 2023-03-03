@@ -184,7 +184,7 @@
     <?php endforeach; ?>
 
   <?php if (drupal_valid_path("node/add/site/$project->name")): ?>
-  <div class="placeholder add-project-button col-xs-12 col-sm-6 col-md-4 col-lg-3">
+  <div class="environment-wrapper placeholder add-project-button col-xs-12 col-sm-6 col-md-4 col-lg-3">
     <a href="<?php print url("node/add/site/$project->name"); ?>" class="btn btn-lg btn-success">
       <i class="fa fa-plus-square"></i><br />
       <?php print t('Create New Environment'); ?></a>

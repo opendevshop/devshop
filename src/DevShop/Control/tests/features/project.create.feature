@@ -12,6 +12,7 @@ Feature: Create a project and check settings
     And I click "Start a new Project"
     Then I should see "Step 1"
     Then I fill in "composer" for "Project Code Name"
+    And I select the radio button "Enter a git repository URL" with the id "edit-git-source-custom"
     And I fill in "https://github.com/opendevshop/drupal-project.git" for "Git Repository URL"
     When I press "Next"
 

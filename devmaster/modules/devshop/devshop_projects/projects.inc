@@ -34,12 +34,13 @@ function devshop_projects_entity_load($entities, $type) {
         }
 
         $query = db_query("
-SELECT
-  project_nid, name, n.title as project_name FROM {hosting_devshop_project_environment} e
+SELECT project_nid, site, name, n.title as project_name 
+  FROM {hosting_devshop_project_environment} e
+  LEFT JOIN {hosting_site} s ON s.nid = e.site
   LEFT JOIN {node} n ON e.project_nid = n.nid
   WHERE site  = :site
-    OR platform = :platform
     OR project_nid = :project
+    OR s.platform = :platform
 ", array(
           ':site' => $nid,
           ':platform' => $nid,
@@ -52,13 +53,12 @@ SELECT
         if ($entity->type == 'task' && !empty($result)) {
           $entity->project = $result->project_nid;
           $entity->project_name = $result->project_name;
-          $entity->environment = $result->name;
         }
         else if (isset($result->project_nid)) {
           $project_node = node_load($result->project_nid);
           if (!empty($project_node->project)) {
-            if (isset($project_node->project->environments[$result->name])) {
-              $entity->environment = $project_node->project->environments[$result->name];
+            if (isset($project_node->project->environment_nids[$result->site])) {
+              $entity->environment = $project_node->project->environment_nids[$result->site];
             }
             $entity->project = $project_node->project;
           }
@@ -104,6 +104,7 @@ function devshop_project_load($node) {
   }
 
   // Git Repo Host
+  // @TODO: Allow other github URLs (ie for enterprise)
   if (isset($project->git_url) && strpos($project->git_url, 'github.com') !== FALSE) {
     $project->git_provider = 'github';
     $project->git_repo_url = strtr($project->git_url, array(
@@ -118,13 +119,18 @@ function devshop_project_load($node) {
     $project->github_repo = $parts[2];
 
   }
-  elseif (isset($project->git_url) && strpos($project->git_url, variable_get('bitbucket_repo_url_trigger_word', 'bitbucket.org')) !== FALSE) {
+  elseif (isset($project->git_url) && strpos($project->git_url, 'bitbucket.org') !== FALSE) {
     $project->git_provider = 'bitbucket';
     $project->git_repo_url = strtr($project->git_url, array(
-      'git@bitbucket.com:' => 'http://bitbucket',
+      'git@bitbucket.org:' => 'http://bitbucket.org/',
       'git://' => 'http://',
       '.git' => '',
     ));
+    $parts = explode('/', parse_url($project->git_repo_url, PHP_URL_PATH));
+    if ($parts[1] && $parts[2]) {
+      $project->bitbucket_owner = $parts[1];
+      $project->bitbucket_repo = $parts[2];
+    }
   }
   else {
     $project->git_provider = 'git';
@@ -155,8 +161,7 @@ function devshop_project_load($node) {
           db.nid as db_server_nid,
           s.db_name,
           pn.title as project_name,
-          pn.created as created,
-          sn.created as created_site,
+          sn.created as created,
           s.vid,
           sn.title as system_domain,
           a.redirection as redirect_domain,
@@ -165,7 +170,7 @@ function devshop_project_load($node) {
         LEFT JOIN {hosting_site} s ON e.site = s.nid
         LEFT JOIN {hosting_context} cs ON s.nid = cs.nid
         LEFT JOIN {node} sn ON s.vid = sn.vid
-        LEFT JOIN {hosting_platform} p ON s.platform = p.nid OR e.platform = p.nid
+        LEFT JOIN {hosting_platform} p ON s.platform = p.nid
         LEFT JOIN {hosting_context} cp ON p.nid = cp.nid
         LEFT JOIN {node} http ON p.web_server = http.nid
         LEFT JOIN {node} db ON s.db_server = db.nid
@@ -173,22 +178,22 @@ function devshop_project_load($node) {
         LEFT JOIN {hosting_site_alias} a ON a.vid = s.vid
         WHERE project_nid = :nid 
           AND e.name != ''
-          AND (
-            s.status IN (:site_status)
-            OR s.verified = 0 
-            OR s.nid IS NULL
-          ) 
+          AND s.status IN (:site_status)
         ORDER BY
-          name;   ", array(
+          name, sn.created DESC;   ", array(
     ':nid' => $node->nid,
 
     // Query includes sites that are either enabled, disabled, queued, unverified, or have no site NID.
     ':site_status' => [
       HOSTING_SITE_DISABLED,
       HOSTING_SITE_QUEUED,
-      HOSTING_SITE_ENABLED
+      HOSTING_SITE_ENABLED,
+      HOSTING_SITE_DELETED
     ]
   ));
+  $environments = [];
+  $environment_nids = [];
+  $deleted_environments = [];
   foreach ($environment_data as $environment) {
 
     $environment->install_profile = $project->install_profile? : 'standard';
@@ -412,29 +417,26 @@ function devshop_project_load($node) {
     // Save to project environments collection.
     drupal_alter('devshop_environment', $environment, $project);
 
-    // Only add to project if not deleted
-    if ($environment->site_status != HOSTING_SITE_DELETED) {
-      // @TODO: Finish up the classes!
-      // $environments[$environment->name] = new \DevShop\Environment\Environment($environment);
-
+    // Save environments to project.
+    if ($environment->site_status == HOSTING_SITE_DELETED) {
+      $deleted_environments[$environment->site] = $environment;
+    }
+    else {
+      if (isset($environments[$environment->name])) {
+        watchdog('devshop_projects', t('There are two enabled environments named %name in project %nid (Sites %nids)', array(
+          '%nid' => $environment->project_nid,
+          '%name' => $environment->name,
+          '%nids' => $environment->site . ' and ' , $environments[$environment->name]->site,
+        )));
+      }
       $environments[$environment->name] = $environment;
     }
+    $environment_nids[$environment->site] = $environment;
   }
 
-  // Put live environment at the top.
-  if (!empty($environments) && isset($project->settings->live) && $project->settings->live['live_environment'] && isset($environments[$project->settings->live['live_environment']])) {
-    $project->environments = array();
-    $live_env = $project->settings->live['live_environment'];
-    $project->environments[$live_env] = $environments[$live_env];
-    unset($environments[$live_env]);
-    $project->environments += $environments;
-  }
-  elseif (!empty($environments)) {
-    $project->environments = $environments;
-  }
-  elseif (!empty($node->title)) {
-    $project->environments = array();
-  }
+  $project->environments = $environments;
+  $project->environment_nids = $environment_nids;
+  $project->environments_deleted = $deleted_environments;
 
   // Make project name and status available.
   $project->name = $node->title;
