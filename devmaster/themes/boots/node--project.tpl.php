@@ -109,9 +109,6 @@
       </div>
     </li>
     <li>
-    <?php if ($project->settings->deploy['method'] == 'manual'): ?>
-      <strong><?php print t('Manual Deployment Only'); ?></strong>
-    <?php else: ?>
         <!-- Webhook -->
         <?php if ($project->settings->deploy['method'] == 'webhook'): ?>
 
@@ -153,7 +150,6 @@
         $float = empty($project->settings->deploy['last_webhook'])? 'inline': 'pull-right';
       ?>
       <li class="<?php print $float; ?>"><?php print $webhook_url; ?></li>
-    <?php endif; ?>
     <?php endif; ?>
     
     <?php // Extra items to allow modules to add things. ?>
