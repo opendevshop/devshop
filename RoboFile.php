@@ -175,8 +175,8 @@ class RoboFile extends \Robo\Tasks {
    */
   private $writeRepos = [
     '.',
-    'vendor/drupal/provision',
-    'src/DevShop/Control/web/sites/all/modules/contrib/hosting'
+    'src/DevShop/Control/web/sites/all/modules/drush/provision',
+    'src/DevShop/Control/web/sites/all/modules/contrib/hosting',
   ];
 
   /**
