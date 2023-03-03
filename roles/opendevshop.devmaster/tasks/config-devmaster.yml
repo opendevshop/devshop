@@ -1,21 +1,4 @@
 ---
-
-- name: DevShop Control | Clear drush caches
-  command: "{{ drush_executable_path }} cc drush"
-  become: true
-  become_user: "{{ aegir_user_name }}"
-  become_method: "{{ ansible_become_method_aegir }}"
-  register: drush_cache_clear
-  changed_when: drush_cache_clear.stdout | length > 0
-
-- name: DevShop Control | Clear all caches
-  command: "{{ drush_executable_path }} {{ devshop_control_drush_alias }} cc all"
-  become: true
-  become_user: "{{ aegir_user_name }}"
-  become_method: "{{ ansible_become_method_aegir }}"
-  register: drush_cache_clear
-  changed_when: drush_cache_clear.stdout | length > 0
-
 - name: DevShop Control | Save GitHub Token
   become: true
   become_user: "{{ aegir_user_name }}"
