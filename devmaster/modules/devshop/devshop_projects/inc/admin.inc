@@ -1,23 +1,6 @@
 <?php
 
 /**
- * @param $element
- */
-function devshop_element_validate_explode_array($element, &$form_state, &$form) {
-  $lines = explode(PHP_EOL, $element['#value']);
-  foreach ($lines as $line) {
-    $line = explode('|', $line);
-    if (count($line) > 1) {
-      $options[$line[0]] = $line[1];
-    }
-    else {
-      $options[] = $line[0];
-    }
-  }
-  form_set_value($element, array_filter($options),$form_state);
-}
-
-/**
  * Projects Settings Page
  *
  * All code for admin interface.
@@ -32,57 +15,42 @@ function devshop_projects_settings_form($form, &$form_state) {
   $form['create'] = array(
     '#group' => 'settings',
     '#type' => 'fieldset',
-    '#title' => t('Project Sources'),
+    '#title' => t('Creating Projects'),
   );
-  $form['create']['devshop_allow_any_git_repo'] = array(
+  $form['create']['help'] = array(
+    '#title' => t('When creating projects...'),
+    '#type' => t('item'),
+  );
+  $form['create']['options'] = array(
+    '#element_validate' => array(
+      'devshop_project_settings_ensure_create_method'
+    )
+  );
+  $form['create']['options']['devshop_project_create_custom'] = array(
     '#title' => t('Allow any Git repository'),
     '#description' => t('Allow users to enter any git repository when starting a project.'),
     '#type' => 'checkbox',
-    '#default_value' => variable_get('devshop_allow_git_repo_options', TRUE),
+    '#default_value' => variable_get('devshop_project_create_custom', TRUE),
   );
-  $form['create']['devshop_allow_git_repo_options'] = array(
+
+  $form['create']['options']['devshop_project_create_choice'] = array(
     '#title' => t('Allow choice of Git Repositories'),
     '#description' => t('Allow users to choose from a list of git repositories when starting a project.'),
     '#type' => 'checkbox',
-    '#default_value' => variable_get('devshop_allow_git_repo_options', TRUE),
+    '#default_value' => variable_get('devshop_project_create_choice', TRUE),
   );
-
-  $form['create']['devshop_git_repo_options'] = array(
+  $form['create']['options']['devshop_project_create_choice_options'] = array(
     '#description' => t('Enter the Git repositories to make available to users, one per line.'),
     '#type' => 'textarea',
-    '#default_value' => implode(PHP_EOL, variable_get('devshop_git_repo_options', array(
-      'git@github.com:opendevshop/devshop-composer-template.git'
-    ))),
-    '#element_validate' => array('devshop_element_validate_explode_array'),
+    '#default_value' => variable_get('devshop_project_create_choice_options', 'git@github.com:opendevshop/drupal-project.git'),
     '#states' => array(
       'visible' => array(
-        ':input[name="devshop_allow_git_repo_options"]' => array('checked' => TRUE)
+        ':input[name="devshop_project_create_choice"]' => array('checked' => TRUE),
       ),
     ),
   );
 
-  $form['create']['devshop_allow_create_repo_github'] = array(
-    '#title' => t('Allow creation of new git repositories'),
-    '#description' => t('Allow users to create new git repositories when starting a new project.'),
-    '#type' => 'checkbox',
-    '#default_value' => variable_get('devshop_allow_create_repo_github', TRUE),
-  );
-  $form['create']['devshop_composer_project_suggestions'] = array(
-    '#title' => t('Available Composer Projects'),
-    '#description' => t('When creating a new git repository, allow users to choose from these composer projects.'),
-    '#type' => 'textarea',
-    '#default_value' => implode(PHP_EOL, variable_get('devshop_composer_project_suggestions', array(
-      'devshop/composer-template:8.x-dev'
-    ))),
-    '#element_validate' => array('devshop_element_validate_explode_array'),
-    '#states' => array(
-      'visible' => array(
-        ':input[name="devshop_allow_create_repo_github"]' => array('checked' => TRUE)
-      ),
-    ),
-  );
-
-  $form['create']['devshop_project_default_drupal_path'] = array(
+  $form['projects']['devshop_project_default_drupal_path'] = array(
     '#title' => t('Default Document Root'),
     '#type' => 'textfield',
     '#description' => t("If index.php isn't in the root of the git repo, you can edit the 'Path to Drupal' setting on each project.  Set a default 'Path to Drupal' here. (For example, an Acquia hosted repo uses 'docroot'.)"),
@@ -276,4 +244,16 @@ function devshop_project_settings_validate_environment_url_pattern($element, &$f
   if (strpos($form_state['values']['devshop_project_environment_url_pattern'], '@environment') === FALSE || strpos($form_state['values']['devshop_project_environment_url_pattern'], '@project') === FALSE) {
     form_error($element, t('The placeholders @project and @environment must be in the Environment Domain Name Pattern.'));
   }
+}
+
+/**
+ * Validate that the default environment domain pattern has @environment and @project.
+ */
+function devshop_project_settings_ensure_create_method($element, &$form_state, $form) {
+  foreach(element_children($form['create']['options']) as $child) {
+    if ($form_state['values'][$child] === 1) {
+      return;
+    }
+  }
+  form_error($element, t('You must allow at least one option for creating projects.'));
 }

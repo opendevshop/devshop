@@ -612,6 +612,7 @@ PHP;
     // Determine home path and path to alias file.
     $drush_path = $this->input->getOption('drush-path');
     $home = $this->input->getOption('aegir_root');
+    $devshop_control_root = $this->input->getOption('root');
     $path_to_alias_file = "{$home}/.drush/{$name}.alias.drushrc.php";
 
     // Notify user.
@@ -629,7 +630,7 @@ PHP;
       $options = $this->input->getOption('force-reinstall')? '--force-reinstall --verbose': '--verbose';
       $this->output->writeln("");
       $this->output->writeln("Running <comment>{$drush_path} @{$name} provision-install --client_email={$client_email} {$options}</comment> ...");
-      $process = $this->getProcess("{$drush_path} @{$name} provision-install --client_email={$client_email} {$options}");
+      $process = $this->getProcess("{$drush_path} --root={$devshop_control_root} @{$name} provision-install --client_email={$client_email} {$options}");
       $process->setTimeout(NULL);
 
       // Ensure process runs sucessfully.
@@ -648,12 +649,15 @@ PHP;
 
     // Run provision-verify
     $drush_path = $this->input->getOption('drush-path');
+    $devshop_control_root = $this->input->getOption('root');
+
     $this->output->writeln("");
     $this->output->writeln("Running <comment>drush @{$name} provision-verify</comment> ...");
 
     // Set to --verbose or use other options to see provision-verify logs when running devmaster:install (for debugging).
     $provision_verify_options = '--verbose';
-    $process = $this->getProcess("{$drush_path} @{$name} provision-verify $provision_verify_options");
+    $process = $this->getProcess("{$drush_path} --root={$devshop_control_root} @{$name} provision-verify $provision_verify_options");
+    $process->setWorkingDirectory($devshop_control_root);
     $process->setTimeout(NULL);
 
     if ($this->runProcess($process)) {
@@ -676,11 +680,12 @@ PHP;
    */
   private function finalize() {
     $drush_path = $this->input->getOption('drush-path');
+    $root = $this->input->getOption('root');
 
     // Run `drush @hostmaster hosting-setup`
     // @see install.hostmaster.inc: 275
     $master_drush_alias = $this->input->getOption('master_drush_alias');
-    if ($this->runProcess(new Process("{$drush_path} @{$master_drush_alias} hosting-setup -y"))) {
+    if ($this->runProcess(new Process("{$drush_path} --root={$root} @{$master_drush_alias} hosting-setup -y"))) {
       $this->output->writeln("");
       $this->output->writeln("Running <comment>drush @{$master_drush_alias} hosting-setup</comment>: <info>Done</info>");
       $this->output->writeln("");

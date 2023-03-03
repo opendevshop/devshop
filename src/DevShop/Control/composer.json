@@ -97,7 +97,12 @@
         "symfony/options-resolver": "^4.4",
         "drupal/drupal-extension": "^4.2",
         "symfony/dependency-injection": "^4.4",
-        "symfony/process": "^4.4"
+        "symfony/process": "^4.4",
+        "bitbucket/client": "^4.1",
+        "drush/drush": "^8.4",
+        "http-interop/http-factory-guzzle": "^1.2",
+        "drupal/provision": "dev-4.x",
+        "php-http/guzzle6-adapter": "^2.0"
     },
     "conflict": {
         "drupal/core": "8.*"
@@ -114,10 +119,11 @@
         "bin-dir": "bin",
         "sort-packages": false,
         "allow-plugins": {
-          "composer/installers": true,
-          "cweagans/composer-patches": true,
-          "drupal-composer/preserve-paths": true,
-          "oomphinc/composer-installers-extender": true
+            "composer/installers": true,
+            "cweagans/composer-patches": true,
+            "drupal-composer/preserve-paths": true,
+            "oomphinc/composer-installers-extender": true,
+            "php-http/discovery": true
         },
         "platform": {
             "php": "7.4.0"

@@ -157,6 +157,13 @@ function devshop_github_form_project_node_form_alter(&$form, &$form_state, $form
   }
 
   $pr_count = count($prs);
+  if (!isset($node->project->settings->github) && $pr_count > 0) {
+    $node->project->settings->github = array(
+      'pull_request_environments' => true,
+      'pull_request_environments_delete' => true,
+    );
+  }
+
   $form['found_prs'] = array(
     '#type' => 'markup',
     '#prefix' => '<div class="alert alert-success">',
@@ -174,7 +181,7 @@ function devshop_github_form_project_node_form_alter(&$form, &$form_state, $form
   );
 
   $form['project']['settings']['github']['pull_request_environments'] = array(
-    '#title' => t('Pull Request Environments'),
+    '#title' => t('Create Pull Request Environments'),
     '#description' => t('Maintain an environment for every !open_pull_request.', array(
       '!open_pull_request' => l(t('open Pull Request (@count)', array(
         '@count' => $pr_count,
@@ -191,16 +198,16 @@ function devshop_github_form_project_node_form_alter(&$form, &$form_state, $form
         '@number' => $pr_count,
       )) . '</span>'
     ),
-    '#default_value' => $project->settings->github['pull_request_environments'],
+    '#default_value' => isset($project->settings->github) ?
+      $project->settings->github['pull_request_environments'] :
+      false,
   );
 
   // Delete Pull Request environments?
   $form['project']['settings']['github']['pull_request_environments_delete'] = array(
       '#type' => 'checkbox',
-      '#title' => t('Delete Pull Request Environments <div class="help-block">When Pull Requests are merged or closed, delete the environment.</div>'),
+      '#title' => t('Delete Environments for Closed Pull Requests'),
       '#default_value' => isset($node->project->settings->github) ? $node->project->settings->github['pull_request_environments_delete'] : 1,
-// @TODO: Putting description in "help-block" right after title looks MUCH better and has better UX because the description is clickable. Put this in the theme layer.
-//      '#description' => t('When Pull Requests are merged or closed, delete the environment.'),
       '#states' => array(
         'visible' => array(
           ':input[name="project[settings][github][pull_request_environments]"]' => array('checked' => TRUE),
@@ -285,7 +292,7 @@ function devshop_github_form_site_node_form_alter(&$form, &$form_state, $form_id
   $project = $form_state['project'];
 
   // Don't try to load PRs if there isn't even a token.
-  if (!empty(variable_get('devshop_github_token', '')) && arg(1) == 'add' && $project->git_provider == 'github'){
+  if (arg(1) == 'add' && $project->git_provider == 'github'){
     try {
       $prs = devshop_github_client()->pullRequests()->all($project->github_owner, $project->github_repo);
       $default_branch = devshop_github_client()->repo()->show($project->github_owner, $project->github_repo)['default_branch'];
@@ -332,11 +339,6 @@ function devshop_github_form_site_node_form_alter(&$form, &$form_state, $form_id
     $form['git_ref']['#element_validate'] = array(
       'devshop_github_form_site_node_form_validate_pr'
     );
-
-    // Add our own submit handler.
-    if (empty($form_state['node']->nid)) {
-      $form['actions']['submit']['#submit'][] = 'devshop_github_environment_create_submit';
-    }
   }
 }
 
@@ -379,17 +381,6 @@ function devshop_github_pr_options($project, $key = 'id', $prs = array()) {
     $pr_options[$option_name] = $pr_description;
   }
   return $pr_options;
-}
-
-/**
- * Submit handler for site/environment settings page.
- */
-function devshop_github_environment_create_submit($form, &$form_state) {
-//
-//  // Save the environment record.
-//  $site = node_load($form_state['node']->nid, null, true);
-//  DevShopGitHubApi::createDeployment($site->environment, 'pending', t('Environment Settings Submit'));
-
 }
 
 /**
@@ -437,69 +428,26 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
   $key_exists = devshop_github_token();
   $key_valid = devshop_github_token_is_valid();
 
-  if (!$key_exists && drupal_valid_path('admin/hosting')) {
-    drupal_set_message(t('GitHub API Integration has not been enabled. You can still add public git repositories. Check !settings to enable additional features.', [
-      '!settings' => l(t('DevShop GitHub Settings'), 'admin/hosting'),
-    ]), 'warning');
-  }
-  elseif (!$key_valid && drupal_valid_path('admin/hosting')) {
+  if ($key_exists && !$key_valid && drupal_valid_path('admin/hosting')) {
     drupal_set_message(t('Your GitHub API Token is invalid. Check !settings to add a new one.', [
       '!settings' => l(t('DevShop GitHub Settings'), 'admin/hosting'),
     ]), 'error');
   }
+  elseif (!$key_exists && drupal_valid_path('admin/hosting')) {
+    drupal_set_message(t('GitHub API Integration has not been enabled. You can still add public git repositories. Check !settings to enable additional features.', [
+      '!settings' => l(t('DevShop GitHub Settings'), 'admin/hosting'),
+    ]), 'warning');
+  }
 
   $options = [];
   $repos = variable_get('devshop_github_available_repositories', array());
+  if (empty($repos)) {
+    $repos = variable_get('devshop_github_all_repositories', array());
+  }
   foreach ($repos as $repo_name => $repo) {
-    $options[$repo['org']][$repo['url']] = $repo_name;
+    $form['source']['choice']['#options']["GitHub: " . $repo['org']][$repo['url']] = $repo_name;
   }
 
-  if (count($options) && empty($form['source']['git_url']['#default_value'])) {
-    $form['source']['git_source']['#default_value'] = 'github_existing';
-  }
-
-  unset($form['source']['git_source']['#options']['custom']);
-  $form['source']['git_source']['#options']['custom'] = t('Custom Git repository URL');
-
-  if (empty($options)) {
-    $form['source']['github_repos'] = array(
-      '#title' => t('Use an existing GitHub repository'),
-      '#description' => t('No GitHub repositories found. !link', array(
-        '!link' => l(t('Refresh GitHub Repos'), 'admin/hosting/github/load-repos', array(
-          'query' => drupal_get_destination(),
-          'attributes' => array(
-            'class' => array('btn btn-primary'),
-          ),
-        )))),
-      '#type' => 'item',
-      '#states' => array(
-        'visible' => array(
-          ':input[name="git_source"]' => array(
-            'value' => 'github_existing'
-          ),
-        ),
-      ),
-    );
-  }
-  else {
-
-  $form['source']['github_repos'] = array(
-    '#title' => t('Use an existing GitHub repository'),
-    '#type' => 'select',
-    '#options' => $options,
-    '#default_value' => $form['source']['git_url']['#default_value'],
-    '#description' => t('Select the GitHub repository to use for this project. Remember, it must contain a Drupal site.') . ' ' .  l(t('Refresh GitHub Repos List'), 'admin/hosting/github/load-repos', array('query' => drupal_get_destination())),
-    '#bootstrap_ignore_pre_render' => TRUE,
-    '#states' => array(
-      'visible' => array(
-        ':input[name="git_source"]' => array(
-          'value' => 'github_existing'
-        ),
-      ),
-    ),
-  );
-
-  }
   $form['source']['github_create'] = array(
     '#type' => 'container',
     '#tree' => TRUE,
@@ -584,25 +532,28 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
       'settings',
       'github_repository_source',
     ),
+    '#access' => variable_get('devshop_allow_create_repo_github', false),
   );
 
 
-  $form['github_repository_source']['populate_choice'] = array(
-//    '#prefix' => '<div class="well">',
-    '#type' => 'radios',
-    '#default_value' => 'create',
-    '#title' => t('Choose what to put into your new Git repository'),
-    '#options' => array(
-      'create' => t('Create project using composer'),
-      'import' => t('Import from another Git URL'),
-    ),
-  );
-
-  $suggested_repos = variable_get('devshop_git_repo_options', array(
-    'git@github.com:opendevshop/devshop-composer-template.git',
-  ));
-  $options = array_combine(array_values($suggested_repos),array_values($suggested_repos));
-  $options['custom'] = t('Enter a custom Git URL');
+//  $form['github_repository_source']['populate_choice'] = array(
+////    '#prefix' => '<div class="well">',
+//    '#type' => 'radios',
+//    '#default_value' => 'create',
+//    '#title' => t('Choose what to put into your new Git repository'),
+//    '#options' => array(
+//      'create' => t('Create project using composer'),
+//      'import' => t('Import from another Git URL'),
+//    ),
+//    //'#access' => !empty($form[''['custom']),
+//  );
+//  dsm($form);
+//
+//  $suggested_repos = variable_get('devshop_project_create_choice_options', array(
+//    'git@github.com:opendevshop/devshop-composer-template.git',
+//  ));
+//  $options = array_combine(array_values($suggested_repos),array_values($suggested_repos));
+//  $options['custom'] = t('Enter a custom Git URL');
 
   $form['github_repository_source']['import'] = array(
     '#type' => 'textfield',
@@ -645,14 +596,10 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
     ),
   );
 
+  $suggested_projects = variable_get('devshop_composer_project_suggestions', "devshop/composer-template:8.x-dev\ndevshop/composer-template:7.x-dev");
 
-  $suggested_projects = variable_get('devshop_composer_project_suggestions', array(
-    'devshop/composer-template:8.x-dev',
-    'devshop/composer-template:7.x-dev',
-//    'acquia/lightning-project',
-  ));
-
-  $options = array_combine(array_values($suggested_projects),array_values($suggested_projects));
+//  $options = array_combine(array_values($suggested_projects),array_values($suggested_projects));
+  $options = [];
   $options['custom'] = t('Enter custom project');
 
   $form['github_repository_source']['composer_project_suggestions'] = array(
@@ -717,7 +664,7 @@ function devshop_github_form_devshop_project_create_step_git_alter(&$form, &$for
   drupal_add_js(array(
     'devshop' => array(
       'projectNameSourceElements' => array(
-        '#edit-github-repos',
+        '#edit-choice',
         '#edit-github-create-github-repository-name',
       ),
     ),
@@ -733,7 +680,6 @@ function devshop_github_devshop_project_git_repo_options() {
   if (devshop_github_token_is_valid()) {
     return array(
       'github_create' => t('Create a new GitHub repository'),
-      'github_existing' => t('An existing GitHub repository'),
     );
   }
 }
@@ -760,6 +706,12 @@ function devshop_github_create_project_form_set_values($element, &$form_state, &
 function devshop_github_form_devshop_project_create_step_environments_alter(&$form, &$form_state, $form_id) {
 
   $project = &$form_state['project'];
+
+  // Return if provider is not github.
+  if ($project->git_provider != 'github') {
+    return;
+  }
+
   $prs_url = $project->git_repo_url . '/pulls';
 
   // Load the PRs.
@@ -912,6 +864,20 @@ function devshop_github_form_devshop_project_create_step_environments_alter(&$fo
   $form['pr_environments']['help'] = $help_display;
   $form['pr_environments']['help']['#weight'] = -1;
 
+//
+// @TODO: Decide if we want to support webhooks anymore.
+//  $form['github_webhook'] = array(
+//    '#title' => t('Setup GitHub Webhook'),
+//    '#description' => t('Leave this box checked to automatically add a webhook to your GitHub Repository !link. Your server must be reachable by the !servers', array(
+//      '!link' => l($repo, $repo_url, $l_options),
+//      '!servers' => l(t('GitHub Servers listed under "hooks" in the API'), 'https://api.github.com/meta', $l_options),
+//      '#type' => 'checkbox',
+//      '#default_value' => variable_get('devshop_github_webhook_setup_default', 0),
+//    )));
+//
+//  $form['#validate'][] = 'devshop_github_project_create_webhook';
+//  $form['#submit'][] = 'devshop_github_project_create_webhook';
+
 }
 
 /**
@@ -982,14 +948,11 @@ function devshop_github_create_repository($element, &$form_state, &$form) {
  */
 function devshop_github_form_devshop_project_create_step_sites_alter(&$form, &$form_state) {
 
-  // Return if project isn't ready.
-  if (empty($form['install_profile'])) {
-    return;
-  }
-
   // Load project and github
   $project_node = node_load($form['nid']['#value']);
   $project = $project_node->project;
+
+  dsm($form_state['project']);
 
   // Return if provider is not github.
   if ($project->git_provider != 'github') {
@@ -1087,7 +1050,7 @@ function devshop_github_project_create_webhook($form, $form_state) {
 function devshop_github_node_load($nodes, $types) {
 
   foreach ($nodes as $nid => &$node) {
-    if ($node->type == 'project') {
+    if ($node->type == 'project' && $node->project->git_provider == 'github') {
       // Look for a pull request object.
       $pull_requests = db_query('SELECT prs.*, e.name AS environment_name 
         FROM {hosting_devshop_github_pull_requests} prs 
@@ -1098,6 +1061,7 @@ function devshop_github_node_load($nodes, $types) {
           $pull_request->pull_request_object = unserialize($pull_request->pull_request_object);
           if (isset($node->project->environments[$pull_request->environment_name])) {
             $node->project->environments[$pull_request->environment_name]->github_pull_request = $pull_request;
+            $node->project->environments[$pull_request->environment_name]->image = $pull_request->pull_request_object->user->avatar_url;
           }
         }
       }
@@ -1111,11 +1075,12 @@ function devshop_github_node_load($nodes, $types) {
  * When submitting from the Site form, and user selects a PR branch, "pull_request" is populated with the PR object.
  */
 function devshop_github_node_insert($node) {
-  if ($node->type == 'site' && (!empty($node->pull_request) || !empty($node->settings->pull_request))) {
+
+  if ($node->type == 'site' && !empty($node->settings->pull_request) && isset($node->settings->pull_request['node_id'])) {
+
     $environment = new stdClass();
     $environment->name = $node->environment_name;
     $environment->site = $node->nid;
-    $environment->project_nid = $node->project_nid;
 
     if (!empty($node->pull_request)) {
       $pr_data = convert_to_object($node->pull_request);
@@ -1126,7 +1091,11 @@ function devshop_github_node_insert($node) {
     else {
       return;
     }
-    devshop_github_save_pr_env_data($pr_data, $environment);
+
+    if (!devshop_github_save_pr_env_data($pr_data, $environment)) {
+      throw new \Exception('Unable to save bitbucket PR data: ' . print_r($pr_data, 1));
+
+    }
   }
 }
 
@@ -1817,8 +1786,10 @@ function devshop_github_save_pr_env_data($pr, $environment) {
 
   // Save environment record.
   try {
-    watchdog('debug', 'environment:' .print_r($environment,1));
-    watchdog('debug', 'PR Save:' .print_r($info,1));
+    watchdog('devshop_github', t('Pull Request saved for environment !nid !env.', array(
+      '!nid' => $environment->site,
+      '!env' => l($environment->uri, "node/{$info->site_nid}"),
+    )));
     drupal_write_record('hosting_devshop_github_pull_requests', $info, $update);
     return TRUE;
   }
@@ -1885,6 +1856,13 @@ function devshop_github_create_all_pr_environments($project_node) {
       unset($prs_to_create_environments_for[$environment->name]);
     }
     // If there IS PR data in the environment and the PR exists on GitHub, update the PR data.
+    elseif ($environment_pr_number && !empty($prs[$environment_pr_slug]) && !empty($environment->tasks['delete'])) {
+      drush_log("Deleted PR environment found: $environment->name [$site_url]", "ok");
+
+      // Save data
+      devshop_github_save_pr_env_data($prs[$environment_pr_slug], $environment);
+    }
+    // If there IS PR data in the environment and the PR exists on GitHub, update the PR data.
     elseif ($environment_pr_number && !empty($prs[$environment_pr_slug])) {
       devshop_github_save_pr_env_data($prs[$environment_pr_slug], $environment);
       drush_log("PR environment found and updated: $environment->name [$site_url]", "ok");
@@ -1894,14 +1872,26 @@ function devshop_github_create_all_pr_environments($project_node) {
         unset($prs_to_create_environments_for[$environment_pr_slug]);
       }
     }
+    // If there IS PR data stored on this environment but the PR does NOT exist,
+    elseif ($environment_pr_number && empty($prs[$environment_pr_slug]) && $environment->site_status == HOSTING_SITE_DELETED) {
+      drush_log("PR environment already deleted: $environment->name [$site_url]", "ok");
+    }
 
-    // If there IS PR data on this environment but the PR does NOT exist, queue the site for deletion.
-    elseif ($environment_pr_number && empty($prs[$environment_pr_slug])) {
+    // If there IS PR data stored on this environment but the PR does NOT exist, and the site isn't already deleted, queue delete task.
+    elseif ($environment_pr_number && empty($prs[$environment_pr_slug]) && $environment->site_status != HOSTING_SITE_DELETED) {
       drush_log("PR $environment_pr_number environment $environment->name exists but PR has been closed. [$site_url] [PR Slug $environment_pr_slug]", "ok");
-      if ($project->settings->github['pull_request_environments_delete'] && empty($environment->tasks['delete'])) {
-        drush_log("PR environment scheduled for deletion: $environment->name [$site_url]", "ok");
+
+      $delete_tasks_running = isset($environment->tasks['delete']) && array_filter($environment->tasks['delete'], function($value) {
+        return $value->task_status == HOSTING_TASK_QUEUED || $value->task_status == HOSTING_TASK_PROCESSING;
+      });
+
+      if ($project->settings->github['pull_request_environments_delete'] && empty($delete_tasks_running)) {
+        drush_log("PR environment scheduled for deletion: $environment->name [$site_url]","ok");
         hosting_add_task($environment->site, 'delete', array('force' => 1));
         $deleted_environments++;
+      }
+      elseif ($delete_tasks_running) {
+        drush_log("PR environment already scheduled for deletion: $environment->name [$site_url]", "ok");
       }
 
       // Since this PR is closed, and the site is scheduled for deletion, don't
@@ -1914,41 +1904,43 @@ function devshop_github_create_all_pr_environments($project_node) {
     $environment->git_sha = file_exists($environment->repo_path)? trim(shell_exec("cd {$environment->repo_path}; git rev-parse HEAD  2> /dev/null")): NULL;
 
     // If Site was installed properly and is still enabled, and repo_path is a real folder, and environment git_sha is not empty, and local git_sha does not match github PR sha...
-    $pr_object = $prs[$environment_pr_slug];
-    if (file_exists($environment->repo_path) && !empty($environment->git_sha) &&  $environment->git_sha != $pr_object->head->sha) {
-      drush_log(dt("Environment git SHA (@e) and PR SHA (@p) are different. Preparing a deploy task... [@url] ", array(
-        '@name' => $environment->name,
-        '@e' => $environment->git_sha,
-        '@p' => $pr_object->head->sha,
-        '@url' => $site_url,
-      )), "ok");
+    if (isset($prs[$environment_pr_slug])) {
+      $pr_object = $prs[$environment_pr_slug];
+      if (file_exists($environment->repo_path) && !empty($environment->git_sha) &&  $environment->git_sha != $pr_object->head->sha) {
+        drush_log(dt("Environment @name SHA (@e) and PR SHA (@p) are different. Preparing a deploy task... [@url] ", array(
+          '@name' => $environment->name,
+          '@e' => $environment->git_sha,
+          '@p' => $pr_object->head->sha,
+          '@url' => $site_url,
+        )), "ok");
 
 
-      // Check for queued deploy tasks. If there are none, create one.
-      $queued_deploy_tasks = hosting_get_new_tasks(1, $environment->site, 'deploy');
-      if (count($queued_deploy_tasks) == 0) {
+        // Check for queued deploy tasks. If there are none, create one.
+        $queued_deploy_tasks = hosting_get_new_tasks(1, $environment->site, 'deploy');
+        if (count($queued_deploy_tasks) == 0) {
 
-        // Trigger deploy task to get latest code.
-        // Pass no args to skip DB updates, cache clearing, etc.
-        drush_log("PR environment scheduled for deployment: $environment->name $environment->git_ref [$site_url]", "ok");
-        hosting_add_task($environment->site, 'deploy', array(
-          'git_ref' => $environment->git_ref,
-        ));
-        $deployed_environments++;
-      }
-      else {
-        drush_log("PR environment deployment skipped: $environment->name $environment->git_ref [$site_url]", "ok");
-      }
-
-      // If site is set to rebuild, trigger "install" with force-reinstall
-      if ($project->settings->github['pull_request_reinstall']) {
-        drush_log("PR environment scheduled for reinstallation: $environment->name [$site_url]", "ok");
-        $queued_install_tasks = hosting_get_new_tasks(1, $environment->site, 'install');
-        if (count($queued_install_tasks) == 0) {
-          hosting_add_task($environment->site, 'install', array('force-reinstall' => 1));
+          // Trigger deploy task to get latest code.
+          // Pass no args to skip DB updates, cache clearing, etc.
+          drush_log("PR environment scheduled for deployment: $environment->name $environment->git_ref [$site_url]", "ok");
+          hosting_add_task($environment->site, 'deploy', array(
+            'git_ref' => $environment->git_ref,
+          ));
+          $deployed_environments++;
         }
         else {
-          drush_log("PR install task skipped: there is already a task in the queue.", "ok");
+          drush_log("PR environment deployment skipped: $environment->name $environment->git_ref [$site_url]", "ok");
+        }
+
+        // If site is set to rebuild, trigger "install" with force-reinstall
+        if ($project->settings->github['pull_request_reinstall']) {
+          drush_log("PR environment scheduled for reinstallation: $environment->name [$site_url]", "ok");
+          $queued_install_tasks = hosting_get_new_tasks(1, $environment->site, 'install');
+          if (count($queued_install_tasks) == 0) {
+            hosting_add_task($environment->site, 'install', array('force-reinstall' => 1));
+          }
+          else {
+            drush_log("PR install task skipped: there is already a task in the queue.", "ok");
+          }
         }
       }
     }
@@ -2073,4 +2065,28 @@ function devshop_github_devshop_post_environment_create($environment) {
  */
 function devshop_environment_get_git_sha($repo_path) {
   return trim(shell_exec("cd {$repo_path}; git rev-parse HEAD  2> /dev/null"));
+}
+
+
+/**
+ * Preprocessor for environment template.
+ */
+function devshop_github_preprocess_environment(&$vars) {
+
+  // Pull Request?
+  $environment = &$vars['environment'];
+  if (isset($environment->github_pull_request) && $environment->github_pull_request) {
+    $environment->class .= ' pull-request';
+    $vars['warnings'][] = array(
+      'type' => 'info',
+      'icon' => 'github',
+      'text' => l($environment->github_pull_request->pull_request_object->title, $environment->github_pull_request->pull_request_object->html_url, array(
+        'absolute' => TRUE,
+        'attributes' => array(
+          'target' => '_blank',
+          'title' => t('Visit this Pull Request on GitHub'),
+        ),
+      )),
+    );
+  }
 }
