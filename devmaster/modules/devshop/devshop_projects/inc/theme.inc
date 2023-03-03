@@ -393,13 +393,13 @@ function devshop_projects_preprocess_node_project(&$vars){
   }
 
   // Set webhook interval
-  if ($project->settings->deploy['method'] == 'webhook' && $project->settings->deploy['last_webhook']){
+  if (!empty($project->settings->deploy['webhooks']) && $project->settings->deploy['last_webhook']){
     $interval = format_interval(REQUEST_TIME - $project->settings->deploy['last_webhook']);
     $vars['webhook_ago'] = t('@time ago', array('@time' => $interval));
   }
 
-  if ($project->settings->deploy['method'] == 'queue') {
-    $vars['queued_ago'] = hosting_format_interval(variable_get('hosting_queue_pull_last_run', FALSE));
+  if (!empty($project->settings->deploy['queue'])) {
+    $vars['queued_ago'] = hosting_format_interval(variable_get('hosting_queue_tasks_last_run', FALSE));
   }
 
   // Webhook status output.

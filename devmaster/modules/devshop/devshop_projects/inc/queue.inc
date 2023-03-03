@@ -35,7 +35,7 @@
 //      continue;
 //    }
 //    $project = $node->project;
-//    if (isset($project->settings->deploy) && $project->settings->deploy['method'] == 'queue'){
+//    if (isset($project->settings->deploy) && !empty($project->settings->deploy['queue'])){
 //      foreach ($project->environments as $environment) {
 //        if ($project->settings->git['refs'][$environment->git_ref] == 'branch' && $environment->settings->pull_disabled == 0) {
 //          $environments[] = $environment;

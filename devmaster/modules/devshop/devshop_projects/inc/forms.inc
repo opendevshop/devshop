@@ -233,11 +233,10 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
     '#collapsible' => TRUE,
     '#collapsed' => arg(1) != $project->nid,
     '#title' => t('Deployment Automation'),
-    '#description' => t('Configure how code is delivered to the servers. Post Deploy hooks are configured per environment.'),
+    '#description' => t('Configure how code is delivered to the servers. If no deployment methods are selected, you must deploy all code changes manually.'),
     '#weight' => -9,
     '#group' => 'project_settings',
   );
-
   $form['project']['settings']['deploy']['webhooks'] = array(
     '#title' => t('Enable Webhook Receiver'),
     '#type' => 'checkbox',
@@ -253,7 +252,7 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
       '#title' => t('Deployment Queue'),
       '#type' => 'checkbox',
       '#description' => t('Periodically check for updates and trigger deployments.'),
-      '#default_value' => isset($project->settings->deploy['webhooks']) ? $project->settings->deploy['webhooks'] : true,
+      '#default_value' => isset($project->settings->deploy['queue']) ? $project->settings->deploy['queue'] : true,
     );
 
     if (user_access('administer hosting queues')) {
@@ -1321,7 +1320,7 @@ function devshop_prepare_platform_node($project, $environment_name, $git_ref, $w
 
 
   // Enable git pull queue for this platform if chosen.
-  if ($project->settings->deploy['method'] == 'queue') {
+  if (!empty($project->settings->deploy['queue'])) {
     // @TODO: Using integers because hosting_git_pull module isn't enabled anymore.
     $platform_node->git['pull_method'] = 1;
   }

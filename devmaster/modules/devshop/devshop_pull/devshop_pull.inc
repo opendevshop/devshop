@@ -5,6 +5,7 @@
  */
 function devshop_pull_callback($project_hosting_context, $hash) {
 
+  module_load_include('module', 'hosting_git');
   module_load_include('inc', 'hosting_git_pull', 'hosting_git_pull.webhook');
 
   // Load the project node & list of allowed IPs
@@ -22,11 +23,11 @@ function devshop_pull_callback($project_hosting_context, $hash) {
     $status = DEVSHOP_PULL_STATUS_INVALID_CODE;
   }
   // Make sure the project has pull callback enabled
-  if ($deploy_settings['method'] != 'webhook') {
+  if (empty($deploy_settings['webhooks'])) {
     $message = "Project not configured to use webhook deployment.";
   }
   // Make sure the client's IP address is on the list
-  else if (!hosting_git_pull_webhook_ip_access()) {
+  elseif (!devshop_pull_webhook_ip_access()) {
     $message = ip_address() . " is not authorized to invoke a webhook request.";
     $status = DEVSHOP_PULL_STATUS_ACCESS_DENIED;
   }
@@ -110,31 +111,6 @@ function devshop_pull_default_webhook($project_node) {
   }
 
   return "Commit notification received! Running 'Deploy' on '$project->name' environments: " . implode(', ', $environments_to_pull);
-}
-
-/**
- * Check whether a given ip address matches a list of allowed ip addresses, some of which
- * may be CIDR.
- *
- * @param $ip
- *   The ip addy to test.
- * @param $list
- *   The list to test against.
- */
-function devshop_pull_ip_match($ip, $list) {
-  foreach ($list as $cidr) {
-    if (trim($ip) === trim($cidr)) {
-      return TRUE;
-    }
-    @list($net, $mask) = explode('/', trim($cidr));
-    if (isset($mask)) {
-      $bitmask = ~((1 << (32 - $mask)) - 1);
-      if ((ip2long($net) & $bitmask) == (ip2long($ip) & $bitmask)) {
-        return TRUE;
-      }
-    }
-  }
-  return FALSE;
 }
 
 /**
