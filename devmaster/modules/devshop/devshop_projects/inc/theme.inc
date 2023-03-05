@@ -1100,14 +1100,11 @@ function devshop_projects_preprocess_environment(&$vars) {
   }
 
   // State: Site Delete initiated.
-  elseif (!empty($environment->tasks['delete']) || $environment->site_status == HOSTING_SITE_DELETED) {
-    $site_delete_task = current($environment->tasks['delete']);
-    if (isset($site_delete_task)) {
-      $vars['warnings'][] = array(
-        'text' => t('Site Destroyed'),
-        'type' => 'info',
-      );
-    }
+  elseif ($environment->site_status == HOSTING_SITE_DELETED) {
+    $vars['warnings'][] = array(
+      'text' => t('Site Destroyed'),
+      'type' => 'info',
+    );
   }
 
   // State: Site is Disabled
