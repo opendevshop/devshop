@@ -459,7 +459,7 @@ class RoboFile extends \Robo\Tasks {
               $push_url = "git@github.com:$slug";  
             }
             else {
-              $push_url = $repo->getCurrentBranch();
+              $push_url = $repo->getCurrentRemoteUrl();
             }
           }
           if ($repo->isDetached()) {
