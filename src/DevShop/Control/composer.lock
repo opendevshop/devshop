@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "61b8ce16352ece803ab731b973456bf2",
+    "content-hash": "78cd30333dacddac3d8d3342541b73c9",
     "packages": [
         {
             "name": "behat/behat",
@@ -2542,7 +2542,7 @@
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/hosting.git",
-                "reference": "d9291c01ed355cad59f736eae405862945b21bd8"
+                "reference": "aa1d3d52a42eb6d739f9ea036aa9ffaa01b06812"
             },
             "require": {
                 "drupal/drupal": "~7.0",
@@ -2568,8 +2568,8 @@
                     "dev-4.x": "4.x-dev"
                 },
                 "drupal": {
-                    "version": "7.x-4.0-beta1+16-dev",
-                    "datestamp": "1678116007",
+                    "version": "7.x-4.0-beta1+17-dev",
+                    "datestamp": "1678123875",
                     "security-coverage": {
                         "status": "not-covered",
                         "message": "Dev releases are not covered by Drupal security advisories."
@@ -3102,17 +3102,11 @@
         },
         {
             "name": "drupal/hosting_tasks_extra",
-            "version": "3.191.0",
+            "version": "dev-4.x",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/hosting_tasks_extra.git",
-                "reference": "7.x-3.191"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/hosting_tasks_extra-7.x-3.191.zip",
-                "reference": "7.x-3.191",
-                "shasum": "77d49528a314b11ebafa5604cde889b3f3e0588d"
+                "reference": "b26ede74200ba8000b9c50e3ad16170981abd0c2"
             },
             "require": {
                 "drupal/drupal": "~7.0",
@@ -3124,12 +3118,15 @@
             },
             "type": "drupal-module",
             "extra": {
+                "branch-alias": {
+                    "dev-4.x": "4.x-dev"
+                },
                 "drupal": {
-                    "version": "7.x-3.191",
-                    "datestamp": "1674283416",
+                    "version": "7.x-4.x-dev",
+                    "datestamp": "1678126132",
                     "security-coverage": {
-                        "status": "covered",
-                        "message": "Covered by Drupal's security advisory policy"
+                        "status": "not-covered",
+                        "message": "Dev releases are not covered by Drupal security advisories."
                     }
                 }
             },
@@ -9301,6 +9298,7 @@
         "drupal/hosting": 20,
         "drupal/hosting_filemanager": 20,
         "drupal/hosting_statsd": 10,
+        "drupal/hosting_tasks_extra": 20,
         "drupal/provision": 20
     },
     "prefer-stable": true,
