@@ -8,9 +8,6 @@ devmaster_skip_upgrade: true
 # The default for local development.
 php_version: "8.0"
 
-# Version of MySQL to install. Used only for Debian/Ubuntu systems.
-mysql_version: "8.0"
-
 ## Uncomment to reinstall hostmaster instance on every robo up.
 ## I'm leaving this commented because otherwise it would reinstall every time.
 ## If you want to reinstall on robo up, use `bin/robo up --force-reinstall`
