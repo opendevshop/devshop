@@ -624,7 +624,7 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
             );
             $form['parameters']['destination'] = array(
               '#type' => 'value',
-              '#value' => $node->environment->system_alias,
+              '#value' => $node->environment->drush_alias,
             );
           }
 
