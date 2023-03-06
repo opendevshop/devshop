@@ -370,8 +370,11 @@ function devshop_remotes_node_load($nodes, $types) {
         $alias_file = $env->repo_path . '/drush/sites/self.site.yml'; 
         if (file_exists($alias_file)) {
           $site_aliases = \Symfony\Component\Yaml\Yaml::parseFile($alias_file);
-          foreach ($site_aliases as $environment => $alias) {
-            $node->project->settings->aliases[$environment] = $alias;
+          
+          if (is_array($site_aliases)) {
+            foreach ($site_aliases as $environment => $alias) {
+              $node->project->settings->aliases[$environment] = $alias;
+            }
           }
         }
 
