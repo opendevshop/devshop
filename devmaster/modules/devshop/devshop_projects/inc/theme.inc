@@ -1200,7 +1200,7 @@ function devshop_projects_preprocess_environment(&$vars) {
 
     // Get the actual tag or branch. If a branch and tag have the same SHA, the tag will be output here.
     // "2> /dev/null" ensures errors don't get printed like "fatal: no tag exactly matches".
-    $environment->git_ref = trim(str_replace('refs/heads/', '', shell_exec("cd {$environment->repo_path}; git describe --tags --exact-match 2> /dev/null || git symbolic-ref -q HEAD 2> /dev/null")));
+//    $environment->git_ref = trim(str_replace('refs/heads/', '', shell_exec("cd {$environment->repo_path}; git describe --tags --exact-match 2> /dev/null || git symbolic-ref -q HEAD 2> /dev/null")));
 
     $environment->git_ref_type = !empty($project->settings->git['refs'][$environment->git_ref])
       ? $project->settings->git['refs'][$environment->git_ref]
@@ -1211,7 +1211,7 @@ function devshop_projects_preprocess_environment(&$vars) {
       $git_status = shell_exec("cd {$environment->repo_path}; git status");
       if (strpos($git_status, 'On branch ') === 0) {
         $environment->git_ref_type = 'branch';
-        $environment->git_ref = $environment->git_ref_stored;
+//        $environment->git_ref = $environment->git_ref_stored;
       }
       else {
         $environment->git_ref_type = 'tag';
