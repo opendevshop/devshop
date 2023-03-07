@@ -1178,6 +1178,9 @@ function devshop_projects_preprocess_environment(&$vars) {
   }
 
   //   Load git information
+  /**
+   * @TODO: Change how this works. Git can no longer run commands on a repo with another user without marking "safe.directory" for every repo.
+   *
   if (isset($environment->repo_path) && file_exists($environment->repo_path . '/.git')) {
     // Timestamp of last commit.
     $environment->git_last = shell_exec("cd {$environment->repo_path}; git log --pretty=format:'%ct' --max-count=1");
@@ -1249,6 +1252,7 @@ function devshop_projects_preprocess_environment(&$vars) {
     $environment->git_status = '';
     $environment->git_diff = '';
   }
+   * */
 
   // Look for alternative git URL
   if ($environment->git_url != $project->git_url) {
