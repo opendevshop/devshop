@@ -12,8 +12,6 @@ if [ -z "$self" ]; then
     self="$selfArg"
 fi
 
-dir=$(cd "${self%[/\\]*}" > /dev/null; cd '../vendor/devshop/bin-tools' && pwd)
-
 usage() {
   echo -n "${scriptName} [OPTION]... [FILE]...
 
