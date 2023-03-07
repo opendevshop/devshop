@@ -17,6 +17,7 @@ services:
     hostname: devshop.local.computer
     ports:
       - "80:80"
+      - "443:443"
       - "2222:22"
       - "33066:3306"
     privileged: true
