@@ -145,6 +145,7 @@ function devshop_project_load($node) {
       SELECT
           e.*,
           s.status as site_status,
+          s.verified as verified,
           p.status as platform_status,
           p.nid as platform,
           cp.name as platform_context,

@@ -674,7 +674,10 @@ sites/all/drush/drushrc.php
                     </a>
                     <?php endif; ?>
                   </div>
-                  <?php print t('Below is the current git status of the codebase at <code>@path</code>', array('@path' => $environment->repo_path)); ?>
+                  <?php print t('Git status of the codebase at <code>@path</code> as of @ago ago.', array(
+                          '@path' => $environment->repo_path,
+                          '@ago' => format_interval(time() - $environment->verified),
+                  )); ?>
                 </div>
 
                 <?php print theme('devshop_ascii', array('output' => $environment->git_commit)); ?>
