@@ -1178,6 +1178,11 @@ function devshop_projects_preprocess_environment(&$vars) {
   }
 
   //   Load git information
+  $environment->git_last_timestamp = date('N', $environment->git_last);
+  $environment->git_last_ago = t('!ago ago', array(
+    '!ago' => format_interval(time() - $environment->git_last , 1)
+  ));
+  
   /**
    * @TODO: Change how this works. Git can no longer run commands on a repo with another user without marking "safe.directory" for every repo.
    *
