@@ -47,7 +47,6 @@
  * @see template_preprocess_node()
  */
 ?>
-
 <!-- STATUS/INFO -->
 <div id="project-info">
   <ul class="list-inline">
@@ -109,14 +108,11 @@
       </div>
     </li>
     <li>
-    <?php if ($project->settings->deploy['method'] == 'manual'): ?>
-      <strong><?php print t('Manual Deployment Only'); ?></strong>
-    <?php else: ?>
         <!-- Webhook -->
-        <?php if ($project->settings->deploy['method'] == 'webhook'): ?>
+        <?php if (!empty($project->settings->deploy['webhooks'])): ?>
 
 
-      <strong><?php print t('Last Commit'); ?></strong>
+      <strong><?php print t('Webhook'); ?></strong>
           <small>
           <?php if (empty($project->settings->deploy['last_webhook'])): ?>
             <!-- Not Received -->
@@ -134,26 +130,33 @@
             <span title="<?php print t('Last webhook receieved.'); ?>"><?php print $webhook_ago; ?></span>
           <?php endif; ?>
           </small>
+      </li>
+      <li class="<?php print $float; ?>"><?php print $webhook_url; ?></li>
 
-        <?php elseif ($project->settings->deploy['method'] == 'queue'): ?>
+        <?php endif; ?>
+        <?php if (!empty($project->settings->deploy['queue'])): ?>
         <!-- Queue -->
-        <strong><?php print t('Queue'); ?>:</strong>
+        <strong><?php print t('Queue'); ?></strong>
+
+        <?php if (empty($queued_ago)): ?>
+            <span class="text-danger"><i class="fa fa-warning"></i> <?php print t('Not Run'); ?></span>
+        <?php endif; ?>
         <small>
           <?php print $queued_ago; ?>
         </small>
           <?php if (user_access('administer hosting queues')): ?>
+              <small>
               <?php print $hosting_queue_admin_link; ?>
+              </small>
           <?php endif; ?>
         <?php endif; ?>
     </li>
 
     <!-- Webhook -->
-    <?php if ($project->settings->deploy['method'] == 'webhook'):
+    <?php if (!empty($project->settings->deploy['webhooks'])):
 
         $float = empty($project->settings->deploy['last_webhook'])? 'inline': 'pull-right';
       ?>
-      <li class="<?php print $float; ?>"><?php print $webhook_url; ?></li>
-    <?php endif; ?>
     <?php endif; ?>
     
     <?php // Extra items to allow modules to add things. ?>

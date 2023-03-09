@@ -24,6 +24,7 @@ devshop-log "Drush Version: $(drush --version)"
 devshop-log "Disabling hosting queue..."
 drush @hostmaster dis hosting_queued -y
 drush @hostmaster vset hosting_queued_paused 1
+drush @hostmaster vset hosting_queue_tasks_enabled 0
 
 #echo "DevShop | devshop-tests.sh | Verify hostmaster platform first..."
 #PLATFORM_ALIAS=`drush @hm php-eval "print d()->platform->name"`

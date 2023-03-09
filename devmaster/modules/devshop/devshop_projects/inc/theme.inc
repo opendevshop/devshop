@@ -180,7 +180,7 @@ function devshop_projects_preprocess_node(&$vars) {
       $form = drupal_get_form('hosting_task_retry_form', $vars['node']->nid);
       $vars['retry'] = $form;
 
-      if ($vars['node']->task_type == 'install' && !$vars['node']->environment->settings->locked && $vars['node']->task_status == HOSTING_TASK_SUCCESS || $vars['node']->task_status == HOSTING_TASK_WARNING) {
+      if ($vars['node']->task_type == 'install' && !$vars['node']->environment->settings->locked && ($vars['node']->task_status == HOSTING_TASK_SUCCESS || $vars['node']->task_status == HOSTING_TASK_WARNING)) {
           $vars['retry'] = [
             '#type' => 'link',
             '#title' => t('Reinstall'),
@@ -393,7 +393,7 @@ function devshop_projects_preprocess_node_project(&$vars){
   }
 
   // Set webhook interval
-  if ($project->settings->deploy['method'] == 'webhook' && $project->settings->deploy['last_webhook']){
+  if (!empty($project->settings->deploy['webhooks']) && $project->settings->deploy['last_webhook']){
     $interval = format_interval(REQUEST_TIME - $project->settings->deploy['last_webhook']);
     $vars['webhook_ago'] = t('@time ago', array('@time' => $interval));
   }
@@ -846,11 +846,6 @@ function devshop_projects_preprocess_environment(&$vars) {
   $environment = &$vars['environment'];
   $project = &$vars['project'];
 
-  // Load last task node.
-  if (isset($environment->last_task_nid)) {
-    $environment->last_task_node = node_load($environment->last_task_nid);
-  }
-
   if (!isset($environment->git_ref_type)) {
     $environment->git_ref_type = '';
   }
@@ -942,7 +937,8 @@ function devshop_projects_preprocess_environment(&$vars) {
 
   $environment->processing = FALSE;
 
-  foreach ($environment->tasks_list as $task) {
+  foreach ($environment->tasks_list as $i => $task) {
+    if ($i == 0) continue;
 
     if ($task->task_status == HOSTING_TASK_QUEUED || $task->task_status == HOSTING_TASK_PROCESSING) {
       $environment->active_tasks++;
@@ -1092,14 +1088,11 @@ function devshop_projects_preprocess_environment(&$vars) {
   }
 
   // State: Site Delete initiated.
-  elseif (!empty($environment->tasks['delete']) || $environment->site_status == HOSTING_SITE_DELETED) {
-    $site_delete_task = current($environment->tasks['delete']);
-    if (isset($site_delete_task)) {
-      $vars['warnings'][] = array(
-        'text' => t('Site Destroyed'),
-        'type' => 'info',
-      );
-    }
+  elseif ($environment->site_status == HOSTING_SITE_DELETED) {
+    $vars['warnings'][] = array(
+      'text' => t('Site Destroyed'),
+      'type' => 'info',
+    );
   }
 
   // State: Site is Disabled
@@ -1173,6 +1166,14 @@ function devshop_projects_preprocess_environment(&$vars) {
   }
 
   //   Load git information
+  $environment->git_last_timestamp = date('N', $environment->git_last);
+  $environment->git_last_ago = t('!ago ago', array(
+    '!ago' => format_interval(time() - $environment->git_last , 1)
+  ));
+  
+  /**
+   * @TODO: Change how this works. Git can no longer run commands on a repo with another user without marking "safe.directory" for every repo.
+   *
   if (isset($environment->repo_path) && file_exists($environment->repo_path . '/.git')) {
     // Timestamp of last commit.
     $environment->git_last = shell_exec("cd {$environment->repo_path}; git log --pretty=format:'%ct' --max-count=1");
@@ -1195,7 +1196,7 @@ function devshop_projects_preprocess_environment(&$vars) {
 
     // Get the actual tag or branch. If a branch and tag have the same SHA, the tag will be output here.
     // "2> /dev/null" ensures errors don't get printed like "fatal: no tag exactly matches".
-    $environment->git_ref = trim(str_replace('refs/heads/', '', shell_exec("cd {$environment->repo_path}; git describe --tags --exact-match 2> /dev/null || git symbolic-ref -q HEAD 2> /dev/null")));
+//    $environment->git_ref = trim(str_replace('refs/heads/', '', shell_exec("cd {$environment->repo_path}; git describe --tags --exact-match 2> /dev/null || git symbolic-ref -q HEAD 2> /dev/null")));
 
     $environment->git_ref_type = !empty($project->settings->git['refs'][$environment->git_ref])
       ? $project->settings->git['refs'][$environment->git_ref]
@@ -1206,7 +1207,7 @@ function devshop_projects_preprocess_environment(&$vars) {
       $git_status = shell_exec("cd {$environment->repo_path}; git status");
       if (strpos($git_status, 'On branch ') === 0) {
         $environment->git_ref_type = 'branch';
-        $environment->git_ref = $environment->git_ref_stored;
+//        $environment->git_ref = $environment->git_ref_stored;
       }
       else {
         $environment->git_ref_type = 'tag';
@@ -1244,6 +1245,7 @@ function devshop_projects_preprocess_environment(&$vars) {
     $environment->git_status = '';
     $environment->git_diff = '';
   }
+   * */
 
   // Look for alternative git URL
   if ($environment->git_url != $project->git_url) {

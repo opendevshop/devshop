@@ -161,7 +161,6 @@ function hosting_create_environment($project, $new_environment_name, $new_enviro
       'name' => $environment->name,
       'site' => $environment->site,
       'settings' => serialize($environment->settings),
-      'last_task' => $environment->last_task,
     ))
     ->execute();
 

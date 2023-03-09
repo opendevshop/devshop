@@ -459,16 +459,16 @@ class RoboFile extends \Robo\Tasks {
               $push_url = "git@github.com:$slug";  
             }
             else {
-              $push_url = $repo->getCurrentBranch();
+              $push_url = $repo->getCurrentRemoteUrl();
             }
           }
           if ($repo->isDetached()) {
-            if ($branch = $this->io()->ask("<comment>$path</comment> git repo is detached. Would you like to check out a different branch?", $repo_branch)) {
+            if ($branch == $this->io()->ask("<comment>$path</comment> git repo is detached. Would you like to check out a different branch?", $repo_branch)) {
               $repo->callGit('checkout', $repo_branch);
             }
-            
           }
-          elseif ($repo->isCurrentRemoteHttp()){
+           
+          if ($repo->isCurrentRemoteHttp()){
             if ($this->io()->confirm("<comment>$path</comment> is using an HTTP remote. Would you like to change it to use $push_url?")) {
               $repo->callGit('remote', ['set-url', $repo->getCurrentRemoteName(), $push_url]);
             }
@@ -723,7 +723,7 @@ class RoboFile extends \Robo\Tasks {
 
     // Don't run when -n is specified,
     if (!$this->input()->isInteractive() || $this->confirm("Destroy devshop.server home directory? (aegir-home)")) {
-      if ($this->_exec("rm -rf aegir-home")->wasSuccessful()) {
+      if ($this->_exec("sudo rm -rf aegir-home")->wasSuccessful()) {
         $this->say("Entire aegir-home folder deleted.");
       }
     }

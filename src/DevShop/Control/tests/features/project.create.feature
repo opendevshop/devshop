@@ -118,7 +118,9 @@ Feature: Create a project and check settings
     Given I am on "http://testuser:testpassword@composer.testenv.devshop.local.computer"
     Then I should see "Welcome!"
     And I should see "Congratulations and welcome to the Drupal community."
-    And I should see "composer.testenv.devshop.local.computer"
+    
+    # this is aegir, setting the site title to the context name.
+    And I should see "composertestenvdevshoplocalcomputer"
 
     Given I am on the homepage
     Then I should see the link "composer"

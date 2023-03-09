@@ -370,7 +370,6 @@ function devshop_environment_save(stdClass &$environment) {
   $info->name = $environment->name;
   $info->site = $environment->site;
   $info->settings = serialize($environment->settings);
-  $info->last_task = $environment->last_task;
 
   // Check for existing records
   $result = db_select('hosting_devshop_project_environment', 'e')
@@ -394,15 +393,3 @@ function devshop_environment_save(stdClass &$environment) {
   }
 }
 
-/**
- * Helper to save last task info.
- */
-function devshop_environment_save_last_task($environment) {
-
-  db_update('hosting_devshop_project_environment')
-    ->fields(array(
-      'last_task' => $environment->last_task,
-    ))
-    ->condition('site', $environment->site)
-    ->execute();
-}
