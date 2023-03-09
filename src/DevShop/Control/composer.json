@@ -160,7 +160,30 @@
           "rm -rf vendor web/profiles web/includes web/misc web/modules web/scripts web/themes web/sites/all/modules/contrib web/sites/all/modules/themes",
           "rm -f web/*; rm -f web/.* || true",
           "echo 'Done.'"
+        ],
+        "devshop:build" : [
+            "composer install --no-dev --no-progress --no-suggest --ansi"
+        ],
+        "devshop:install": [
+          "drush site:install --existing-config"
+        ],
+        "devshop:deploy": [
+          "drush cache-clear all",
+          "drush updb -y"
+        ],
+        "devshop:test": [
+          "bin/behat --help"
+        ],
+        "devshop:verify": [
+          "drush status"
         ]
+    },
+    "scripts-descriptions": {
+      "devshop:build": "Prepare software stack. Run composer install.",
+      "devshop:install": "Install the site from scratch.",
+      "devshop:deploy": "Update the site after code changes or sync.",
+      "devshop:test": "Test the site.",
+      "devshop:verify": "Verify the site is working properly. Safe on live."
     },
     "extra": {
       "installer-types": ["npm-asset"],
