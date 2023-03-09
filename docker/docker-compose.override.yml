@@ -8,5 +8,5 @@ services:
     command: devshop-ansible-playbook
     volumes:
       - ../:/usr/share/devshop
-      - ../aegir-home:/var/aegir
-      - $HOME/.ssh:/var/aegir/.ssh
+      - ../aegir-home:/var/platform
+      - $HOME/.ssh:/var/platform/.ssh

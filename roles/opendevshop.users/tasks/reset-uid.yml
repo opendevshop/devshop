@@ -11,7 +11,7 @@
   shell: "ps -ef | grep -v grep | grep -w {{ aegir_user_name }} | awk '{print $2}'"
   register: running_processes
 
-- name: Aegir User Processes
+- name: Platform User Processes
   debug:
     var: running_processes
 

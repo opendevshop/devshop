@@ -1,6 +1,6 @@
 ---
 
-- name: Symbolic link to Aegir's Apache Config
+- name: Symbolic link to Platform's Apache Config
   file:
     src: "{{ aegir_user_home }}/config/apache.conf"
     # For Debian, apache_conf_path == '/etc/apache2'

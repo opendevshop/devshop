@@ -44,7 +44,7 @@
   include_tasks: "prepare-user.yml"
   tags: [always]
 
-- name: Ensure /var/aegir is owned by aegir user.
+- name: Ensure platform user home is owned by platform user.
   file:
     state: directory
     recurse: true
@@ -52,11 +52,11 @@
     group: "{{ aegir_user_name }}"
     owner: "{{ aegir_user_name }}"
 
-- name: Ensure /var/aegir has correct permissions.
+- name: Ensure platform user home has correct permissions.
   command: chmod 755 {{ aegir_user_home }}
   when: ansible_os_family == "RedHat"
 
-- name: Create aegir's config folder
+- name: Create platform user config folder
   file:
     path: "{{ aegir_user_home }}/config"
     owner: "{{ aegir_user_name }}"
@@ -64,7 +64,7 @@
     state: directory
     mode: 0755
 
-- name: Create aegir's logs folder
+- name: Create platform logs folder
   file:
     path: "{{ aegir_logs_path }}"
     owner: "{{ aegir_user_name }}"
@@ -72,13 +72,13 @@
     state: directory
     mode: 0755
 
-- name: Create a link to aegir's logs folder
+- name: Create a link to platforms logs folder
   file:
     src: "{{ aegir_logs_path }}"
     dest: "{{ aegir_user_home }}/logs"
     state: link
 
-- name: Create aegir's authorized keys file
+- name: Create platform user authorized keys file
   copy:
     dest: "{{ aegir_user_home }}/.ssh/authorized_keys"
     owner: "{{ aegir_user_name }}"

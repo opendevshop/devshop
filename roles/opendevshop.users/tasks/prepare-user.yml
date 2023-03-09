@@ -1,11 +1,11 @@
 ---
-- name: Detect current Aegir user UID
+- name: Detect current Platform user UID
   getent:
     database: passwd
     key: "{{ aegir_user_name }}"
   failed_when: false
 
-- name: Detect current Aegir user GID
+- name: Detect current Platform user GID
   getent:
     database: group
     key: "{{ aegir_user_name }}"
@@ -18,19 +18,19 @@
   when:
     - getent_passwd is defined
 
-- name: Current Aegir User UID & GID
+- name: Current Platform User UID & GID
   debug:
     msg: "UID: {{ aegir_user_uid_current }}  GID: {{ aegir_user_gid_current }}"
   when:
     - getent_passwd is defined
 
-- name: Desired Aegir User UID & GID
+- name: Desired Platform User UID & GID
   debug:
     msg: "UID: {{ aegir_user_uid }}  GID: {{ aegir_user_gid }}"
   when:
     - getent_passwd is defined
 
-- name: Include Reset Aegir User tasks
+- name: Include Reset Platform User tasks
   include_tasks: "reset-uid.yml"
   when:
     # Do not run if aegir_user_uid_current is blank (happens on first install).
@@ -39,7 +39,7 @@
     - aegir_user_uid != aegir_user_uid_current or aegir_user_gid != aegir_user_gid_current
   tags: [always]
 
-- name: Create Aegir Group (so we can set the GID)
+- name: Create Platform Group (so we can set the GID)
   group:
     name: "{{ aegir_user_name }}"
     state: present
@@ -48,7 +48,7 @@
 - name: Populate service facts
   service_facts:
 
-- name: Create Aegir user
+- name: Create Platform user
   when:
     - aegir_create_user
   user:
