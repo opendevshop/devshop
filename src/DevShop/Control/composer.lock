@@ -2835,7 +2835,7 @@
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/hosting_https.git",
-                "reference": "3ee1bc7c7c51ba1c377caac84c09d4f03c4f3067"
+                "reference": "40115940411da73785d9d7b06d11b7541d33e77c"
             },
             "require": {
                 "drupal/drupal": "~7.0",
@@ -2854,8 +2854,8 @@
                     "dev-3.x": "3.x-dev"
                 },
                 "drupal": {
-                    "version": "7.x-3.190+1-dev",
-                    "datestamp": "1677626137",
+                    "version": "7.x-3.190+2-dev",
+                    "datestamp": "1678393565",
                     "security-coverage": {
                         "status": "not-covered",
                         "message": "Dev releases are not covered by Drupal security advisories."
