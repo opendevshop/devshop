@@ -846,19 +846,6 @@ function devshop_projects_preprocess_environment(&$vars) {
   $environment = &$vars['environment'];
   $project = &$vars['project'];
 
-  // Create tasks list, keyed by VID
-  $tasks_list = array();
-  foreach ($environment->tasks as $task_type => $tasks) {
-    foreach ($tasks as $task_nid => $task) {
-      $tasks_list[$task_nid] = $task;
-    }
-  }
-  krsort($tasks_list);
-  
-  $environment->tasks_list = $tasks_list;
-  reset($environment->tasks_list);
-  $environment->last_task_node = current($environment->tasks_list);
-
   if (!isset($environment->git_ref_type)) {
     $environment->git_ref_type = '';
   }
@@ -950,7 +937,8 @@ function devshop_projects_preprocess_environment(&$vars) {
 
   $environment->processing = FALSE;
 
-  foreach ($environment->tasks_list as $task) {
+  foreach ($environment->tasks_list as $i => $task) {
+    if ($i == 0) continue;
 
     if ($task->task_status == HOSTING_TASK_QUEUED || $task->task_status == HOSTING_TASK_PROCESSING) {
       $environment->active_tasks++;

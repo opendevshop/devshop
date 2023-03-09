@@ -220,6 +220,19 @@ function devshop_project_load($node) {
     // Get all tasks, keyed by type.
     $environment->tasks = devshop_get_tasks($environment);
 
+    // Create tasks list, keyed by VID
+    $tasks_list = array();
+    foreach ($environment->tasks as $task_type => $tasks) {
+      foreach ($tasks as $task_nid => $task) {
+        $tasks_list[$task_nid] = $task;
+      }
+    }
+    krsort($tasks_list);
+
+    $environment->tasks_list = $tasks_list;
+    reset($environment->tasks_list);
+    $environment->last_task_node = current($environment->tasks_list);
+
     // The URL that the branch or tag links to.
     if ($project->git_provider == 'github') {
       $environment->git_repo_url = strtr($environment->git_url, array(
