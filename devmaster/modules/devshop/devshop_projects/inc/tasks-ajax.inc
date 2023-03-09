@@ -58,7 +58,8 @@ function devshop_tasks_json_endpoint($node) {
 
 /**
  * Page callback that returns current tasks status.
- *
+ * DEPRECATED. Kept here for reference. 
+ * @TODO: Remove.
  * @param string $project_name
  */
 function devshop_projects_tasks_status_json() {
