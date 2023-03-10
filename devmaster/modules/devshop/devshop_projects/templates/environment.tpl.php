@@ -196,34 +196,9 @@
 
       <div class="environment-status">
 
-      <?php
-      // If we detect a currently running deploy...
-      if (isset($environment->tasks['deploy'])):
-        $task = current($environment->tasks['deploy']);
-
-        if (($environment->git_ref != $task->task_args['git_ref'] || $environment->git_ref != $environment->git_ref_stored) && ($task->task_status == HOSTING_TASK_QUEUED || $task->task_status == HOSTING_TASK_PROCESSING)): ?>
-        <span title="<?php print t('Deploying from @source to @target...', array('@source' => $environment->git_ref, '@target' => $task->task_args['git_ref'])); ?>">
-          <a href="<?php print $environment->git_ref_url; ?>" class="environment-meta-data environment-git-ref btn btn-text" target="_blank"  title="<?php print t('Current actual git ref.'); ?>">
-            <i class='fa fa-<?php print $environment->git_ref_type == 'tag'? 'tag': 'code-fork'; ?>'></i><?php print (!empty($environment->git_ref_stored)? $environment->git_ref_stored: $environment->git_ref); ?>
-          </a>
-          <i class="fa fa-caret-right text-muted small"></i>
-          <a href="<?php print $environment->git_ref_url; ?>" class="environment-meta-data environment-git-ref btn btn-text" target="_blank"  title="<?php print t('Desired git ref.'); ?>">
-          <i class='fa fa-<?php print $project->settings->git['refs'][$task->task_args['git_ref']] == 'tag'? 'tag': 'code-fork'; ?>'></i><?php print $task->task_args['git_ref']; ?>
-          </a>
-          </span>
-
-          <?php else: ?>
-            <a href="<?php print $environment->git_ref_url; ?>" class="environment-meta-data environment-git-ref btn btn-text" target="_blank" title="<?php print t('Git !type: ', array('!type' => $environment->git_ref_type)) . $environment->git_ref; ?>">
-            <i class='fa fa-<?php print $environment->git_ref_type == 'tag'? 'tag': 'code-fork'; ?>'></i><?php print $environment->git_ref; ?>
-          </a>
-        <?php endif; ?>
-
-      <?php else: ?>
         <a href="<?php print $environment->git_ref_url; ?>" class="environment-meta-data environment-git-ref btn btn-text" target="_blank" title="<?php print t('Git !type: ', array('!type' => $environment->git_ref_type)) . $environment->git_ref; ?>">
           <i class='fa fa-<?php print $environment->git_ref_type == 'tag'? 'tag': 'code-fork'; ?>'></i><?php print $environment->git_ref; ?>
         </a>
-      <?php endif; ?>
-
 
         <?php if ($environment->version): ?>
             <a href="<?php print url("node/$environment->platform"); ?>"  title="Drupal version <?php print $environment->version; ?>" class="environment-meta-data environment-drupal-version btn btn-text">
