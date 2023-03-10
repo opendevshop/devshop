@@ -680,9 +680,7 @@ sites/all/drush/drushrc.php
                   )); ?>
                 </div>
 
-                <?php print theme('devshop_ascii', array('output' => $environment->git_commit)); ?>
                 <?php print theme('devshop_ascii', array('output' => $environment->git_status)); ?>
-                <?php print theme('devshop_ascii', array('output' => $environment->git_diff)); ?>
 
                 <p>
                   <?php print $note; ?>
