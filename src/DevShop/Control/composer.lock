@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "67fbe9abd734d6e8819408ea5fd1c8c5",
+    "content-hash": "123722dc90c34782760326897fe11fed",
     "packages": [
         {
             "name": "behat/behat",
@@ -2542,7 +2542,7 @@
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/hosting.git",
-                "reference": "edfd03a7c573e2322701d1e170c0f51ad81d8fa1"
+                "reference": "d9e77d22309778b109c3281da211ffa955a3fba3"
             },
             "require": {
                 "drupal/drupal": "~7.0",
@@ -2572,8 +2572,8 @@
                     "dev-4.x": "4.x-dev"
                 },
                 "drupal": {
-                    "version": "7.x-4.0-beta1+57-dev",
-                    "datestamp": "1678459234",
+                    "version": "7.x-4.0-beta1+59-dev",
+                    "datestamp": "1678468616",
                     "security-coverage": {
                         "status": "not-covered",
                         "message": "Dev releases are not covered by Drupal security advisories."
@@ -3114,95 +3114,6 @@
             }
         },
         {
-            "name": "drupal/hosting_tasks_extra",
-            "version": "3.191.0",
-            "source": {
-                "type": "git",
-                "url": "https://git.drupalcode.org/project/hosting_tasks_extra.git",
-                "reference": "7.x-3.191"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/hosting_tasks_extra-7.x-3.191.zip",
-                "reference": "7.x-3.191",
-                "shasum": "77d49528a314b11ebafa5604cde889b3f3e0588d"
-            },
-            "require": {
-                "drupal/drupal": "~7.0",
-                "drupal/hosting_site": "*"
-            },
-            "require-dev": {
-                "drupal/hosting": "*",
-                "drupal/hosting_site": "*"
-            },
-            "type": "drupal-module",
-            "extra": {
-                "drupal": {
-                    "version": "7.x-3.191",
-                    "datestamp": "1674283416",
-                    "security-coverage": {
-                        "status": "covered",
-                        "message": "Covered by Drupal's security advisory policy"
-                    }
-                }
-            },
-            "notification-url": "https://packages.drupal.org/7/downloads",
-            "license": [
-                "GPL-2.0-or-later"
-            ],
-            "authors": [
-                {
-                    "name": "anarcat",
-                    "homepage": "https://www.drupal.org/user/1274"
-                },
-                {
-                    "name": "colan",
-                    "homepage": "https://www.drupal.org/user/58704"
-                },
-                {
-                    "name": "cweagans",
-                    "homepage": "https://www.drupal.org/user/404732"
-                },
-                {
-                    "name": "dsnopek",
-                    "homepage": "https://www.drupal.org/user/266527"
-                },
-                {
-                    "name": "ergonlogic",
-                    "homepage": "https://www.drupal.org/user/368613"
-                },
-                {
-                    "name": "gboudrias",
-                    "homepage": "https://www.drupal.org/user/918342"
-                },
-                {
-                    "name": "helmo",
-                    "homepage": "https://www.drupal.org/user/449000"
-                },
-                {
-                    "name": "Jon Pugh",
-                    "homepage": "https://www.drupal.org/user/17028"
-                },
-                {
-                    "name": "memtkmcc",
-                    "homepage": "https://www.drupal.org/user/92646"
-                },
-                {
-                    "name": "omega8cc",
-                    "homepage": "https://www.drupal.org/user/539502"
-                },
-                {
-                    "name": "Steven Jones",
-                    "homepage": "https://www.drupal.org/user/99644"
-                }
-            ],
-            "description": "Adds additional tasks to Aegir.",
-            "homepage": "https://www.drupal.org/project/hosting_tasks_extra",
-            "support": {
-                "source": "https://git.drupalcode.org/project/hosting_tasks_extra"
-            }
-        },
-        {
             "name": "drupal/jquery_update",
             "version": "2.7.0",
             "source": {
@@ -3573,7 +3484,7 @@
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/provision.git",
-                "reference": "62b81036eec2cf9955bfdf9d3d024dc15b96c513"
+                "reference": "e996a04675141a240b885c7a3ed5d3390840b8c5"
             },
             "require": {
                 "drupal/drupal": "~7.0",
@@ -3589,8 +3500,8 @@
                     "dev-4.x": "4.x-dev"
                 },
                 "drupal": {
-                    "version": "7.x-4.0-beta2+58-dev",
-                    "datestamp": "1678394637",
+                    "version": "7.x-4.0-beta2+65-dev",
+                    "datestamp": "1678468616",
                     "security-coverage": {
                         "status": "not-covered",
                         "message": "Dev releases are not covered by Drupal security advisories."
