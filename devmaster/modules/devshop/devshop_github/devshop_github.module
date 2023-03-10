@@ -126,7 +126,7 @@ function devshop_github_menu() {
  */
 function devshop_github_form_project_node_form_alter(&$form, &$form_state, $form_id) {
   $node = $form['#node'];
-  $project = &$form_state['project'];
+  $project = $node->project;
   $prs_url = $project->git_repo_url . '/pulls';
   if ($node->project->git_provider != 'github') {
     return;
