@@ -13,7 +13,7 @@
  */
 function drush_acquia_post_provision_deploy($branch = '') {
 
-  if (d()->type == 'site'){
+  if (d()->type == 'site' && d()->environment_settings && d()->project){
 
     if (empty($branch)) {
       $branch = d()->platform->git_ref;
