@@ -398,8 +398,8 @@ function devshop_projects_preprocess_node_project(&$vars){
     $vars['webhook_ago'] = t('@time ago', array('@time' => $interval));
   }
 
-  if ($project->settings->deploy['method'] == 'queue') {
-    $vars['queued_ago'] = hosting_format_interval(variable_get('hosting_queue_pull_last_run', FALSE));
+  if (!empty($project->settings->deploy['method'])) {
+    $vars['queued_ago'] = hosting_format_interval(variable_get('hosting_queue_git_last_run', FALSE));
   }
 
   // Webhook status output.
@@ -951,15 +951,7 @@ function devshop_projects_preprocess_environment(&$vars) {
     //    $text = "<i class='fa fa-{$task->icon}'></i> {$task->type_name} <span class='small'>{$task->status_name}</span> <em class='small pull-right'><i class='fa fa-calendar'></i> {$task->ago}</em>";
     $items[] = theme('devshop_task', array('task' => $task));
   }
-  $environment->task_logs = l('<i class="fa fa-list"></i> ' . t('Task Logs'), "node/$environment->site/tasks", array(
-    'html' => TRUE,
-    'attributes' => array(
-      'class' => array(
-        'list-group-item',
-      ),
-    ),
-  ));
-  $environment->task_logs .= '<div class="tasks-wrapper">' . implode("\n", $items) . '</div>';
+  $environment->task_logs = '<div class="tasks-wrapper">' . implode("\n", $items) . '</div>';
 
   // Set a class showing the environment as active.
   if ($environment->active_tasks > 0) {
