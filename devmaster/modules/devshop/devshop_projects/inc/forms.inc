@@ -244,6 +244,25 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
     '#default_value' => isset($project->settings->deploy['webhooks']) ? $project->settings->deploy['webhooks'] : true,
   );
 
+  // Queue
+  $queues = hosting_get_queues();
+  if (isset($queues['tasks'])) {
+
+    $form['project']['settings']['deploy']['queue'] = array(
+      '#title' => t('Deployment Queue'),
+      '#type' => 'checkbox',
+      '#description' => t('Periodically check for updates and trigger deployments.'),
+      '#default_value' => isset($project->settings->deploy['queue']) ? $project->settings->deploy['queue'] : true,
+    );
+
+    if (user_access('administer hosting queues')) {
+      $form['project']['settings']['deploy']['queue']['#description'] .= ' ' . l(t("Task Queue Settings"), 'admin/hosting/queues');
+    }
+  }
+
+  // Manual Pull
+  $form['project']['settings']['deploy']['method']['#options']['manual'] = t('Disable automated deployment');
+  $form['project']['settings']['deploy']['method']['#options']['manual'] .= '<div class="description">' . t('Only run deployments when triggered manually.') . '</div>';
 
   // Add link to hosting queues admin if the user can access them.
   if (!isset($queues['deploy']['enabled']) && user_access('administer hosting queues')) {
@@ -605,7 +624,7 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
             );
             $form['parameters']['destination'] = array(
               '#type' => 'value',
-              '#value' => $node->environment->system_alias,
+              '#value' => $node->environment->drush_alias,
             );
           }
 

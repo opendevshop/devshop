@@ -3114,6 +3114,92 @@
             }
         },
         {
+            "name": "drupal/hosting_tasks_extra",
+            "version": "dev-4.x",
+            "source": {
+                "type": "git",
+                "url": "https://git.drupalcode.org/project/hosting_tasks_extra.git",
+                "reference": "b26ede74200ba8000b9c50e3ad16170981abd0c2"
+            },
+            "require": {
+                "drupal/drupal": "~7.0",
+                "drupal/hosting_site": "*"
+            },
+            "require-dev": {
+                "drupal/hosting": "*",
+                "drupal/hosting_site": "*"
+            },
+            "type": "drupal-module",
+            "extra": {
+                "branch-alias": {
+                    "dev-4.x": "4.x-dev"
+                },
+                "drupal": {
+                    "version": "7.x-4.x-dev",
+                    "datestamp": "1678126132",
+                    "security-coverage": {
+                        "status": "not-covered",
+                        "message": "Dev releases are not covered by Drupal security advisories."
+                    }
+                }
+            },
+            "notification-url": "https://packages.drupal.org/7/downloads",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "anarcat",
+                    "homepage": "https://www.drupal.org/user/1274"
+                },
+                {
+                    "name": "colan",
+                    "homepage": "https://www.drupal.org/user/58704"
+                },
+                {
+                    "name": "cweagans",
+                    "homepage": "https://www.drupal.org/user/404732"
+                },
+                {
+                    "name": "dsnopek",
+                    "homepage": "https://www.drupal.org/user/266527"
+                },
+                {
+                    "name": "ergonlogic",
+                    "homepage": "https://www.drupal.org/user/368613"
+                },
+                {
+                    "name": "gboudrias",
+                    "homepage": "https://www.drupal.org/user/918342"
+                },
+                {
+                    "name": "helmo",
+                    "homepage": "https://www.drupal.org/user/449000"
+                },
+                {
+                    "name": "Jon Pugh",
+                    "homepage": "https://www.drupal.org/user/17028"
+                },
+                {
+                    "name": "memtkmcc",
+                    "homepage": "https://www.drupal.org/user/92646"
+                },
+                {
+                    "name": "omega8cc",
+                    "homepage": "https://www.drupal.org/user/539502"
+                },
+                {
+                    "name": "Steven Jones",
+                    "homepage": "https://www.drupal.org/user/99644"
+                }
+            ],
+            "description": "Adds additional tasks to Aegir.",
+            "homepage": "https://www.drupal.org/project/hosting_tasks_extra",
+            "support": {
+                "source": "https://git.drupalcode.org/project/hosting_tasks_extra"
+            }
+        },
+        {
             "name": "drupal/jquery_update",
             "version": "2.7.0",
             "source": {
@@ -3485,6 +3571,7 @@
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/provision.git",
                 "reference": "aa4326f101c38c717d2a60d570c87afd0e940e95"
+                "reference": "8d9ca35f1a7c3bace48220782145c868e75781d6"
             },
             "require": {
                 "drupal/drupal": "~7.0",
@@ -3502,6 +3589,8 @@
                 "drupal": {
                     "version": "7.x-4.0-beta2+68-dev",
                     "datestamp": "1678478475",
+                    "version": "7.x-4.0-beta2+50-dev",
+                    "datestamp": "1678128278",
                     "security-coverage": {
                         "status": "not-covered",
                         "message": "Dev releases are not covered by Drupal security advisories."
@@ -9226,6 +9315,7 @@
         "drupal/hosting_filemanager": 20,
         "drupal/hosting_https": 20,
         "drupal/hosting_statsd": 10,
+        "drupal/hosting_tasks_extra": 20,
         "drupal/provision": 20
     },
     "prefer-stable": true,

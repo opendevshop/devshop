@@ -414,21 +414,23 @@ function drush_devshop_provision_post_provision_install() {
       return drush_set_error('DEVSHOP_ERROR', dt('Install_method"clone_source" was not set.'));
     }
 
-    $destination = d()->name;
-    $command = "drush provision-sync $source $destination --database --files --update-uri --disable-rollback-backup --registry-rebuild";
+    $destination = '@' . d()->group . '.' . d()->environment;
+    $extra_dump = escapeshellarg('--extra-dump="--single-transaction=false"');
+    $command = "drush sql-sync $extra_dump $source $destination";
 
-    // Build command based on environment settings.
-    if (d()->environment_settings['deploy']['update']) {
-      $command .= " --updatedb";
-    }
-    if (d()->environment_settings['deploy']['cache']) {
-      $command .= " --cache-clear";
-    }
-    if (d()->environment_settings['deploy']['revert']) {
-      $command .= " --features-revert-all";
-    }
+//    // Build command based on environment settings.
+//    if (d()->environment_settings['deploy']['update']) {
+//      $command .= " --updatedb";
+//    }
+//    if (d()->environment_settings['deploy']['cache']) {
+//      $command .= " --cache-clear";
+//    }
+//    if (d()->environment_settings['deploy']['revert']) {
+//      $command .= " --features-revert-all";
+//    }
 
-    provision_process($command, NULL, 'Cloning site from ' . d($source)->uri);
+    $environment = [];
+    provision_process($command, d()->root, dt('Syncing database...'), $environment, TRUE);
     provision_process('drush cc drush', NULL, 'Clearing drush caches');
 //    devshop_drush_process_cache_clear($destination);
   }
