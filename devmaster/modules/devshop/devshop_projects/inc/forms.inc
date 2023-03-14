@@ -369,15 +369,16 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
     '#default_value' => $project->settings->default_environment['force_default_servers']?: 0,
   );
 
-  $form['project']['installing'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('Site Installation'),
-    '#group' => 'project_settings',
-    '#tree' => FALSE,
-    '#weight' => -11,
-  );
-
-  $form['project']['installing']['install_method'] = devshop_environment_install_method_form($project);
+  if (arg(0) =='node') {
+    $form['project']['installing'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Site Installation'),
+      '#group' => 'project_settings',
+      '#tree' => FALSE,
+      '#weight' => -11,
+    );
+    $form['project']['installing']['install_method'] = devshop_environment_install_method_form($project);
+  }
   return $form;
 }
 
