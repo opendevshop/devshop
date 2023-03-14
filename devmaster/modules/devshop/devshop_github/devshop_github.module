@@ -678,9 +678,9 @@ function devshop_github_form_devshop_project_create_step_environments_alter(&$fo
   $prs_url = $project->git_repo_url . '/pulls';
 
   // Load the PRs.
+   $settings_link = '';
   try {
     $prs = devshop_github_client()->pullRequests()->all($project->github_owner, $project->github_repo);
-    $settings_link = '';
     $environment_forms = array();
     if (!empty($project->settings->github['pull_request_environments'])) {
 
