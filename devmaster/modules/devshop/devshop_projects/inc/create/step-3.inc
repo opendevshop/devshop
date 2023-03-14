@@ -204,7 +204,6 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
     }
 
     $project->environments = $environments;
-    ctools_object_cache_set('project', 'devshop_project', $project);
     $form_state['redirect'] = 'projects/add/environments';
   }
   else {
@@ -217,6 +216,12 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
       }
     }
   }
+  
+  // Save install method to settings.
+  $project->settings->install_method = $form_state['values']['install_method']; 
+
+  ctools_object_cache_set('project', 'devshop_project', $project);
+
 }
 
 /**

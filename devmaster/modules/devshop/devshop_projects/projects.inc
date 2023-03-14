@@ -93,6 +93,8 @@ function devshop_project_load($node) {
   $project->name = $node->project_name;
   $project->settings = (object) unserialize($project->settings);
 
+  // Set install_profile.
+  $project->install_profile = $project->settings->install_method['install_profile'] ?? '';
 
   // Create "refs" array to determine ref type.
   $project->settings->git['refs'] = array();

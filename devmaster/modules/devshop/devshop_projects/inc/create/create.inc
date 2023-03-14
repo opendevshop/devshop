@@ -216,6 +216,9 @@ function devshop_projects_create_wizard_finish(&$form_state) {
   $project = &$form_state['project'];
   $project_node = node_load($project->nid);
 
+  // Save create wizard cache object
+  $project->project = $project;
+  
   // Set to not verify and to publish.
   $project_node->no_verify = TRUE;
   $project_node->status = 1;

@@ -368,6 +368,16 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
     '#type' => 'checkbox',
     '#default_value' => $project->settings->default_environment['force_default_servers']?: 0,
   );
+
+  $form['project']['installing'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Site Installation'),
+    '#group' => 'project_settings',
+    '#tree' => FALSE,
+    '#weight' => -11,
+  );
+
+  $form['project']['installing']['install_method'] = devshop_environment_install_method_form($project);
   return $form;
 }
 
@@ -397,6 +407,10 @@ function devshop_projects_validate($node, &$form, &$form_state) {
   if (strpos($form_state['values']['project']['base_url'], '@environment') === FALSE ) {
     form_set_error('project][base_url', t('Environment Domain Name Pattern must include @environment placeholder.'));
   }
+  
+  // Move install_method back to project settings so we don't have to mess with parents.
+  $form_state['values']['project']['settings']['install_method'] = $form_state['values']['install_method']; 
+
 }
 
 /**
@@ -1082,7 +1096,11 @@ function devshop_projects_create_environment_form_validate_name($element, &$form
   }
 }
 
-function devshop_environment_install_method_form($project, $values = array(), $parent_element = 'install_method') {
+function devshop_environment_install_method_form($project, $values = null, $parent_element = 'install_method') {
+  
+  if (!$values) {
+    $values = $project->settings->install_method;
+  }
   $form = array(
     '#type' => 'fieldset',
     '#tree' => TRUE,
@@ -1125,7 +1143,7 @@ function devshop_environment_install_method_form($project, $values = array(), $p
     ),
     '#title' => t('Drupal Install Profile'),
     '#required' => false,
-    '#default_value' => $project->install_profile,
+    '#default_value' => $values['install_profile'],
     '#title_display' => 'invisible',
     '#description' => t('(optional) Enter the exact name the install profile to use. It must already exist in your git branch or tag.'),
     '#element_validate' => array(
@@ -1239,7 +1257,7 @@ function devshop_environment_install_method_form($project, $values = array(), $p
   $form['import'] = array(
     '#type' => 'textfield',
     '#title' => t('Path to SQL'),
-    '#default_value' => $values['import'],
+    '#default_value' => $values['import'] ?? '',
     '#description' =>
       t('Enter either a remote MySQL address (such as mysql://username:password@host/database), or an absolute path to an SQL dump (such as /var/aegir/site-backup.sql).') .
       '<span class="text-danger">' . t('This string is stored in plain text. Use with caution.') . '</span>'
@@ -1255,11 +1273,12 @@ function devshop_environment_install_method_form($project, $values = array(), $p
     ),
   );
 
-  $form['install_method']['import_files'] = array(
+  $form['import_files'] = array(
     '#type' => 'textfield',
-    '#title' => t('Path to Files Snapshot Directory'),
+    '#title' => t('Path to Files Directory'),
+    '#default_value' => $values['import_files'] ?? '',
     '#description' =>
-      t('Enter an absolute path to a files snapshot directory (such as /var/aegir/backups/files-snapshot/).') .
+      t('Enter an absolute path to a files directory (such as /var/aegir/backups/files-snapshot/).') .
       '<span class="text-danger">' . t('This string is stored in plain text. Use with caution.') . '</span>',
     '#weight' => -98,
     '#states' => array(

@@ -183,7 +183,7 @@ function devshop_projects_node_insert($node) {
   $info->code_path = hosting_path_normalize($node->project->code_path);
   $info->drupal_path = hosting_path_normalize($node->project->drupal_path);
   $info->base_url = $node->project->base_url;
-  $info->install_profile = isset($node->project->install_profile) ? $node->project->install_profile: null;
+  $info->install_profile = $node->project->settings->install_method['install_profile'] ?? '';
 
   // Save serialized data, minus environments
   $info->settings = serialize($node->project->settings);
@@ -262,16 +262,7 @@ function devshop_projects_node_update($node) {
   $info->code_path = hosting_path_normalize($project->code_path);
   $info->drupal_path = hosting_path_normalize($project->drupal_path);
   $info->base_url = $project->base_url;
-
-  if (!empty($project->install_profile)) {
-    $info->install_profile = $project->install_profile;
-  }
-  elseif (!empty($project->settings->default_environment['install_profile'])) {
-    $info->install_profile = $project->settings->default_environment['install_profile'];
-  }
-  else {
-    $info->install_profile = null;
-  }
+  $info->install_profile = $project->settings->install_method['install_profile'];
 
   // Save serialized data, minus environments
   $info->settings = serialize($project->settings);
