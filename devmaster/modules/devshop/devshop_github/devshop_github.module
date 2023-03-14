@@ -214,43 +214,6 @@ function devshop_github_form_project_node_form_alter(&$form, &$form_state, $form
         ),
       ),
   );
-
-  $options = array(
-    t('Install Drupal') => array(
-        'devshop__github__install' => empty($node->project->install_profile)? t('Default Install Profile (configured later)'): $node->project->install_profile,
-    ),
-    t('Clone another environment') => array(),
-  );
-
-  $options[t('Clone another environment')] = $form_state['environments'];
-  $options[t('Clone another environment')]['_primary'] = t('Primary Environment');
-
-  if (empty($options[t('Clone another environment')])) {
-    $options[t('Clone another environment')]['_primary'] = t('Primary Environment (configured later)');
-  }
-
-  $form['project']['settings']['github']['pull_request_install_method'] = devshop_environment_install_method_form($node->project, $node->project->settings->github['pull_request_install_method'], 'project[settings][github][pull_request_install_method]');
-  $form['project']['settings']['github']['pull_request_install_method']['#weight'] = 10;
-  $form['project']['settings']['github']['pull_request_install_method']['#title'] = t('Pull Request Environment Installation Method');
-  $form['project']['settings']['github']['pull_request_install_method']['#description'] = t('Select the method for installing all Pull Request environments.');
-
-  $form['project']['settings']['github']['pull_request_install_method']['#states'] = array(
-    'visible' => array(
-      ':input[name="project[settings][github][pull_request_environments]"]' => array('checked' => TRUE),
-    ),
-  );
-
-  $form['project']['settings']['github']['pull_request_reinstall'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Rebuild Pull Request Environments on every git push. <div class="help-block">Destroy and Rebuild Pull Request environments on every code push. All data in environments created via Pull Request will be destroyed every time code is pushed. The rebuild method is determie</div>'),
-    '#default_value' => isset($node->project->settings->github) ?
-      $node->project->settings->github['pull_request_reinstall'] : 0,
-    '#states' => array(
-      'visible' => array(
-        ':input[name="project[settings][github][pull_request_environments]"]' => array('checked' => TRUE),
-      ),
-    ),
-  );
   $form['project']['settings']['github']['pull_request_auto_merge'] = array(
     '#type' => 'checkbox',
     '#title' => t('Enable GitHub Auto-Merge. <div class="help-block">When creating the github deployment, tell it to attempt to automatically merge changes in from the primary branch. </div><div class="help-block"><span class="text-warning">WARNING: This will prevent deployment notifications if the branch cannot be merged because of a conflict. DevShop will send a message to GitHub notifying the developers they must resolve the conflicts to continue deployment notifications</span></div>'),

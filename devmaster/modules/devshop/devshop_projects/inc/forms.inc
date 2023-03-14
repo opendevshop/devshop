@@ -104,19 +104,6 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
 //    ),
 //  );
 
-  $form['project']['codebase']['install_profile'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Install Profile'),
-    '#description' => t('Enter the name of the install profile to use for sites in this project.'),
-    '#size' => 40,
-    '#default_value' => $project->install_profile,
-    '#maxlength' => 255,
-    '#weight' => 3,
-    '#parents' => array(
-      'project',
-      'install_profile',
-    ),
-  );
   $form['project']['codebase']['base_url'] = array(
     '#type' => 'textfield',
     '#title' => t('Environment Domain Name Pattern'),
@@ -133,6 +120,14 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
     ),
   );
 
+  $form['project']['codebase']['install_method'] = devshop_environment_install_method_form($project);
+  $form['project']['codebase']['install_method']['install_profile']['#parents'] = [
+    'project',
+    'install_profile',
+  ];
+  
+  dsm($form);
+  
   // Don't allow editing
   if ($node->nid) {
 
@@ -339,13 +334,6 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
     '#title' => t('Server Stack'),
     '#description' => t('The servers to use when creating new environments.'),
     '#group' => 'project_settings',
-  );
-
-  $form['project']['settings']['default_environment']['install_profile'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Default Install Profile'),
-    '#description' => t('New environments will be created using this install profile. Existing environments will not be affected.'),
-    '#default_value' => $node->project->install_profile,
   );
 
   // HTTP Server select.
@@ -1122,9 +1110,9 @@ function devshop_environment_install_method_form($project, $values = array(), $p
       'manual' => t('Manual Install'),
       'import' => t('Import Database'),
     ),
-    '#default_value' => $values['method']?: 'profile',
+    '#default_value' => $values['method'] ?? 'profile',
   );
-
+  
   $form['none'] = array(
     '#type' => 'container',
     '#weight' => -98,
@@ -1138,37 +1126,18 @@ function devshop_environment_install_method_form($project, $values = array(), $p
     ),
   );
 
-  $form['profile'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Drupal Install Profile'),
-    '#description' => t('Enter the name of an install profile to use for this site. (optional)'),
-    '#description_display' => 'before',
-    '#weight' => -98,
-    '#required' => TRUE,
-    '#options' => devshop_environment_add_form_profile_options($project),
-    '#states' => array(
-      'visible' => array(
-       ":input[name='{$parent_element}[method]']" => array('value' => 'profile'),
-      ),
+  $form['install_profile'] = array(
+    '#type' => 'machine_name',
+    '#machine_name' => array(
+      'exists' => 'always_false',
     ),
-  );
-
-  // Set default profile.
-  if (count($form['profile']['#options']) == 1 || empty($project->install_profile)) {
-    $form['profile']['#default_value'] = '_other';
-  }
-  else {
-    $form['profile']['#default_value'] = $project->install_profile;
-  }
-
-  $form['profile_other'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Other Install Profile'),
-    '#default_value' => $values['profile_other'],
+    '#title' => t('Drupal Install Profile'),
+    '#required' => false,
+    '#default_value' => $project->install_profile,
     '#title_display' => 'invisible',
-    '#description' => t('Enter the exact name the install profile to use. It must already exist in your git branch or tag.'),
+    '#description' => t('(optional) Enter the exact name the install profile to use. It must already exist in your git branch or tag.'),
     '#element_validate' => array(
-      'devshop_projects_create_environment_form_validate_profile'
+      'form_validate_machine_name'
     ),
     '#attributes' => array(
       'placeholder' => t('Profile Name'),
@@ -1177,7 +1146,6 @@ function devshop_environment_install_method_form($project, $values = array(), $p
     '#states' => array(
       'visible' => array(
        ":input[name='{$parent_element}[method]']" => array('value' => 'profile'),
-        ':input[name="install_method[profile]"]' => array('value' => '_other'),
       ),
     ),
   );
@@ -1218,7 +1186,6 @@ function devshop_environment_install_method_form($project, $values = array(), $p
       '#type' => 'radios',
       '#title' => t('Environment to clone'),
       '#weight' => -98,
-      '#required' => TRUE,
       '#options' => $environment_options,
       '#default_value' => $values['clone_source'],
       '#states' => array(
@@ -1307,69 +1274,7 @@ function devshop_environment_install_method_form($project, $values = array(), $p
     ),
   );
 
-  $form['server_stack'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('Server Stack'),
-    '#group' => 'environment_settings',
-  );
-
-  $form['server_stack']['db_server'] = $form['db_server'];
-  $form['server_stack']['db_server']['#group'] = 'environment_settings';
-  $form['server_stack']['db_server']['#tree'] = FALSE;
-  unset($form['db_server']);
-
-  $web_servers = hosting_get_servers('http', FALSE);
-  $form['server_stack']['web_server'] = array(
-    '#type' => 'radios',
-    '#title' => t('Web server'),
-    '#description' => t('The web server the site will be hosted on.'),
-    '#options' => $web_servers,
-    '#required' => TRUE,
-    '#tree' => FALSE,
-    '#default_value' => $project->settings->default_environment['web_server'],
-  );
-
-  // Force the new environment to use the "default" servers.
-  if ($project->settings->default_environment['force_default_servers']) {
-    $form['server_stack']['#description'] = t('All environments in this project must use this server stack.');
-
-    $web_server_nid = $project->settings->default_environment['web_server'];
-    $form['server_stack']['web_server']['#type'] = 'value';
-    $form['server_stack']['web_server']['#value'] = $web_server_nid;
-    $form['server_stack']['web_server_label'] = array(
-      '#type' => 'item',
-      '#title' => t('Web server'),
-      '#markup' => l($web_servers[$web_server_nid], "node/$web_server_nid", array('attributes' => array('target' => '_blank'))),
-    );
-
-    $db_servers = hosting_get_servers('db', FALSE);
-    $db_server_nid = $project->settings->default_environment['db_server'];
-    $form['server_stack']['db_server']['#type'] = 'value';
-    $form['server_stack']['db_server']['#value'] = $db_server_nid;
-    $form['server_stack']['db_server_label'] = array(
-      '#type' => 'item',
-      '#title' => t('Database server'),
-      '#markup' => l($db_servers[$db_server_nid], "node/$db_server_nid", array('attributes' => array('target' => '_blank'))),
-    );
-  }
-
-  $form['project_nid'] = array(
-    '#value' => $project->nid,
-    '#type' => 'value',
-  );
-
-  $form['platform_node'] = array(
-    '#type' => 'value',
-    '#value' => NULL,
-  );
-
-
-  // Remove platform and profile options.
-  // @TODO: Patch Aegir so we don't have to load all of these platform options.
-  $form['platform']['#access'] = FALSE;
-  $form['profile']['#access'] = FALSE;
-  $form['git']['#access'] = FALSE;
-
+  return $form;
 }
 
 /**
@@ -1445,19 +1350,6 @@ function devshop_prepare_platform_node($project, $environment_name, $git_ref, $w
     $platform_node->publish_path = $platform_node->git_root;
   }
   return $platform_node;
-}
-
-/**
- * Validator for the "other profile" field.
- *
- * @param $element
- * @param $form_state
- * @param $form
- */
-function devshop_projects_create_environment_form_validate_profile($element, &$form_state, &$form) {
-  if ($form_state['values']['install_method']['method'] == 'profile' && $form_state['values']['install_method']['profile'] =='_other') {
-    form_set_value($form['install_method']['profile'], $element['#value'], $form_state);
-  }
 }
 
 /**
@@ -1539,28 +1431,6 @@ function devshop_environment_method_process($element) {
   }
 
   return $element;
-}
-
-/**
- * Return all available install profiles found in all platforms for this project.
- */
-function devshop_environment_add_form_profile_options($project) {
-
-
-  foreach ($project->environments as $e => $environment) {
-
-    $packages = hosting_package_instances_load(array(
-      'package_type' => 'profile',
-      'rid' => $environment->platform,
-    ));
-
-    foreach ($packages as $instance) {
-      $options[$instance->short_name] = $instance->title;
-      $options[$instance->short_name] .= ' <small class="text-muted">' . $instance->description . '</small>';
-    }
-  }
-  $options['_other'] = t('Other') . ' <small class="text-muted">' . t('Choose another profile.') . '</small>';
-  return $options;
 }
 
 /**
@@ -1779,4 +1649,9 @@ function devshop_projects_form_server_node_form_alter(&$form, &$form_state, $for
 function devshop_projects_hosting_site_options_alter(&$return, $node) {
   $return['profile'][] = 0;
   $return['platform'][] = 0;
+}
+
+
+function always_false() {
+  return false;
 }
