@@ -87,6 +87,11 @@ function devshop_project_create_step_environments($form, &$form_state) {
     );
   }
   $form['project']['environments']['NEW']['name']['#attributes']['autofocus'] = 'autofocus';
+
+  $form['install_method'] = devshop_environment_install_method_form($project);
+  $form['install_method']['method']['#title'] = t('Default Install Method');
+  $form['install_method']['#description'] = t('Environments will be installed with this method by default. You can choose alternative methods when creating environments manually.');
+  
   return $form;
 }
 

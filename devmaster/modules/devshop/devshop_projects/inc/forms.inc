@@ -119,12 +119,6 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
       'base_url',
     ),
   );
-
-  $form['project']['codebase']['install_method'] = devshop_environment_install_method_form($project);
-  $form['project']['codebase']['install_method']['install_profile']['#parents'] = [
-    'project',
-    'install_profile',
-  ];
   
   // Don't allow editing
   if ($node->nid) {
@@ -1149,7 +1143,11 @@ function devshop_environment_install_method_form($project, $values = array(), $p
   );
 
   // Generate environments options.
+  $environment_options['@primary'] = t('Primary Environment');
   foreach ($project->environments as $e => $environment) {
+    if ($e == 'NEW') {
+      continue;
+    }
     $link = l(' <i class="fa fa-external-link"></i> ' . $environment->uri,  $environment->url, array(
         'html' => TRUE,
         'attributes' => array(
@@ -1185,7 +1183,7 @@ function devshop_environment_install_method_form($project, $values = array(), $p
       '#title' => t('Environment to clone'),
       '#weight' => -98,
       '#options' => $environment_options,
-      '#default_value' => $values['clone_source'],
+      '#default_value' => $values['clone_source'] ?? '@primary',
       '#states' => array(
         'visible' => array(
          ":input[name='{$parent_element}[method]']" => array('value' => 'clone'),
@@ -1218,12 +1216,11 @@ function devshop_environment_install_method_form($project, $values = array(), $p
   //    );
   //  }
 
-
   $form['clone_source_drush'] = array(
     '#type' => 'textfield',
     '#title' => t('Drush Alias'),
-    '#default_value' => $values['clone_source_drush'],
-    '#description' => t('Enter a Drush alias you would like to Sync your database and files from. It must already exist on the server.'),
+    '#default_value' => $values['clone_source_drush'] ?? '',
+    '#description' => t('Enter a Drush alias you would like to Sync your database and files from. The alias can be a global drush alias file or in your site codebase at ./drush/sites/self.site.yml.'),
     '#element_validate' => array(
       'devshop_projects_create_environment_form_validate_clone_source'
     ),
