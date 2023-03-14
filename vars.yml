@@ -4,4 +4,4 @@
 ---
 
 # The default version of PHP to use.
-php_version: "8.0"
+php_version: "8.1"

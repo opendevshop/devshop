@@ -202,9 +202,16 @@ function devshop_bitbucket_form_devshop_projects_settings_form_alter(&$form, &$f
 
     $latest_repo = current($latest_repos['values']);
     $repo_count = count($latest_repos['values']);
-    $repo_link = l($latest_repo['full_name'], $latest_repo['links']['html']['href'], array(
-      'attributes' => array(
-        'target' => '_blank')));
+    
+    if ($latest_repo) {
+      $repo_link = l($latest_repo['full_name'], $latest_repo['links']['html']['href'], array(
+        'attributes' => array(
+          'target' => '_blank')));  
+    }
+    else {
+      $repo_link = '';
+    }
+    
     $scopes = $client->getLastResponse()->getHeader('X-Oauth-Scopes');
     $api_error = NULL;
   }

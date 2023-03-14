@@ -16,6 +16,20 @@ define('DEVSHOP_PULL_STATUS_INVALID_CODE', 3);
 // The base URL to use for the Post Commit callback.
 define('DEVSHOP_PULL_CALLBACK_URL', 'webhook');
 
+// These are github's Webhook callback IPs.
+// This list grows occaisonally, update it as needed.
+define('DEVSHOP_PULL_WEBHOOK_DEFAULT_ALLOWED_IPS', "
+204.232.175.64/27
+192.30.252.0/22
+185.199.108.0/22
+140.82.112.0/20
+185.199.108.0/22
+140.82.112.0/20
+104.192.143.192/28
+104.192.143.208/28
+104.192.142.192/28
+");
+
 /**
  * Implements hook_permission().
  */
@@ -39,4 +53,92 @@ function devshop_pull_menu() {
     'type' => MENU_CALLBACK,
   );
   return $items;
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function devshop_pull_form_devshop_projects_settings_form_alter(&$form, &$form_state, $form_id) {
+
+  $form['webhooks'] = array(
+    '#group' => 'settings',
+    '#type' => 'fieldset',
+    '#title' => t('Webhooks'),
+  );
+  $form['webhooks']['devshop_pull_webhook_ip_acl'] = [
+    '#type' => 'textarea',
+    '#title' => t('Control Access by IP'),
+    '#default_value' => variable_get('devshop_pull_webhook_ip_acl', DEVSHOP_PULL_WEBHOOK_DEFAULT_ALLOWED_IPS
+    ),
+    '#rows' => 6,
+  ];
+
+  // Add some help text on what to fill in.
+  $items = [];
+  $items[] = t('Enter the IP addresses that are allowed to trigger a "Pull Code" task. You may specify address ranges using CIDR notation (e.g. 192.168.1.0/24).');
+  $items[] = t("Your local computer's IP address is %ip.", ['%ip' => ip_address()]);
+
+  // Show the last IP used to call our webhook. To make adding it easier.
+  $last_ip = variable_get('hosting_git_pull_webhook_last_ip', '');
+  if ($last_ip) {
+    $items[] = t('The last IP to attempt a commit notification was %ip', ['%ip' => $last_ip]);
+  }
+  else {
+    $items[] = t('No requests ever detected.  If you add the trigger URL for a project to your git repo host, the IP will be logged and displayed here.');
+  }
+
+  $items[] = l(t('View GitHub Webhook IP addresses (listed under "hooks")'), 'https://api.github.com/meta', [
+    'attributes' => [
+      '_target' => 'blank',
+    ],
+  ]);
+  $items[] = l(t('View BitBucket Webhook IP addresses'), 'https://ip-ranges.atlassian.com', [
+    'attributes' => [
+      '_target' => 'blank',
+    ],
+  ]);
+  $items[] = t('Leave empty to allow access from any IP address.');
+  $form['webhooks']['devshop_pull_webhook_ip_acl']['#description'] = theme('item_list', ['items' => $items]);
+}
+
+/**
+ * Determine if the requesting server is allowed to post.
+ */
+function devshop_pull_webhook_ip_access() {
+  $allowed_ips = explode("\n", trim(variable_get('devshop_pull_webhook_ip_acl', HOSTING_GIT_WEBHOOK_DEFAULT_ALLOWED_IPS)));
+  array_filter(array_map('trim', $allowed_ips));
+  return devshop_pull_ip_match(ip_address(), $allowed_ips);
+}
+
+/**
+ * Check whether a given ip address matches a list of allowed ip addresses.
+ *
+ * A CIDR is allowed. Returns TRUE if $list is empty.
+ *
+ * @param string $ip
+ *   The ip addy to test.
+ * @param array $list
+ *   The list to test against.
+ */
+function devshop_pull_ip_match($ip, $list) {
+  if (empty(array_filter($list))) {
+    return TRUE;
+  }
+  foreach ($list as $cidr) {
+    if (trim($ip) === trim($cidr)) {
+      return TRUE;
+    }
+    @list($net, $mask) = explode('/', trim($cidr));
+    if (isset($mask)) {
+      if ($mask > 32) {
+        // IPv6 is not supported... yet.
+        return FALSE;
+      }
+      $bitmask = ~((1 << (32 - $mask)) - 1);
+      if ((ip2long($net) & $bitmask) == (ip2long($ip) & $bitmask)) {
+        return TRUE;
+      }
+    }
+  }
+  return FALSE;
 }

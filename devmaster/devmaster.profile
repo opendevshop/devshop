@@ -321,6 +321,12 @@ function devmaster_task_finalize() {
 
   // Rebuild node access permissions.
   node_access_rebuild();
+
+  // Enable hosting tasks queue
+  variable_set('hosting_queue_tasks_enabled', true);
+  variable_set('hosting_queue_git_enabled', true);
+  variable_set('hosting_queue_tasks_items', 15);
+
 }
 
 /**

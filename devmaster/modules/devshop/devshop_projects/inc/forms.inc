@@ -233,51 +233,36 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
     '#collapsible' => TRUE,
     '#collapsed' => arg(1) != $project->nid,
     '#title' => t('Deployment Automation'),
-    '#description' => t('Configure how code is delivered to the servers. Post Deploy hooks are configured per environment.'),
+    '#description' => t('Configure how code is delivered to the servers. If no deployment methods are selected, you must deploy all code changes manually.'),
     '#weight' => -9,
     '#group' => 'project_settings',
   );
-
-  $form['project']['settings']['deploy']['method'] = array(
-    '#title' => 'Deploy Code Method',
-    '#type' => 'radios',
-    '#description' => t('Choose the method used to deploy code to the server.'),
-    '#default_value' => isset($project->settings->deploy['method']) ? $project->settings->deploy['method'] : 'webhook',
+  $form['project']['settings']['deploy']['webhooks'] = array(
+    '#title' => t('Enable Webhook Receiver'),
+    '#type' => 'checkbox',
+    '#description' => t('Provide an endpoint for your git repository host to ping to enable immediate deployment. Requires DevShop to be reachable from your git host.'),
+    '#default_value' => isset($project->settings->deploy['webhooks']) ? $project->settings->deploy['webhooks'] : true,
   );
 
-  // Commit Webhook
-  $form['project']['settings']['deploy']['method']['#options']['webhook'] = t('Immediate Deployment');
-  $form['project']['settings']['deploy']['method']['#options']['webhook'] .= '<div class="description">' . t('Recommended. Deploy code as it is delivered to your repository.') . ' <em>' . t('Requires setting up a webhook with your git repository host.') . '</em>' . '</div>';
-
-  // @TODO: Change deploy settings to just be "Keep up to date".
   // Queue
-//  $queues = hosting_get_queues();
-//  if ($queues['pull']['enabled']) {
-//    $form['project']['settings']['deploy']['method']['#options']['queue'] = t('Queued Deployment');
-//
-//    $t = array();
-//    $t['@freq'] = format_interval($queues['pull']['frequency'], 1);
-//
-//    $form['project']['settings']['deploy']['method']['#options']['queue'] .= '<div class="description">';
-//    $form['project']['settings']['deploy']['method']['#options']['queue'] .= t('Git pull code every @freq. Use only if repository webhooks are not available.', $t);
-//
-//
-//    if (user_access('administer hosting queues')) {
-//      $form['project']['settings']['deploy']['method']['#options']['queue'] .= ' ' . l(t("Pull Queue configured to run every @freq.", $t), 'admin/hosting/queues');
-//    }
-//    else {
-//      $form['project']['settings']['deploy']['method']['#options']['queue'] .= ' ' . t("Pull Queue configured to run every @freq.", $t);
-//    }
-//
-//    $form['project']['settings']['deploy']['method']['#options']['queue'] .= '</div>';
-//
-//  }
+  $queues = hosting_get_queues();
+  if (isset($queues['tasks'])) {
+
+    $form['project']['settings']['deploy']['queue'] = array(
+      '#title' => t('Deployment Queue'),
+      '#type' => 'checkbox',
+      '#description' => t('Periodically check for updates and trigger deployments.'),
+      '#default_value' => isset($project->settings->deploy['queue']) ? $project->settings->deploy['queue'] : true,
+    );
+
+    if (user_access('administer hosting queues')) {
+      $form['project']['settings']['deploy']['queue']['#description'] .= ' ' . l(t("Task Queue Settings"), 'admin/hosting/queues');
+    }
+  }
 
   // Manual Pull
-  $form['project']['settings']['deploy']['method']['#options']['manual'] = t('Manual Deployment');
-  $form['project']['settings']['deploy']['method']['#options']['manual'] .= '<div class="description">' . t('Deploy code to servers manually via devshop or drush.');
-
-  $form['project']['settings']['deploy']['method']['#options']['manual'] .= ' <em>' . t('Not recommended. All environments must be manually updated.') . '</em>' . '</div>';
+  $form['project']['settings']['deploy']['method']['#options']['manual'] = t('Disable automated deployment');
+  $form['project']['settings']['deploy']['method']['#options']['manual'] .= '<div class="description">' . t('Only run deployments when triggered manually.') . '</div>';
 
   // Add link to hosting queues admin if the user can access them.
   if (!isset($queues['deploy']['enabled']) && user_access('administer hosting queues')) {
@@ -639,7 +624,7 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
             );
             $form['parameters']['destination'] = array(
               '#type' => 'value',
-              '#value' => $node->environment->system_alias,
+              '#value' => $node->environment->drush_alias,
             );
           }
 
@@ -849,11 +834,6 @@ function devshop_projects_form_site_node_form_alter(&$form, &$form_state, $form_
     $form['environment']['platform'] = array(
       '#value' => $environment->platform,
       '#type' => 'value',
-    );
-
-    $form['environment']['last_task'] = array(
-      '#type' => 'value',
-      '#value' => $environment->last_task,
     );
     $form['form_title'] = array(
       '#markup' => t('Environment Settings'),
@@ -1435,7 +1415,7 @@ function devshop_prepare_platform_node($project, $environment_name, $git_ref, $w
 
 
   // Enable git pull queue for this platform if chosen.
-  if ($project->settings->deploy['method'] == 'queue') {
+  if (!empty($project->settings->deploy['queue'])) {
     // @TODO: Using integers because hosting_git_pull module isn't enabled anymore.
     $platform_node->git['pull_method'] = 1;
   }

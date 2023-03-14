@@ -38,6 +38,8 @@ dependencies[] = hosting_backup_queue
 dependencies[] = hosting_site_backup_manager
 dependencies[] = hosting_https
 dependencies[] = hosting_apache_https
+dependencies[] = hosting_self_signed
+dependencies[] = hosting_letsencrypt
 
 ;dependencies[] = fix_permissions
 ;dependencies[] = fix_ownership
@@ -53,7 +55,6 @@ dependencies[] = actions_permissions
 dependencies[] = r4032login
 dependencies[] = jquery_update
 dependencies[] = module_filter
-dependencies[] = hosting_letsencrypt
 
 ; This breaks hosting.install.  Removing it for now.
 ;dependencies[] = adminrole
