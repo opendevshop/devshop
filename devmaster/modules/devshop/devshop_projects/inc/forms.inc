@@ -1099,9 +1099,8 @@ function devshop_projects_create_environment_form_validate_name($element, &$form
 
 function devshop_environment_install_method_form($project, $values = null, $parent_element = 'install_method') {
   
-  if (!$values) {
-    $values = $project->settings->install_method;
-  }
+  $values = $values ?? $project->settings->install_method ?? [];
+
   $form = array(
     '#type' => 'fieldset',
     '#tree' => TRUE,
@@ -1144,7 +1143,7 @@ function devshop_environment_install_method_form($project, $values = null, $pare
     ),
     '#title' => t('Drupal Install Profile'),
     '#required' => false,
-    '#default_value' => $values['install_profile'],
+    '#default_value' => $values['install_profile'] ?? '', 
     '#title_display' => 'invisible',
     '#description' => t('(optional) Enter the exact name the install profile to use. It must already exist in your git branch or tag.'),
     '#element_validate' => array(
