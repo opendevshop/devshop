@@ -126,8 +126,6 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
     'install_profile',
   ];
   
-  dsm($form);
-  
   // Don't allow editing
   if ($node->nid) {
 
