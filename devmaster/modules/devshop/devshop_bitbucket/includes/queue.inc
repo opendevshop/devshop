@@ -64,7 +64,7 @@ function hosting_bitbucket_queue($count) {
  */
 function devshop_bitbucket_create_all_pr_environments($project_node) {
 
-  // Load all PRs from GitHub API
+  // Load all PRs from BitBucket API
   $project = $project_node->project;
   try {
     $list = devshop_bitbucket_client()->repositories()
