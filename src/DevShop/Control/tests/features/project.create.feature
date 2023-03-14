@@ -47,6 +47,8 @@ Feature: Create a project and check settings
     And I fill in "live" for "project[environments][NEW][name]"
     And I select "9.x" from "project[environments][NEW][git_ref]"
     And I press "Add environment"
+    
+    And I fill in "minimal" for "install_method[install_profile]"
     Then I press "Create Project & Environments"
 
     # FINISH!
@@ -54,7 +56,8 @@ Feature: Create a project and check settings
     And I should see "Dashboard"
     And I should see "Settings"
     And I should see "Logs"
-
+    And I should see "Install Profile minimal"
+    
     # @TODO: Fix install profile at hosting_site level: if install_profile is a string, look up package nid before saving.
     # And I should see "standard"
 #    And I should see "http://github.com/opendevshop/drupal"
@@ -105,6 +108,9 @@ Feature: Create a project and check settings
 
     When I click "Project Settings"
     Then I select "testenv" from "Primary Environment"
+    
+    Then the field "install_method[install_profile]" should have the value "minimal"
+    
     And I press "Save"
 
     Then I should see "DevShop Project composer has been updated."
