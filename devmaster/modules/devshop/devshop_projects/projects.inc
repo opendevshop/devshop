@@ -148,6 +148,7 @@ function devshop_project_load($node) {
           e.*,
           s.status as site_status,
           s.verified as verified,
+          s.profile as install_profile,
           p.status as platform_status,
           p.nid as platform,
           cp.name as platform_context,
@@ -202,8 +203,6 @@ function devshop_project_load($node) {
   $environment_nids = [];
   $deleted_environments = [];
   foreach ($environment_data as $environment) {
-
-    $environment->install_profile = $project->install_profile? : 'standard';
 
     // Site dashboard URL.
     $environment->dashboard_url = url("node/{$environment->site}", array(
