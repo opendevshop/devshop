@@ -124,6 +124,10 @@ function devshop_projects_node_load($nodes, $types) {
       // Load install method into an easy to access property.
       if (empty($node->install_method) && isset($node->environment->settings->install_method)) {
         $node->install_method = $node->environment->settings->install_method['method'];
+        
+        if ($node->install_method == 'clone') {
+          $node->clone_source = $node->environment->settings->install_method['clone_source'];
+        }
       }
 
       // If profile ID is empty but name is stored, load to $node->profile_name so that provision will load it.
