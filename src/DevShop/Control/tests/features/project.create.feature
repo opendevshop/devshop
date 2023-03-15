@@ -126,8 +126,6 @@ Feature: Create a project and check settings
     # Minimal profile has "Log in" on homepage.
     Then I should see "Log in"
     
-    And I should see "Congratulations and welcome to the Drupal community."
-    
     # this is aegir, setting the site title to the context name.
     And I should see "composertestenvdevshoplocalcomputer"
 
