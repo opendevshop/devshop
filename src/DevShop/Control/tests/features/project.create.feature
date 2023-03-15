@@ -177,3 +177,24 @@ Feature: Create a project and check settings
     Given I am on "http://composer.manualinstall.devshop.local.computer/core/install.php"
     # This fails in CI right now.
     Then I should see "Choose language"
+
+    # Testing "Clone Install"
+    Given I am on "/project/composer"
+    When I click "Create New Environment"
+    And I fill in "cloned" for "Environment Name"
+    And I select "9.x" from "git_ref"
+    And I select "clone" from "install_method[method]"
+    And I select "standard" from "install_method[clone_source]"
+    
+    Then I press "Create New Environment"
+    Then I should see "Environment cloned created in project composer."
+    And I should see the link "standard"
+    And I should see "clone of"
+
+    When I run drush "hosting-tasks --force --fork=0 --strict=0"
+
+    Given I am on "http://composer.cloned.devshop.local.computer"
+        
+    # Proves it is a clone.
+    Then I should see "Welcome!"
+    And I should see "composerstandarddevshoplocalcomputer"
