@@ -183,17 +183,16 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
   $form_state['environments'] = $environments_options;
   $environments_options[''] = t('None');
 
-  $form['project']['codebase']['live_environment'] = array(
+  $form['project']['codebase']['primary_environment'] = array(
     '#type' => 'select',
     '#title' => t('Primary Environment'),
     '#suffix' => '<p class="muted">' . t('Select the primary environment for this project, typically the live environment. This environment will be marked with a <i class="fa fa-bolt"></i> icon. This is the environment that will be cloned when pull requests are created.') . '</p>',
     '#options' => $environments_options,
-    '#default_value' => isset($project->settings->live) ? $project->settings->live['live_environment'] : '',
+    '#default_value' => $project->settings->primary_environment ?? current($environments_options),
     '#parents' => array(
       'project',
       'settings',
-      'live',
-      'live_environment',
+      'primary_environment',
     ),
   );
 

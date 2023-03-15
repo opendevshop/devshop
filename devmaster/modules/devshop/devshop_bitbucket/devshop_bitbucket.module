@@ -930,7 +930,7 @@ function devshop_bitbucket_webhook($project_node) {
 //              // @TODO: Once we add "deploy hooks" to "Project Settings: Environment Defaults" we will have to change this.
 //
 //              // If live environment is set to run tests on deploy...
-//              $live_environment = $project->settings->live['live_environment'];
+//              $live_environment = $project->settings->primary_environment;
 //              if ($project->environments[$live_environment]->settings->deploy['test']) {
 //                $params = new stdClass();
 //                $params->state = 'pending';

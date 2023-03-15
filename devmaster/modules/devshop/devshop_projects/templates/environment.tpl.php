@@ -187,7 +187,7 @@
       <!-- Environment Name -->
         <a href="<?php print $environment->site? url("node/$environment->site"): url("node/$environment->platform"); ?>" class="environment-link" title="<?php print t('Environment: ') . $environment->name; ?>">
 
-          <?php if ($environment->name == $project->settings->live['live_environment']): ?>
+          <?php if ($environment->name == $project->settings->primary_environment): ?>
             <i class="fa fa-bolt" title="<?php print t('Primary Environment'); ?>"></i>
           <?php endif; ?>
 
@@ -441,7 +441,7 @@
                                     <?php foreach ($source_environments as $source): ?>
                                         <?php if ($source->name == $environment->name) continue; ?>
                                         <li><a href="/hosting_confirm/<?php print $environment->site ?>/site_sync/?source=<?php print $source->site ?>">
-                                                <?php if ($project->settings->live['live_environment'] == $source->name): ?>
+                                                <?php if ($project->settings->primary_environment == $source->name): ?>
                                                     <i class="fa fa-bolt deploy-db-indicator"></i>
                                                 <?php elseif (isset($source->settings->locked) && $source->settings->locked): ?>
                                                     <i class="fa fa-lock deploy-db-indicator"></i>

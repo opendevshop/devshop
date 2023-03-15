@@ -161,8 +161,8 @@ function devshop_testing_form_elements($project, $environment_name = NULL) {
   }
   else {
     // If these settings are not for a specific environment, load up live or the first one.
-    if (!empty($project->settings->live['live_environment'])) {
-      $environment = (object) $project->environments[$project->settings->live['live_environment']];
+    if (!empty($project->settings->primary_environment)) {
+      $environment = (object) $project->environments[$project->settings->primary_environment];
     }
     else {
       $environment = array_shift($project->environments);

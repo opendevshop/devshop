@@ -62,7 +62,7 @@ HTML;
 
       // Live URL
       $live_domain = $project->settings->live['live_domain'];
-      $live_environment = $project->settings->live['live_environment'];
+      $live_environment = $project->settings->primary_environment;
 
       if ($live_domain) {
         $domain = $live_domain;
@@ -412,7 +412,7 @@ function devshop_hosting_site_goto_link($node) {
 //  $project = node_load($node->environment->project_nid);
 
   // If this is the live environment, use the live domain.
-  if ($node->environment->name == $node->project->settings->live['live_environment']) {
+  if ($node->environment->name == $node->project->settings->primary_environment) {
     $url = $node->project->settings->live['live_domain'];
   }
   // If environment aliases are enabled

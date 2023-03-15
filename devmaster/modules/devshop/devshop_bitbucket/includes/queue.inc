@@ -217,13 +217,13 @@ function devshop_bitbucket_create_all_pr_environments($project_node) {
   }
 
   // If pull_request_environments_method method set to "_primary", and live_environment is not set,throw an error.
-  if ($project->settings->bitbucket['pull_request_environments_method'] == '_primary' && empty($project->settings->live['live_environment'])) {
+  if ($project->settings->bitbucket['pull_request_environments_method'] == '_primary' && empty($project->settings->primary_environment)) {
     return drush_set_error("DRUSH_FRAMEWORK_ERROR", 'PR environments set to clone "Primary Environment", but there is none configured. Visit Project Settings > General Settings and choose a Primary Environment.');
   }
 
   //  If pull_request_environments_method method set to "_primary", reset 'pull_request_environments_method' to the name of the primary environment.
-  elseif ($project->settings->bitbucket['pull_request_environments_method'] == '_primary' && !empty($project->settings->live['live_environment'])) {
-    $primary_env_name = $project->settings->live['live_environment'];
+  elseif ($project->settings->bitbucket['pull_request_environments_method'] == '_primary' && !empty($project->settings->primary_environment)) {
+    $primary_env_name = $project->settings->primary_environment;
     $project->settings->bitbucket['pull_request_environments_method'] = $primary_env_name;
   }
 

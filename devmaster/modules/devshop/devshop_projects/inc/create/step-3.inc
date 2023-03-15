@@ -236,7 +236,7 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
   $project->settings->install_method = $form_state['values']['install_method']; 
   
   // Save primary environment.
-  $project->settings->live['live_environment'] = $form_state['values']['project']['primary_environment'];
+  $project->settings->primary_environment = $form_state['values']['project']['primary_environment'];
 
   ctools_object_cache_set('project', 'devshop_project', $project);
 

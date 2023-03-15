@@ -492,11 +492,11 @@ HTML;
 
   // Prepare environments output
   // Render live environment first.
-  if (isset($project->settings->live) && $project->settings->live['live_environment'] && isset($project->environments[$project->settings->live['live_environment']])) {
-    $environments = [$project->environments[$project->settings->live['live_environment']]];
+  if (isset($project->settings->live) && $project->settings->primary_environment && isset($project->environments[$project->settings->primary_environment])) {
+    $environments = [$project->environments[$project->settings->primary_environment]];
 
     $remaining = $vars['node']->project->environments;
-    unset($remaining[$project->settings->live['live_environment']]);
+    unset($remaining[$project->settings->primary_environment]);
     $environments += $remaining;
   }
   else {
@@ -914,7 +914,7 @@ function devshop_projects_preprocess_environment(&$vars) {
     $environment->class = 'disabled';
     $environment->list_item_class = 'disabled';
   }
-  elseif ($environment->name == $project->settings->live['live_environment']) {
+  elseif ($environment->name == $project->settings->primary_environment) {
     $environment->class = ' live-environment';
     $environment->list_item_class = 'info';
   }
