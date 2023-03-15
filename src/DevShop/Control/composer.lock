@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6b9fc21effe392eaba5d222b68198b49",
+    "content-hash": "13a564978ac804f9a306f380a4c9ab46",
     "packages": [
         {
             "name": "behat/behat",
@@ -6930,6 +6930,63 @@
                 "source": "https://github.com/bobthecow/psysh/tree/v0.11.12"
             },
             "time": "2023-01-29T21:24:40+00:00"
+        },
+        {
+            "name": "pyrech/composer-changelogs",
+            "version": "v2.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/pyrech/composer-changelogs.git",
+                "reference": "14b08841efd3ba1d113fd999db5fa0001318c2fc"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/pyrech/composer-changelogs/zipball/14b08841efd3ba1d113fd999db5fa0001318c2fc",
+                "reference": "14b08841efd3ba1d113fd999db5fa0001318c2fc",
+                "shasum": ""
+            },
+            "require": {
+                "composer-plugin-api": "^1.0 || ^2.0",
+                "ext-json": "*",
+                "php": ">=7.4"
+            },
+            "require-dev": {
+                "composer/composer": "^1.1 || ^2.0",
+                "friendsofphp/php-cs-fixer": "^3.0",
+                "phpstan/phpstan": "^1.9",
+                "symfony/phpunit-bridge": "^6.2"
+            },
+            "type": "composer-plugin",
+            "extra": {
+                "class": "Pyrech\\ComposerChangelogs\\ChangelogsPlugin"
+            },
+            "autoload": {
+                "psr-4": {
+                    "Pyrech\\ComposerChangelogs\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Loïck Piera",
+                    "email": "pyrech@gmail.com"
+                }
+            ],
+            "description": "Display changelogs after each composer update",
+            "keywords": [
+                "changelog",
+                "composer",
+                "plugin",
+                "update"
+            ],
+            "support": {
+                "issues": "https://github.com/pyrech/composer-changelogs/issues",
+                "source": "https://github.com/pyrech/composer-changelogs/tree/v2.0.0"
+            },
+            "time": "2023-02-04T15:44:22+00:00"
         },
         {
             "name": "ralouphie/getallheaders",

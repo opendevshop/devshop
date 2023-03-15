@@ -102,7 +102,8 @@
         "drush/drush": "^8.4",
         "http-interop/http-factory-guzzle": "^1.2",
         "drupal/provision": "dev-4.x",
-        "php-http/guzzle6-adapter": "^2.0"
+        "php-http/guzzle6-adapter": "^2.0",
+        "pyrech/composer-changelogs": "^2.0"
     },
     "conflict": {
         "drupal/core": "8.*"
@@ -123,7 +124,8 @@
             "cweagans/composer-patches": true,
             "drupal-composer/preserve-paths": true,
             "oomphinc/composer-installers-extender": true,
-            "php-http/discovery": true
+            "php-http/discovery": true,
+            "pyrech/composer-changelogs": true
         },
         "platform": {
             "php": "7.4.0"
