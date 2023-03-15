@@ -1427,3 +1427,9 @@ kbd.alert {
 
 #devshop-projects-settings-form .alert li {
 }
+
+.environment .environment-created .content {
+  max-width: 14em;
+  display: inline-block;
+  vertical-align: middle;
+}

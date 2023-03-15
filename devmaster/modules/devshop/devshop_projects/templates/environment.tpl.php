@@ -366,10 +366,15 @@
 
 
   <!-- Environment Info -->
-    <div class="list-group-item environment-info">
-        <label>
-          <?php print t('Created'); ?>
-        </label>
+    <div class="list-group-item environment-info environment-created">
+        
+        <div class="btn-group btn-group-smaller pull-right" role="group">
+            <a type="button" class="btn btn-link" href="<?php url("/hosting_confirm/{$environment->site}/site_install") ?>">
+                <i class="fa fa-recycle"></i>
+              <?php print t('Reinstall'); ?>
+            </a>
+        </div>
+        <label><?php print t('Created '); ?></label>
         <span class="content">
             <time class="timeago" datetime="<?php print date('c', $environment->created) ?>"><?php print format_date($environment->created); ?></time>
             <?php print $environment->install_method_label; ?>
