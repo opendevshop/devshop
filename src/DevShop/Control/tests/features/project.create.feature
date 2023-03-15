@@ -162,6 +162,7 @@ Feature: Create a project and check settings
     Then I should see "Welcome!"
 
     # Testing "Manual Install"
+    Given I am on "/project/composer"
     When I click "Create New Environment"
     And I fill in "manualinstall" for "Environment Name"
     And I select "9.x" from "git_ref"
@@ -173,6 +174,6 @@ Feature: Create a project and check settings
 
     Then I should see "Environment Dashboard"
     And I should see "Manually Installed"
-    Given I am on "http://myproject.manualinstall.devshop.local.computer/core/install.php"
+    Given I am on "http://composer.manualinstall.devshop.local.computer/core/install.php"
     # This fails in CI right now.
     Then I should see "Choose language"
