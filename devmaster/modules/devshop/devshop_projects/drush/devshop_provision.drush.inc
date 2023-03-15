@@ -430,7 +430,7 @@ function drush_devshop_provision_post_provision_install() {
 //    }
 
     $environment = [];
-    provision_process($command, d()->root, dt('Syncing database...'), $environment, TRUE);
+    provision_process($command, drush_server_home(), dt('Syncing database...'), $environment, TRUE);
     provision_process('drush cc drush', NULL, 'Clearing drush caches');
 //    devshop_drush_process_cache_clear($destination);
   }

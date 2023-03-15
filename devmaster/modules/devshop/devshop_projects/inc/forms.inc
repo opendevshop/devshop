@@ -1176,7 +1176,7 @@ function devshop_environment_install_method_form($project, $values = null, $pare
       )) . '</small>';
     $git_ref = $environment->git_ref;
     $icon = isset($environment->git_ref_type) && $environment->git_ref_type == 'tag'? 'tag': 'code-fork';
-    $environment_options[$environment->site_context] = "<span>{$environment->name}</span> <small class='git-ref text-muted'><i class='fa fa-$icon'></i> $git_ref</small> <small>$link</small>";
+    $environment_options[$environment->drush_alias] = "<span>{$environment->name}</span> <small class='git-ref text-muted'><i class='fa fa-$icon'></i> $git_ref</small> <small>$link</small>";
   }
 
   // Add other aliases to the clone source.
