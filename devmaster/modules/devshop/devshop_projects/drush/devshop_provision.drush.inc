@@ -418,17 +418,6 @@ function drush_devshop_provision_post_provision_install() {
     $extra_dump = escapeshellarg('--extra-dump="--single-transaction=false"');
     $command = "drush sql-sync $extra_dump $source $destination";
 
-//    // Build command based on environment settings.
-//    if (d()->environment_settings['deploy']['update']) {
-//      $command .= " --updatedb";
-//    }
-//    if (d()->environment_settings['deploy']['cache']) {
-//      $command .= " --cache-clear";
-//    }
-//    if (d()->environment_settings['deploy']['revert']) {
-//      $command .= " --features-revert-all";
-//    }
-
     $environment = [];
     provision_process($command, drush_server_home(), dt('Syncing database...'), $environment, TRUE);
     provision_process('drush cc drush', NULL, 'Clearing drush caches');

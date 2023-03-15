@@ -535,57 +535,6 @@ function devshop_bitbucket_form_devshop_project_create_step_git_alter(&$form, &$
   }
 }
 
-
-/**
- * Implements hook_form_FORM_ID_alter() for project_node_form().
- */
-function devshop_bitbucket_form_devshop_project_create_step_sites_alter(&$form, &$form_state) {
-//
-//  // Return if project isn't ready.
-//  if (empty($form['install_profile'])) {
-//    return;
-//  }
-//
-//  // Return if there is no bitbucket token
-//  $bitbucket_token = variable_get('devshop_bitbucket_token', '');
-//  if (empty($bitbucket_token)) {
-//    return;
-//  }
-//
-//  // Load project and bitbucket
-//  $project_node = node_load($form['nid']['#value']);
-//  $project = $project_node->project;
-//
-//  // Return if provider is not bitbucket.
-//  if ($project->git_provider != 'bitbucket') {
-//    return;
-//  }
-//
-//  // Return if deploy method is not webhook.
-//  if ($project->settings->deploy['method'] != 'webhook') {
-//    return;
-//  }
-//
-//  $repo = $project->bitbucket_owner . '/' . $project->bitbucket_repo;
-//  $repo_url = "http://bitbucket.com/" . $repo;
-//
-//  $form['bitbucket_webhook'] = array(
-//    '#title' => t('Setup bitbucket Webhook'),
-//    '#description' => t('Leave this box checked to automatically add a webhook to your bitbucket Repository !link.', array(
-//      '!link' => l($repo, $repo_url, array(
-//          'attributes' => array(
-//            'target' => '_blank',
-//          ),
-//      ))
-//    )),
-//    '#type' => 'checkbox',
-//    '#default_value' => 1,
-//  );
-//
-//  $form['#validate'][] = 'devshop_bitbucket_project_create_webhook';
-//  $form['#submit'][] = 'devshop_bitbucket_project_create_webhook';
-}
-
 /**
  * Extra submit hook for last step of project create form.
  */
@@ -1358,6 +1307,9 @@ function devshop_bitbucket_form_devshop_project_create_step_environments_alter(&
       '#type' => 'value',
       '#value' => $pr,
     );
+
+    $form['project']['primary_environment']['#options'][$env_name] = $env_name;
+
   }
 
   // Merge environments fields together to put PRs on top.
