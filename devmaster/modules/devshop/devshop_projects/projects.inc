@@ -373,9 +373,17 @@ function devshop_project_load($node) {
           $environment->clone_source = $environment->settings->install_method['clone_source_drush'];
         }
 
+        list($clone_proj, $clone_env) = explode('.', $environment->clone_source);
+          
         // Load clone source nid and environment name.
-        $environment->clone_source_node = db_query("SELECT nid, e.name FROM {hosting_context} h LEFT JOIN hosting_devshop_project_environment e ON h.nid = e.site WHERE h.name = :name", array(':name' => ltrim($environment->clone_source, '@')))->fetchObject();
-
+        $environment->clone_source_node = db_query("SELECT e.site as nid, e.name, p.title FROM 
+            hosting_devshop_project_environment e 
+            LEFT JOIN node p ON e.project_nid = p.nid 
+                WHERE e.name = :name AND p.title = :project", array(
+          ':name' => ltrim($clone_env, '@'),
+          ':project' => ltrim($clone_proj, '@'),
+        ))->fetchObject();
+        
         // If no site node was found with the selected alias, display the alias.
         if (empty($environment->clone_source_node->name)) {
           $source_label = $environment->clone_source;
