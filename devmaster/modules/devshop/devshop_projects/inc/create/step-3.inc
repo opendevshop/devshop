@@ -34,9 +34,9 @@ function devshop_project_create_step_environments($form, &$form_state) {
   );
   $form['project'] = array(
     '#tree' => TRUE,
+    '#theme' => 'devshop_projects_create_settings_form',
   );
   $form['project']['environments'] = array(
-    '#theme' => 'devshop_projects_create_settings_form',
     '#tree' => TRUE,
     '#prefix' => '<div id="environments-wrapper">',
     '#suffix' => '</div>',
@@ -91,6 +91,16 @@ function devshop_project_create_step_environments($form, &$form_state) {
   $form['install_method'] = devshop_environment_install_method_form($project);
   $form['install_method']['method']['#title'] = t('Default Install Method');
   $form['install_method']['#description'] = t('Environments will be installed with this method by default. You can choose alternative methods when creating environments manually.');
+
+  $environment_options = array_keys($project->environments);
+  $environment_options = array_combine($environment_options,$environment_options);
+
+  $form['project']['primary_environment'] = [
+    '#type' => 'radios',
+    '#title' => t('Primary Environment'),
+    '#options' => $environment_options,
+    '#default_value' => key($environment_options),
+  ];
   
   return $form;
 }
@@ -135,6 +145,9 @@ function devshop_project_create_step_environments_validate(&$form, &$form_state)
       }
     }
   }
+
+//  dsm($form_state['values']);
+//  form_set_error('', 'wtf');
 }
 
 ///**
@@ -221,6 +234,9 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
   
   // Save install method to settings.
   $project->settings->install_method = $form_state['values']['install_method']; 
+  
+  // Save primary environment.
+  $project->settings->live['live_environment'] = $form_state['values']['project']['primary_environment'];
 
   ctools_object_cache_set('project', 'devshop_project', $project);
 
@@ -235,7 +251,6 @@ function devshop_project_environment_create_form_element($project, $environment)
 
   $element = array(
     '#tree' => TRUE,
-    '#theme' => 'devshop_projects_settings_table',
   );
 
   // Environment properties

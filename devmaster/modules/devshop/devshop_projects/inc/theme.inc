@@ -93,29 +93,34 @@ function theme_devshop_projects_settings_form($form) {
  * @TODO: Fold into theme_devshop_projects_settings_form()
  */
 function theme_devshop_projects_create_settings_form($vars) {
-
   $form = $vars['form'];
   $rows = array();
   $header = array();
-  foreach (element_children($form) as $env_name) {
+  foreach (element_children($form['environments']) as $env_name) {
     $row = array();
+    $header['primary'] = 'Primary';
     $header['name'] = 'Name';
     $header['git_ref'] = t('Branch/Tag');
 
-    $name_element = $form[$env_name]['name'];
-    $git_ref_element = $form[$env_name]['git_ref'];
-    $settings_element = $form[$env_name]['settings'];
+    $name_element = $form['environments'][$env_name]['name'];
+    $git_ref_element = $form['environments'][$env_name]['git_ref'];
+    $settings_element = $form['environments'][$env_name]['settings'];
 
+    $primary_radio = $form['primary_environment'][$env_name];
+    $primary_radio['#title'] = '';
+    $primary_radio['#attributes']['class'][] = 'pull-right';
+    
+    $row[] = drupal_render($primary_radio);
     $row[] = drupal_render($name_element);
     $row[] = drupal_render($git_ref_element);
 
     foreach (element_children($settings_element) as $setting) {
       if (!isset($header[$setting])) {
-        $header[$setting] = isset($form[$env_name]['settings'][$setting]['#title']) ? $form[$env_name]['settings'][$setting]['#title'] : '';
+        $header[$setting] = isset($form['environments'][$env_name]['settings'][$setting]['#title']) ? $form['environments'][$env_name]['settings'][$setting]['#title'] : '';
       }
-      $form[$env_name]['settings'][$setting]['#title'] = '';
+      $form['environments'][$env_name]['settings'][$setting]['#title'] = '';
 
-      $element = $form[$env_name]['settings'][$setting];
+      $element = $form['environments'][$env_name]['settings'][$setting];
       $row[] = drupal_render($element);
     }
     $rows[] = $row;
@@ -127,7 +132,6 @@ function theme_devshop_projects_create_settings_form($vars) {
           'class' => array('table', 'project-environments-table'),
       )
   ));
-
   return $output;
 }
 
