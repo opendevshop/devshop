@@ -143,6 +143,21 @@ Feature: Create a project and check settings
 
     # @TODO: Test setting for "allow sites to be destroyed"
 
+    # Testing "Install Profile"
+    When I click "Create New Environment"
+    And I fill in "standard" for "Environment Name"
+    And I select "9.x" from "git_ref"
+    And I select "profile" from "install_method[method]"
+    Then the field "install_method[install_profile]" should have the value "minimal"
+    And I fill in "standard" for "install_method[install_profile]"
+    
+    Then I press "Create New Environment"
+    Then I should see "Installed with standard"
+
+    When I run drush "hosting-tasks --force --fork=0 --strict=0"
+
+    Given I am on "http://myproject.standard.devshop.local.computer"
+    Then I should see "Welcome!"
 
     # Testing "Manual Install"
     When I click "Create New Environment"
@@ -156,6 +171,6 @@ Feature: Create a project and check settings
 
     Then I should see "Environment Dashboard"
     And I should see "Manually Installed"
-    Given I am on "http://myproject.manual.devshop.local.computer/core/install.php"
+    Given I am on "http://myproject.manualinstall.devshop.local.computer/core/install.php"
     # This fails in CI right now.
-    # Then I should see "Choose language"
+    Then I should see "Choose language"
