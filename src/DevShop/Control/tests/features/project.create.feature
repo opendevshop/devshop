@@ -122,7 +122,10 @@ Feature: Create a project and check settings
 #    Then the response status code should be 401
 
     Given I am on "http://testuser:testpassword@composer.testenv.devshop.local.computer"
-    Then I should see "Welcome!"
+    
+    # Minimal profile has "Log in" on homepage.
+    Then I should see "Log in"
+    
     And I should see "Congratulations and welcome to the Drupal community."
     
     # this is aegir, setting the site title to the context name.
@@ -157,6 +160,7 @@ Feature: Create a project and check settings
     When I run drush "hosting-tasks --force --fork=0 --strict=0"
 
     Given I am on "http://myproject.standard.devshop.local.computer"
+    # Standard profile has "Welcome!" on homepage.
     Then I should see "Welcome!"
 
     # Testing "Manual Install"
