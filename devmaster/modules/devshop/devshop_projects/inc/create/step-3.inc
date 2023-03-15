@@ -210,6 +210,8 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
     foreach ($environments as $name => $environment) {
       $environment = (object) $environment;
       $environment->settings = (object) $environment->settings;
+      $environment->settings->install_method = $form_state['values']['install_method'];
+
       $name = trim($environment->name);
       if (!empty($name)) {
         hosting_create_environment($project, $name, $environment->git_ref, NULL, $environment->settings, 'create', $environment->git_remote, TRUE);

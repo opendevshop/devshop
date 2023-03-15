@@ -62,6 +62,7 @@ function hosting_create_environment($project, $new_environment_name, $new_enviro
     $site->name = $user->name;
     $site->client = HOSTING_DEFAULT_CLIENT;
     $site->settings = $settings;
+    $site->profile = $settings->install_method['install_profile'];
 
     // Attach a new platform node.
     $site->platform_node = $platform;
@@ -147,9 +148,8 @@ function hosting_create_environment($project, $new_environment_name, $new_enviro
     // Use settings passed in to this function.
     $environment->settings = $settings;
 
-    // Save profile to install_method.
-    $environment->settings->install_method['method'] = 'profile';
-    $environment->settings->install_method['profile'] = $project->install_profile;
+    // Use install_method from project.
+    $environment->settings->install_method = $project->settings->install_method;
 
   }
 

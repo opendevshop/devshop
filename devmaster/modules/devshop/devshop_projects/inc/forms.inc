@@ -1091,9 +1091,10 @@ function devshop_projects_create_environment_form_validate_name($element, &$form
 
     // Set value in form_state.
     form_set_value($form['platform_node'], $platform_node, $form_state);
-    form_set_value($form['profile'], 0, $form_state);
     form_set_value($form['platform'], 0, $form_state);
 
+    form_set_value($form['profile'], $form_state['values']['install_method']['install_profile'], $form_state);
+    
   }
 }
 
