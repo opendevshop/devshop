@@ -22,7 +22,8 @@
     "guzzlehttp/guzzle": "^6",
     "php-http/guzzle6-adapter": "^2.0@dev",
     "http-interop/http-factory-guzzle": "^1.2",
-    "php-http/discovery": "~1.14.0"
+    "php-http/discovery": "~1.14.0",
+    "eloquent/composer-config-reader": "^3.0"
   },
   "extra": {
     "branch-alias": {
