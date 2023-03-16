@@ -4,6 +4,7 @@
 # This prevents updating your local copy of devshop to a different or running the upgrade command.
 devshop_cli_skip_update: true
 devmaster_skip_upgrade: true
+devshop_control_git_reset: 0
 
 # The default for local development.
 php_version: "8.1"
