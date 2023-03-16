@@ -22,10 +22,6 @@
         "type": "path",
         "url": "../../../devmaster"
       },
-      "git_traits": {
-        "type": "path",
-        "url": "../Component/GitTraits"
-      },
       "behat": {
         "type": "vcs",
         "url":  "https://github.com/jonpugh/DrupalDriver.git"
