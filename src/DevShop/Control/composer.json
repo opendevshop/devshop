@@ -134,6 +134,9 @@
     "autoload": {
         "classmap": [
             "scripts/composer/ScriptHandler.php"
+        ],
+        "files": [
+            "web/sites/all/drush/provision/provision.inc"
         ]
     },
     "scripts": {
@@ -165,6 +168,11 @@
         ]
     },
     "extra": {
+      "composer-changelogs": {
+        "commit-auto": "ask",
+        "commit-bin-file": "vendor/pyrech/composer-changelogs/bin/git-commit.sh",
+        "commit-message": "Composer package updates:"
+      },
       "installer-types": ["npm-asset"],
       "installer-paths": {
             "web/": ["type:drupal-core"],
