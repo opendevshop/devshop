@@ -559,11 +559,10 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
 
       // Deploy task form
       case 'deploy':
+        $form['actions']['submit']['#attributes']['class'][] = 'btn btn-lg btn-primary';
+        $form['actions']['submit']['#value'] .= ' <i class="fa fa-rocket"></i>';
 
-        // Alter title of deploy task.
-        $node = node_load($form['nid']['#value']);
-//        drupal_set_title(t('Deploy code to Environment "@env"', array('@env' => $node->environment->name)), PASS_THROUGH);
-//        $form['actions']['cancel']['#value'] = l(t('Cancel'), "node/{$node->project->nid}");
+        $form['parameters']['note']['#attributes']['class'][] = 'alert alert-info';
         break;
 
       // Sync task form
