@@ -8,6 +8,12 @@ body.admin-menu .navbar-static-top {
   z-index: 3;
 }
 
+h4 {
+  font-weight: bold;
+  font-size: 1.5em;
+  margin: .5em 0px 1.5em 0em;
+}
+
 .environment-wrapper {
   min-width: 330px;
 }
