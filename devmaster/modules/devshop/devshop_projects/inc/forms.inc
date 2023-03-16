@@ -562,7 +562,7 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
         $form['actions']['submit']['#attributes']['class'][] = 'btn btn-lg btn-primary';
         $form['actions']['submit']['#value'] .= ' <i class="fa fa-rocket"></i>';
 
-        $form['parameters']['note']['#attributes']['class'][] = 'alert alert-info';
+        $form['parameters']['steps']['note']['#attributes']['class'][] = 'alert alert-info';
         break;
 
       // Sync task form
