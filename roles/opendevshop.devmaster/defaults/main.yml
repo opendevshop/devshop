@@ -82,7 +82,7 @@ devshop_cli_version: "{{ devshop_version }}"
 devshop_control_git_remote: "{{ devshop_cli_repo }}"
 devshop_control_git_root: "{{ devshop_cli_path }}"
 devshop_control_git_reference: "{{ devshop_version }}"
-devshop_control_git_reset: 1
+devshop_control_git_reset: 0
 
 # Relative path to docroot. This is usually just "web" but we want devshop-control and devshop to share source code, and aegir to know where the git repo is.
 devshop_control_git_docroot: "src/DevShop/Control/web"
