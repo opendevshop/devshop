@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "74db0fd7b1b2af81c0ad06a618da7383",
+    "content-hash": "54eb9b7c8cc6291aaab7d61c49491616",
     "packages": [
         {
             "name": "behat/behat",
@@ -2542,7 +2542,7 @@
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/hosting.git",
-                "reference": "9ac8624c012a9a6b0cd95771fa2092282ce669cb"
+                "reference": "3d1ffa45ca467e9823347903938074b23a139b1b"
             },
             "require": {
                 "drupal/drupal": "~7.0",
@@ -2550,7 +2550,7 @@
                 "drupal/views_bulk_operations": "*",
                 "gitonomy/gitlib": "^1.3",
                 "laravel-validation-rules/ip": "^1.4",
-                "sensiolabs/ansi-to-html": "^1.1"
+                "sensiolabs/ansi-to-html": "^1.2"
             },
             "require-dev": {
                 "drupal/hosting_alias": "*",
@@ -2572,8 +2572,8 @@
                     "dev-4.x": "4.x-dev"
                 },
                 "drupal": {
-                    "version": "7.x-4.0-beta1+72-dev",
-                    "datestamp": "1678911566",
+                    "version": "7.x-4.0-beta1+82-dev",
+                    "datestamp": "1678981873",
                     "security-coverage": {
                         "status": "not-covered",
                         "message": "Dev releases are not covered by Drupal security advisories."
@@ -3570,7 +3570,7 @@
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/provision.git",
-                "reference": "ba68c95b8d3c83811976139f537525273957e52a"
+                "reference": "0bb7c0d8b55df7ddc9fbd3232b358370532e9aea"
             },
             "require": {
                 "drupal/drupal": "~7.0",
@@ -3586,8 +3586,8 @@
                     "dev-4.x": "4.x-dev"
                 },
                 "drupal": {
-                    "version": "7.x-4.0-beta2+75-dev",
-                    "datestamp": "1678911822",
+                    "version": "7.x-4.0-beta2+78-dev",
+                    "datestamp": "1678981853",
                     "security-coverage": {
                         "status": "not-covered",
                         "message": "Dev releases are not covered by Drupal security advisories."
@@ -3595,6 +3595,9 @@
                 }
             },
             "autoload": {
+                "files": [
+                    "provision.inc"
+                ],
                 "psr-0": {
                     "Provision_": [
                         "Provision"
