@@ -104,7 +104,7 @@ function devshop_projects_create_wizard($step = NULL) {
         $messages_to_user[] = $message->message;
       }
     }
-    $project->verify_error = theme('devshop_ascii', array('output' => implode('\n', $messages_to_user)));
+    $project->verify_error = theme('hosting_ascii', array('output' => implode('\n', $messages_to_user)));
 
 
     // If not on the first step, go to it.

@@ -37,11 +37,6 @@ function devshop_projects_theme() {
       ),
       'template' => 'project-add',
     ),
-    'devshop_ascii' => array(
-      'variables' => array(
-        'output' => '',
-      ),
-    ),
     'devshop_task' => array(
       'variables' => array(
           'task' => NULL,
@@ -655,7 +650,7 @@ function devshop_task_get_messages($task_node) {
     }
 
     // Convert ASCII to HTML
-    $output = theme('devshop_ascii', array('output' => $data['output']));
+    $output = theme('hosting_ascii', array('output' => $data['output']));
 
     if (!empty($output)) {
       $body = "<div class='panel-body panel-type-{$data['type']} panel-ansii'>$output</div>";
@@ -783,45 +778,6 @@ function template_preprocess_devshop_project_nav(&$vars) {
 
   // Scrub git urls
   $vars['safe_git_url'] = scrub_repo_url($project->git_url);
-}
-
-/**
- * Output pretty console themed ASCII.
- *
- * Usage:
- *   theme('devshop_ascii', $string);
- */
-function theme_devshop_ascii($vars) {
-  $string = $vars['output'];
-  if (empty($string)) {
-    return $string;
-  }
-
-  // Prepare ASCII Converter
-  $theme = new SolarizedXTermTheme();
-  $styles = $theme->asCss();
-  $styles .= ".ansi_box { overflow: auto; padding: 10px 15px; font-family: monospace; }";
-
-  drupal_add_html_head("<style>$styles</style>");
-  $converter = new AnsiToHtmlConverter($theme);
-  $output = $converter->convert($string);
-  
-  // Make URLs clickable:
-  $filter = new stdClass();
-  $filter->settings = [
-    'filter_url_length' => 1000,
-  ];
-  $output = _filter_url($output, $filter);
-  
-  // Change linebreaks to <br> tags.
-  $output = strtr($output, array(
-    '\n' => '<br />',
-  ));
-
-  return <<<HTML
-  <pre class="ansi_color_bg_black ansi_color_fg_white ansi_box">$output</pre>
-HTML;
-
 }
 
 /**
