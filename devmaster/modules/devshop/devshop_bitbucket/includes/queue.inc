@@ -95,8 +95,8 @@ function devshop_bitbucket_create_all_pr_environments($project_node) {
     $site_url = url("node/{$environment->site}", array('absolute' => true));
 
     // Get PR ID, if it already has one.
-    if (!empty($environment->bitbucket_pull_request->id)) {
-      $environment_pr_number = $environment->bitbucket_pull_request->id;
+    if (!empty($environment->bitbucket_pull_request->number)) {
+      $environment_pr_number = $environment->bitbucket_pull_request->number;
       $environment_pr_slug = "pr{$environment_pr_number}";
     }
     else {
