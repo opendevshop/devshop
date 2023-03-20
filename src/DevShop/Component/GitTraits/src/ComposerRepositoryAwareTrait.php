@@ -40,7 +40,6 @@ trait ComposerRepositoryAwareTrait
   {
     $reader = new ConfigurationReader;
     if ($configuration) {
-      dsm('using config from caller');
       $this->composerConfig = $configuration;
     }
     else {
