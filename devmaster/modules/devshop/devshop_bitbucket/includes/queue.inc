@@ -229,21 +229,14 @@ function devshop_bitbucket_create_all_pr_environments($project_node) {
 
   // Step 2: For all PRS that do not have an environment, create one.
   foreach ($prs_to_create_environments_for as $slug => $pr) {
-    drush_log("Creating environment for PR $pr->number ...", "ok");
-    $branch = $pr->head->ref;
+    drush_log("Creating environment for PR $pr->id ...", "ok");
+    $branch = $pr->source->branch->name;
 
     // If PR has different remote URL, set it.
-    if ($pr->head->repo->fork) {
-      // Try to match project URL scheme
-      if (strpos($project->git_url, 'git://') === 0){
-        $remote_url = $pr->head->repo->git_url;
-      }
-      elseif (strpos($project->git_url, 'git@') === 0){
-        $remote_url = $pr->head->repo->ssh_url;
-      }
-      else {
-        $remote_url = $pr->head->repo->clone_url;
-      }
+    if ($pr->source->repository->full_name != $pr->destination->repository->full_name ) {
+      $remote_url = strtr($project->git_url, [
+        $pr->destination->repository->full_name => $pr->source->repository->full_name,
+      ]);
     }
 
     // If not a fork, use the same git_ref as project.
