@@ -135,7 +135,7 @@ function hosting_create_environment($project, $new_environment_name, $new_enviro
     }
 
     if ($action == 'fork') {
-      $environment->settings->branch_to_fork = $source_environment->git_ref;
+      $environment->settings->branch_to_fork = $source_environment->git_refence;
     }
   }
   else {
