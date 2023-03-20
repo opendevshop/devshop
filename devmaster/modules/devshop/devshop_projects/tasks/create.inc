@@ -125,7 +125,7 @@ function hosting_create_environment($project, $new_environment_name, $new_enviro
     if ($source_environment->settings->install_method['method'] == 'profile') {
       $environment->settings->install_method = array(
         'method' => 'clone',
-        'clone_source' => $source_environment->system_alias
+        'clone_source' => $source_environment->drush_alias
       );
     }
     else {
