@@ -276,16 +276,6 @@ function devshop_bitbucket_create_all_pr_environments($project_node) {
       //      DevShopGitHubApi::createDeployment($environment, 'queued');
       devshop_bitbucket_save_pr_env_data($pr, $environment);
       drush_log("Environment $environment_name created for $project_node->title via cloning $source_env...", "ok");
-
-      // Queue up a "deploy" task so that the same hooks are run post-clone.
-      // @TODO: Decide if a setting is needed to control this behavior.
-      // @TODO: Reduce duplication with the github webhook.
-      // @TODO: Make this a global setting for all "clone" environment installs.
-      drush_log("PR environment scheduled for deployment: $environment->name $environment->git_ref [$site_url]", "ok");
-      hosting_add_task($environment->site, 'deploy', array(
-        'git_ref' => $branch,
-      ));
-
     }
     // If environment does not exist, note that error.
     elseif (!isset($project->environments[$project->settings->bitbucket['pull_request_environments_method']])) {
