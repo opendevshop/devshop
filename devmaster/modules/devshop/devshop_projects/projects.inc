@@ -383,10 +383,12 @@ function devshop_project_load($node) {
         // Load clone source nid and environment name.
         $environment->clone_source_node = db_query("SELECT e.site as nid, e.name, p.title FROM 
             hosting_devshop_project_environment e 
+            LEFT JOIN hosting_site s ON e.site = s.nid 
             LEFT JOIN node p ON e.project_nid = p.nid 
-                WHERE e.name = :name AND p.title = :project", array(
+                WHERE e.name = :name AND p.title = :project AND s.status = :status", array(
           ':name' => ltrim($clone_env, '@'),
           ':project' => ltrim($clone_proj, '@'),
+          ':status' => HOSTING_SITE_ENABLED,
         ))->fetchObject();
         
         // If no site node was found with the selected alias, display the alias.
