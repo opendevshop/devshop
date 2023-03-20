@@ -1331,18 +1331,6 @@ function devshop_prepare_platform_node($project, $environment_name, $git_ref, $w
   $platform_node->git_reference = $git_ref;
   $platform_node->git_reset = isset($project->git_reset) ? $project->git_reset: 0;
 
-
-  // Enable git pull queue for this platform if chosen.
-  if (!empty($project->settings->deploy['queue'])) {
-    // @TODO: Using integers because hosting_git_pull module isn't enabled anymore.
-    $platform_node->git['pull_method'] = 1;
-  }
-  // For devshop "webhook" and "manual" methods, disable git pull for now.
-  else {
-    $platform_node->git['pull_method'] = 0;
-  }
-
-
   // Determine which web server to use.
   // If no web server was set and project has a default, make sure we set it.
   if (empty($web_server) && !empty($project->settings->default_environment['web_server'])) {
