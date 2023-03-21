@@ -1,0 +1,3 @@
+---
+__php_xdebug_module_path: /usr/lib64/php/modules
+__php_xdebug_config_filename: xdebug.ini
