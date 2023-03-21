@@ -176,7 +176,8 @@
             "web/sites/all/drush/{$name}/": ["type:drupal-drush"],
             "web/sites/all/libraries/{$name}/": ["type:drupal-library","type:bower-asset","type:npm-asset"],
             "web/sites/all/modules/contrib/{$name}/": ["type:drupal-module"],
-            "web/sites/all/themes/contrib/{$name}/": ["type:drupal-theme"]
+            "web/sites/all/themes/contrib/{$name}/": ["type:drupal-theme"],
+            "web/sites/all/libraries/{$name}": ["hybridauth/hybridauth"]
       },
       "preserve-paths": [
           "web/sites/default",
