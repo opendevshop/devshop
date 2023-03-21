@@ -90,7 +90,7 @@
 
               <!-- Download button -->
               <p>
-                <a href="<?php print $aliases_url; ?>" class="btn btn-primary"><?php print t('Download Alias File'); ?></a> or copy to <code>~/.drush/<?php print $project->name; ?>.aliases.drushrc.php</code>.
+                <a href="<?php print $aliases_url; ?>" class="btn btn-primary"><?php print t('Download Alias File'); ?></a> or copy to <code>~/.drush/sites/<?php print $project->name; ?>.site.yml</code> or in your project codebase at <code>./drush/sites/self.site.yml</code>.
               </p>
 
               <textarea cols="40" rows="10" class='form-control' onlick="this.select()"><?php print $drush_aliases; ?></textarea>
