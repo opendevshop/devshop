@@ -142,6 +142,7 @@
             "DrupalProject\\composer\\ScriptHandler::checkComposerVersion"
         ],
         "post-install-cmd": [
+            "ln -sf ../../../../vendor/hybridauth/hybridauth web/sites/all/libraries/hybridauth",
             "DrupalProject\\composer\\ScriptHandler::createRequiredFiles",
             "DrupalProject\\composer\\ScriptHandler::checkDevmasterPackage"
         ],
@@ -176,8 +177,7 @@
             "web/sites/all/drush/{$name}/": ["type:drupal-drush"],
             "web/sites/all/libraries/{$name}/": ["type:drupal-library","type:bower-asset","type:npm-asset"],
             "web/sites/all/modules/contrib/{$name}/": ["type:drupal-module"],
-            "web/sites/all/themes/contrib/{$name}/": ["type:drupal-theme"],
-            "web/sites/all/libraries/{$name}": ["hybridauth/hybridauth"]
+            "web/sites/all/themes/contrib/{$name}/": ["type:drupal-theme"]
       },
       "preserve-paths": [
           "web/sites/default",
