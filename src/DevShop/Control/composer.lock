@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3ee64e85ef577d4e48223056e5cb534c",
+    "content-hash": "444c851661dd585a5ec7716af5bfe654",
     "packages": [
         {
             "name": "behat/behat",
@@ -3257,6 +3257,59 @@
             }
         },
         {
+            "name": "drupal/hybridauth",
+            "version": "2.16.0",
+            "source": {
+                "type": "git",
+                "url": "https://git.drupalcode.org/project/hybridauth.git",
+                "reference": "7.x-2.16"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://ftp.drupal.org/files/projects/hybridauth-7.x-2.16.zip",
+                "reference": "7.x-2.16",
+                "shasum": "ce52b1cf5edbc4f0de6aea24ad354fb6fbe11431"
+            },
+            "require": {
+                "drupal/ctools": "*",
+                "drupal/drupal": "~7.0"
+            },
+            "type": "drupal-module",
+            "extra": {
+                "drupal": {
+                    "version": "7.x-2.16",
+                    "datestamp": "1531318398",
+                    "security-coverage": {
+                        "status": "covered",
+                        "message": "Covered by Drupal's security advisory policy"
+                    }
+                }
+            },
+            "notification-url": "https://packages.drupal.org/7/downloads",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "duozersk",
+                    "homepage": "https://www.drupal.org/user/378397"
+                },
+                {
+                    "name": "rwohleb",
+                    "homepage": "https://www.drupal.org/user/27042"
+                },
+                {
+                    "name": "vishun",
+                    "homepage": "https://www.drupal.org/user/199418"
+                }
+            ],
+            "description": "Provides HybridAuth social sign-on.",
+            "homepage": "https://www.drupal.org/project/hybridauth",
+            "support": {
+                "source": "https://git.drupalcode.org/project/hybridauth"
+            }
+        },
+        {
             "name": "drupal/jquery_update",
             "version": "2.7.0",
             "source": {
@@ -5064,6 +5117,68 @@
                 "source": "https://github.com/http-interop/http-factory-guzzle/tree/1.2.0"
             },
             "time": "2021-07-21T13:50:14+00:00"
+        },
+        {
+            "name": "hybridauth/hybridauth",
+            "version": "v3.9.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/hybridauth/hybridauth.git",
+                "reference": "a950212d2f52df5b0662cd520b0043c4ee6d0f1b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/hybridauth/hybridauth/zipball/a950212d2f52df5b0662cd520b0043c4ee6d0f1b",
+                "reference": "a950212d2f52df5b0662cd520b0043c4ee6d0f1b",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^5.4 || ^7.0 || ^8.0"
+            },
+            "require-dev": {
+                "ext-curl": "*",
+                "phpunit/phpunit": "^4.8.35 || ^6.5 || ^8.0"
+            },
+            "suggest": {
+                "firebase/php-jwt": "Needed to support Apple provider",
+                "phpseclib/phpseclib": "Needed to support Apple provider"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Hybridauth\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Miled",
+                    "email": "hybridauth@gmail.com"
+                }
+            ],
+            "description": "PHP Social Authentication Library",
+            "homepage": "https://hybridauth.github.io",
+            "keywords": [
+                "Authentication",
+                "OpenId",
+                "api",
+                "apple",
+                "authorization",
+                "facebook",
+                "google",
+                "oauth",
+                "social",
+                "twitter"
+            ],
+            "support": {
+                "gitter": "https://gitter.im/hybridauth/hybridauth",
+                "issues": "https://github.com/hybridauth/hybridauth/issues",
+                "source": "https://github.com/hybridauth/hybridauth/tree/v3.9.0"
+            },
+            "time": "2023-03-12T09:30:26+00:00"
         },
         {
             "name": "illuminate/contracts",
