@@ -6,7 +6,7 @@
   command: "{{ drush_executable_path }} {{ devshop_control_drush_alias }} vset devshop_github_token {{ devshop_github_token }}"
   when:
     - devshop_github_token is defined
-    - devshop_github_token | length > 0
+    - devshop_github_token | string | length > 0
   # @TODO: The "when" condition is not getting picked up, so let's ignore errors here for now. See #422.
   ignore_errors: true
 
