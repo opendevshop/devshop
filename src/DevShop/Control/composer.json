@@ -101,7 +101,7 @@
         "php-http/guzzle6-adapter": "^2.0",
         "pyrech/composer-changelogs": "^2.0",
         "drupal/hybridauth": "^2.16",
-        "hybridauth/hybridauth": "^3.9"
+        "hybridauth/hybridauth": "^2"
     },
     "conflict": {
         "drupal/core": "8.*"
@@ -142,7 +142,7 @@
             "DrupalProject\\composer\\ScriptHandler::checkComposerVersion"
         ],
         "post-install-cmd": [
-            "ln -sf ../../../../vendor/hybridauth/hybridauth web/sites/all/libraries/hybridauth",
+            "cd web/sites/all/libraries && ln -sf ../../../../vendor/hybridauth/hybridauth",
             "DrupalProject\\composer\\ScriptHandler::createRequiredFiles",
             "DrupalProject\\composer\\ScriptHandler::checkDevmasterPackage"
         ],
