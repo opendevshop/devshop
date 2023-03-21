@@ -1433,3 +1433,6 @@ kbd.alert {
 
 #devshop-projects-settings-form .alert li {
 }
+#auth_box input[type="text"], #auth_box input[type="password"] {
+  width: initial;
+}
