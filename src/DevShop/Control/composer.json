@@ -99,7 +99,9 @@
         "http-interop/http-factory-guzzle": "^1.2",
         "drupal/provision": "4.x-dev@dev",
         "php-http/guzzle6-adapter": "^2.0",
-        "pyrech/composer-changelogs": "^2.0"
+        "pyrech/composer-changelogs": "^2.0",
+        "drupal/hybridauth": "^2.16",
+        "hybridauth/hybridauth": "^3.9"
     },
     "conflict": {
         "drupal/core": "8.*"
