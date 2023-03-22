@@ -3,7 +3,7 @@
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
-  command: "{{ drush_executable_path }} {{ devshop_control_drush_alias }} vset devshop_github_token {{ devshop_github_token }}"
+  command: "drush {{ devshop_control_drush_alias }} vset devshop_github_token {{ devshop_github_token }}"
   when:
     - devshop_github_token is defined
     - devshop_github_token | string | length > 0
