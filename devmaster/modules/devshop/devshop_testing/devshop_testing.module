@@ -263,36 +263,36 @@ function devshop_testing_task_submit(&$form, &$form_state) {
 //  form_set_value($form['parameters']['tests_to_run'], $value, $form_state);
 }
 
-/**
- * Implements hook_devshop_deploy_hooks_form_elements_alter().
- */
-function devshop_testing_devshop_deploy_hooks_form_elements_alter(&$form, $is_environment_form) {
-  // Add to deploy hooks.
-
-  // If this is the environment form and the project allows environment specific deploy hooks...
-  if ($is_environment_form && isset($form['#project']->settings) && $form['#project']->settings->deploy['allow_environment_deploy_config']) {
-    $default_value = $form['#environment']->settings->deploy['test'];
-  }
-  // If this is env form and project does not allow env specific deploy hooks...
-  elseif ($is_environment_form && isset($form['#project']->settings) && !$form['#project']->settings->deploy['allow_environment_deploy_config']) {
-    $default_value = $form['#project']->settings->deploy['default_hooks']['test'];
-  }
-  // If this is a project form...
-  elseif (!$is_environment_form) {
-    $default_value = isset($form['#project']->settings->deploy)? $form['#project']->settings->deploy['default_hooks']['test']: 0;
-  }
-  else {
-    $default_value = 0;
-  }
-
-  $form['test'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Run Tests.'),
-    '#description' => t('Run tests after every code deploy.'),
-    '#weight' => 100,
-    '#default_value' => $default_value,
-  );
-}
+///**
+// * Implements hook_devshop_deploy_hooks_form_elements_alter().
+// */
+//function devshop_testing_devshop_deploy_hooks_form_elements_alter(&$form, $is_environment_form) {
+//  // Add to deploy hooks.
+//
+//  // If this is the environment form and the project allows environment specific deploy hooks...
+//  if ($is_environment_form && isset($form['#project']->settings) && $form['#project']->settings->deploy['allow_environment_deploy_config']) {
+//    $default_value = $form['#environment']->settings->deploy['test'];
+//  }
+//  // If this is env form and project does not allow env specific deploy hooks...
+//  elseif ($is_environment_form && isset($form['#project']->settings) && !$form['#project']->settings->deploy['allow_environment_deploy_config']) {
+//    $default_value = $form['#project']->settings->deploy['default_hooks']['test'];
+//  }
+//  // If this is a project form...
+//  elseif (!$is_environment_form) {
+//    $default_value = isset($form['#project']->settings->deploy)? $form['#project']->settings->deploy['default_hooks']['test']: 0;
+//  }
+//  else {
+//    $default_value = 0;
+//  }
+//
+//  $form['test'] = array(
+//    '#type' => 'checkbox',
+//    '#title' => t('Run Tests.'),
+//    '#description' => t('Run tests after every code deploy.'),
+//    '#weight' => 100,
+//    '#default_value' => $default_value,
+//  );
+//}
 
 /**
  * Implements hook_hosting_slack_message_alter()

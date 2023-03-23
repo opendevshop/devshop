@@ -351,10 +351,10 @@ function devshop_project_load($node) {
     // System Alias
     $environment->system_alias = '@' . $environment->system_domain;
 
-    // If per-environment hooks config is not allowed, load it from the project.
-    if (isset($project->settings->deploy) && !$project->settings->deploy['allow_environment_deploy_config']) {
-      $environment->settings->deploy = $project->settings->deploy['default_hooks'];
-    }
+//    // If per-environment hooks config is not allowed, load it from the project.
+//    if (isset($project->settings->deploy) && !$project->settings->deploy['allow_environment_deploy_config']) {
+//      $environment->settings->deploy = $project->settings->deploy['default_hooks'];
+//    }
 
     // Load Install Method and info.
     if (!empty($environment->settings->install_method['import'])) {

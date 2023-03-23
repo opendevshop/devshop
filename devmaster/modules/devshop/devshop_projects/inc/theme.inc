@@ -513,15 +513,15 @@ HTML;
     $vars['project_messages'] = $project->messages;
   }
 
-  if (isset($vars['node']->project->settings->deploy['default_hooks']) && !$vars['node']->project->settings->deploy['allow_environment_deploy_config'] && count(array_filter($vars['node']->project->settings->deploy['default_hooks'])) == 0) {
-    $vars['project_messages'][] = array(
-      'message' => t('No deploy hooks are configured for this project. If new code is deployed, you will have to run update.php manually. Check your !link.', array(
-        '!link' => l(t('Project Settings'),"node/{$vars['node']->nid}/edit"),
-      )),
-      'icon' => '<i class="fa fa-exclamation-triangle"></i>',
-      'type' => 'warning',
-    );
-  }
+//  if (isset($vars['node']->project->settings->deploy['default_hooks']) && !$vars['node']->project->settings->deploy['allow_environment_deploy_config'] && count(array_filter($vars['node']->project->settings->deploy['default_hooks'])) == 0) {
+//    $vars['project_messages'][] = array(
+//      'message' => t('No deploy hooks are configured for this project. If new code is deployed, you will have to run update.php manually. Check your !link.', array(
+//        '!link' => l(t('Project Settings'),"node/{$vars['node']->nid}/edit"),
+//      )),
+//      'icon' => '<i class="fa fa-exclamation-triangle"></i>',
+//      'type' => 'warning',
+//    );
+//  }
 
   if (!isset($vars['project_extra_items']) || !is_array($vars['project_extra_items'])) {
     $vars['project_extra_items'] = array();

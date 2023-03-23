@@ -815,8 +815,6 @@ function devshop_bitbucket_webhook($project_node) {
 
             // Default args to the environments deploy settings.
             $args = $environment->settings->deploy;
-            $args['git_ref'] = $environment->git_ref;
-
             if (isset($environment->site) && $node = node_load($environment->site)) {
               hosting_add_task($environment->site, 'deploy', $args);
             }
