@@ -173,6 +173,11 @@ function devshop_projects_node_insert($node) {
     }
   }
 
+  // On site insert, inherit hosting_settings from the project.
+  if ($node->type == 'site' && empty($node->hosting_settings) && !empty($node->project->hosting_settings)) {
+    $node->hosting_settings = $node->project->hosting_settings;
+  }
+    
   if ($node->type != 'project') {
     return;
   }

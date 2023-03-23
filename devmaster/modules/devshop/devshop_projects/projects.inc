@@ -92,6 +92,9 @@ function devshop_project_load($node) {
   // Load up all project settings.
   $project->name = $node->project_name;
   $project->settings = (object) unserialize($project->settings);
+  
+  // Load hosting.module core property into project object so all other things can load it.
+  $project->hosting_settings = $node->hosting_settings;
 
   // Set install_profile.
   $project->install_profile = $project->settings->install_method['install_profile'] ?? '';
