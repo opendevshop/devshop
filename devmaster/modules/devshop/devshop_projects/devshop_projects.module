@@ -23,6 +23,14 @@ include_once('tasks/deploy.inc');
 use Symfony\Component\Yaml\Yaml;
 
 /**
+ * @param $types
+ *
+ */
+function devshop_projects_hosting_context_types_alter(&$types) {
+  $types[] = 'project';
+}
+
+/**
  * Implements hook_init().
  *
  * Adds a css file.
