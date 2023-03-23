@@ -1770,17 +1770,16 @@ function devshop_github_create_all_pr_environments($project_node) {
       drush_log("No PR data found in Drupal database for environment [$environment->name] site NID [$environment->site]", 'warning');
       continue;
     }
-// @TODO: Remove.Causes PR data to be lost.
-//    // If no PR data, but the environment name matches a PR's slug, update data.
-//    // Handles the edge case where a pr123 environment lost it's github PR info.
-//    elseif (!$environment_pr_number && !empty($prs[$environment->name])) {
-//      devshop_github_save_pr_env_data($prs[$environment->name], $environment);
-//      drush_log(
-//        "Environment found with the name '$environment->name'. Assuming it is a PR environment. Updating it with PR data and removing it from the list of environments to create. [$site_url]",
-//        "warning"
-//      );
-//      unset($prs_to_create_environments_for[$environment->name]);
-//    }
+    // If no PR data, but the environment name matches a PR's slug, update data.
+    // Handles the edge case where a pr123 environment lost it's github PR info.
+    elseif (!$environment_pr_number && !empty($prs[$environment->name])) {
+      devshop_github_save_pr_env_data($prs[$environment->name], $environment);
+      drush_log(
+        "Environment found with the name '$environment->name'. Assuming it is a PR environment. Updating it with PR data and removing it from the list of environments to create. [$site_url]",
+        "warning"
+      );
+      unset($prs_to_create_environments_for[$environment->name]);
+    }
     // If there IS PR data in the environment and the PR exists on GitHub, update the PR data.
     elseif ($environment_pr_number && !empty($prs[$environment_pr_slug]) && !empty($environment->tasks['delete'])) {
       drush_log("Deleted PR environment found: $environment->name [$site_url]", "ok");
