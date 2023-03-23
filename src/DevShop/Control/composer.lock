@@ -3680,7 +3680,7 @@
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/provision.git",
-                "reference": "44d6a4391f19507c3dc6806b6975b86d86685960"
+                "reference": "a867ed13693d0a57376494301767515623a4789d"
             },
             "require": {
                 "devshop/git-traits": "1.x-dev",
@@ -3699,8 +3699,8 @@
                     "dev-4.x": "4.x-dev"
                 },
                 "drupal": {
-                    "version": "7.x-4.0-beta2+112-dev",
-                    "datestamp": "1679518327",
+                    "version": "7.x-4.0-beta2+113-dev",
+                    "datestamp": "1679581130",
                     "security-coverage": {
                         "status": "not-covered",
                         "message": "Dev releases are not covered by Drupal security advisories."
