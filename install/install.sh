@@ -111,6 +111,8 @@ done
 # Generate host specific vars to be injected into inventory.
 # All command line options that are ansible variables should be saved here.
 ANSIBLE_EXTRA_VARS=()
+
+# TODO: Move ro run.sh!
 # This is to saved to local /etc/ansible/hosts file, so always use local connect.
 ANSIBLE_EXTRA_VARS+=("ansible_host: ${HOSTNAME_FQDN}")
 ANSIBLE_EXTRA_VARS+=("ansible_connection: local")
