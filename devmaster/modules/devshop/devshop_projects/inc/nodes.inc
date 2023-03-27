@@ -172,11 +172,11 @@ function devshop_projects_node_insert($node) {
       drupal_goto("node/{$site->project->nid}");
     }
   }
-
-  // On site insert, inherit hosting_settings from the project.
-  if ($node->type == 'site' && empty($node->hosting_settings) && !empty($node->project->hosting_settings)) {
-    $node->hosting_settings = $node->project->hosting_settings;
-  }
+// @TODO: Fix this.
+//  // On site insert, inherit hosting_settings from the project.
+//  if ($node->type == 'site' && empty($node->hosting_settings) && !empty($node->project->hosting_settings)) {
+//    $node->hosting_settings = $node->project->hosting_settings;
+//  }
     
   if ($node->type != 'project') {
     return;
