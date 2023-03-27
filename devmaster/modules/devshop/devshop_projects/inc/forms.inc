@@ -1320,8 +1320,15 @@ function devshop_prepare_platform_node($project, $environment_name, $git_ref, $w
 
   $platform_node->git_root = $project->code_path . '/' . $environment_name;
 
-  // Set git_docroot from drupal_path.
-  $platform_node->git_docroot = $project->drupal_path;
+  // Append drupal_path to repo_path if there is one. If not, repo_path is publish_path.
+  if ($project->drupal_path) {
+    $platform_node->publish_path = $platform_node->git_root . '/' . $project->drupal_path;
+    $platform_node->git_docroot = $project->drupal_path;
+  }
+  else {
+    $platform_node->publish_path = $platform_node->git_root;
+  }
+
   return $platform_node;
 }
 
