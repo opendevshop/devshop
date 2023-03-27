@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9cbe652bdf8ffdd4329978df77a9ec79",
+    "content-hash": "a454eaa9890b200eead140a1a0e5da2d",
     "packages": [
         {
             "name": "behat/behat",
@@ -2599,7 +2599,7 @@
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/hosting.git",
-                "reference": "2c179282febb6001c22e5a2976139d9c34d53f19"
+                "reference": "a516ac5b686f41d27fa4a9284d3fb04fe00d641b"
             },
             "require": {
                 "drupal/drupal": "~7.0",
@@ -2629,8 +2629,8 @@
                     "dev-4.x": "4.x-dev"
                 },
                 "drupal": {
-                    "version": "7.x-4.0-beta1+95-dev",
-                    "datestamp": "1679616235",
+                    "version": "7.x-4.0-beta1+100-dev",
+                    "datestamp": "1679941806",
                     "security-coverage": {
                         "status": "not-covered",
                         "message": "Dev releases are not covered by Drupal security advisories."
@@ -3680,7 +3680,7 @@
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/provision.git",
-                "reference": "1dc09c0ae0b7f22bdc5c73537083fefbac22ce3c"
+                "reference": "12f6ae2807ba6112c73db961093dddb4b3c78981"
             },
             "require": {
                 "devshop/git-traits": "1.x-dev",
@@ -3699,8 +3699,8 @@
                     "dev-4.x": "4.x-dev"
                 },
                 "drupal": {
-                    "version": "7.x-4.0-beta2+120-dev",
-                    "datestamp": "1679933552",
+                    "version": "7.x-4.0-beta2+129-dev",
+                    "datestamp": "1679950053",
                     "security-coverage": {
                         "status": "not-covered",
                         "message": "Dev releases are not covered by Drupal security advisories."
