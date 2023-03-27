@@ -33,7 +33,7 @@ services:
 
     environment:
       - ANSIBLE_EXTRA_VARS
-      - ANSIBLE_TAGS
+      - ANSIBLE_TAGS=runtime
       - ANSIBLE_VERBOSITY
       - ANSIBLE_PLAYBOOK_COMMAND_OPTIONS
       - ANSIBLE_PLAYBOOK=/usr/share/devshop/roles/devshop.server/play.yml
