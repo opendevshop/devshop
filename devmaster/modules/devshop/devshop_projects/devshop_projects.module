@@ -178,6 +178,7 @@ function devshop_environment_menu_first_items($environment, $tasks) {
     }
 
     $items[] = 'deploy';
+    $items[] = 'backup';
   }
 
   // Load test task, if it exists
