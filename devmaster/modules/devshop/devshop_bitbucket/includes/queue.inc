@@ -241,7 +241,7 @@ function devshop_bitbucket_create_all_pr_environments($project_node) {
 
     // If not a fork, use the same git_ref as project.
     else {
-      $remote_url = $project->git_ref;
+      $remote_url = $project->git_url;
     }
 
     // @TODO: Create a "PR Env pattern" setting.
