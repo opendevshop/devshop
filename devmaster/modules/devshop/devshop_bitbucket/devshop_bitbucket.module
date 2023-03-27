@@ -728,7 +728,7 @@ function devshop_bitbucket_save_pr_env_data($pr, $environment) {
   try {
     watchdog('devshop_bitbucket', t('Pull Request saved for environment !nid !env.', array(
       '!nid' => $environment->site,
-      '!env' => l($environment->uri, "node/{$info->site_nid}"),
+      '!env' => l($environment->name, "node/{$info->site_nid}"),
     )));
     drupal_write_record('hosting_devshop_bitbucket_pull_requests', $info, $update);
     return TRUE;
