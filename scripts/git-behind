@@ -19,6 +19,12 @@ Returns true if local working copy is behind the git remote.
 "
 }
 
+BRANCH_OR_TAG=$(git-ref-type)
+if  [ "$BRANCH_OR_TAG"=="branch" ]; then
+  echo "Not on a branch."
+  exit 1
+fi
+
 git fetch
 BEHIND=$(git rev-list HEAD..FETCH_HEAD --count)
 
