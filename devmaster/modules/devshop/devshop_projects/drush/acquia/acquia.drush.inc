@@ -28,16 +28,13 @@ function drush_acquia_post_provision_deploy($branch = '') {
       return;
     }
 
-    // If project has no path to drupal, we know it's not acquia.
-    if ($project->drupal_path != 'docroot') {
-      drush_log('[DEVSHOP] Acquia Cloud skipped.', 'ok');
-      return;
-    }
-
     // Detect hook files.
     $cloud_hooks_path = $environment->repo_path . '/hooks';
     if (file_exists($cloud_hooks_path)) {
       drush_log('[DEVSHOP] Acquia Cloud Hooks detected...', 'ok');
+    }
+    else {
+      return;
     }
 
     // Collect scripts to run.

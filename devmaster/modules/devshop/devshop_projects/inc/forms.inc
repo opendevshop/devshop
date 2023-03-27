@@ -72,12 +72,19 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
   );
 
   $items = [];
-  $items[] = t('Enter the relative path to the exposed document root within your repository. Leave blank if index.php is in the root. Common paths are docroot or web.');
-  $items[] = t('If you are using the drupal-composer project for Drupal 8, the default document root is "web".');
+  $items[] = t('The relative path within your repository to the public web root directory.');
+  $items[] = t("If this project uses the !link library, leave this blank to automatically detect the web root.", [
+    '!link' => l(t('Drupal Composer Scaffold'),'https://github.com/drupal/core-composer-scaffold', [
+      'absolute' => true,
+      'attributes' => [
+        '_target' => 'blank'
+      ],
+    ])
+  ]);
 
   $form['project']['codebase']['drupal_path'] = array(
     '#type' => 'textfield',
-    '#title' => t('Document Root'),
+    '#title' => t('Document Root (optional)'),
     '#description' => theme('item_list', ['items' => $items]),
     '#size' => 40,
     '#default_value' => $project->drupal_path,
@@ -1313,14 +1320,8 @@ function devshop_prepare_platform_node($project, $environment_name, $git_ref, $w
 
   $platform_node->git_root = $project->code_path . '/' . $environment_name;
 
-  // Append drupal_path to repo_path if there is one. If not, repo_path is publish_path.
-  if ($project->drupal_path) {
-    $platform_node->publish_path = $platform_node->git_root . '/' . $project->drupal_path;
-    $platform_node->git_docroot = $project->drupal_path;
-  }
-  else {
-    $platform_node->publish_path = $platform_node->git_root;
-  }
+  // Set git_docroot from drupal_path.
+  $platform_node->git_docroot = $project->drupal_path;
   return $platform_node;
 }
 
