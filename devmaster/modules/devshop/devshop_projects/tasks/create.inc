@@ -122,7 +122,7 @@ function hosting_create_environment($project, $new_environment_name, $new_enviro
     // If the source environment was installed from a profile, we have to change
     // "install_method" so that it installs by cloning the source site, not by
     // the "profile" install_method.
-    if ($source_environment->settings->install_method['method'] == 'profile') {
+    if (!empty($source_environment->settings->install_method['method']) && $source_environment->settings->install_method['method'] == 'profile') {
       $environment->settings->install_method = array(
         'method' => 'clone',
         'clone_source' => $source_environment->drush_alias
@@ -151,15 +151,6 @@ function hosting_create_environment($project, $new_environment_name, $new_enviro
     // Use install_method from project.
     $environment->settings->install_method = $project->settings->install_method;
 
-  }
-
-  // Get platform verify task
-  $environment->last_task = 0;
-  if (isset($site->nid)) {
-    $tasks = hosting_get_tasks('rid', $site->nid);
-    if (is_array($tasks)) {
-      $environment->last_task = current($tasks)->nid;
-    }
   }
 
   $environment->project_nid = $project->nid;
