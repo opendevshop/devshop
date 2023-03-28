@@ -79,7 +79,10 @@ jobs:
           echo "devshop_cli_repo: ${{ github.event.pull_request.head.repo.clone_url }}" >> vars.ci.yml
           echo "GIT_REF=${{ github.head_ref }}" >> $GITHUB_ENV
           git switch --create ${{ github.head_ref }}
-
+      
+      - name: "vars.ci.yml"
+        run: cat vars.ci.yml
+        
       # Build "devshop.server"
       - name: "Build devshop/server:php${{ matrix.php }}"
         working-directory: docker
