@@ -53,7 +53,7 @@ jobs:
           - "8.0"
           - "8.1"
 
-    if: github.ref == 'refs/heads/1.x'
+    # if: github.ref == 'refs/heads/1.x'
 
     steps:
       - name: Checkout sourcecode.
