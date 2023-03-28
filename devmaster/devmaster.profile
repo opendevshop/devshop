@@ -321,6 +321,11 @@ function devmaster_task_finalize() {
 
   // Rebuild node access permissions.
   node_access_rebuild();
+
+  // Disable hosting tasks queue. QueueD will handle it asyncronously now.
+  variable_set('hosting_queue_tasks_enabled', false);
+  variable_set('hosting_queue_git_enabled', false);
+
 }
 
 /**

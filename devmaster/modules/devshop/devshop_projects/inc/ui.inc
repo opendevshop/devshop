@@ -100,7 +100,7 @@ HTML;
     // Links to all environments
     $items = '';
     foreach ($project->environments as $env => $environment) {
-      if (empty($environment->last_task)) {
+      if (empty($environment->last_task_node)) {
         $icon = 'cube';
         $class = 'status';
       }
@@ -155,7 +155,7 @@ HTML;
 
   // No Projects
   if (empty($rows)) {
-    $link = url('admin/devshop');
+    $link = url('admin/hosting');
     $welcome = t('Welcome to <em>your</em> DevShop!');
     $subtitle = t("You are almost ready to start working.");
     $text = t("Check your DevShop settings or get started with a new Project.");

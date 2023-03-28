@@ -120,7 +120,6 @@ function devshop_projects_hosting_project_context_options(&$task) {
     foreach ($project->environments as &$environment) {
       unset($environment->tasks);
       unset($environment->tasks_list);
-      unset($environment->last_task_node);
     }
 
     $task->context_options['project'] = $project;
@@ -138,8 +137,7 @@ function devshop_projects_hosting_site_context_options(&$task) {
   if (isset($task->ref->environment)) {
     $task->context_options['environment'] = $task->ref->environment->name;
     $task->context_options['environment_settings'] = $task->ref->environment->settings;
-    $task->context_options['project'] = $task->ref->project->name;
-    $task->context_options['git_ref'] = $task->ref->environment->git_ref;
+    $task->context_options['group'] = $task->ref->project->name;
   }
 
   // If install task is set to force-reinstall, pass to drush options.
@@ -294,8 +292,6 @@ function devshop_projects_drush_context_import($context, &$node) {
         drush_log(dt('Site property "project" is set to "!project", but there is no project node or context by that name.'), 'warning');
       }
     }
-
-    devshop_reset_last_tasks();
   }
 }
 

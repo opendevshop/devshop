@@ -45,6 +45,7 @@ jobs:
         php_version:
           - "7.4"
           - "8.0"
+          - "8.1"
 
     if: github.ref == 'refs/heads/1.x'
 

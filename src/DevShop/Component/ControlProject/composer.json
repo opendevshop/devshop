@@ -77,7 +77,8 @@
         "npm-asset/underscore": "^1.10",
         "oomphinc/composer-installers-extender": "^2.0",
         "toin0u/digitalocean-v2": "~2.0",
-        "devshop/devmaster": "^1.7||1.x-dev@dev"
+        "devshop/devmaster": "^1.7||1.x-dev@dev",
+        "http-interop/http-factory-guzzle": "*"
     },
     "conflict": {
         "drupal/core": "8.*"
@@ -97,7 +98,8 @@
           "composer/installers": true,
           "cweagans/composer-patches": true,
           "drupal-composer/preserve-paths": true,
-          "oomphinc/composer-installers-extender": true
+          "oomphinc/composer-installers-extender": true,
+          "php-http/discovery": true
         }
     },
     "autoload": {
@@ -129,10 +131,6 @@
           "rm -rf vendor web/profiles web/includes web/misc web/modules web/scripts web/themes web/sites/all/modules/contrib web/sites/all/modules/themes",
           "rm -f web/*; rm -f web/.* || true",
           "echo 'Done.'"
-        ],
-        "reinstall": [
-          "@uninstall",
-          "@composer update --no-dev --no-progress --prefer-source"
         ]
     },
     "extra": {

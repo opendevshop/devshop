@@ -63,8 +63,6 @@ jobs:
     - name: Install dependencies
       working-directory: ${{env.working-directory}}
       run: |
-        composer config repositories.power-process '{"type": "path","url": "../PowerProcess"}'
-        composer require devshop/power-process
         composer install --prefer-dist --no-progress --no-suggest
 
     - name: Run Yaml Tasks

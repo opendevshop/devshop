@@ -14,13 +14,14 @@ env:
 jobs:
   install_script:
     name: Install Script
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     strategy:
       fail-fast: false
       matrix:
         os:
-          - 'ubuntu1804'
+# @TODO: Put back if it works.
+#          - 'ubuntu1804'
           - 'ubuntu2004'
 
     env:

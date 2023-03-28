@@ -33,8 +33,10 @@ docker run \
   --hostname $DEVSHOP_SERVER_HOSTNAME \
   --publish 80:80 \
   --volume $PWD/build/install.sh:/tmp/devshop-install.sh \
+  --tty \
   ubuntu/container
 
 docker exec \
+  --tty \
   install-server-test \
   bash /tmp/devshop-install.sh --hostname=$DEVSHOP_SERVER_HOSTNAME \

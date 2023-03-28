@@ -343,13 +343,8 @@ function devshop_remotes_form_hosting_task_confirm_form_alter(&$form, &$form_sta
 
 /**
  * Implements hook_preprocess_environment().
- * @TODO: This is not working! Get to work then remove from boots/template.php
  */
 function devshop_remotes_preprocess_environment(&$vars) {
-
-  kpr($vars);
-  die;
-
 }
 
 /**

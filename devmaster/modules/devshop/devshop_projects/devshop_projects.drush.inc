@@ -7,19 +7,6 @@
 include 'drush/contexts.inc';
 
 /**
- * Implements hook_hosting_task_update_status().
- *
- * Saves task status to environment
- */
-function devshop_projects_hosting_task_update_status($task, $status) {
-  $ref = node_load($task->rid);
-  if (($ref->type == 'site' || $ref->type == 'platform') && isset($ref->environment)) {
-    $ref->environment->last_task = $task->nid;
-    devshop_environment_save_last_task($ref->environment);
-  }
-}
-
-/**
  * Implements drush_HOOK_pre_COMMAND()
  *
  * This runs for each task during the command
@@ -158,11 +145,6 @@ function devshop_projects_post_hosting_delete_task($task, $data) {
 
   // When a platform is deleted (if it is in a project), delete the environment record.
   if ($task->ref->type == 'platform' && !empty($task->ref->project)) {
-    db_delete('hosting_devshop_project_environment')
-      ->condition('project_nid', $task->ref->project->nid)
-      ->condition('platform', $task->ref->platform)
-      ->execute();
-
     // If drupal root is not repo root, delete folder at code_path.
     $repo_path = str_replace($task->ref->project->drupal_path, '', $task->ref->publish_path);
     if (file_exists($repo_path) ) {

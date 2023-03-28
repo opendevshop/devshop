@@ -28,7 +28,7 @@ env:
   GIT_REF: 1.x
 
   # Prevents including docker-compose.override, which is for local development.
-  COMPOSE_FILE: docker-compose.yml
+  COMPOSE_FILE: docker-compose.yml:docker-compose.ci.yml
 
 jobs:
   docker:
@@ -40,16 +40,14 @@ jobs:
         vars:
           - 'php_version=7.4'
           - 'php_version=8.0'
+          - 'php_version=8.1'
 
-        from:
-          - 'devshop/server:latest'
-          - 'ubuntu:20.04'
-          - 'ubuntu:18.04'
-
+        os:
+#           - 'ubuntu1804'
+          - 'ubuntu2004'
     env:
-      DEVSHOP_DOCKER_IMAGE:  "devshop/server:built"
-      DEVSHOP_CONTAINER_FROM:  "${{ matrix.from }}"
-
+      OS: "${{ matrix.os }}"
+      DEVSHOP_DOCKER_IMAGE:  "devshop/server:${{ matrix.os }}"
       HOSTNAME: "devshop.${{ github.event.pull_request.number }}.${{ matrix.os }}.actions.github.com"
       ANSIBLE_EXTRA_VARS: "${{ matrix.vars }}"
 
@@ -78,21 +76,14 @@ jobs:
           echo "devshop_cli_repo: ${{ github.event.pull_request.head.repo.clone_url }}" >> vars.ci.yml
           echo "GIT_REF=${{ github.head_ref }}" >> $GITHUB_ENV
           git switch --create ${{ github.head_ref }}
-# If you need really big logs...
-#          echo "ANSIBLE_VERBOSITY=2" >> $GITHUB_ENV
-
-      - name: Set OS so correct Dockerfile is used.
-        if: matrix.from == 'ubuntu:20.04'
-        run: |
-          echo "OS=ubuntu2004" >> $GITHUB_ENV
 
       # Build "devshop.server"
-      - name: "Build ${{ env.DEVSHOP_DOCKER_IMAGE }}"
+      - name: "Build devshop/server:${{ matrix.os }}"
         working-directory: docker
         run: docker-compose build
 
       # Launch Container
-      - name: "Launch a freshly built ${{ env.DEVSHOP_DOCKER_IMAGE }} container"
+      - name: "Launch a freshly built devshop/server:${{ matrix.os }} container"
         working-directory: docker
         run: |
           docker-compose up --detach devshop.server

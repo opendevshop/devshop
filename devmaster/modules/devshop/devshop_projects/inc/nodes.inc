@@ -194,7 +194,7 @@ function devshop_projects_node_insert($node) {
   if (!isset($node->old_vid) || empty($node->old_vid)) {
 
     // Save the "hosting context", which includes setting the path alias.
-    $name = ($node->hosting_name) ? $node->hosting_name : $node->title;
+    $name = !empty($node->hosting_name) ? $node->hosting_name : $node->title;
 
     // Ensure "project_" prefix on hosting context name.
     if (strpos($name, 'project_') !== 0) {
@@ -334,9 +334,9 @@ function devshop_projects_node_delete($node) {
 
   // When a platform or site node is FULLY deleted, remove the environment record.
   // This should never happen, site and platform nodes are never fully deleted.
-  if (($node->type == 'site' || $node->type == 'platform') && !empty($node->project)) {
+  if (($node->type == 'site') && !empty($node->project)) {
     db_delete('hosting_devshop_project_environment')
-      ->condition($node->type, $node->nid)
+      ->condition('site', $node->nid)
       ->execute();
   }
 }
@@ -369,9 +369,7 @@ function devshop_environment_save(stdClass &$environment) {
   $info->project_nid = $environment->project_nid;
   $info->name = $environment->name;
   $info->site = $environment->site;
-  $info->platform = $environment->platform;
   $info->settings = serialize($environment->settings);
-  $info->last_task = $environment->last_task;
 
   // Check for existing records
   $result = db_select('hosting_devshop_project_environment', 'e')
@@ -382,7 +380,7 @@ function devshop_environment_save(stdClass &$environment) {
     ->fetchField()
   ;
 
-  $keys = $result? array('project_nid', 'name'): array();
+  $keys = $result? array('site'): array();
 
   // Save environment record.
   if (drupal_write_record('hosting_devshop_project_environment', $info, $keys)) {
@@ -395,16 +393,3 @@ function devshop_environment_save(stdClass &$environment) {
   }
 }
 
-/**
- * Helper to save last task info.
- */
-function devshop_environment_save_last_task($environment) {
-
-  db_update('hosting_devshop_project_environment')
-    ->fields(array(
-      'last_task' => $environment->last_task,
-    ))
-    ->condition('name', $environment->name)
-    ->condition('project_nid', $environment->project_nid)
-    ->execute();
-}

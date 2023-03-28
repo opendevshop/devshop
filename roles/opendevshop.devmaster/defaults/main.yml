@@ -43,7 +43,9 @@ devshop_cli_path: /usr/share/devshop
 devshop_cli_scripts_path: "{{ devshop_cli_path }}/scripts"
 devshop_cli_bin_path: "{{ devshop_cli_path }}/bin"
 devshop_cli_executable_path: "{{ devshop_cli_path }}/bin/devshop"
-drush_executable_path: "{{ devshop_cli_path }}/bin/drush"
+
+# Drush for DevShop Control
+drush_executable_path: "{{ devshop_control_git_root }}/bin/drush"
 
 devshop_cli_composer_install_command: "install --no-interaction"
 

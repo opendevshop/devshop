@@ -9,12 +9,12 @@
 function devshop_bitbucket_schema() {
   $schema['hosting_devshop_bitbucket_pull_requests'] = array(
     'fields' => array(
-      'id' => array(
+      'site_nid' => array(
         'type' => 'int',
         'unsigned' => TRUE,
         'not null' => TRUE,
         'default' => 0,
-        'description' => 'Pull Request ID',
+        'description' => "The site associated with this pull request.",
       ),
       'number' => array(
         'type' => 'int',
@@ -23,20 +23,6 @@ function devshop_bitbucket_schema() {
         'default' => 0,
         'description' => 'Pull Request Number',
       ),
-      'project_nid' => array(
-        'type' => 'int',
-        'unsigned' => TRUE,
-        'not null' => TRUE,
-        'default' => 0,
-        'description' => "The project's Node ID.",
-      ),
-      'environment_name' => array(
-        'type' => 'varchar',
-        'not null' => TRUE,
-        'length' => 64,
-        'default' => '',
-        'description' => 'Environment name for this pull request environment.',
-      ),
       'pull_request_object' => array(
         'type' => 'text',
         'not null' => FALSE,
@@ -44,7 +30,7 @@ function devshop_bitbucket_schema() {
         'description' => 'A serialized array of settings for this environment.',
       ),
     ),
-    'primary key' => array('id'),
+    'primary key' => array('site_nid'),
   );
   return $schema;
 }
@@ -64,7 +50,7 @@ function devshop_bitbucket_install() {
 
   // Display a message about setting a bitbucket personal token.
   drupal_set_message(t('DevShop bitbucket module has been enabled.  You must add an access token to enable full functionality at !link.', array(
-    '!link' => l(t('the settings page'), 'admin/devshop/bitbucket'),
+    '!link' => l(t('the settings page'), 'admin/hosting/bitbucket'),
   )));
 }
 
@@ -92,4 +78,36 @@ function devshop_bitbucket_update_7001() {
     ))
     ->condition('name', 'devshop_bitbucket')
     ->execute();
+}
+
+// @TODO: REMOVE PROJECT_NID and env name.
+
+/**
+ * Update the hosting_devshop_bitbucket_pull_requests table.
+ */
+function devshop_bitbucket_update_7005() {
+  
+  // 1. Create new field site_nid.
+  db_add_field('hosting_devshop_bitbucket_pull_requests', 'site_nid', array(
+    'type' => 'int',
+    'unsigned' => TRUE,
+    'not null' => TRUE,
+    'default' => 0,
+    'description' => "The site associated with this pull request.",
+  ));
+
+  // 2. Update table with new site.nid based on project nid and env name.
+  db_query(<<<SQL
+  UPDATE 
+    {hosting_devshop_bitbucket_pull_requests} pr JOIN 
+    {hosting_devshop_project_environment} e ON 
+        pr.environment_name = e.name AND 
+        pr.project_nid = e.project_nid 
+      SET pr.site_nid = e.site 
+SQL);
+
+  // 3. Delete old project_nid and env name fields.
+  db_drop_field('hosting_devshop_bitbucket_pull_requests', 'project_nid');
+  db_drop_field('hosting_devshop_bitbucket_pull_requests', 'environment_name');
+
 }

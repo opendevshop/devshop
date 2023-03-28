@@ -25,6 +25,10 @@
       "git_traits": {
         "type": "path",
         "url": "../Component/GitTraits"
+      },
+      "behat": {
+        "type": "vcs",
+        "url":  "https://github.com/jonpugh/DrupalDriver.git"
       }
     },
     "require": {
@@ -41,6 +45,7 @@
         "drupal-composer/preserve-paths": "^0.1.6",
         "drupal/composer_autoloader": "^1.0",
         "drupal/drupal": "^7.94",
+        "drupal/drupal-driver":  "dev-patch-1 as v2.2.2",
         "symfony/filesystem": "~2.7 || ^3",
         "webflo/drupal-finder": "^1.2.1",
         "devshop/devmaster": "1.x-dev",
@@ -61,7 +66,7 @@
         "drupal/hosting": "dev-4.x",
         "drupal/hosting_filemanager": "dev-1.x",
         "drupal/hosting_git": "^3.181",
-        "drupal/hosting_https": "^3.182",
+        "drupal/hosting_https": "3.x-dev",
         "drupal/hosting_logs": "^3.181",
         "drupal/hosting_site_backup_manager": "^3.180",
         "drupal/hosting_statsd": "@beta",
@@ -89,7 +94,15 @@
         "sensiolabs/ansi-to-html": "^1.2",
         "symfony/deprecation-contracts": "^2.5",
         "psr/cache": "^1.0",
-        "symfony/options-resolver": "^4.4"
+        "symfony/options-resolver": "^4.4",
+        "drupal/drupal-extension": "^4.2",
+        "symfony/dependency-injection": "^4.4",
+        "symfony/process": "^4.4",
+        "bitbucket/client": "^4.1",
+        "drush/drush": "^8.4",
+        "http-interop/http-factory-guzzle": "^1.2",
+        "drupal/provision": "dev-4.x",
+        "php-http/guzzle6-adapter": "^2.0"
     },
     "conflict": {
         "drupal/core": "8.*"
@@ -106,13 +119,14 @@
         "bin-dir": "bin",
         "sort-packages": false,
         "allow-plugins": {
-          "composer/installers": true,
-          "cweagans/composer-patches": true,
-          "drupal-composer/preserve-paths": true,
-          "oomphinc/composer-installers-extender": true
+            "composer/installers": true,
+            "cweagans/composer-patches": true,
+            "drupal-composer/preserve-paths": true,
+            "oomphinc/composer-installers-extender": true,
+            "php-http/discovery": true
         },
         "platform": {
-          "php": "7.4.0"
+            "php": "7.4.0"
         }
     },
     "autoload": {
