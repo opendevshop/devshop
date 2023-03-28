@@ -72,6 +72,7 @@ jobs:
       - name: Prepare Pull Request-only environment
         if: github.event_name=='pull_request'
         run: |
+          echo "php_version: ${{ matrix.php }}" >> vars.ci.yml
           echo "devshop_version: ${{ github.head_ref }}" >> vars.ci.yml
           echo "devshop_cli_repo: ${{ github.event.pull_request.head.repo.clone_url }}" >> vars.ci.yml
           echo "GIT_REF=${{ github.head_ref }}" >> $GITHUB_ENV
@@ -83,7 +84,7 @@ jobs:
         run: docker-compose build
 
       # Launch Container
-      - name: "Launch a freshly built devshop/server:${{ matrix.os }} container"
+      - name: "Launch a freshly built devshop/server:php${{ matrix.php }} container"
         working-directory: docker
         run: |
           docker-compose up --detach devshop.server
