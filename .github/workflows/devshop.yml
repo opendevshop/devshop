@@ -37,19 +37,19 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        vars:
-          - 'php_version=7.4'
-          - 'php_version=8.0'
-          - 'php_version=8.1'
+        php:
+          - '7.4'
+          - '8.0'
+          - '8.1'
 
         os:
 #           - 'ubuntu1804'
           - 'ubuntu2004'
     env:
       OS: "${{ matrix.os }}"
-      DEVSHOP_DOCKER_IMAGE:  "devshop/server:${{ matrix.os }}"
+      DEVSHOP_DOCKER_IMAGE:  "devshop/server:php${{ matrix.php }}"
       HOSTNAME: "devshop.${{ github.event.pull_request.number }}.${{ matrix.os }}.actions.github.com"
-      ANSIBLE_EXTRA_VARS: "${{ matrix.vars }}"
+      ANSIBLE_EXTRA_VARS: "php_version=${{ matrix.php }}"
 
     runs-on: ubuntu-20.04
     steps:
@@ -78,7 +78,7 @@ jobs:
           git switch --create ${{ github.head_ref }}
 
       # Build "devshop.server"
-      - name: "Build devshop/server:${{ matrix.os }}"
+      - name: "Build devshop/server:php${{ matrix.php }}"
         working-directory: docker
         run: docker-compose build
 
