@@ -84,7 +84,7 @@ jobs:
       - name: "Build devshop/server:php${{ matrix.php }}"
         working-directory: docker
         run: docker-compose build
-        when: matrix.build
+        if: matrix.build
 
       # Launch Container
       - name: "Launch a freshly built devshop/server:php${{ matrix.php }} container"
