@@ -32,7 +32,7 @@ env:
 
 jobs:
   docker:
-    name: "${{ matrix.action }} DevShop"
+    name: "${{ matrix.action }} DevShop: PHP {{ matrix.php }}"
     # description: Build every docker container, then install DevShop to confirm they work.
     strategy:
       fail-fast: false
