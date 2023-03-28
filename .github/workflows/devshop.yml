@@ -41,7 +41,9 @@ jobs:
           - '7.4'
           - '8.0'
           - '8.1'
-
+        build:
+          - true
+          - false
         os:
 #           - 'ubuntu1804'
           - 'ubuntu2004'
@@ -82,6 +84,7 @@ jobs:
       - name: "Build devshop/server:php${{ matrix.php }}"
         working-directory: docker
         run: docker-compose build
+        when: matrix.build
 
       # Launch Container
       - name: "Launch a freshly built devshop/server:php${{ matrix.php }} container"
