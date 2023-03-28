@@ -57,6 +57,7 @@ jobs:
         if: github.event_name=='pull_request'
         run: |
           echo "devshop_version: ${{ github.head_ref }}" >> vars.yml
+          echo "php_version: ${{ matrix.php_version }}" >> vars.yml
           echo "devshop_cli_repo: ${{ github.event.pull_request.head.repo.clone_url }}" >> vars.yml
           cat vars.yml
 
