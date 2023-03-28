@@ -32,24 +32,26 @@ env:
 
 jobs:
   docker:
-    name: "Build DevShop"
+    name: "${{ matrix.action }} DevShop"
     # description: Build every docker container, then install DevShop to confirm they work.
     strategy:
       fail-fast: false
       matrix:
-        vars:
-          - 'php_version=7.4'
-          - 'php_version=8.0'
-          - 'php_version=8.1'
-
+        php:
+          - '7.4'
+          - '8.0'
+          - '8.1'
+        action:
+          - Build
+#          - Test
         os:
 #           - 'ubuntu1804'
           - 'ubuntu2004'
     env:
       OS: "${{ matrix.os }}"
-      DEVSHOP_DOCKER_IMAGE:  "devshop/server:${{ matrix.os }}"
+      DEVSHOP_DOCKER_IMAGE:  "devshop/server:php${{ matrix.php }}"
       HOSTNAME: "devshop.${{ github.event.pull_request.number }}.${{ matrix.os }}.actions.github.com"
-      ANSIBLE_EXTRA_VARS: "${{ matrix.vars }}"
+      ANSIBLE_EXTRA_VARS: "php_version=${{ matrix.php }}"
 
     runs-on: ubuntu-20.04
     steps:
@@ -72,18 +74,25 @@ jobs:
       - name: Prepare Pull Request-only environment
         if: github.event_name=='pull_request'
         run: |
+          echo "php_version: '${{ matrix.php }}'" >> vars.ci.yml
           echo "devshop_version: ${{ github.head_ref }}" >> vars.ci.yml
           echo "devshop_cli_repo: ${{ github.event.pull_request.head.repo.clone_url }}" >> vars.ci.yml
           echo "GIT_REF=${{ github.head_ref }}" >> $GITHUB_ENV
           git switch --create ${{ github.head_ref }}
 
       # Build "devshop.server"
-      - name: "Build devshop/server:${{ matrix.os }}"
+      - name: "Build devshop/server:php${{ matrix.php }}"
         working-directory: docker
         run: docker-compose build
+        if: matrix.action == 'Build'
+
+      - name: "Pull devshop/server:php${{ matrix.php }}"
+        working-directory: docker
+        run: docker-compose pull
+        if: matrix.action == 'Test'
 
       # Launch Container
-      - name: "Launch a freshly built devshop/server:${{ matrix.os }} container"
+      - name: "Launch a freshly built devshop/server:php${{ matrix.php }} container"
         working-directory: docker
         run: |
           docker-compose up --detach devshop.server
