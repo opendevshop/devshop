@@ -6,6 +6,7 @@ on:
   push:
     branches:
       - 1.x
+      - bug/docker/hub
   schedule:
     - cron: "10 1 * * 0"
 
