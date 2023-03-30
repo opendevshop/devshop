@@ -5,10 +5,10 @@ on:
   workflow_dispatch:
     
   pull_request:
-    branches:
-      - bug/docker/actions
+    types: [opened, synchronize]
   push:
     branches:
+      - bug/github/actions
       - 1.x
   schedule:
     - cron: "10 1 * * 0"
@@ -66,7 +66,7 @@ jobs:
           echo "devshop_version: ${{ github.head_ref }}" >> vars.ci.yml
           echo "php_version: ${{ matrix.php_version }}" >> vars.ci.yml
           echo "devshop_cli_repo: ${{ github.event.pull_request.head.repo.clone_url }}" >> vars.ci.yml
-          cat vars.yml
+          cat vars.ci.yml
 
       - name: Set Container Tags
         run: |
@@ -97,3 +97,5 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ env.DOCKER_TAGS }}
+          build-args:
+            ANSIBLE_PLAYBOOK_COMMAND_OPTIONS_ARG: "--extra-vars=@/usr/share/devshop/vars.ci.yml"
