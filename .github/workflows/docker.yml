@@ -3,10 +3,11 @@ name: Docker Hub
 
 on:
   pull_request:
+    branches:
+      - bug/docker/actions
   push:
     branches:
       - 1.x
-      - bug/docker/hub
   schedule:
     - cron: "10 1 * * 0"
 
@@ -52,7 +53,7 @@ jobs:
           - "8.0"
           - "8.1"
 
-    if: github.ref == 'refs/heads/1.x'
+    # if: github.ref == 'refs/heads/1.x'
 
     steps:
       - name: Checkout sourcecode.
