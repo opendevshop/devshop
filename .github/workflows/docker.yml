@@ -98,4 +98,4 @@ jobs:
           push: true
           tags: ${{ env.DOCKER_TAGS }}
           build-args:
-            ANSIBLE_PLAYBOOK_COMMAND_OPTIONS_ARG: "--extra-vars=@/usr/share/devshop/vars.ci.yml"
+            - ANSIBLE_PLAYBOOK_COMMAND_OPTIONS_ARG= --extra-vars=@/usr/share/devshop/vars.ci.yml
