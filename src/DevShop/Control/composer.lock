@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a454eaa9890b200eead140a1a0e5da2d",
+    "content-hash": "31f0b71dd59564fed6ed509cfedb57f8",
     "packages": [
         {
             "name": "behat/behat",
@@ -9893,12 +9893,12 @@
     ],
     "minimum-stability": "dev",
     "stability-flags": {
-        "drupal/drupal-driver": 20,
         "devshop/devmaster": 20,
         "drupal/admin_menu": 5,
         "drupal/aegir_config": 10,
         "drupal/cas_attributes": 5,
         "drupal/devshop_stats": 20,
+        "drupal/drupal-driver": 20,
         "drupal/hosting": 20,
         "drupal/hosting_filemanager": 20,
         "drupal/hosting_https": 20,
