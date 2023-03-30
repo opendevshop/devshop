@@ -24,9 +24,9 @@ function aegir_update_drush_command() {
 function drush_aegir_update_provision_update_drupal() {
   drush_errors_on();
 
-    $path = d()->platform->repo_path? d()->platform->repo_path: d()->platform->root;
+    $path = drush_get_option('git_root');
     if (file_exists($path . '/composer.json')) {
-      provision_process('composer update', $path);
+      provision_process(drush_get_option('composer_update_command', 'composer update --ansi --no-progress'), $path);
     }
     elseif (drush_drupal_major_version(d()->root) <= 7) {
       provision_backend_invoke(d()->name, 'pm-update');
