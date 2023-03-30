@@ -7,7 +7,6 @@ on:
   pull_request:
   push:
     branches:
-      - bug/github/actions
       - 1.x
   schedule:
     - cron: "10 1 * * 0"
