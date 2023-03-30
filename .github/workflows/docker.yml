@@ -61,8 +61,8 @@ jobs:
 
       - name: Save info to vars file.
         run: |
-          echo "devshop_version: ${{ github.ref_name }}" >> vars.yml
-          echo "php_version: ${{ matrix.php_version }}" >> vars.yml
+          echo "devshop_version: '${{ github.ref_name }}'" >> vars.yml
+          echo "php_version: '${{ matrix.php_version }}'" >> vars.yml
           cat vars.yml
 
       - name: Set Container Tags
