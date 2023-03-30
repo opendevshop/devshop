@@ -37,11 +37,17 @@ function hosting_task_update_drupal_form() {
       '#prefix' => '<div class="alert alert-warning"><i class="fa fa-warning"></i> ',
       '#suffix' => '</div>',
     );
+    $form['packages'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Packages to update'),
+      '#description' => t('Enter a list of packages you would like to update. Leave blank to try updating all of them.'),
+    );
     $form['commit'] = array(
       '#type' => 'checkbox',
       '#title' => t('Commit & Push all changes'),
       '#description' => t('After running the update, commit and push all changes.'),
       '#default_value' => 1,
+      '#access' => user_access('create git_commit task'),
     );
     return $form;
 }
@@ -62,7 +68,6 @@ function aegir_update_post_hosting_update_drupal_task($task, $data) {
       ));
   }
 
-  hosting_add_task($task->ref->platform, 'verify');
   hosting_add_task($task->ref->nid, 'verify');
 }
 
