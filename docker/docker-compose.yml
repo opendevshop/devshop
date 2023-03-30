@@ -2,19 +2,37 @@ version: "2.1"
 services:
   devshop:
     build:
-      context: ..
-      dockerfile: docker/Dockerfile
+      context: ".."
+      dockerfile: "docker/Dockerfile.${OS:-ubuntu1804}"
+      args:
+        # see .env files for defaults.
+        - DEVSHOP_CONTAINER_FROM
+        - DEVSHOP_DOCKER_COMMAND_BUILD_ARG
+        - ANSIBLE_EXTRA_VARS_ARG
+        - ANSIBLE_TAGS_ARG
+        - ANSIBLE_PLAYBOOK_COMMAND_OPTIONS_ARG
     image: devshop/server
     container_name: devshop
     restart: unless-stopped
     hostname: devshop.local.computer
-    
     volumes:
       - ../:/usr/share/devshop
       - ../aegir-home:/var/aegir
       - /var/lib/mysql
 
     environment:
+      - ANSIBLE_EXTRA_VARS
+      - ANSIBLE_TAGS=runtime
+      - ANSIBLE_VERBOSITY
+      - ANSIBLE_PLAYBOOK_COMMAND_OPTIONS
+      - ANSIBLE_PLAYBOOK=/usr/share/devshop/roles/devshop.server/play.yml
+      - DEVSHOP_DOCKER_COMMAND_RUN
+      - DOCKER_COMMAND_POST
+      - GITHUB_HEAD_REF
+      - DEVSHOP_TESTS_ARTIFACTS_PATH
+      # Setting this ensures the docker containers have this value, regardless if the container is an older image.
+      - DEVSHOP_ANSIBLE_GROUP_NAME=devshop_server
+
       - PUID=${PGUID:-1000}
       - PGID=${PGUID:-1000}
       - TZ=America/New_York

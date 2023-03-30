@@ -3,6 +3,8 @@ name: Docker Hub
 
 on:
   pull_request:
+    branches:
+      - bug/docker/actions
   push:
     branches:
       - 1.x
@@ -40,6 +42,10 @@ jobs:
       fail-fast: false
       matrix:
         os_slug:
+          # ubuntu2004 docker builds fail. 
+          # Ensure MySQL is stopped after initial install....
+          #   localhost failed | msg: Service is in unknown state
+          # - ubuntu2004
           - ubuntu1804
 
         php_version:
@@ -47,16 +53,16 @@ jobs:
           - "8.0"
           - "8.1"
 
-    if: github.ref == 'refs/heads/1.x'
+    # if: github.ref == 'refs/heads/1.x'
 
     steps:
       - name: Checkout sourcecode.
         uses: actions/checkout@v2
 
       - name: Save info to vars file.
-        if: github.event_name=='pull_request'
         run: |
           echo "devshop_version: ${{ github.head_ref }}" >> vars.yml
+          echo "php_version: ${{ matrix.php_version }}" >> vars.yml
           echo "devshop_cli_repo: ${{ github.event.pull_request.head.repo.clone_url }}" >> vars.yml
           cat vars.yml
 
