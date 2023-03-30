@@ -63,10 +63,9 @@ jobs:
 
       - name: Save info to vars file.
         run: |
-          echo "devshop_version: ${{ github.head_ref }}" >> vars.ci.yml
-          echo "php_version: ${{ matrix.php_version }}" >> vars.ci.yml
-          echo "devshop_cli_repo: ${{ github.event.pull_request.head.repo.clone_url }}" >> vars.ci.yml
-          cat vars.ci.yml
+          echo "devshop_version: ${{ github.ref_name }}" >> vars.yml
+          echo "php_version: ${{ matrix.php_version }}" >> vars.yml
+          cat vars.yml
 
       - name: Set Container Tags
         run: |
@@ -97,5 +96,3 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ env.DOCKER_TAGS }}
-          build-args:
-          - "ANSIBLE_PLAYBOOK_COMMAND_OPTIONS_ARG= --extra-vars=@/usr/share/devshop/vars.ci.yml"
