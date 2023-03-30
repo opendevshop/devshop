@@ -2,6 +2,8 @@
 name: Docker Hub
 
 on:
+  workflow_dispatch:
+    
   pull_request:
     branches:
       - bug/docker/actions
@@ -61,9 +63,9 @@ jobs:
 
       - name: Save info to vars file.
         run: |
-          echo "devshop_version: ${{ github.head_ref }}" >> vars.yml
-          echo "php_version: ${{ matrix.php_version }}" >> vars.yml
-          echo "devshop_cli_repo: ${{ github.event.pull_request.head.repo.clone_url }}" >> vars.yml
+          echo "devshop_version: ${{ github.head_ref }}" >> vars.ci.yml
+          echo "php_version: ${{ matrix.php_version }}" >> vars.ci.yml
+          echo "devshop_cli_repo: ${{ github.event.pull_request.head.repo.clone_url }}" >> vars.ci.yml
           cat vars.yml
 
       - name: Set Container Tags
