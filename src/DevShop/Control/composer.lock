@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "31f0b71dd59564fed6ed509cfedb57f8",
+    "content-hash": "09792e2aff85b237eb804d0af8b713b8",
     "packages": [
         {
             "name": "behat/behat",
@@ -2800,90 +2800,6 @@
             "homepage": "https://www.drupal.org/project/hosting_filemanager",
             "support": {
                 "source": "https://git.drupalcode.org/project/hosting_filemanager"
-            }
-        },
-        {
-            "name": "drupal/hosting_git",
-            "version": "3.190.0",
-            "source": {
-                "type": "git",
-                "url": "https://git.drupalcode.org/project/hosting_git.git",
-                "reference": "7.x-3.190"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/hosting_git-7.x-3.190.zip",
-                "reference": "7.x-3.190",
-                "shasum": "f1735bf727cc7bc79322a1c5b14c467f2c47b7c0"
-            },
-            "require": {
-                "drupal/drupal": "~7.0",
-                "drupal/hosting_site": "*"
-            },
-            "require-dev": {
-                "drupal/hosting_site": "*"
-            },
-            "type": "drupal-module",
-            "extra": {
-                "drupal": {
-                    "version": "7.x-3.190",
-                    "datestamp": "1606489729",
-                    "security-coverage": {
-                        "status": "covered",
-                        "message": "Covered by Drupal's security advisory policy"
-                    }
-                }
-            },
-            "notification-url": "https://packages.drupal.org/7/downloads",
-            "license": [
-                "GPL-2.0-or-later"
-            ],
-            "authors": [
-                {
-                    "name": "Jon Pugh",
-                    "homepage": "https://www.drupal.org/user/17028"
-                },
-                {
-                    "name": "Steven Jones",
-                    "homepage": "https://www.drupal.org/user/99644"
-                },
-                {
-                    "name": "anarcat",
-                    "homepage": "https://www.drupal.org/user/1274"
-                },
-                {
-                    "name": "colan",
-                    "homepage": "https://www.drupal.org/user/58704"
-                },
-                {
-                    "name": "cweagans",
-                    "homepage": "https://www.drupal.org/user/404732"
-                },
-                {
-                    "name": "ergonlogic",
-                    "homepage": "https://www.drupal.org/user/368613"
-                },
-                {
-                    "name": "gboudrias",
-                    "homepage": "https://www.drupal.org/user/918342"
-                },
-                {
-                    "name": "helmo",
-                    "homepage": "https://www.drupal.org/user/449000"
-                },
-                {
-                    "name": "memtkmcc",
-                    "homepage": "https://www.drupal.org/user/92646"
-                },
-                {
-                    "name": "omega8cc",
-                    "homepage": "https://www.drupal.org/user/539502"
-                }
-            ],
-            "description": "Allows Hostmaster managed sites and platforms to use Git.",
-            "homepage": "https://www.drupal.org/project/hosting_git",
-            "support": {
-                "source": "https://git.drupalcode.org/project/hosting_git"
             }
         },
         {
