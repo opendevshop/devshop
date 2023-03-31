@@ -21,6 +21,15 @@ function devshop_projects_node_info() {
   return $types;
 }
 
+function devshop_projects_node_prepare(&$node) {
+  
+  // Load up project hosting settings on create site page.
+  if ($node->type == 'site' && empty($node->hosting_settings) && arg(1) == 'add' && !empty(arg(3))) {
+    $project = devshop_projects_load_by_name(arg(3));
+    $node->hosting_settings = $project->hosting_settings;
+  }
+}
+
 /**
  * Implements hook_node_load().
  *
@@ -119,20 +128,9 @@ function devshop_projects_node_load($nodes, $types) {
       $node->project = devshop_project_load($node);
     }
     elseif ($node->type == 'site') {
-
-      // @TODO: Check if this is ever needed now that install_method is in core aegir.
-      // Load install method into an easy to access property.
-      if (empty($node->install_method) && isset($node->environment->settings->install_method)) {
-        $node->install_method = $node->environment->settings->install_method['method'];
-        
-        if ($node->install_method == 'clone') {
-          $node->clone_source = $node->environment->settings->install_method['clone_source'];
-        }
-      }
-
-      // If profile ID is empty but name is stored, load to $node->profile_name so that provision will load it.
-      if (empty($node->profile) && !empty($node->environment->settings->install_method['profile'])) {
-        $node->profile_name = $node->environment->settings->install_method['profile'];
+      // For sites without hosting_settings, load from project. 
+      if (empty($node->hosting_settings) && !empty($node->project->hosting_settings)) {
+        $node->hosting_settings = $node->project->hosting_settings;
       }
     }
   }
@@ -186,6 +184,7 @@ function devshop_projects_node_insert($node) {
     hosting_add_task($node->nid, 'verify');
   }
 
+  // @TODO: Move all to hosting_settings.
   $info = new stdClass();
   $info->nid = $node->nid;
   $info->git_url = $node->project->git_url;

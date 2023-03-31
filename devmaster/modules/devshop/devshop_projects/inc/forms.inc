@@ -19,6 +19,14 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
     '#type' => 'value',
   );
 
+  // Default site settings.
+  // Load a site node form using the projects hosting_settings.
+  $site = new stdClass();
+  $site->type = 'site';
+  $site->hosting_settings = $node->hosting_settings;
+  $site_form = drupal_get_form('site_node_form', $site);
+  $form['hosting_settings'] = $site_form['hosting_settings'];
+  
   // Project Settings
   // Every value under $form['project'] gets serialized and saved into a project's "data" column.
   $form['project'] = array(
@@ -220,70 +228,6 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
     '#default_value' => isset($project->settings->live) ? $project->settings->live['environment_aliases'] : FALSE,
   );
 
-  // Pull Code Method
-  $form['project']['settings']['deploy'] = array(
-    '#type' => 'fieldset',
-    '#collapsible' => TRUE,
-    '#collapsed' => arg(1) != $project->nid,
-    '#title' => t('Deployment Automation'),
-    '#description' => t('Configure how code is delivered to the servers. If no deployment methods are selected, you must deploy all code changes manually.'),
-    '#weight' => -9,
-    '#group' => 'project_settings',
-  );
-  $form['project']['settings']['deploy']['webhooks'] = array(
-    '#title' => t('Enable Webhook Receiver'),
-    '#type' => 'checkbox',
-    '#description' => t('Provide an endpoint for your git repository host to ping to enable immediate deployment. Requires DevShop to be reachable from your git host.'),
-    '#default_value' => isset($project->settings->deploy['webhooks']) ? $project->settings->deploy['webhooks'] : true,
-  );
-
-  // Queue
-  $queues = hosting_get_queues();
-  if (isset($queues['tasks'])) {
-
-    $form['project']['settings']['deploy']['queue'] = array(
-      '#title' => t('Deployment Queue'),
-      '#type' => 'checkbox',
-      '#description' => t('Periodically check for updates and trigger deployments.'),
-      '#default_value' => isset($project->settings->deploy['queue']) ? $project->settings->deploy['queue'] : true,
-    );
-
-    if (user_access('administer hosting queues')) {
-      $form['project']['settings']['deploy']['queue']['#description'] .= ' ' . l(t("Task Queue Settings"), 'admin/hosting/queues');
-    }
-  }
-
-  // Manual Pull
-  $form['project']['settings']['deploy']['method']['#options']['manual'] = t('Disable automated deployment');
-  $form['project']['settings']['deploy']['method']['#options']['manual'] .= '<div class="description">' . t('Only run deployments when triggered manually.') . '</div>';
-
-  // Add link to hosting queues admin if the user can access them.
-  if (!isset($queues['deploy']['enabled']) && user_access('administer hosting queues')) {
-    $form['project']['settings']['deploy']['queue_admin'] = array(
-      '#value' => t('The !link is disabled. Enable it to allow projects to pull code in the queue.', array(
-        '!link' => l(t('Pull Queue'), 'admin/hosting/queues'),
-      )),
-      '#prefix' => '<p>',
-      '#suffix' => '</p>',
-    );
-  }
-
-  // Load deploy hooks form element.
-  $form['hosting_settings']['deployment'] = array(
-    '#title' => t('Deployment Steps'),
-    '#type' => 'fieldset',
-    '#group' => 'project_settings',
-  );
-  $form['hosting_settings']['deployment']['is_site'] = array(
-    '#type' => 'value',
-    '#value' => false,
-  );
-
-  $form['hosting_settings']['deployment']['steps'] = hosting_site_deploy_steps_form_element($node);
-  $form['hosting_settings']['deployment']['steps']['#type'] = 'item';
-  $form['hosting_settings']['deployment']['steps']['#title'] = t('Default Deployment Steps');
-  $form['hosting_settings']['deployment']['steps']['#description'] = t('When deploying new code, run these steps.');
-  
   // @TODO: is there a better way to save certain values? We lose data without these.
   $form['project']['settings']['deploy']['last_webhook'] = array(
     '#type' => 'value',
@@ -348,17 +292,6 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
     '#type' => 'checkbox',
     '#default_value' => $project->settings->default_environment['force_default_servers']?: 0,
   );
-
-  if (arg(0) =='node') {
-    $form['project']['installing'] = array(
-      '#type' => 'fieldset',
-      '#title' => t('Site Installation'),
-      '#group' => 'project_settings',
-      '#tree' => FALSE,
-      '#weight' => -11,
-    );
-    $form['project']['installing']['install_method'] = devshop_environment_install_method_form($project);
-  }
   return $form;
 }
 
@@ -755,7 +688,7 @@ HTML;
  */
 function devshop_projects_form_site_node_form_alter(&$form, &$form_state, $form_id) {
 
-  $node = $form['#node'];
+  $node = &$form['#node'];
   $environment = NULL;
 
   $form['environment'] = array(
@@ -765,6 +698,7 @@ function devshop_projects_form_site_node_form_alter(&$form, &$form_state, $form_
 
   // On site create page, use devshop_projects_create_environment_form()
   if (arg(1) == 'add') {
+    # @TODO : Move to hosting_site.form.
     devshop_projects_create_environment_form($form, $form_state, $form_id);
 
     $project = devshop_projects_load_by_name(arg(3));
@@ -955,6 +889,7 @@ function devshop_projects_create_environment_form(&$form, &$form_state, $form_id
     ),
   );
 
+  // @TODO: Move to hosting_site_form()
   $branch_options = devshop_projects_git_ref_options($project);
   $form['git_ref'] = array(
     '#title' => t('Branch or Tag'),
@@ -968,13 +903,10 @@ function devshop_projects_create_environment_form(&$form, &$form_state, $form_id
     ),
   );
 
-  $form['install_method'] = devshop_environment_install_method_form($project);
-  $form['install_method']['#weight'] = -99;
-
   $form['server_stack'] = array(
     '#type' => 'fieldset',
     '#title' => t('Server Stack'),
-    '#group' => 'environment_settings',
+    '#group' => 'site_settings',
   );
 
   $form['server_stack']['db_server'] = $form['db_server'];
