@@ -62,14 +62,19 @@
       <small><a href="http://<?php print $project->settings->live['live_domain']; ?>" target="_blank">http://<?php print $project->settings->live['live_domain']; ?></a></small>
     </li>
     <?php endif; ?>
+    <?php if ($project->install_profile): ?>
     <li>
       <strong>Install Profile</strong>
       <small><?php print $project->install_profile ?></small>
     </li>
+    <?php endif; ?>
+
+    <?php if (variable_get('devshop_projects_ui_show_basepath', false)): ?>
     <li data-toggle="tooltip" data-placement="bottom" title="<?php print t('The source code for each environment will be placed into subfolders of this folder.');?>">
       <strong>Base Path</strong>
       <small><?php print $project->code_path ?></small>
     </li>
+    <?php endif; ?>
 
     <!-- Drush Info -->
     <li class="pull-right">
