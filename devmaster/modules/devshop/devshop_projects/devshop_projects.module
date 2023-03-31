@@ -794,22 +794,6 @@ function _devshop_projects_project_has_module($node, $module) {
 }
 
 /**
- * Helper to get a project node by name.
- */
-function devshop_load_project_by_name($name) {
-  $nid = db_select('node', 'n')
-    ->fields('n', array('nid'))
-    ->condition('type', 'project')
-    ->condition('title', $name)
-    ->condition('status', 1)
-    ->execute()
-    ->fetchField()
-  ;
-  $node = node_load($nid);
-  return $node;
-}
-
-/**
  * Generate an environment's URL from project and environment name using the domain name pattern.
  *
  * @param $project
