@@ -33,7 +33,7 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
     '#tree' => false,
   ];
   $form['hosting_settings']['site']['hosting_settings'] = $site_form['hosting_settings'];
-  
+  $form['hosting_settings']['site']['hosting_settings']['#tree'] = true;
   $form['hosting_settings']['site']['site_settings']['#type'] = 'vertical_tabs';
 
   // Project Settings
