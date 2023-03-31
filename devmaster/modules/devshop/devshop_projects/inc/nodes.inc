@@ -26,7 +26,7 @@ function devshop_projects_node_prepare($node) {
   // Load up project hosting settings on create site page.
   if ($node->type == 'site' && empty($node->hosting_settings) && arg(1) == 'add' && !empty(arg(3))) {
     $project = devshop_projects_load_by_name(arg(3));
-    $node->hosting_settings = $project->hosting_settings;
+    $node->hosting_settings = $project->hosting_settings['site']['site_settings'];
   }
 }
 
