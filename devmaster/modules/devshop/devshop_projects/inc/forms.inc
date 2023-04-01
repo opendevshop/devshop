@@ -773,13 +773,6 @@ function devshop_projects_form_site_node_form_alter(&$form, &$form_state, $form_
       '#description' => t('Prevent devshop users from destroying the database.') . '<p class="text-danger">Drush users may still overwrite the database.</p>',
   );
 
-  $form['environment']['settings']['pull_disabled'] = array(
-      '#type' => 'checkbox',
-      '#title' => t('Disable Deploy on Commit'),
-      '#default_value' => isset($environment->settings->pull_disabled) ? $environment->settings->pull_disabled : FALSE,
-      '#description' => t('Do not pull code to the server on commit & push.'),
-  );
-
   $form['environment']['settings']['#title'] = t('General Settings');
   $form['environment']['settings']['#group'] = 'site_settings';
   $form['environment']['settings']['#weight'] = -100;
