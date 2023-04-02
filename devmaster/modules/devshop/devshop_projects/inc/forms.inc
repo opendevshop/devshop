@@ -696,110 +696,82 @@ HTML;
  * "Environment" Settings form.
  */
 function devshop_projects_form_site_node_form_alter(&$form, &$form_state, $form_id) {
-
-  $node = &$form['#node'];
-  $environment = NULL;
-
-  $form['environment'] = array(
-    '#weight' => -9,
-    '#tree' => true,
-  );
-
-  // On site create page, use devshop_projects_create_environment_form()
-  if (arg(1) == 'add') {
-    # @TODO : Move to hosting_site.form.
-    devshop_projects_create_environment_form($form, $form_state, $form_id);
-
-    $project = devshop_projects_load_by_name(arg(3));
-    $form_state['project'] = $project->project;
-  }
-
-  // Only act on site nodes that are in projects.
-  elseif (!isset($node->environment)) {
-    return;
-  }
-  else {
-
-    // Get environment object.  (Convert if it is an array. This happens when clicking "Add an Alias".
-    $environment = (object) $node->environment;
-    $project = $node->project;
-
-    // Remove aegir's helpful info panel.
-    unset($form['info']);
-
-    // Values
-    $form['environment']['project_nid'] = array(
-      '#value' => $environment->project_nid,
-      '#type' => 'value',
-    );
-    $form['environment']['project_name'] = array(
-      '#value' => $environment->project_name,
-      '#type' => 'value',
-    );
-    $form['environment']['name'] = array(
-      '#value' => $environment->name,
-      '#type' => 'value',
-    );
-    $form['environment']['git_ref'] = array(
-      '#value' => $environment->git_ref,
-      '#type' => 'value',
-    );
-    $form['environment']['site'] = array(
-      '#value' => $environment->site,
-      '#type' => 'value',
-    );
-    $form['environment']['platform'] = array(
-      '#value' => $environment->platform,
-      '#type' => 'value',
-    );
-    $form['form_title'] = array(
-      '#markup' => t('Environment Settings'),
-      '#prefix' => '<h3>',
-      '#suffix' => '</h3>',
-      '#weight' => -1000,
-    );
-  }
-
-  // User-configurable Settings
-  $form['environment']['settings'] = array(
-      '#type' => 'fieldset',
-      '#title' => t('Environment Settings'),
-      '#tree' => true,
-  );
-  $form['environment']['settings']['locked'] = array(
-      '#type' => 'checkbox',
-      '#title' => t('Lock Database'),
-      '#default_value' => isset($environment->settings->locked) ? $environment->settings->locked : FALSE,
-      '#description' => t('Prevent devshop users from destroying the database.') . '<p class="text-danger">Drush users may still overwrite the database.</p>',
-  );
-
-  $form['environment']['settings']['#title'] = t('General Settings');
-  $form['environment']['settings']['#group'] = 'site_settings';
-  $form['environment']['settings']['#weight'] = -100;
-
-   $form['environment']['settings']['deploy']['#group'] = 'site_settings';
-
-  // Have to add new element for Domains because of the way drupal ajax callback works.
-
-  $form['environment']['settings']['client'] = $form['client'];
-  $form['environment']['settings']['client']['#tree'] = FALSE;
-  unset($form['client']);
-
-  $form['environment']['settings']['site_language'] = $form['site_language'];
-  $form['environment']['settings']['site_language']['#tree'] = FALSE;
-  unset($form['site_language']);
-
-  // Ensure values are saved.
-  if (!isset($form['install_method'])) {
-    $form['install_method'] = array(
-      '#type' => 'value',
-      '#value' => $environment->settings->install_method,
-    );
-  }
-
-  // Add our own submit handler.
-  $form['actions']['submit']['#submit'][] = 'devshop_projects_environment_settings_submit';
-
+//
+//  $node = &$form['#node'];
+//  $environment = NULL;
+//
+//  $form['environment'] = array(
+//    '#weight' => -9,
+//    '#tree' => true,
+//  );
+//
+//  // On site create page, use devshop_projects_create_environment_form()
+//  if (arg(1) == 'add') {
+//    # @TODO : Move to hosting_site.form.
+//    devshop_projects_create_environment_form($form, $form_state, $form_id);
+//
+//    $project = devshop_projects_load_by_name(arg(3));
+//    $form_state['project'] = $project->project;
+//  }
+//
+//  // Only act on site nodes that are in projects.
+//  elseif (!isset($node->environment)) {
+//    return;
+//  }
+//  else {
+//
+//    // Get environment object.  (Convert if it is an array. This happens when clicking "Add an Alias".
+//    $environment = (object) $node->environment;
+//    $project = $node->project;
+//
+//    // Remove aegir's helpful info panel.
+//    unset($form['info']);
+//
+//    // Values
+//    $form['environment']['project_nid'] = array(
+//      '#value' => $environment->project_nid,
+//      '#type' => 'value',
+//    );
+//    $form['environment']['project_name'] = array(
+//      '#value' => $environment->project_name,
+//      '#type' => 'value',
+//    );
+//    $form['environment']['name'] = array(
+//      '#value' => $environment->name,
+//      '#type' => 'value',
+//    );
+//    $form['environment']['git_ref'] = array(
+//      '#value' => $environment->git_ref,
+//      '#type' => 'value',
+//    );
+//    $form['environment']['site'] = array(
+//      '#value' => $environment->site,
+//      '#type' => 'value',
+//    );
+//    $form['environment']['platform'] = array(
+//      '#value' => $environment->platform,
+//      '#type' => 'value',
+//    );
+//    $form['form_title'] = array(
+//      '#markup' => t('Environment Settings'),
+//      '#prefix' => '<h3>',
+//      '#suffix' => '</h3>',
+//      '#weight' => -1000,
+//    );
+//  }
+//
+//  // User-configurable Settings
+//  $form['environment']['settings'] = array(
+//      '#type' => 'fieldset',
+//      '#title' => t('Environment Settings'),
+//      '#tree' => true,
+//  );
+//  $form['environment']['settings']['locked'] = array(
+//      '#type' => 'checkbox',
+//      '#title' => t('Lock Database'),
+//      '#default_value' => isset($environment->settings->locked) ? $environment->settings->locked : FALSE,
+//      '#description' => t('Prevent devshop users from destroying the database.') . '<p class="text-danger">Drush users may still overwrite the database.</p>',
+//  );
 }
 
 
@@ -811,163 +783,163 @@ function devshop_hosting_alias_add_alias_callback($form, $form_state) {
 }
 
 
-/**
- * Form alters for "site_node_form", which is our "Create Environment" form.
- *
- * Code that only applies to "site create" form should go here. If it needs to
- * be in create and edit, it should go in devshop_projects_form_site_node_form_alter()
- *
- * This is invoked from devshop_projects_form_site_node_form_alter()
- *
- * @see devshop_projects_form_site_node_form_alter()
- *
- */
-function devshop_projects_create_environment_form(&$form, &$form_state, $form_id) {
-
-  // Look for project. If there is none, return.
-  $project_node = devshop_projects_load_by_name(arg(3));
-  if ($project_node->type != 'project') {
-    return;
-  }
-  $project = $project_node->project;
-
-  if ($project_node->status != NODE_PUBLISHED) {
-    drupal_set_message(t('This project is not active. You may still create environments but non-admin users will not see the project or sites. Visit !settings to reactivate the project.', array(
-      '!settings' => l(t('Project Settings'), "node/{$project->nid}/edit"),
-    )), 'warning');
-  }
-  // Wrap the form in a container so we can use grid
-  $form['#prefix'] = '<div class="container add-environment-container">';
-  $form['#suffix'] = '</div>';
-
-  $form['form_title'] = array(
-    '#markup' => t('Create New Environment'),
-    '#prefix' => '<h3>',
-    '#suffix' => '</h3>',
-    '#weight' => -1000,
-  );
-
-  // Add our own validator and submit handlers.
-  $form['actions']['submit']['#value'] = t('Create New Environment');
-//  array_unshift($form['actions']['submit']['#submit'], 'devshop_projects_create_environment_form_submit');
-
-  // Generate field prefix and suffix using domain name pattern.
-  if (variable_get('devshop_projects_allow_custom_base_url')) {
-    $pattern = $project->base_url;
-  }
-  else {
-    $pattern = variable_get('devshop_project_environment_url_pattern', '@project.@environment.@hostname');
-  }
-
-  $labels = explode('@environment', strtr($pattern, array(
-    '@project' => $project_node->title,
-    '@hostname' => $_SERVER['SERVER_NAME'],
-  )));
-
-  // Hide the "Domain Name" field, as this will be generated
-  $form['title']['#access'] = false;
-  $form['title']['#required'] = false;
-
-  $form['environment_name'] = array(
-    '#title' => t('Environment Name'),
-    '#type' => 'textfield',
-    '#description' => t('Enter a unique name for your environment. It will be used to generate a domain name. You can add additional domain names later.'),
-    '#required' => TRUE,
-    '#field_prefix' => '<div class="input-group"><div class="input-group-addon">http://' . $labels[0] . '</div>',
-    '#field_suffix' => '<div class="input-group-addon input-group-addon-url">' . $labels[1] .'</div>
-        </div>',
-    '#size' => 10,
-    '#maxlength' => 64,
-    '#weight' => -101,
-    '#attributes' => array(
-      'data-placement' => 'bottom',
-      'placeholder' => t('name'),
-    ),
-    '#element_validate' => array(
-      'devshop_projects_create_environment_form_validate_name'
-    ),
-    '#wrapper_attributes' => array(
-      'class' => array('col-sm-8 col-md-8'),
-    ),
-  );
-
-  // @TODO: Move to hosting_site_form()
-  $branch_options = devshop_projects_git_ref_options($project);
-  $form['git_ref'] = array(
-    '#title' => t('Branch or Tag'),
-    '#type' => 'select',
-    '#description' => t('The git reference to checkout for this environment. You can change this later using the "Deploy Code" button.'),
-    '#options' => $branch_options,
-    '#required' => TRUE,
-    '#weight' => -100,
-    '#wrapper_attributes' => array(
-      'class' => array('col-sm-4 col-md-4'),
-    ),
-  );
-
-  $form['server_stack'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('Server Stack'),
-    '#group' => 'site_settings',
-  );
-
-  $form['server_stack']['db_server'] = $form['db_server'];
-  $form['server_stack']['db_server']['#group'] = 'environment_settings';
-  $form['server_stack']['db_server']['#tree'] = FALSE;
-  unset($form['db_server']);
-
-  $web_servers = hosting_get_servers('http', FALSE);
-  $form['server_stack']['web_server'] = array(
-    '#type' => 'radios',
-    '#title' => t('Web server'),
-    '#description' => t('The web server the site will be hosted on.'),
-    '#options' => $web_servers,
-    '#required' => TRUE,
-    '#tree' => FALSE,
-    '#default_value' => $project->settings->default_environment['web_server'],
-  );
-
-  // Force the new environment to use the "default" servers.
-  if ($project->settings->default_environment['force_default_servers']) {
-    $form['server_stack']['#description'] = t('All environments in this project must use this server stack.');
-
-    $web_server_nid = $project->settings->default_environment['web_server'];
-    $form['server_stack']['web_server']['#type'] = 'value';
-    $form['server_stack']['web_server']['#value'] = $web_server_nid;
-    $form['server_stack']['web_server_label'] = array(
-      '#type' => 'item',
-      '#title' => t('Web server'),
-      '#markup' => l($web_servers[$web_server_nid], "node/$web_server_nid", array('attributes' => array('target' => '_blank'))),
-    );
-
-    $db_servers = hosting_get_servers('db', FALSE);
-    $db_server_nid = $project->settings->default_environment['db_server'];
-    $form['server_stack']['db_server']['#type'] = 'value';
-    $form['server_stack']['db_server']['#value'] = $db_server_nid;
-    $form['server_stack']['db_server_label'] = array(
-      '#type' => 'item',
-      '#title' => t('Database server'),
-      '#markup' => l($db_servers[$db_server_nid], "node/$db_server_nid", array('attributes' => array('target' => '_blank'))),
-    );
-  }
-
-  $form['project_nid'] = array(
-    '#value' => $project->nid,
-    '#type' => 'value',
-  );
-
-  $form['platform_node'] = array(
-    '#type' => 'value',
-    '#value' => NULL,
-  );
-
-
-  // Remove platform and profile options.
-  // @TODO: Patch Aegir so we don't have to load all of these platform options.
-  $form['platform']['#access'] = FALSE;
-  $form['profile']['#access'] = FALSE;
-  $form['git']['#access'] = FALSE;
-}
+///**
+// * Form alters for "site_node_form", which is our "Create Environment" form.
+// *
+// * Code that only applies to "site create" form should go here. If it needs to
+// * be in create and edit, it should go in devshop_projects_form_site_node_form_alter()
+// *
+// * This is invoked from devshop_projects_form_site_node_form_alter()
+// *
+// * @see devshop_projects_form_site_node_form_alter()
+// *
+// */
+//function devshop_projects_create_environment_form(&$form, &$form_state, $form_id) {
+//
+//  // Look for project. If there is none, return.
+//  $project_node = devshop_projects_load_by_name(arg(3));
+//  if ($project_node->type != 'project') {
+//    return;
+//  }
+//  $project = $project_node->project;
+//
+//  if ($project_node->status != NODE_PUBLISHED) {
+//    drupal_set_message(t('This project is not active. You may still create environments but non-admin users will not see the project or sites. Visit !settings to reactivate the project.', array(
+//      '!settings' => l(t('Project Settings'), "node/{$project->nid}/edit"),
+//    )), 'warning');
+//  }
+//  // Wrap the form in a container so we can use grid
+//  $form['#prefix'] = '<div class="container add-environment-container">';
+//  $form['#suffix'] = '</div>';
+//
+//  $form['form_title'] = array(
+//    '#markup' => t('Create New Environment'),
+//    '#prefix' => '<h3>',
+//    '#suffix' => '</h3>',
+//    '#weight' => -1000,
+//  );
+//
+//  // Add our own validator and submit handlers.
+//  $form['actions']['submit']['#value'] = t('Create New Environment');
+////  array_unshift($form['actions']['submit']['#submit'], 'devshop_projects_create_environment_form_submit');
+//
+//  // Generate field prefix and suffix using domain name pattern.
+//  if (variable_get('devshop_projects_allow_custom_base_url')) {
+//    $pattern = $project->base_url;
+//  }
+//  else {
+//    $pattern = variable_get('devshop_project_environment_url_pattern', '@project.@environment.@hostname');
+//  }
+//
+//  $labels = explode('@environment', strtr($pattern, array(
+//    '@project' => $project_node->title,
+//    '@hostname' => $_SERVER['SERVER_NAME'],
+//  )));
+//
+//  // Hide the "Domain Name" field, as this will be generated
+//  $form['title']['#access'] = false;
+//  $form['title']['#required'] = false;
+//
+//  $form['environment_name'] = array(
+//    '#title' => t('Environment Name'),
+//    '#type' => 'textfield',
+//    '#description' => t('Enter a unique name for your environment. It will be used to generate a domain name. You can add additional domain names later.'),
+//    '#required' => TRUE,
+//    '#field_prefix' => '<div class="input-group"><div class="input-group-addon">http://' . $labels[0] . '</div>',
+//    '#field_suffix' => '<div class="input-group-addon input-group-addon-url">' . $labels[1] .'</div>
+//        </div>',
+//    '#size' => 10,
+//    '#maxlength' => 64,
+//    '#weight' => -101,
+//    '#attributes' => array(
+//      'data-placement' => 'bottom',
+//      'placeholder' => t('name'),
+//    ),
+//    '#element_validate' => array(
+//      'devshop_projects_create_environment_form_validate_name'
+//    ),
+//    '#wrapper_attributes' => array(
+//      'class' => array('col-sm-8 col-md-8'),
+//    ),
+//  );
+//
+//  // @TODO: Move to hosting_site_form()
+//  $branch_options = devshop_projects_git_ref_options($project);
+//  $form['git_ref'] = array(
+//    '#title' => t('Branch or Tag'),
+//    '#type' => 'select',
+//    '#description' => t('The git reference to checkout for this environment. You can change this later using the "Deploy Code" button.'),
+//    '#options' => $branch_options,
+//    '#required' => TRUE,
+//    '#weight' => -100,
+//    '#wrapper_attributes' => array(
+//      'class' => array('col-sm-4 col-md-4'),
+//    ),
+//  );
+//
+//  $form['server_stack'] = array(
+//    '#type' => 'fieldset',
+//    '#title' => t('Server Stack'),
+//    '#group' => 'settings',
+//  );
+//
+//  $form['server_stack']['db_server'] = $form['db_server'];
+//  $form['server_stack']['db_server']['#group'] = 'environment_settings';
+//  $form['server_stack']['db_server']['#tree'] = FALSE;
+//  unset($form['db_server']);
+//
+//  $web_servers = hosting_get_servers('http', FALSE);
+//  $form['server_stack']['web_server'] = array(
+//    '#type' => 'radios',
+//    '#title' => t('Web server'),
+//    '#description' => t('The web server the site will be hosted on.'),
+//    '#options' => $web_servers,
+//    '#required' => TRUE,
+//    '#tree' => FALSE,
+//    '#default_value' => $project->settings->default_environment['web_server'],
+//  );
+//
+//  // Force the new environment to use the "default" servers.
+//  if ($project->settings->default_environment['force_default_servers']) {
+//    $form['server_stack']['#description'] = t('All environments in this project must use this server stack.');
+//
+//    $web_server_nid = $project->settings->default_environment['web_server'];
+//    $form['server_stack']['web_server']['#type'] = 'value';
+//    $form['server_stack']['web_server']['#value'] = $web_server_nid;
+//    $form['server_stack']['web_server_label'] = array(
+//      '#type' => 'item',
+//      '#title' => t('Web server'),
+//      '#markup' => l($web_servers[$web_server_nid], "node/$web_server_nid", array('attributes' => array('target' => '_blank'))),
+//    );
+//
+//    $db_servers = hosting_get_servers('db', FALSE);
+//    $db_server_nid = $project->settings->default_environment['db_server'];
+//    $form['server_stack']['db_server']['#type'] = 'value';
+//    $form['server_stack']['db_server']['#value'] = $db_server_nid;
+//    $form['server_stack']['db_server_label'] = array(
+//      '#type' => 'item',
+//      '#title' => t('Database server'),
+//      '#markup' => l($db_servers[$db_server_nid], "node/$db_server_nid", array('attributes' => array('target' => '_blank'))),
+//    );
+//  }
+//
+//  $form['project_nid'] = array(
+//    '#value' => $project->nid,
+//    '#type' => 'value',
+//  );
+//
+//  $form['platform_node'] = array(
+//    '#type' => 'value',
+//    '#value' => NULL,
+//  );
+//
+//
+//  // Remove platform and profile options.
+//  // @TODO: Patch Aegir so we don't have to load all of these platform options.
+//  $form['platform']['#access'] = FALSE;
+//  $form['profile']['#access'] = FALSE;
+//  $form['git']['#access'] = FALSE;
+//}
 
 /**
  * Validator for the domain name field: Sets domain according to pattern.
