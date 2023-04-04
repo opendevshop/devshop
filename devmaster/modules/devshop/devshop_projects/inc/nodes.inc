@@ -104,7 +104,7 @@ function devshop_projects_node_load($nodes, $types) {
       $node->task_date = format_date($executed);
 
       // Set task type
-      $node->type_name = $task_types[$refs_types[$node->rid]][$node->task_type]['title'];
+      $node->type_name = !empty($task_types[$refs_types[$node->rid]][$node->task_type])? $task_types[$refs_types[$node->rid]][$node->task_type]['title']: $node->task_type;
 
       // If platform's first verify...
       if (isset($node->ref) && $node->ref->type == 'platform' && $node->ref->verified == 0) {
