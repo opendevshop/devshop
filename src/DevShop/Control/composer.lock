@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "09792e2aff85b237eb804d0af8b713b8",
+    "content-hash": "58ef992fb34f6c9b9a1956c678f98b06",
     "packages": [
         {
             "name": "behat/behat",
@@ -2698,69 +2698,6 @@
             }
         },
         {
-            "name": "drupal/hosting_certificate",
-            "version": "3.190.0",
-            "require": {
-                "drupal/drupal": "~7.0",
-                "drupal/hosting": "*",
-                "drupal/hosting_https": "^3"
-            },
-            "type": "metapackage",
-            "extra": {
-                "drupal": {
-                    "version": "7.x-3.190",
-                    "datestamp": "1606489877",
-                    "security-coverage": {
-                        "status": "covered",
-                        "message": "Covered by Drupal's security advisory policy"
-                    }
-                }
-            },
-            "notification-url": "https://packages.drupal.org/7/downloads",
-            "license": [
-                "GPL-2.0-or-later"
-            ],
-            "authors": [
-                {
-                    "name": "bgm",
-                    "homepage": "https://www.drupal.org/user/89461"
-                },
-                {
-                    "name": "colan",
-                    "homepage": "https://www.drupal.org/user/58704"
-                },
-                {
-                    "name": "cweagans",
-                    "homepage": "https://www.drupal.org/user/404732"
-                },
-                {
-                    "name": "ergonlogic",
-                    "homepage": "https://www.drupal.org/user/368613"
-                },
-                {
-                    "name": "gboudrias",
-                    "homepage": "https://www.drupal.org/user/918342"
-                },
-                {
-                    "name": "helmo",
-                    "homepage": "https://www.drupal.org/user/449000"
-                },
-                {
-                    "name": "Jon Pugh",
-                    "homepage": "https://www.drupal.org/user/17028"
-                },
-                {
-                    "name": "memtkmcc",
-                    "homepage": "https://www.drupal.org/user/92646"
-                }
-            ],
-            "description": "A service to generate HTTPS certificates for Aegir-hosted sites.",
-            "homepage": "https://www.drupal.org/project/hosting_https",
-            "support": {
-                "source": "https://git.drupalcode.org/project/hosting_https"
-            }
-        },
-        {
             "name": "drupal/hosting_filemanager",
             "version": "dev-1.x",
             "source": {
@@ -2800,95 +2737,6 @@
             "homepage": "https://www.drupal.org/project/hosting_filemanager",
             "support": {
                 "source": "https://git.drupalcode.org/project/hosting_filemanager"
-            }
-        },
-        {
-            "name": "drupal/hosting_https",
-            "version": "dev-3.x",
-            "source": {
-                "type": "git",
-                "url": "https://git.drupalcode.org/project/hosting_https.git",
-                "reference": "40115940411da73785d9d7b06d11b7541d33e77c"
-            },
-            "require": {
-                "drupal/drupal": "~7.0",
-                "drupal/hosting_certificate": "*",
-                "drupal/hosting_web_server": "*"
-            },
-            "require-dev": {
-                "drupal/hosting": "*",
-                "drupal/hosting_certificate": "*",
-                "drupal/hosting_nginx": "*",
-                "drupal/hosting_web_server": "*"
-            },
-            "type": "drupal-module",
-            "extra": {
-                "branch-alias": {
-                    "dev-3.x": "3.x-dev"
-                },
-                "drupal": {
-                    "version": "7.x-3.190+2-dev",
-                    "datestamp": "1678393565",
-                    "security-coverage": {
-                        "status": "not-covered",
-                        "message": "Dev releases are not covered by Drupal security advisories."
-                    }
-                }
-            },
-            "autoload": {
-                "psr-0": {
-                    "Provision_": [
-                        "drush/Provision",
-                        "submodules/apache_https/drush/Provision",
-                        "submodules/certificate/drush/Provision",
-                        "submodules/letsencrypt/drush/Provision",
-                        "submodules/nginx_https/drush/Provision",
-                        "submodules/self_signed/drush/Provision"
-                    ]
-                }
-            },
-            "notification-url": "https://packages.drupal.org/7/downloads",
-            "license": [
-                "GPL-2.0-or-later"
-            ],
-            "authors": [
-                {
-                    "name": "bgm",
-                    "homepage": "https://www.drupal.org/user/89461"
-                },
-                {
-                    "name": "colan",
-                    "homepage": "https://www.drupal.org/user/58704"
-                },
-                {
-                    "name": "cweagans",
-                    "homepage": "https://www.drupal.org/user/404732"
-                },
-                {
-                    "name": "ergonlogic",
-                    "homepage": "https://www.drupal.org/user/368613"
-                },
-                {
-                    "name": "gboudrias",
-                    "homepage": "https://www.drupal.org/user/918342"
-                },
-                {
-                    "name": "helmo",
-                    "homepage": "https://www.drupal.org/user/449000"
-                },
-                {
-                    "name": "Jon Pugh",
-                    "homepage": "https://www.drupal.org/user/17028"
-                },
-                {
-                    "name": "memtkmcc",
-                    "homepage": "https://www.drupal.org/user/92646"
-                }
-            ],
-            "description": "Adds HTTPS support to Aegir sites.",
-            "homepage": "https://www.drupal.org/project/hosting_https",
-            "support": {
-                "source": "https://git.drupalcode.org/project/hosting_https"
             }
         },
         {
@@ -9817,7 +9665,6 @@
         "drupal/drupal-driver": 20,
         "drupal/hosting": 20,
         "drupal/hosting_filemanager": 20,
-        "drupal/hosting_https": 20,
         "drupal/hosting_statsd": 10,
         "drupal/hosting_tasks_extra": 20,
         "drupal/provision": 20
