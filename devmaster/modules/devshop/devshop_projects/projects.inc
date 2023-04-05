@@ -424,7 +424,7 @@ function devshop_project_load($node) {
       case "profile":
       default:
         $environment->install_method_label = t('Installed with !profile', array(
-          '!profile' => $environment->install_profile,
+          '!profile' => $environment->hosting_settings['install']['install_profile'],
         ));
 
         break;
