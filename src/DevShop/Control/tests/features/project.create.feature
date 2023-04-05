@@ -141,8 +141,16 @@ Feature: Create a project and check settings
     Then I am at "project/composer"
     Then I should see "testenv"
     And I should see "Disabled"
-
-    # @TODO: Test setting for "allow sites to be destroyed"
+    
+    When I click "Destroy Environment"
+    And I press "Delete Site"
+    Then I should see the error message "Confirm: All data in this site will be destroyed. Check this box to confirm your intentions to do this. field is required."
+    When I check the box "Confirm: All data in this site will be destroyed. Check this box to confirm your intentions to do this. *"
+    When I press "Delete Site"
+    Then I should see "Delete Site" in the ".environment-task-logs" element
+    When I run drush "hosting-tasks --force --fork=0 --strict=0"
+    And I click "testenv"
+    Then print current URL
 
     # Testing "Install Profile"
     When I click "Create New Environment"
