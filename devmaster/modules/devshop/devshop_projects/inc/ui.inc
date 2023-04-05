@@ -40,7 +40,7 @@ function devshop_projects_projects_page($show_inactive = FALSE) {
     $first_environment = current($project->environments);
     if ($first_environment) {
       $platform_node = node_load($first_environment->platform);
-      $version = $platform_node->release->version?: t('unknown');
+      $version = $platform_node->release->version ?? t('unknown');
     }
     else {
       $version = '';
