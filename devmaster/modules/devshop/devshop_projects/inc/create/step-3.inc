@@ -87,13 +87,17 @@ function devshop_project_create_step_environments($form, &$form_state) {
     );
   }
   $form['project']['environments']['NEW']['name']['#attributes']['autofocus'] = 'autofocus';
-
-  $form['install_method'] = devshop_environment_install_method_form($project);
-  $form['install_method']['method']['#title'] = t('Default Install Method');
-  $form['install_method']['#description'] = t('Environments will be installed with this method by default. You can choose alternative methods when creating environments manually.');
+//
+//  $form['install_method'] = devshop_environment_install_method_form($project);
+//  $form['install_method']['method']['#title'] = t('Default Install Method');
+//  $form['install_method']['#description'] = t('Environments will be installed with this method by default. You can choose alternative methods when creating environments manually.');
 
   $environment_options = array_keys($project->environments);
   $environment_options = array_combine($environment_options,$environment_options);
+
+  $node = node_load($project->nid);
+  $form['hosting_settings']['install'] = hosting_site_install_methods_form_element($node);
+  $form['hosting_settings']['install']['#parents'] = ['hosting_settings', 'install'];
 
   $form['project']['primary_environment'] = [
     '#type' => 'radios',
