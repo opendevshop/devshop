@@ -355,18 +355,8 @@ function devshop_project_load($node) {
 //      $environment->settings->deploy = $project->settings->deploy['default_hooks'];
 //    }
 
-    // Load Install Method and info.
-    if (!empty($environment->settings->install_method['import'])) {
-      $environment->install_method = 'import';
-    }
-    elseif (isset($environment->settings->install_method['method'])) {
-      $environment->install_method = $environment->settings->install_method['method'];
-    }
-    else {
-      $environment->install_method = 'profile';
-    }
-
-    switch ($environment->hosting_settings['install']['method']) {
+    $environment->install_method = $environment->hosting_settings['install']['method'] ?? '';
+    switch ($environment->install_method) {
 
       // Install Method: Clone
       case 'clone':
