@@ -23,8 +23,10 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
   // Load a site node form using the projects hosting_settings.
   $site = new stdClass();
   $site->type = 'site';
-  $site->hosting_settings = $node->hosting_settings['site']['site_settings'];
-  $state = ['build_info' => ['args' => [$site]]];
+  $site->hosting_settings = $node->hosting_settings; 
+  $state = [
+    'build_info' => ['args' => [$site]],
+  ];
   $site_form = drupal_retrieve_form('site_node_form', $state);
   
   foreach (element_children($site_form['hosting_settings']) as $i) {
