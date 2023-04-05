@@ -109,7 +109,7 @@ Feature: Create a project and check settings
     When I click "Project Settings"
     Then I select "testenv" from "Primary Environment"
     
-    Then the field "install_method[install_profile]" should have the value "minimal"
+    Then the field "hosting_settings[install][install_profile]" should have the value "minimal"
     
     And I press "Save"
 
@@ -149,8 +149,8 @@ Feature: Create a project and check settings
     And I fill in "standard" for "Environment Name"
     And I select "9.x" from "git_ref"
     And I select "profile" from "install_method[method]"
-    Then the field "install_method[install_profile]" should have the value "minimal"
-    And I fill in "standard" for "install_method[install_profile]"
+    Then the field "hosting_settings[install][install_profile]" should have the value "minimal"
+    And I fill in "standard" for "hosting_settings[install][install_profile]"
     
     Then I press "Create New Environment"
     Then I should see "Installed with standard"
