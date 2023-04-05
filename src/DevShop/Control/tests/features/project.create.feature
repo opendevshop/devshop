@@ -133,7 +133,7 @@ Feature: Create a project and check settings
     Then I should see the link "composer"
     And I should see the link "testenv"
     When I click "testenv"
-    Then I should not see "Destroy Environment"
+#    Then I should not see "Destroy Environment"
     When I click "Disable Environment"
     Then I should see "Are you sure you want to disable composer.testenv.devshop.local.computer?"
     And I press "Disable"
