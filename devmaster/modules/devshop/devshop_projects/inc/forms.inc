@@ -218,6 +218,7 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
       'settings',
       'primary_environment',
     ),
+    '#access' => count($form_state['environments']),
   );
 
   // Live Domain
