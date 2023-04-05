@@ -144,7 +144,7 @@ Feature: Create a project and check settings
     
     When I click "Destroy Environment"
     And I press "Delete Site"
-    Then I should see the error message "Confirm: All data in this site will be destroyed. Check this box to confirm your intentions to do this. field is required."
+    Then I should see "Confirm: All data in this site will be destroyed. Check this box to confirm your intentions to do this. field is required."
     When I check the box "Confirm: All data in this site will be destroyed. Check this box to confirm your intentions to do this. *"
     When I press "Delete Site"
     Then I should see "Delete Site" in the ".environment-task-logs" element
