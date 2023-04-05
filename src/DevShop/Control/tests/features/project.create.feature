@@ -48,7 +48,7 @@ Feature: Create a project and check settings
     And I select "9.x" from "project[environments][NEW][git_ref]"
     And I press "Add environment"
     
-    And I fill in "minimal" for "install_method[install_profile]"
+    And I fill in "minimal" for "hosting_settings[install][install_profile]"
     Then I press "Create Project & Environments"
 
     # FINISH!
