@@ -172,6 +172,7 @@ function devshop_project_load($node) {
           db.title as db_server,
           db.nid as db_server_nid,
           s.db_name,
+          s.profile,
           pn.title as project_name,
           sn.created as created,
           s.vid,
@@ -408,7 +409,7 @@ function devshop_project_load($node) {
       case "profile":
         
         $environment->install_method_label = t('Installed with !profile', array(
-          '!profile' => empty($environment->hosting_settings['install']['install_profile']) ? t('default') : $environment->hosting_settings['install']['install_profile'],
+          '!profile' => empty($environment->profile) ? t('default') : $environment->profile,
         ));
 
         break;

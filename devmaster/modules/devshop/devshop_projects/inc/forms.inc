@@ -30,7 +30,9 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
   $site_form = drupal_retrieve_form('site_node_form', $state);
   
   foreach (element_children($site_form['hosting_settings']) as $i) {
+    // Put every child fieldset of hosting_settings into project_settings group.
     if ($site_form['hosting_settings'][$i]['#type'] == 'fieldset') {
+      $site_form['hosting_settings'][$i]['#title'] = t('Site @thing', ['@thing' => $site_form['hosting_settings'][$i]['#title']]);
       $site_form['hosting_settings'][$i]['#group'] = 'project_settings';
       $site_form['hosting_settings'][$i]['#weight'] = 10;
     }
