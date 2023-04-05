@@ -931,10 +931,10 @@ function devshop_projects_preprocess_environment(&$vars) {
   //  }
 
   // No hooks configured.
-  if (isset($project->settings->deploy) && $project->settings->deploy['allow_environment_deploy_config'] && $environment->site_status == HOSTING_SITE_ENABLED && isset($environment->settings->deploy) && count(array_filter($environment->settings->deploy)) == 0) {
+  if (count(array_filter($environment->hosting_settings['deployment']['steps'] ?? [])) == 0) {
     $vars['warnings'][] = array(
-      'text' => t('No deploy hooks are configured. Check !link.', array(
-        '!link' => l(t('Environment Settings'), "node/{$environment->site}/edit"),
+      'text' => t('No Deploy Steps are enabled. Check !link.', array(
+        '!link' => l(t('Settings'), "node/{$environment->site}/edit", ['fragment' => 'edit-hosting-settings-deployment']),
       )),
       'type' => 'warning',
     );
