@@ -26,15 +26,15 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
   $site->hosting_settings = $node->hosting_settings['site']['site_settings'];
   $state = ['build_info' => ['args' => [$site]]];
   $site_form = drupal_retrieve_form('site_node_form', $state);
-  $form['hosting_settings']['site'] = [
-    '#type' => 'fieldset',
-    '#title' => t('Default Site Settings'),
-    '#group' => 'project_settings',
-    '#tree' => false,
-  ];
-  $form['hosting_settings']['site']['hosting_settings'] = $site_form['hosting_settings'];
   
-  $form['hosting_settings']['site']['site_settings']['#type'] = 'vertical_tabs';
+  foreach (element_children($site_form['hosting_settings']) as $i) {
+    if ($site_form['hosting_settings'][$i]['#type'] == 'fieldset') {
+      $site_form['hosting_settings'][$i]['#group'] = 'project_settings';
+      $site_form['hosting_settings'][$i]['#weight'] = 10;
+    }
+  }
+  
+  $form['hosting_settings'] += $site_form['hosting_settings'];
 
   // Project Settings
   // Every value under $form['project'] gets serialized and saved into a project's "data" column.
