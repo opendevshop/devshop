@@ -156,6 +156,7 @@ function devshop_project_load($node) {
           p.nid as platform,
           cp.name as platform_context,
           cs.name as site_context,
+          cs.settings as hosting_settings,
           p.publish_path as root,
           p.publish_path as publish_path,
           p.git_reference as git_ref,
@@ -221,6 +222,7 @@ function devshop_project_load($node) {
     $environment->drush_alias = "@{$project->name}.{$environment->name}";
 
     // Unserialize environment settings.
+    $environment->hosting_settings = unserialize($environment->hosting_settings);
     $environment->settings = (object) unserialize($environment->settings);
 
     // Get last task
@@ -370,7 +372,7 @@ function devshop_project_load($node) {
       $environment->install_method = 'profile';
     }
 
-    switch ($environment->install_method) {
+    switch ($environment->hosting_settings['install']['method']) {
 
       // Install Method: Clone
       case 'clone':

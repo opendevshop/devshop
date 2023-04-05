@@ -215,6 +215,7 @@ function devshop_projects_create_wizard_finish(&$form_state) {
 
   $project = &$form_state['project'];
   $project_node = node_load($project->nid);
+  $project_node->hosting_settings = $form_state['values']['hosting_settings'];
 
   // Save create wizard cache object
   $project->project = $project;

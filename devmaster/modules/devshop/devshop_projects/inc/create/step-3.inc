@@ -201,6 +201,7 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
   // Get project and reset properties..
   $project_node = node_load($form_state['values']['nid'], NULL, TRUE);
   $project = $project_node->project;
+  $project->hosting_settings += $form_state['values']['hosting_settings'];
   if (isset($form_state['project']->code_path) && empty($project->code_path)) {
     $project->code_path = $form_state['project']->code_path;
   }
