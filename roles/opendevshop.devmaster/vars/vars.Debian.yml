@@ -1,12 +1,3 @@
 ---
 local_bin_path: /usr/local/bin
 apache_user: www-data
-
-extra_packages:
-  - git
-  - vim
-  - openssl
-  - patch
-  - postfix
-  - rsync
-  - zip

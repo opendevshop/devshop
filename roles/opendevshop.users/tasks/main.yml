@@ -44,14 +44,6 @@
   include_tasks: "prepare-user.yml"
   tags: [always]
 
-- name: Ensure /var/aegir is owned by aegir user.
-  file:
-    state: directory
-    recurse: true
-    path: "{{ aegir_user_home }}"
-    group: "{{ aegir_user_name }}"
-    owner: "{{ aegir_user_name }}"
-
 - name: Ensure /var/aegir has correct permissions.
   command: chmod 755 {{ aegir_user_home }}
   when: ansible_os_family == "RedHat"
