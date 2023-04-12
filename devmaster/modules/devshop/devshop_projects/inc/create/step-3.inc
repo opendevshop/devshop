@@ -87,17 +87,9 @@ function devshop_project_create_step_environments($form, &$form_state) {
     );
   }
   $form['project']['environments']['NEW']['name']['#attributes']['autofocus'] = 'autofocus';
-//
-//  $form['install_method'] = devshop_environment_install_method_form($project);
-//  $form['install_method']['method']['#title'] = t('Default Install Method');
-//  $form['install_method']['#description'] = t('Environments will be installed with this method by default. You can choose alternative methods when creating environments manually.');
 
   $environment_options = array_keys($project->environments);
   $environment_options = array_combine($environment_options,$environment_options);
-
-  $node = node_load($project->nid);
-  $form['hosting_settings']['install'] = hosting_site_install_methods_form_element($node);
-  $form['hosting_settings']['install']['#parents'] = ['hosting_settings', 'install'];
 
   $form['project']['primary_environment'] = [
     '#type' => 'radios',
@@ -105,7 +97,7 @@ function devshop_project_create_step_environments($form, &$form_state) {
     '#options' => $environment_options,
     '#default_value' => key($environment_options),
   ];
-  
+
   return $form;
 }
 
@@ -201,7 +193,10 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
   // Get project and reset properties..
   $project_node = node_load($form_state['values']['nid'], NULL, TRUE);
   $project = $project_node->project;
-  $project->hosting_settings += $form_state['values']['hosting_settings'];
+  
+  // No more settings form on step 3 page.
+  // $project->hosting_settings += $form_state['values']['hosting_settings'];
+    
   if (isset($form_state['project']->code_path) && empty($project->code_path)) {
     $project->code_path = $form_state['project']->code_path;
   }
@@ -236,10 +231,7 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
       }
     }
   }
-  
-  // Save install method to settings.
-  $project->settings->install_method = $form_state['values']['install_method']; 
-  
+
   // Save primary environment.
   $project->settings->primary_environment = $form_state['values']['project']['primary_environment'];
 
