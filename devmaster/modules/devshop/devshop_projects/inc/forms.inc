@@ -718,23 +718,64 @@ function devshop_projects_form_site_node_form_alter(&$form, &$form_state, $form_
     $project = devshop_projects_load_by_name(arg(3));
     $form_state['project'] = $project->project;
   }
+
   // Only act on site nodes that are in projects.
   elseif (!isset($node->environment)) {
-      return;
+    return;
   }
   else {
-    $form['site_language'] = [
+
+    // Get environment object.  (Convert if it is an array. This happens when clicking "Add an Alias".
+    $environment = (object) $node->environment;
+    $project = $node->project;
+
+    // Remove aegir's helpful info panel.
+    unset($form['info']);
+
+    // Values
+    $form['environment']['project_nid'] = array(
+      '#value' => $environment->project_nid,
       '#type' => 'value',
-      '#value' => $form['site_language']['#default_value'],
-    ];
-    $form['client'] = [
+    );
+    $form['environment']['project_name'] = array(
+      '#value' => $environment->project_name,
       '#type' => 'value',
-      '#value' => $form['site_language']['#client'],
-    ];
-    
-    // Add our own submit handler.
-    $form['actions']['submit']['#submit'][] = 'devshop_projects_environment_settings_submit';
+    );
+    $form['environment']['name'] = array(
+      '#value' => $environment->name,
+      '#type' => 'value',
+    );
+    $form['environment']['git_ref'] = array(
+      '#value' => $environment->git_ref,
+      '#type' => 'value',
+    );
+    $form['environment']['site'] = array(
+      '#value' => $environment->site,
+      '#type' => 'value',
+    );
+    $form['environment']['platform'] = array(
+      '#value' => $environment->platform,
+      '#type' => 'value',
+    );
+    $form['form_title'] = array(
+      '#markup' => t('Environment Settings'),
+      '#prefix' => '<h3>',
+      '#suffix' => '</h3>',
+      '#weight' => -1000,
+    );
   }
+  $form['site_language'] = [
+    '#type' => 'value',
+    '#value' => $form['site_language']['#default_value'],
+  ];
+  $form['client'] = [
+      '#type' => 'value',
+      '#value' => $form['client']['#default_value'],
+  ];
+  dsm($form);
+  // Add our own submit handler.
+  $form['actions']['submit']['#submit'][] = 'devshop_projects_environment_settings_submit';
+
 }
 
 
