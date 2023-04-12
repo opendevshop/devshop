@@ -110,6 +110,10 @@
     - role: geerlingguy.php
       tags: [buildtime]
 
+    - role: geerlingguy.php-xdebug
+      when: xdebug_enabled | bool
+      tags: [buildtime]
+
     - role: geerlingguy.php-mysql
       tags: [buildtime]
 
