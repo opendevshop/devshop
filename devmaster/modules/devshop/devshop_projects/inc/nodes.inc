@@ -280,6 +280,8 @@ function devshop_projects_node_update($node) {
   if (empty($node->no_verify)) {
     hosting_add_task($node->nid, 'verify');
   }
+  
+  hosting_context_register($node->nid, $node->hosting_name, $node->hosting_settings);
 
   $project_node = node_load($node->nid, NULL, TRUE);
 
