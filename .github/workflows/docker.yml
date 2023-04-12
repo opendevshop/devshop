@@ -5,6 +5,9 @@ on:
   workflow_dispatch:
     
   pull_request:
+    branches:
+      # This workflow will only run on pull requests for branch test/docker/actions.
+      - test/docker/actions
   push:
     branches:
       - 1.x
