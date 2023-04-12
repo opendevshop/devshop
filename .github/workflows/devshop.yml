@@ -71,7 +71,17 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
 
-      - name: Prepare vars
+      # github.ref_name is the branch name on branch builds.
+      # On PRs ref_name is `PR#/merge`.
+      - name: Prepare Non Pull Request-only environment
+        if: github.event_name!='pull_request'
+        run: |
+          echo "php_version: '${{ matrix.php }}'" >> vars.ci.yml
+          echo "devshop_version: ${{ github.ref_name }}" >> vars.ci.yml
+
+      # github.head_ref is the PR branch name.
+      - name: Prepare Pull Request-only environment
+        if: github.event_name=='pull_request'
         run: |
           echo "php_version: '${{ matrix.php }}'" >> vars.ci.yml
           echo "devshop_version: ${{ github.head_ref }}" >> vars.ci.yml
