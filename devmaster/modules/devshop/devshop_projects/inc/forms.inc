@@ -772,7 +772,6 @@ function devshop_projects_form_site_node_form_alter(&$form, &$form_state, $form_
       '#type' => 'value',
       '#value' => $form['client']['#default_value'],
   ];
-  dsm($form);
   // Add our own submit handler.
   $form['actions']['submit']['#submit'][] = 'devshop_projects_environment_settings_submit';
 
