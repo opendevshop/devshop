@@ -126,6 +126,16 @@
     force: "{{ not devshop_cli_skip_update }}"
   when: not devshop_cli_skip_update
 
+- name: Ensure DevShop Control code is owned by platform user.
+  file:
+    state: directory
+    path: "{{ item }}"
+    group: "{{ aegir_user_name }}"
+    owner: "{{ aegir_user_name }}"
+    recurse: true
+  with_items:
+    - "{{ devshop_cli_path }}"
+
 - name: "Composer Install DevShop Source"
   command: "{{ php_executable }} {{ composer_path }} {{ devshop_cli_composer_install_command }}"
   # Changed: true is so we don't fail ansible lint.
@@ -173,6 +183,25 @@
     src: drushrc.php.j2
     dest: "/etc/drush/drushrc.php"
     mode: 0655
+
+#- name: Ensure /var/aegir is owned by aegir user.
+#  file:
+#    state: directory
+#    path: "{{ aegir_user_home }}"
+#    group: "{{ aegir_user_name }}"
+#    owner: "{{ aegir_user_name }}"
+
+#- name: Ensure DevShop Control code is owned by aegir user.
+#  file:
+#    state: directory
+#    path: "{{ item }}"
+#    group: "{{ aegir_user_name }}"
+#    owner: "{{ aegir_user_name }}"
+#    recurse: true
+#  when: devshop_control_git_root is match(devshop_cli_path)
+#  with_items:
+#    - "{{ devshop_control_git_root }}"
+#    - "{{ devshop_cli_path }}/devmaster"
 
 - name: Create home subfolders
   file:
