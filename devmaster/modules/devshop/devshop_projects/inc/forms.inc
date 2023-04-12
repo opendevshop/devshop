@@ -718,100 +718,23 @@ function devshop_projects_form_site_node_form_alter(&$form, &$form_state, $form_
     $project = devshop_projects_load_by_name(arg(3));
     $form_state['project'] = $project->project;
   }
-
   // Only act on site nodes that are in projects.
   elseif (!isset($node->environment)) {
-    return;
+      return;
   }
   else {
-
-    // Get environment object.  (Convert if it is an array. This happens when clicking "Add an Alias".
-    $environment = (object) $node->environment;
-    $project = $node->project;
-
-    // Remove aegir's helpful info panel.
-    unset($form['info']);
-
-    // Values
-    $form['environment']['project_nid'] = array(
-      '#value' => $environment->project_nid,
+    $form['site_language'] = [
       '#type' => 'value',
-    );
-    $form['environment']['project_name'] = array(
-      '#value' => $environment->project_name,
+      '#value' => $form['site_language']['#default_value'],
+    ];
+    $form['client'] = [
       '#type' => 'value',
-    );
-    $form['environment']['name'] = array(
-      '#value' => $environment->name,
-      '#type' => 'value',
-    );
-    $form['environment']['git_ref'] = array(
-      '#value' => $environment->git_ref,
-      '#type' => 'value',
-    );
-    $form['environment']['site'] = array(
-      '#value' => $environment->site,
-      '#type' => 'value',
-    );
-    $form['environment']['platform'] = array(
-      '#value' => $environment->platform,
-      '#type' => 'value',
-    );
-    $form['form_title'] = array(
-      '#markup' => t('Environment Settings'),
-      '#prefix' => '<h3>',
-      '#suffix' => '</h3>',
-      '#weight' => -1000,
-    );
+      '#value' => $form['site_language']['#client'],
+    ];
+    
+    // Add our own submit handler.
+    $form['actions']['submit']['#submit'][] = 'devshop_projects_environment_settings_submit';
   }
-
-  // User-configurable Settings
-  $form['environment']['settings'] = array(
-      '#type' => 'fieldset',
-      '#title' => t('Environment Settings'),
-      '#tree' => true,
-  );
-  $form['environment']['settings']['locked'] = array(
-      '#type' => 'checkbox',
-      '#title' => t('Lock Database'),
-      '#default_value' => isset($environment->settings->locked) ? $environment->settings->locked : FALSE,
-      '#description' => t('Prevent devshop users from destroying the database.') . '<p class="text-danger">Drush users may still overwrite the database.</p>',
-  );
-
-  $form['environment']['settings']['pull_disabled'] = array(
-      '#type' => 'checkbox',
-      '#title' => t('Disable Deploy on Commit'),
-      '#default_value' => isset($environment->settings->pull_disabled) ? $environment->settings->pull_disabled : FALSE,
-      '#description' => t('Do not pull code to the server on commit & push.'),
-  );
-
-  $form['environment']['settings']['#title'] = t('General Settings');
-  $form['environment']['settings']['#group'] = 'site_settings';
-  $form['environment']['settings']['#weight'] = -100;
-
-   $form['environment']['settings']['deploy']['#group'] = 'site_settings';
-
-  // Have to add new element for Domains because of the way drupal ajax callback works.
-
-  $form['environment']['settings']['client'] = $form['client'];
-  $form['environment']['settings']['client']['#tree'] = FALSE;
-  unset($form['client']);
-
-  $form['environment']['settings']['site_language'] = $form['site_language'];
-  $form['environment']['settings']['site_language']['#tree'] = FALSE;
-  unset($form['site_language']);
-
-  // Ensure values are saved.
-  if (!isset($form['install_method'])) {
-    $form['install_method'] = array(
-      '#type' => 'value',
-      '#value' => $environment->settings->install_method,
-    );
-  }
-
-  // Add our own submit handler.
-  $form['actions']['submit']['#submit'][] = 'devshop_projects_environment_settings_submit';
-
 }
 
 
