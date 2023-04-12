@@ -27,6 +27,8 @@ Feature: Create a project and check settings
     Then I fill in "web" for "Document Root"
     And I check the box "Pull Request Environments"
 
+    And I fill in "minimal" for "hosting_settings[install][profile]"
+
     When I press "Next"
     Then I should see "pr1"
     And I should see "(PR TEST)"
@@ -48,7 +50,6 @@ Feature: Create a project and check settings
     And I select "9.x" from "project[environments][NEW][git_ref]"
     And I press "Add environment"
     
-    And I fill in "minimal" for "hosting_settings[install][profile]"
     Then I press "Create Project & Environments"
 
     # FINISH!
