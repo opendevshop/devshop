@@ -15,4 +15,3 @@ devshop_prerequisite_packages:
   - systemd-cron
   - sudo
   - wget
-  - rsync

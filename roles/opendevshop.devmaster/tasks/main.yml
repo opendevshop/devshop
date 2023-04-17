@@ -147,6 +147,7 @@
     owner: "{{ aegir_user_name }}"
     recurse: true
   with_items:
+    - "{{ devshop_control_git_root }}"
     - "{{ devshop_cli_path }}"
 
 - name: "Composer Install DevShop Source"
@@ -168,15 +169,12 @@
   args:
     mode: 0644
 
-- name: Link bin scripts in system bin directories.
+- name: Add DevShop bin via symlink so path does not matter.
   file:
-    src: "{{ devshop_cli_path }}/bin/{{ item }}"
-    dest: "{{ local_bin_path }}/{{ item }}"
+    src: "{{ devshop_cli_path }}/bin/devshop"
+    dest: "{{ local_bin_path }}/devshop"
     state: link
     force: true
-  with_items: 
-    - devshop
-    - drush
 
 - name: Debug environment
   command: "env"
@@ -197,24 +195,24 @@
     dest: "/etc/drush/drushrc.php"
     mode: 0655
 
-#- name: Ensure /var/aegir is owned by aegir user.
-#  file:
-#    state: directory
-#    path: "{{ aegir_user_home }}"
-#    group: "{{ aegir_user_name }}"
-#    owner: "{{ aegir_user_name }}"
+- name: Ensure /var/aegir is owned by aegir user.
+  file:
+    state: directory
+    path: "{{ aegir_user_home }}"
+    group: "{{ aegir_user_name }}"
+    owner: "{{ aegir_user_name }}"
 
-#- name: Ensure DevShop Control code is owned by aegir user.
-#  file:
-#    state: directory
-#    path: "{{ item }}"
-#    group: "{{ aegir_user_name }}"
-#    owner: "{{ aegir_user_name }}"
-#    recurse: true
-#  when: devshop_control_git_root is match(devshop_cli_path)
-#  with_items:
-#    - "{{ devshop_control_git_root }}"
-#    - "{{ devshop_cli_path }}/devmaster"
+- name: Ensure DevShop Control code is owned by aegir user.
+  file:
+    state: directory
+    path: "{{ item }}"
+    group: "{{ aegir_user_name }}"
+    owner: "{{ aegir_user_name }}"
+    recurse: true
+  when: devshop_control_git_root is match(devshop_cli_path)
+  with_items:
+    - "{{ devshop_control_git_root }}"
+    - "{{ devshop_cli_path }}/devmaster"
 
 - name: Create home subfolders
   file:

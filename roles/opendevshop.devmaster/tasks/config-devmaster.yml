@@ -1,18 +1,12 @@
 ---
-- name: Clear drush caches
-  command: "{{ drush_executable_path }} cc drush"
-  become: true
-  become_user: "{{ aegir_user_name }}"
-  become_method: "{{ ansible_become_method_aegir }}"
-
 - name: DevShop Control | Save GitHub Token
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
-  command: "drush {{ devshop_control_drush_alias }} vset devshop_github_token {{ devshop_github_token }}"
+  command: "{{ drush_executable_path }} {{ devshop_control_drush_alias }} vset devshop_github_token {{ devshop_github_token }}"
   when:
     - devshop_github_token is defined
-    - devshop_github_token | string | length > 0
+    - devshop_github_token | length > 0
   # @TODO: The "when" condition is not getting picked up, so let's ignore errors here for now. See #422.
   ignore_errors: true
 
@@ -87,14 +81,8 @@
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
 
-#- name: Verify DevShop Control site
-#  command: "{{ drush_executable_path }} {{ devshop_control_drush_alias }} provision-verify"
-#  become: true
-#  become_user: "{{ aegir_user_name }}"
-#  become_method: "{{ ansible_become_method_aegir }}"
-#
-#- name: Clear drush caches
-#  command: "{{ drush_executable_path }} cc drush"
-#  become: true
-#  become_user: "{{ aegir_user_name }}"
-#  become_method: "{{ ansible_become_method_aegir }}"
+- name: Verify DevShop Control site
+  command: "{{ drush_executable_path }} {{ devshop_control_drush_alias }} provision-verify"
+  become: true
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"

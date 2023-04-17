@@ -95,7 +95,7 @@
       tags: [always]
 
     - role: geerlingguy.mysql
-      tags: [buildtime]
+      tags: [always]
 
     - role: geerlingguy.repo-remi
       when: ansible_os_family == 'RedHat'
@@ -108,10 +108,6 @@
       tags: [buildtime]
 
     - role: geerlingguy.php
-      tags: [buildtime]
-
-    - role: geerlingguy.php-xdebug
-      when: xdebug_enabled | default(false)
       tags: [buildtime]
 
     - role: geerlingguy.php-mysql
