@@ -1,7 +1,7 @@
 ---
 # defaults file for aegir.user
-aegir_user_uid: "12345"
-aegir_user_gid: "12345"
+aegir_user_uid: "1000"
+aegir_user_gid: "1000"
 
 # Set to TRUE to always incude the 'reset-uid.yml' task list, forcing a gid/uid reset each time.
 aegir_user_force_set_uid: false
