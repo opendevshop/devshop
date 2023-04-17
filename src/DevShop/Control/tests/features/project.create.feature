@@ -66,6 +66,9 @@ Feature: Create a project and check settings
     And I should see the link "live"
     And I should see the link "http://composer.dev.devshop.local.computer"
 
+    And I should not see the link "Destroy Environment"
+    And I should not see the link "Disable Environment"
+
     And I should see the link "Update readme. (PR TEST)"
     And I should see the link "Add Behat tests"
 
@@ -92,6 +95,7 @@ Feature: Create a project and check settings
     And I fill in "What's the password?" for "Message"
     # @TODO: "Domain Aliases" <label> tag is missing the "for" attribute, so we can't target the string "Domain Aliases"
     And I fill in "test.mysite.com" for "aliases[0]"
+    And I uncheck the box "Protect Site"
 
     Then I press "Create New Environment"
     Then I should see the link "http://test.mysite.com"
@@ -106,6 +110,7 @@ Feature: Create a project and check settings
     Then the field "Username" should have the value "testuser"
     Then the field "Password" should have the value "testpassword"
     Then the field "Message" should have the value "What's the password?"
+    Then the "Protect Site" checkbox should not be checked
 
     When I click "Project Settings"
     Then I select "testenv" from "Primary Environment"
