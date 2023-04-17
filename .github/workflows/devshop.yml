@@ -92,6 +92,7 @@ jobs:
         run: |
           echo "GIT_REF=${{ github.head_ref }}" >> $GITHUB_ENV
           git switch --create ${{ github.head_ref }}
+          chmod 777 ./.github/test-artifacts
       
       - name: "vars.ci.yml"
         run: cat vars.ci.yml
