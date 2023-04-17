@@ -17,3 +17,4 @@ extra_packages:
   - cronie
   - openssl
   - mod_ssl
+  - rsync

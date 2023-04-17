@@ -8,4 +8,5 @@ extra_packages:
   - openssl
   - patch
   - postfix
+  - rsync
   - zip
