@@ -62,10 +62,10 @@
       <small><a href="http://<?php print $project->settings->live['live_domain']; ?>" target="_blank">http://<?php print $project->settings->live['live_domain']; ?></a></small>
     </li>
     <?php endif; ?>
-    <?php if ($project->hosting_settings['install']['install_profile']): ?>
+    <?php if ($project->hosting_settings['install']['profile']): ?>
     <li>
       <strong>Install Profile</strong>
-      <small><?php print $project->hosting_settings['install']['install_profile'] ?></small>
+      <small><?php print $project->hosting_settings['install']['profile'] ?></small>
     </li>
     <?php endif; ?>
 

@@ -91,7 +91,7 @@ HTML;
       $row[] = "<span class='text-muted'><i class='fa fa-drupal'></i>
  $version 
       <br />
-      <small class='install-profile'>{$project->hosting_settings['install']['install_profile']}</small>
+      <small class='install-profile'>{$project->hosting_settings['install']['profile']}</small>
 </button>";
 
     // Git URL
