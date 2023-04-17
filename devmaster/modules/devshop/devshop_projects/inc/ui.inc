@@ -285,7 +285,7 @@ function devshop_environment_menu($environment) {
 
   // Add all actions from hook_devshop_environment_menu()
   foreach ($items as $item) {
-    if (isset($tasks[$item])) {
+      if (isset($tasks[$item])) {
 
       // Special handling for delete/disable/enable
       if ($item == 'disable' || $item == 'enable') {
@@ -315,11 +315,13 @@ function devshop_environment_menu($environment) {
       else {
         $icon = '';
       }
-      $output_items[] = <<<HTML
+      if (drupal_valid_path($href)) {
+          $output_items[] = <<<HTML
       <a href="$url">
             $icon $title
       </a>
 HTML;
+      }
     }
     else {
       $output_items[] = $item;
