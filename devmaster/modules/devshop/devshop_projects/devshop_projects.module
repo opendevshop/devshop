@@ -181,6 +181,7 @@ function devshop_environment_menu_first_items($environment, $tasks) {
     $items[] = 'backup';
     $items[] = 'disable';
     $items[] = 'delete';
+    $items[] = 'install';
   }
 
   // Load test task, if it exists
