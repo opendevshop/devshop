@@ -179,7 +179,7 @@ function devshop_projects_preprocess_node(&$vars) {
       $form = drupal_get_form('hosting_task_retry_form', $vars['node']->nid);
       $vars['retry'] = $form;
 
-      if ($vars['node']->task_type == 'install' && !$vars['node']->environment->settings->locked && ($vars['node']->task_status == HOSTING_TASK_SUCCESS || $vars['node']->task_status == HOSTING_TASK_WARNING)) {
+      if ($vars['node']->task_type == 'install' && !$vars['node']->environment->hosting_settings['general']['protected'] && ($vars['node']->task_status == HOSTING_TASK_SUCCESS || $vars['node']->task_status == HOSTING_TASK_WARNING)) {
           $vars['retry'] = [
             '#type' => 'link',
             '#title' => t('Reinstall'),
@@ -191,7 +191,7 @@ function devshop_projects_preprocess_node(&$vars) {
             ),
           ];
       }
-      elseif ($vars['node']->task_type == 'install' && $vars['node']->environment->settings->locked) {
+      elseif ($vars['node']->task_type == 'install' && $vars['node']->environment->hosting_settings['general']['protected']) {
         $vars['retry'] = array(
           '#children' => t('Site is protected.'),
           '#type' => 'container',

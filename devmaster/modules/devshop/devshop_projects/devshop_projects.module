@@ -179,6 +179,8 @@ function devshop_environment_menu_first_items($environment, $tasks) {
 
     $items[] = 'deploy';
     $items[] = 'backup';
+    $items[] = 'disable';
+    $items[] = 'delete';
   }
 
   // Load test task, if it exists
@@ -234,20 +236,6 @@ HTML;
 //          'html' => TRUE,
 //        )
 //      );
-    }
-
-    // Add disable or delete task based on hosting variable.
-    if (!variable_get('hosting_require_disable_before_delete', TRUE)) {
-      $items[] = 'disable';
-      $items[] = 'delete';
-    } else {
-
-      if ($environment->site_status == HOSTING_SITE_DISABLED) {
-        $items[] = 'enable';
-        $items[] = 'delete';
-      } elseif (empty($environment->settings->locked)) {
-        $items[] = 'disable';
-      }
     }
 
     $items[] = '<div class="divider"></div>';

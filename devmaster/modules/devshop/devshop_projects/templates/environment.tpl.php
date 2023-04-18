@@ -196,6 +196,12 @@
 
       <div class="environment-status">
 
+        <?php if (isset($environment->hosting_settings['general']['protected']) && $environment->hosting_settings['general']['protected']): ?>
+          <a class="environment-meta-data btn btn-text" title="<?php print t('This site is protected.'); ?>">
+            <i class="fa fa-lock"></i><?php print t('Protected') ?>
+          </a>
+        <?php endif; ?>
+
         <a href="<?php print $environment->git_ref_url; ?>" class="environment-meta-data environment-git-ref btn btn-text" target="_blank" title="<?php print t('Git !type: ', array('!type' => $environment->git_ref_type)) . $environment->git_ref; ?>">
           <i class='fa fa-<?php print $environment->git_ref_type == 'tag'? 'tag': 'code-fork'; ?>'></i><?php print $environment->git_ref; ?>
         </a>
@@ -212,12 +218,6 @@
 
         <?php if ($environment->site_status == HOSTING_SITE_DELETED): ?>
             <a class="environment-meta-data btn btn-text">Deleted</a>
-        <?php endif; ?>
-
-        <?php if (isset($environment->settings->locked) && $environment->settings->locked): ?>
-            <a class="environment-meta-data btn btn-text" title="<?php print t('This database is locked.'); ?>">
-          <i class="fa fa-lock"></i><?php print t('Locked') ?>
-        </a>
         <?php endif; ?>
 
         <?php if (drupal_valid_path("node/{$environment->site}/errors")): ?>
@@ -432,7 +432,7 @@
                                 <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu" role="menu">
-                                <?php if (isset($environment->settings->locked) && $environment->settings->locked): ?>
+                                <?php if (isset($environment->hosting_settings['general']['protected']) && $environment->hosting_settings['general']['protected']): ?>
                                     <li><label><?php print t('This environment is locked. You cannot deploy data here.'); ?></label></li>
                                 <?php elseif (count($source_environments) == 0): ?>
                                     <li><label><?php print t('No other environments available.'); ?></label></li>
@@ -443,7 +443,7 @@
                                         <li><a href="/hosting_confirm/<?php print $environment->site ?>/site_sync/?source=<?php print $source->site ?>">
                                                 <?php if ($project->settings->primary_environment == $source->name): ?>
                                                     <i class="fa fa-bolt deploy-db-indicator"></i>
-                                                <?php elseif (isset($source->settings->locked) && $source->settings->locked): ?>
+                                                <?php elseif (isset($source->hosting_settings['general']['protected']) && $source->hosting_settings['general']['protected']): ?>
                                                     <i class="fa fa-lock deploy-db-indicator"></i>
                                                 <?php endif; ?>
 

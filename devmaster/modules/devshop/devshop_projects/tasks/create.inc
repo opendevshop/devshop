@@ -120,7 +120,7 @@ function hosting_create_environment($project, $new_environment_name, $new_enviro
 
     // We assume since this is a clone, it does not need to be locked, and it should be auto-pulling.
     // Unlock the environment... @TODO: Should this be a project setting?
-    $environment->settings->locked = 0;
+    $environment->hosting_settings['general']['protected'] = 0;
 
     // If the source environment was installed from a profile, we have to change
     // "install_method" so that it installs by cloning the source site, not by
