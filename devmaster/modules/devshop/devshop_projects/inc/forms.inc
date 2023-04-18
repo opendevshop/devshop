@@ -929,6 +929,14 @@ function devshop_projects_create_environment_form(&$form, &$form_state, $form_id
     '#value' => NULL,
   );
 
+  $form['site_language'] = [
+    '#type' => 'value',
+    '#value' => $form['site_language']['#value'],
+  ];
+  $form['client'] = [
+    '#type' => 'value',
+    '#value' => $form['client']['#default_value'],
+  ];
 
   // Remove platform and profile options.
   // @TODO: Patch Aegir so we don't have to load all of these platform options.
