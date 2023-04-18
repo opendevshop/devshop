@@ -137,17 +137,6 @@ function devshop_projects_node_load($nodes, $types) {
 }
 
 /**
- * When install tasks are created, add "force-reinstall" task argument.
- *
- * @param $node
- */
-function devshop_projects_node_presave($node) {
-  if ($node->type == 'task' && $node->task_type == 'install' && $node->is_new) {
-    $node->task_args['force-reinstall'] = 1;
-  }
-}
-
-/**
  * Implementation of hook_insert().
  *
  *   1. Saves data into our table.
