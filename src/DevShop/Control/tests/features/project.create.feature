@@ -155,7 +155,7 @@ Feature: Create a project and check settings
     When I press "Delete Site"
     Then I should see "Delete Site" in the ".environment-task-logs" element
     When I run drush "hosting-tasks --force --fork=0 --strict=0"
-    And I click "testenv"
+    And I click "composer"
     Then print current URL
 
     # Testing "Install Profile"
