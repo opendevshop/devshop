@@ -764,14 +764,7 @@ function devshop_projects_form_site_node_form_alter(&$form, &$form_state, $form_
       '#weight' => -1000,
     );
   }
-  $form['site_language'] = [
-    '#type' => 'value',
-    '#value' => $form['site_language']['#default_value'],
-  ];
-  $form['client'] = [
-      '#type' => 'value',
-      '#value' => $form['client']['#default_value'],
-  ];
+
   // Add our own submit handler.
   $form['actions']['submit']['#submit'][] = 'devshop_projects_environment_settings_submit';
 
