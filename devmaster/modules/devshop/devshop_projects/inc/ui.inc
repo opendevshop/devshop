@@ -270,7 +270,6 @@ function devshop_environment_menu($environment) {
 
     $items[] = 'verify';
     $items[] = 'flush_cache';
-    $items[] = 'rebuild_registry';
     $items[] = 'run_cron';
     $items[] = 'update';
     $items[] = '<div class="divider"></div>';
