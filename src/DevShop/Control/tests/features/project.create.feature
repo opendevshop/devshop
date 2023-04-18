@@ -162,7 +162,7 @@ Feature: Create a project and check settings
     When I click "Create New Environment"
     And I fill in "standard" for "Environment Name"
     And I select "9.x" from "git_ref"
-    And I select "profile" from "install_method[method]"
+    And I select "profile" from "hosting_settings[install][method]"
     Then the field "hosting_settings[install][profile]" should have the value "minimal"
     And I fill in "standard" for "hosting_settings[install][profile]"
     
@@ -180,7 +180,7 @@ Feature: Create a project and check settings
     When I click "Create New Environment"
     And I fill in "manualinstall" for "Environment Name"
     And I select "9.x" from "git_ref"
-    And I select "manual" from "install_method[method]"
+    And I select "manual" from "hosting_settings[install][method]"
     Then I press "Create New Environment"
     Then I should see "Environment manualinstall created in project composer."
 
@@ -197,7 +197,7 @@ Feature: Create a project and check settings
     When I click "Create New Environment"
     And I fill in "cloned" for "Environment Name"
     And I select "9.x" from "git_ref"
-    And I select "clone" from "install_method[method]"
+    And I select "clone" from "hosting_settings[install][method]"
     And I select "@composer.standard" from "install_method[clone_source]"
     
     Then I press "Create New Environment"
