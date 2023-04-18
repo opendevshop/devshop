@@ -2943,7 +2943,7 @@
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/hosting_tasks_extra.git",
-                "reference": "b26ede74200ba8000b9c50e3ad16170981abd0c2"
+                "reference": "75ee3d533b15b976d968578bada5082bcdb7943d"
             },
             "require": {
                 "drupal/drupal": "~7.0",
@@ -2960,7 +2960,7 @@
                 },
                 "drupal": {
                     "version": "7.x-4.x-dev",
-                    "datestamp": "1678126132",
+                    "datestamp": "1681822705",
                     "security-coverage": {
                         "status": "not-covered",
                         "message": "Dev releases are not covered by Drupal security advisories."
