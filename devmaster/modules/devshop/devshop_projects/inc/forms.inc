@@ -501,24 +501,14 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
           if ($_GET['source'] == 'other') {
             $source = '';
           }
-          elseif (is_int($_GET['source'])) {
+          else {
             $source = node_load($_GET['source']);
+
             if (isset($source->nid) && $source->type != 'site') {
               break;
             }
-              $source_alias = $source->environment->system_alias;
+              $source_alias = $source->environment->drush_alias;
           }
-          elseif (isset($node->project->settings->aliases[$_GET['source']])) {
-              $alias_name = $source = $_GET['source'];
-              $source_alias = "@{$node->project->name}.{$alias_name}";
-              $alias_data = $node->project->settings->aliases[$_GET['source']];
-          }
-          else {
-              return;
-          }
-
-//          print_r($source); die;
-//          print $source_alias ; die;
 
           drupal_set_title(t('Sync Data to Environment "@env"', array('@env' => $node->environment->name)), PASS_THROUGH);
           $environment = $node->environment;
@@ -548,16 +538,6 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
               '#value' => $node->environment->drush_alias,
             );
           }
-
-          // Don't copy modules and themes.
-          unset($form['parameters']['modules']);
-          unset($form['parameters']['themes']);
-          unset($form['parameters']['libraries']);
-
-          // Better output
-          $form['parameters']['database']['#prefix'] = '<label>' . t('What to Sync?') . '</label>';
-          $form['parameters']['registry-rebuild']['#prefix'] = '<label>' . t('Run Deploy Hooks?') . '</label>';
-          $form['parameters']['backup']['#weight'] = -11;
 
           $form['actions']['submit']['#value'] = '<i class="fa fa-arrow-right"></i>' . t('Sync Data');
           $form['actions']['submit']['#attributes'] = array(
