@@ -132,6 +132,9 @@ function devshop_projects_node_load($nodes, $types) {
       if (empty($node->hosting_settings) && !empty($node->project->hosting_settings)) {
         $node->hosting_settings = $node->project->hosting_settings;
       }
+
+      // Override drush alias.
+      $node->drush_alias = $node->environment->drush_alias;
     }
   }
 }
