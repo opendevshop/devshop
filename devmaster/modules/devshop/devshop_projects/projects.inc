@@ -361,11 +361,11 @@ function devshop_project_load($node) {
 
       // Install Method: Clone
       case 'clone':
-        $environment->clone_source = $environment->settings->install_method['clone_source'];
+        $environment->clone_source = $environment->hosting_settings['install']['clone_source'];
 
         // Load clone source for "other".
         if ($environment->clone_source == '_other') {
-          $environment->clone_source = $environment->settings->install_method['clone_source_drush'];
+          $environment->clone_source = $environment->hosting_settings['install']['clone_source_drush'];
         }
 
         list($clone_proj, $clone_env) = explode('.', $environment->clone_source);
