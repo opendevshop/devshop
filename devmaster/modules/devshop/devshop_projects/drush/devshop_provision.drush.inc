@@ -394,38 +394,10 @@ function drush_devshop_provision_provision_install_validate() {
  *
  * This function handles all of the alternative environment install methods.
  */
-function drush_devshop_provision_post_provision_install() {
-
-  // Install Method: Clone
-  // Sync from a drush alias.
-  drush_log('Installing environment with method: ' . d()->install_method , 'p_log');
-  if (d()->install_method == 'clone') {
-    drush_log(dt('Environment Clone initiated...'), 'p_log');
-    $clone_source = d()->environment_settings['install_method']['clone_source'];
-
-    // If "clone_source" is set to "_other", use the drush alias in "clone_source_drush".
-    if ($clone_source == '_other') {
-      $source = d()->environment_settings['install_method']['clone_source_drush'];
-    }
-    elseif (!empty($clone_source)) {
-      $source = d()->environment_settings['install_method']['clone_source'];
-    }
-    else {
-      return drush_set_error('DEVSHOP_ERROR', dt('Install_method"clone_source" was not set.'));
-    }
-
-    $destination = '@' . d()->group . '.' . d()->environment;
-    $extra_dump = escapeshellarg('--extra-dump="--single-transaction=false"');
-    $command = "drush sql-sync $extra_dump $source $destination";
-
-    $environment = [];
-    provision_process($command, drush_server_home(), dt('Syncing database...'), $environment, TRUE);
-    provision_process('drush cc drush', NULL, 'Clearing drush caches');
-//    devshop_drush_process_cache_clear($destination);
-  }
+function drush_devshop_provisionzz_post_provision_install() {
 
   // Install Method: import
-  elseif (d()->install_method == 'import') {
+  if (d()->install_method == 'import') {
 
 
     // If import source is a mysql URL:
