@@ -134,7 +134,9 @@ function devshop_projects_node_load($nodes, $types) {
       }
 
       // Override drush alias.
-      $node->drush_alias = $node->environment->drush_alias;
+      if (isset($node->environment->drush_alias)) {
+        $node->drush_alias = $node->environment->drush_alias;
+      }
     }
   }
 }

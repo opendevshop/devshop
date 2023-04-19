@@ -840,7 +840,7 @@ function devshop_projects_preprocess_environment(&$vars) {
       $source_environment->sync_link = url("hosting_confirm/$environment->site/site_sync", [
         'query' => [
           'token' => drupal_get_token($user->uid),
-          'source' => $source_environment->drush_alias,
+          'source' => $source_environment->site,
         ]
       ]);
       $vars['source_environments'][$source_environment->name] = $source_environment;
