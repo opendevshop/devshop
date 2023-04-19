@@ -437,10 +437,10 @@
                                 <?php elseif (count($source_environments) == 0): ?>
                                     <li><label><?php print t('No other environments available.'); ?></label></li>
                                 <?php else: ?>
-                                    <li><label><?php print t('Deploy data from'); ?></label></li>
+                                    <li><label><?php print t('Sync data from'); ?></label></li>
                                     <?php foreach ($source_environments as $source): ?>
                                         <?php if ($source->name == $environment->name) continue; ?>
-                                        <li><a href="/hosting_confirm/<?php print $environment->site ?>/site_sync/?source=<?php print $source->site ?>">
+                                        <li><a href="<?php print $source->sync_link ?>">
                                                 <?php if ($project->settings->primary_environment == $source->name): ?>
                                                     <i class="fa fa-bolt deploy-db-indicator"></i>
                                                 <?php elseif (isset($source->hosting_settings['general']['protected']) && $source->hosting_settings['general']['protected']): ?>

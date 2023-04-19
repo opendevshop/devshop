@@ -837,6 +837,12 @@ function devshop_projects_preprocess_environment(&$vars) {
   // Look for all available source environments
   foreach ($vars['project']->environments as $source_environment) {
     if ($source_environment->site) {
+      $source_environment->sync_link = url("hosting_confirm/$environment->site/site_sync", [
+        'query' => [
+          'token' => drupal_get_token($user->uid),
+          'source' => $source_environment->drush_alias,
+        ]
+      ]);
       $vars['source_environments'][$source_environment->name] = $source_environment;
     }
   }
