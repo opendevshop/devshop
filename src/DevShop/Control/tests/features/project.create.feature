@@ -198,7 +198,7 @@ Feature: Create a project and check settings
     And I fill in "cloned" for "Environment Name"
     And I select "9.x" from "git_ref"
     And I select "clone" from "hosting_settings[install][method]"
-    And I select "@composer.standard" from "install_method[clone_source]"
+    And I select "@composer.standard" from "hosting_settings[install][clone_source]"
     
     Then I press "Create New Environment"
     Then I should see "Environment cloned created in project composer."
