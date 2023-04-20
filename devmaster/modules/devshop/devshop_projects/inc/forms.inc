@@ -23,13 +23,13 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
   // Load a site node form using the projects hosting_settings.
   $site = new stdClass();
   $site->type = 'site';
-  $site->hosting_settings = $node->hosting_settings; 
+  $site->hosting_settings = $node->hosting_settings;
   $site->project = $node->project;
   $state = [
     'build_info' => ['args' => [$site]],
   ];
   $site_form = drupal_retrieve_form('site_node_form', $state);
-  
+
   foreach (element_children($site_form['hosting_settings']) as $i) {
     // Put every child fieldset of hosting_settings into project_settings group.
     if ($site_form['hosting_settings'][$i]['#type'] == 'fieldset') {
@@ -38,7 +38,7 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
       $site_form['hosting_settings'][$i]['#weight'] = 10;
     }
   }
-  
+
   $form['hosting_settings'] += $site_form['hosting_settings'];
 
   // Project Settings
@@ -148,7 +148,7 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
       'base_url',
     ),
   );
-  
+
   // Don't allow editing
   if ($node->nid) {
 
@@ -336,9 +336,9 @@ function devshop_projects_validate($node, &$form, &$form_state) {
   if (strpos($form_state['values']['project']['base_url'], '@environment') === FALSE ) {
     form_set_error('project][base_url', t('Environment Domain Name Pattern must include @environment placeholder.'));
   }
-  
+
   // Move install_method back to project settings so we don't have to mess with parents.
-  $form_state['values']['project']['settings']['install_method'] = $form_state['values']['install_method']; 
+  $form_state['values']['project']['settings']['install_method'] = $form_state['values']['install_method'];
 
 }
 
@@ -557,7 +557,7 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
           $source_environment_url = $source_environment->url? $source_environment->url: 'http://' . $alias_data['uri'];
           $source_environment_name = $source_environment->name? $source_environment->name: $alias_name;
           $html = <<<HTML
-          
+
 <div class="container no-wrap">
   <div class="inline">
     <a href="$source_environment_url" target="_blank" class="btn btn-default btn-lg"><span class="text-lg"><i class="fa fa-globe"></i> {$source_environment_name} </span>
@@ -567,9 +567,9 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
 
   </div>
   <div class="inline btn">
-  
+
     <i class="fa fa-arrow-right fa-4x"></i>
-    
+
   </div>
   <div class="inline">
     <a href="$environment->url" target="_blank" class="btn btn-danger btn-lg"><span class="text-lg"><i class="fa fa-trash"></i> {$environment->name} </span>
@@ -961,7 +961,7 @@ function devshop_projects_create_environment_form_validate_name($element, &$form
     form_set_value($form['platform'], 0, $form_state);
 
     form_set_value($form['profile'], $form_state['values']['install_method']['install_profile'], $form_state);
-    
+
   }
 }
 
