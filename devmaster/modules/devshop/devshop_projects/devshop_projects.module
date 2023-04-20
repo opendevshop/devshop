@@ -870,6 +870,7 @@ function devshop_public_key_valid_fingerprint($devshop_key = '') {
  * @param $target
  *
  * @return void
+ * @see hosting_site_install_methods_form_element()
  */
 function devshop_projects_hosting_clone_source_options_alter(&$options, $target) {
 
@@ -877,12 +878,8 @@ function devshop_projects_hosting_clone_source_options_alter(&$options, $target)
     return;
   }
 
-  // Add "primary" option.
-  $primary_label = t('Primary Environment: Unknown. Check !link', [
-    '!link' => l(t('Project Settings'), "node/{$target->project->nid}/edit", [
-      'query' => drupal_get_destination(),
-    ])
-  ]);
+  // If project has no environments yet.
+  $primary_label = t('Primary Environment');
 
   // If primary environnment setting is set...
   if ($target->project->settings->primary_environment ?? FALSE) {
@@ -893,6 +890,14 @@ function devshop_projects_hosting_clone_source_options_alter(&$options, $target)
       // Set the label to include the site.
       $primary_alias = $target->project->environments[$primary]->drush_alias;
       $primary_label = t('Primary Environment: !primary', ['!primary' => $options[$primary_alias]]);
+    }
+    else {
+      // No environment exists with the name set in primary environment. Tell user to check settings.
+      $primary_label = t('Primary Environment: Not found. Check !link', [
+        '!link' => l(t('Project Settings'), "node/{$target->project->nid}/edit", [
+          'query' => drupal_get_destination(),
+        ])
+      ]);
     }
   }
   // Add "Primary" option to list.
