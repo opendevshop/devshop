@@ -16,7 +16,7 @@ Feature: DevShop Servers have LetsEncrypt enabled out of the box.
     When I run drush "hosting-tasks --force --fork=0 --strict=0"
 
     Then I click "Edit"
-    Then I select the radio button "Self Signed"
+    Then I select the radio button "Apache"
     And I press "Save"
     Then I should see "SelfSigned"
 
