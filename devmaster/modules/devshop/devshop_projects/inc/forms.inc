@@ -1247,8 +1247,8 @@ function devshop_projects_create_environment_form_validate_import($element, &$fo
 
   $url_components = parse_url($element['#value']);
 
-  if ($form_state['values']['install_method']['method'] == 'import' && empty($element['#value'])) {
-    form_set_error('install_method][import', t('If using the "Import Database" Install Method, you must enter a MySQL connection URL or absolute path to an SQL file.'));
+  if ($form_state['values']['hosting_settings']['install']['method'] == 'import' && empty($element['#value'])) {
+    form_set_error('hosting_settings][install][import', t('If using the "Import Database" Install Method, you must enter a MySQL connection URL or absolute path to an SQL file.'));
   }
   elseif (isset($url_components['scheme']) && $url_components['scheme'] == 'mysql') {
     $database = array(
@@ -1266,7 +1266,7 @@ function devshop_projects_create_environment_form_validate_import($element, &$fo
       drupal_set_message(t('Database connection successful.'));
     }
     catch (\PDOException $e) {
-      form_set_error('install_method][import', t('Unable to connect to the database: %e', array('%e' => $e->getMessage())));
+      form_set_error('hosting_settings][install][import', t('Unable to connect to the database: %e', array('%e' => $e->getMessage())));
     }
     finally {
       db_set_active();
