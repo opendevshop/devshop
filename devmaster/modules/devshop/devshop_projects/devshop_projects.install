@@ -510,3 +510,10 @@ function devshop_projects_update_7103() {
   variable_set('hosting_queue_tasks_enabled', true);
   variable_set('hosting_queue_tasks_items', 15);
 }
+
+/**
+ * Enable hosting tasks queue so that tasks can run in parallel if needed.
+ */
+function devshop_projects_update_7104() {
+    module_enable(['hosting_git']);
+}
