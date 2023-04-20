@@ -182,6 +182,10 @@ function devshop_environment_menu_first_items($environment, $tasks) {
     $items[] = 'disable';
     $items[] = 'delete';
     $items[] = 'install';
+    $items[] = '<div class="divider"></div>';
+    $items[] = 'git-branch';
+    $items[] = 'git-tag';
+    $items[] = 'git-commit';
   }
 
   // Load test task, if it exists
