@@ -873,6 +873,10 @@ function devshop_public_key_valid_fingerprint($devshop_key = '') {
  */
 function devshop_projects_hosting_clone_source_options_alter(&$options, $target) {
 
+  if (!isset($target->project)) {
+    return;
+  }
+
   // Add "primary" option.
   $primary_label = t('Primary Environment: Unknown. Check !link', [
     '!link' => l(t('Project Settings'), "node/{$target->project->nid}/edit", [
