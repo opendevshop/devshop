@@ -959,9 +959,6 @@ function devshop_projects_create_environment_form_validate_name($element, &$form
     // Set value in form_state.
     form_set_value($form['platform_node'], $platform_node, $form_state);
     form_set_value($form['platform'], 0, $form_state);
-
-    form_set_value($form['profile'], $form_state['values']['install_method']['install_profile'], $form_state);
-
   }
 }
 
@@ -1116,8 +1113,6 @@ function devshop_projects_environment_settings_submit($form, &$form_state) {
   else {
     $environment = (object) $form_state['values']['environment'];
   }
-
-  $form_state['values']['environment']['settings']['install_method'] = $form_state['values']['install_method'];
 
   $environment->settings = serialize($form_state['values']['environment']['settings']);
 
