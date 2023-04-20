@@ -205,6 +205,7 @@ function devshop_project_load($node) {
   ));
   $environments = [];
   $environment_nids = [];
+  $environment_aliases = [];
   $deleted_environments = [];
   foreach ($environment_data as $environment) {
 
