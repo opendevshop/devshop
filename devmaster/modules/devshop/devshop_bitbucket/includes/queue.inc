@@ -216,17 +216,6 @@ function devshop_bitbucket_create_all_pr_environments($project_node) {
 
   }
 
-  // If pull_request_environments_method method set to "_primary", and live_environment is not set,throw an error.
-  if ($project->settings->bitbucket['pull_request_environments_method'] == '_primary' && empty($project->settings->primary_environment)) {
-    return drush_set_error("DRUSH_FRAMEWORK_ERROR", 'PR environments set to clone "Primary Environment", but there is none configured. Visit Project Settings > General Settings and choose a Primary Environment.');
-  }
-
-  //  If pull_request_environments_method method set to "_primary", reset 'pull_request_environments_method' to the name of the primary environment.
-  elseif ($project->settings->bitbucket['pull_request_environments_method'] == '_primary' && !empty($project->settings->primary_environment)) {
-    $primary_env_name = $project->settings->primary_environment;
-    $project->settings->bitbucket['pull_request_environments_method'] = $primary_env_name;
-  }
-
   // Step 2: For all PRS that do not have an environment, create one.
   foreach ($prs_to_create_environments_for as $slug => $pr) {
     drush_log("Creating environment for PR $pr->id ...", "ok");
@@ -247,37 +236,10 @@ function devshop_bitbucket_create_all_pr_environments($project_node) {
     // @TODO: Create a "PR Env pattern" setting.
     $environment_name = $slug;
 
-    // If method is "install"...
-    if ($project->settings->bitbucket['pull_request_environments_method'] == 'devshop__bitbucket__install') {
 
-      // Create environment then save PR data.
-      // @TODO: Unify this into one function.
-      $environment = hosting_create_environment($project, $environment_name, $branch, NULL, NULL, 'create', $remote_url);
-      //      DevShopGitHubApi::createDeployment($environment, 'queued');
-      devshop_bitbucket_save_pr_env_data($pr, $environment);
-
-      drush_log("Environment $environment_name created for $project_node->title via installation profile.", "ok");
-    }
-    // If environment exists for "pull_request_environments_method" setting, clone it.
-    elseif (isset($project->environments[$project->settings->bitbucket['pull_request_environments_method']])) {
-      $source_env = $project->settings->bitbucket['pull_request_environments_method'];
-
-      // Create environment then save PR data.
-      // @TODO: Unify this into one function.
-      $environment = hosting_create_environment($project, $environment_name, $branch, $source_env, NULL, 'create', $remote_url);
-
-      //      DevShopGitHubApi::createDeployment($environment, 'queued');
-      devshop_bitbucket_save_pr_env_data($pr, $environment);
-      drush_log("Environment $environment_name created for $project_node->title via cloning $source_env...", "ok");
-    }
-    // If environment does not exist, note that error.
-    elseif (!isset($project->environments[$project->settings->bitbucket['pull_request_environments_method']])) {
-      drush_log("No environment found named {$project->settings->bitbucket['pull_request_environments_method']}", "warning");
-    }
-    // If "pull_request_environments_method" is something else, we don't know what to do.
-    else {
-      drush_log("Unknown PR environment creation method: {$project->settings->bitbucket['pull_request_environments_method']}", "warning");
-    }
+    // Create "environment". (site node)
+    $environment = hosting_create_environment($project, $environment_name, $branch, NULL, NULL, 'create', $remote_url);
+    devshop_bitbucket_save_pr_env_data($pr, $environment);
   }
 
   // Process $prs_to_create_environments_for

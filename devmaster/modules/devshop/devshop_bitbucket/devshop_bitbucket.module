@@ -154,32 +154,6 @@ function devshop_bitbucket_form_project_node_form_alter(&$form, &$form_state, $f
       ),
     ),
   );
-
-  // Pull Request Environment method.
-  // $form['bitbucket']['pull_request_environments_method'] = array(
-
-  $environments = array_keys($node->project->environments);
-  $options = array(
-    t('Install Drupal') => array(
-        'devshop__bitbucket__install' => empty($node->project->install_profile)? t('Default install profile.'): $node->project->install_profile,
-    ),
-    t('Clone another environment') => array(),
-  );
-
-  if (empty($environments)) {
-    $options[t('Clone another environment')][] = t('No environments available.');
-  }
-  else {
-    $options[t('Clone another environment')] = array_combine($environments, $environments);
-  }
-  $form['project']['settings']['bitbucket']['pull_request_environments_method'] = array(
-      '#type' => 'select',
-      '#title' => t('Pull Request Environment Creation Method'),
-      '#default_value' => isset($node->project->settings->bitbucket) ?
-          $node->project->settings->bitbucket['pull_request_environments_method'] : 'devshop__bitbucket__install',
-      '#description' => t('Select the method for creating the pull request environments.'),
-      '#options' => $options,
-  );
 }
 
 /**
@@ -859,20 +833,7 @@ function devshop_bitbucket_webhook($project_node) {
               }
             }
             else {
-              // If method is "install"...
-              if ($project->settings->bitbucket['pull_request_environments_method'] == 'devshop__bitbucket__install') {
-                hosting_create_environment($project, $environment_name, $branch);
-                $message .= "Environment $environment_name created for $project_node->title via installation profile.\n";
-              }
-              // Otherwise, it is a clone from live.
-              elseif (isset($project->environments[$project->settings->bitbucket['pull_request_environments_method']] )) {
-                $source_env = $project->settings->bitbucket['pull_request_environments_method'];
-                hosting_create_environment($project, $environment_name, $branch, $source_env);
-                $message .= "Environment $environment_name created for $project_node->title via cloning $source_env \n";
-              }
-              else {
-                $message .= 'Unable to determine what to do! Check "Pull Request Environment Method" setting.';
-              }
+              hosting_create_environment($project, $environment_name, $branch);
             }
 //
 //            $owner = $project->bitbucket_owner;
