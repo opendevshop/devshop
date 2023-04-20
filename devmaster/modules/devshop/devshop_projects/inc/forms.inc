@@ -305,7 +305,7 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
     '#title' => t('Force new environments to use these servers.'),
     '#description' => t('When new environments are created, they will use the servers selected above.'),
     '#type' => 'checkbox',
-    '#default_value' => $project->settings->default_environment['force_default_servers']?: 0,
+    '#default_value' => $project->settings->default_environment['force_default_servers'] ?? 0,
   );
   return $form;
 }
