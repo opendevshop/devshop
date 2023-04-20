@@ -10,9 +10,8 @@ Feature: DevShop Servers have LetsEncrypt enabled out of the box.
     When I am at "hosting/c/server_master"
     And I click "Edit"
     Then I should see "Let's Encrypt"
-    Then I select the radio button "LetsEncrypt"
-    Then I select the radio button "Staging"
-    Then I select the radio button with the label "Apache HTTPS"
+    And I select "LetsEncrypt" from "services[Certificate][type]"
+    And I select "staging" from "services[Certificate][LetsEncrypt][letsencrypt_ca]"
     And I press "Save"
     When I run drush "hosting-tasks --force --fork=0 --strict=0"
 
