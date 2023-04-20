@@ -1307,26 +1307,10 @@ function devshop_github_webhook($project_node) {
                 $already_have_pr_info = TRUE;
               }
             } else {
-              // If method is "install"...
-              if ($project->settings->github['pull_request_install_method'] == 'install') {
-                hosting_create_environment($project, $environment_name, $branch, null, $git_url);
-                $message .= "Environment $environment_name created for $project_node->title via installation profile.\n";
-              } // Otherwise, it is a clone from live.
-              elseif (isset($project->environments[$project->settings->github['pull_request_install_method']['install_method']])) {
-                $source_env = $project->settings->github['pull_request_install_method']['install_method'];
-                $environment = hosting_create_environment($project, $environment_name, $branch, $source_env, $git_url);
 
-                // Queue up a "deploy" task so that the same hooks are run post-clone.
-                // @TODO: Decide if a setting is needed to control this behavior.
-                // @TODO: Reduce duplication with the github queue.
-                $deploy_task = hosting_add_task($environment->site, 'deploy', array(
-                  'git_ref' => $branch,
-                ));
-                $message .= "Environment $environment_name created for $project_node->title via cloning $source_env \n";
-                $message .= "Deploy task queued: $deploy_task->nid \n";
-              } else {
-                $message .= 'Unable to determine what to do! Check "Pull Request Environment Method" setting.';
-              }
+              // Create the environment. Settings are inherited from project.
+              hosting_create_environment($project, $environment_name, $branch, null, $git_url);
+
             }
 //
 //            $project_node = node_load($project->nid);
@@ -1857,49 +1841,9 @@ function devshop_github_create_all_pr_environments($project_node) {
     // @TODO: Create a "PR Env pattern" setting.
     $environment_name = $slug;
 
-    if ($project->settings->github['pull_request_install_method']['method'] == 'clone') {
-      $source_environment_site_context = hosting_context_load($project->settings->github['pull_request_install_method']['clone_source']);
-      $source_environment_site_node = node_load($source_environment_site_context->nid);
-      $source_environment_name  = $source_environment_site_node->environment->name;
-
-      drush_log("Preparing to creating environment $environment_name as clone of $source_environment_name ...", "warning");
-    }
-    else {
-      drush_log("Preparing to creating environment $environment_name  ...", "warning");
-    }
-
-    $environment_settings = array(
-      'install_method' => $project->settings->github['pull_request_install_method'],
-    );
-
-    // If project is configured to clone,and source environment exists, clone it.
-    if ($project->settings->github['pull_request_install_method']['method'] == 'clone' && isset($project->environments[$source_environment_name])) {
-
-      // Create environment then save PR data.
-      // @TODO: Unify this into one function.
-      $environment = hosting_create_environment($project, $environment_name, $branch, $source_environment_name, $environment_settings, 'create', $remote_url);
-
-//      DevShopGitHubApi::createDeployment($environment, 'queued');
-      devshop_github_save_pr_env_data($pr, $environment);
-      drush_log("Environment $environment_name created for $project_node->title via cloning $source_environment_name...", "ok");
-    }
-    // If project is configured to clone,and source environment does not exist exists, throw a warning
-    elseif ($project->settings->github['pull_request_install_method']['method'] == 'clone' && !isset($project->environments[$source_environment_name])) {
-      drush_log("No environment found named {$source_environment_name} in project {$project->name}. Unable to clone.", "warning");
-    }
-    // All other install methods get handled by provision-install hooks.
-    else {
-
-      // Create environment then save PR data.
-      // @TODO: Unify this into one function.
-      $environment = hosting_create_environment($project, $environment_name, $branch, NULL, $environment_settings, 'create', $remote_url);
-      //      DevShopGitHubApi::createDeployment($environment, 'queued');
-      devshop_github_save_pr_env_data($pr, $environment);
-
-      drush_log("Environment $environment_name created for $project_node->title.", "ok");
-    }
-
-    drush_log("PR INSTALL METHOD data: " . $project->settings->github['pull_request_install_method'], 'warning');
+    // Create "environment". (site node)
+    $environment = hosting_create_environment($project, $environment_name, $branch, NULL, NULL, 'create', $remote_url);
+    devshop_bitbucket_save_pr_env_data($pr, $environment);
   }
 
   // Process $prs_to_create_environments_for
