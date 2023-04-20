@@ -217,7 +217,7 @@ function devshop_project_load($node) {
     $environment->drush_alias = "@{$project->name}.{$environment->name}";
 
     // Unserialize environment settings.
-    $environment->hosting_settings = unserialize($environment->hosting_settings);
+    $environment->hosting_settings = $environment->hosting_settings ? unserialize($environment->hosting_settings) : [];
     $environment->settings = (object) unserialize($environment->settings);
 
     // Get last task
