@@ -447,10 +447,12 @@ function devshop_project_load($node) {
       $environments[$environment->name] = $environment;
     }
     $environment_nids[$environment->site] = $environment;
+    $environment_aliases[$environment->drush_alias] = $environment;
   }
 
   $project->environments = $environments;
   $project->environment_nids = $environment_nids;
+  $project->environment_aliases = $environment_aliases;
   $project->environments_deleted = $deleted_environments;
 
   // Make project name and status available.
