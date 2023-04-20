@@ -863,3 +863,40 @@ function devshop_public_key_valid_fingerprint($devshop_key = '') {
 
   return $devshop_sshkey['fingerprint'];
 }
+
+/**
+ * Implements hook_hosting_clone_source_options_alter()
+ * @param $options
+ * @param $target
+ *
+ * @return void
+ */
+function devshop_projects_hosting_clone_source_options_alter(&$options, $target) {
+
+  // Only show sites that are in the same project.
+  foreach ($options as $alias => $label) {
+    if ($alias != '_other' && !isset($target->project->environment_aliases[$alias])) {
+      unset($options[$alias]);
+    }
+  }
+
+  // Add other aliases to the clone source.
+  if (isset($target->project->settings->aliases)) {
+    foreach ($target->project->settings->aliases as $alias => $data) {
+      $link = l('<i class="fa fa-external-link"></i> ' . $data['uri'], 'http://' . $data['uri'], array(
+          'html' => TRUE,
+          'attributes' => array(
+            'target' => '_blank',
+            'class' => array('btn-text'),
+          ),
+        )) . '</small>';
+      $remote = t('Unknown');
+      $options["@{$target->project->name}.{$alias}"] = "<span>{$alias}</span> <small class='git-ref text-muted'><i class='fa fa-globa'></i> $remote</small> <small>$link</small>";
+    }
+ }
+
+  // Put back _other, on the end.
+  $option_other = $options['_other'];
+  unset($options['_other']);
+  $options['_other'] = $option_other;
+}
