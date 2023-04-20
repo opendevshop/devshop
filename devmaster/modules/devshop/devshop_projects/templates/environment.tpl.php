@@ -400,13 +400,13 @@
                                 <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu btn-git-ref" role="menu">
-                              <?php if (user_access('create platform git-branch task') || user_access('create platform git-tag task')): ?>
+                              <?php if (user_access('create site git-branch task') || user_access('create site git-tag task')): ?>
                                 <li class="create-git-ref"><label><?php print t('Create'); ?>
-                              <?php if (user_access('create platform git-branch task')): ?>
-                                  <a href="/hosting_confirm/<?php print $environment->platform ?>/platform_git-branch?create=1" class="btn btn-sm"><i class="fa fa-code-fork"></i> <?php print t('Branch'); ?></a>
+                              <?php if (user_access('create site git-branch task')): ?>
+                                  <a href="<?php print $create_git_branch_url ?>" class="btn btn-sm"><i class="fa fa-code-fork"></i> <?php print t('Branch'); ?></a>
                               <?php endif; ?>
-                              <?php if (user_access('create platform git-tag task')): ?>
-                                <a href="/hosting_confirm/<?php print $environment->platform ?>/platform_git-tag" class="btn btn-sm"><i class="fa fa-tag"></i> <?php print t('Tag'); ?></a>
+                              <?php if (user_access('create site git-tag task')): ?>
+                                <a href="<?php print $create_git_tag_url ?>" class="btn btn-sm"><i class="fa fa-tag"></i> <?php print t('Tag'); ?></a>
                               <?php endif; ?>
                                   </label></li>
                               <?php endif; ?>

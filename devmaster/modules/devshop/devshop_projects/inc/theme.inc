@@ -1209,6 +1209,17 @@ function devshop_projects_preprocess_environment(&$vars) {
   if ($environment->git_url != $project->git_url) {
     $vars['git_origin'] = $environment->git_url;
   }
+
+  $vars['create_git_branch_url'] = url("hosting_confirm/{$environment->site}/site_git-branch", array(
+    'query' => array(
+      'token' => drupal_get_token($user->uid),
+    )
+  ));
+  $vars['create_git_tag_url'] = url("hosting_confirm/{$environment->site}/site_git-tag", array(
+    'query' => array(
+      'token' => drupal_get_token($user->uid),
+    )
+  ));
 }
 
 /**
