@@ -24,6 +24,7 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
   $site = new stdClass();
   $site->type = 'site';
   $site->hosting_settings = $node->hosting_settings; 
+  $site->project = $node->project;
   $state = [
     'build_info' => ['args' => [$site]],
   ];
