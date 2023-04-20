@@ -94,7 +94,7 @@ function devshop_provision_pre_flight($platform_name = NULL){
  */
 function devshop_provision_provision_drupal_config($uri, $data, $config = NULL) {
 
-  $environment = d()->environment;
+  $environment = d()->hosting_environment;
   $project = d()->project;
 
   return <<<PHP
@@ -144,7 +144,7 @@ function devshop_provision_provision_services() {
  */
 function devshop_provision_provision_apache_vhost_config($uri, $data) {
 
-  $environment = d()->environment;
+  $environment = d()->hosting_environment;
   $project = d()->project;
 
   if (empty($environment) || empty($project)) {
@@ -174,7 +174,7 @@ PHP;
  */
 function devshop_provision_provision_nginx_vhost_config($data) {
 
-  $environment = d()->environment;
+  $environment = d()->hosting_environment;
   $project = d()->project;
 
   if (empty($environment) || empty($project)) {
@@ -225,7 +225,7 @@ function drush_devshop_provision_pre_updatedb() {
   // It has a project property, but not the environment.
   // That is what the extra import task is for.
   // We can look for the missing environment
-  if (!empty(d()->project) && empty(d()->environment)) {
+  if (!empty(d()->project) && empty(d()->hosting_environment)) {
     drush_log('[DEVSHOP] New environment detected.  Rebuilding Registry.', 'ok');
     drush_invoke('registry-rebuild');
   }

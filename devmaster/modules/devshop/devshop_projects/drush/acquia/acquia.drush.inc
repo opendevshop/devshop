@@ -21,7 +21,7 @@ function drush_acquia_post_provision_deploy($branch = '') {
 
     $project_name = d()->project;
     $project = (object) d("@project_{$project_name}")->project;
-    $environment = (object) $project->environments[d()->environment];
+    $environment = (object) $project->environments[d()->hosting_environment];
 
     // Respect environment settings.
     if ($environment->settings['deploy']['acquia_hooks'] != 1) {
