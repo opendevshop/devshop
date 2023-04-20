@@ -191,7 +191,7 @@ function devshop_projects_preprocess_node(&$vars) {
             ),
           ];
       }
-      elseif ($vars['node']->task_type == 'install' && $vars['node']->environment->hosting_settings['general']['protected']) {
+      elseif ($vars['node']->task_type == 'install' && $vars['node']->task_status != HOSTING_TASK_ERROR && $vars['node']->environment->hosting_settings['general']['protected']) {
         $vars['retry'] = array(
           '#children' => t('Site is protected.'),
           '#type' => 'container',
