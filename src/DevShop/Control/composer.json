@@ -64,7 +64,7 @@
         "drupal/hosting_logs": "^3.181",
         "drupal/hosting_site_backup_manager": "^3.180",
         "drupal/hosting_statsd": "@beta",
-        "drupal/hosting_tasks_extra": "4.x-dev@dev",
+        "drupal/hosting_tasks_extra": "^4.0",
         "drupal/hybridauth": "^2.16",
         "drupal/jquery_update": "^2.7",
         "drupal/libraries": "^2.0",
