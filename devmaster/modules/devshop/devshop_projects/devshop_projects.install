@@ -522,6 +522,6 @@ function devshop_projects_update_7104() {
  * Uninstall devshop_tests module.
  */
 function devshop_projects_update_7105() {
-    module_disable(['devshop_testing']);
-    drupal_uninstall_modules(['devshop_testing']);
+    module_disable(['devshop_testing', 'devshop_dothooks']);
+    drupal_uninstall_modules(['devshop_testing', 'devshop_dothooks']);
 }
