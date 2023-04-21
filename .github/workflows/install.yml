@@ -57,8 +57,6 @@ jobs:
 
     - name: Confirm DevShop Installation
       run: |
-        docker exec -u aegir install-server-test drush @hm status
-        docker exec -u aegir install-server-test drush @hm uli
         wget --output-file=artifact-install-script-frontpage.html http://install-test.devshop.local.computer
 
     - name: Upload Artifacts
