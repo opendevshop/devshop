@@ -62,12 +62,10 @@ dependencies[] = module_filter
 
 ; DevShop
 dependencies[] = devshop_hosting
-dependencies[] = devshop_dothooks
 dependencies[] = devshop_projects
 dependencies[] = devshop_pull
 dependencies[] = devshop_github
 dependencies[] = devshop_bitbucket
-dependencies[] = devshop_testing
 dependencies[] = aegir_ssh
 dependencies[] = aegir_download
 dependencies[] = aegir_update
