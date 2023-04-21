@@ -1,4 +1,4 @@
-name = DevShop Testing
+name = DevShop Testing (DEPRECATED)
 description = Allow simpletests to be run easily on your DevShop projects.
 core = 7.x
 package = DevShop
