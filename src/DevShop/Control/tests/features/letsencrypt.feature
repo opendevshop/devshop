@@ -17,6 +17,7 @@ Feature: DevShop Servers have LetsEncrypt enabled out of the box.
 
     Then I click "Edit"
     Then I select the radio button "Apache"
+    And I select the radio button "None" with the id "edit-services-certificate-type-null"
     And I press "Save"
     Then I should see "SelfSigned"
 
