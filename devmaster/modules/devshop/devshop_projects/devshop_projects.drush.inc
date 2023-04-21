@@ -31,46 +31,6 @@ function drush_devshop_projects_pre_hosting_task()
     $task->options['message'] = $task->task_args['message'];
     $task->options['update'] = $task->task_args['update'];
   }
-
-  // Verify Platform
-  // Here is where we hook in and clone the site
-  // @TODO: This can be removed once hosting_git migration is complete.
-//  if ($task->ref->type == 'platform' && $task->task_type == 'verify' && !empty($task->ref->project->git_url)) {
-//    drush_devshop_platform_verify();
-//   }
-
-  // Pull
-  if ($task->ref->type == 'project' && $task->task_type == 'devshop-pull') {
-    $task->args['environments'] = $task->task_args['environments'];
-    $task->options['update'] = $task->task_args['update'];
-    $task->options['revert'] = !empty($task->task_args['revert']);
-    $task->options['cache'] = $task->task_args['cache'];
-    $task->options['force'] = FALSE;
-  }
-
-  // Deploy
-  if ($task->ref->type == 'site' && $task->task_type == 'devshop-deploy' && !empty($task->args['git_reference'])) {
-
-    // The git_ref is the only argument
-    $task->args['git_ref'] = $task->task_args['git_ref'];
-
-    // Just load in all of the task_args as options(they come from the task form.)
-    if (is_array($task->task_args)) {
-      foreach ($task->task_args as $arg => $value) {
-        $task->options[$arg] = $value;
-      }
-    }
-  }
-
-  // Run tests
-  if ($task->ref->type == 'site' && $task->task_type == 'test') {
-
-    $task->options['tests-to-run'] = $task->task_args['tests_to_run'];
-    $task->options['test-type'] = $task->task_args['test_type'];
-  }
-
-  // On every task triggered by devshop, set this option.
-  $task->options['is-devshop'] = TRUE;
 }
 
 /**
