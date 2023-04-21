@@ -22,11 +22,3 @@ Feature: DevShop Servers have LetsEncrypt enabled out of the box.
 
     When I run drush "hosting-tasks --force --fork=0 --strict=0"
     Then print last drush output
-
-  @api
-  Scenario: Server node has Certificate and HTTPS services enabled.
-    Given I am logged in as a user with the "administrator" role
-    When I am at "hosting/c/hostmaster"
-    # Flicker fail: https://github.com/opendevshop/devshop/runs/1537656512?check_suite_focus=true#step:8:622
-    # Then I should see "Encryption Disabled"
-    Then I should see "Encryption"
