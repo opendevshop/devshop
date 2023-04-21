@@ -55,10 +55,6 @@ jobs:
     - name: Run Install Script
       run: bash .github/workflows/install-sh-test.sh
 
-    - name: Confirm DevShop Installation
-      run: |
-        wget --output-file=artifact-install-script-frontpage.html http://install-test.devshop.local.computer
-
     - name: Upload Artifacts
       uses: actions/upload-artifact@v2
       if: always()
