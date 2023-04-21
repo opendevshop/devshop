@@ -133,7 +133,7 @@ function devshop_projects_node_load($nodes, $types) {
 
       $node->project = devshop_project_load($node);
     }
-    elseif ($node->type == 'site') {
+    elseif ($node->type == 'site' && !empty($node->project)) {
       // For sites without hosting_settings, load from project. 
       if (empty($node->hosting_settings) && !empty($node->project->hosting_settings)) {
         $node->hosting_settings = $node->project->hosting_settings;
