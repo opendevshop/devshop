@@ -297,7 +297,7 @@ function devshop_github_form_site_node_form_alter(&$form, &$form_state, $form_id
     unset($existing_options[t('Branches')][$default_branch]);
 
     $form['git_ref']['#options'] = array_merge($default_branch_option, $pr_options, $existing_options);
-    $form['git_ref']['#default_value'] = $default_branch;
+    $form['git_ref']['#default_value'] = $form['git_ref']['#default_value'] ?? $default_branch;
 
     $form['git_ref']['#element_validate'] = array(
       'devshop_github_form_site_node_form_validate_pr'
@@ -766,7 +766,7 @@ function devshop_github_form_devshop_project_create_step_environments_alter(&$fo
           '#type' => 'value',
           '#value' => $pr,
         );
-        
+
         $form['project']['primary_environment']['#options'][$env_name] = $env_name;
       }
 
@@ -977,9 +977,9 @@ function devshop_github_node_load($nodes, $types) {
   foreach ($nodes as $nid => &$node) {
     if ($node->type == 'project' && $node->project->git_provider == 'github') {
       // Look for a pull request object.
-      $pull_requests = db_query('SELECT prs.*, e.name AS environment_name 
-        FROM {hosting_devshop_github_pull_requests} prs 
-        LEFT JOIN {hosting_devshop_project_environment} e ON prs.site_nid = e.site 
+      $pull_requests = db_query('SELECT prs.*, e.name AS environment_name
+        FROM {hosting_devshop_github_pull_requests} prs
+        LEFT JOIN {hosting_devshop_project_environment} e ON prs.site_nid = e.site
         WHERE project_nid = :project_nid', array(':project_nid' => $nid));
       foreach ($pull_requests as $pull_request) {
         if (!empty($pull_request->pull_request_object)) {

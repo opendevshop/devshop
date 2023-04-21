@@ -28,6 +28,11 @@ function devshop_projects_node_prepare($node) {
     $project = devshop_projects_load_by_name(arg(3));
     $node->hosting_settings = $project->hosting_settings;
     $node->project = $project->project;
+
+    // When cloning an environment, inherit it's settings.
+    if (arg(4) == 'clone' && !empty($project->project->environments[arg(5)])) {
+      $node->hosting_settings = $project->project->environments[arg(5)]->hosting_settings;
+    }
   }
 }
 
@@ -138,6 +143,10 @@ function devshop_projects_node_load($nodes, $types) {
       if (isset($node->environment->drush_alias)) {
         $node->drush_alias = $node->environment->drush_alias;
       }
+
+      // Override hosting_group and hosting_environment.
+      $node->hosting_group = $node->project->name;
+      $node->hosting_environment = $node->environment->name;
     }
   }
 }

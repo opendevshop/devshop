@@ -924,6 +924,32 @@ function devshop_projects_create_environment_form(&$form, &$form_state, $form_id
   $form['platform']['#access'] = FALSE;
   $form['profile']['#access'] = FALSE;
   $form['git']['#access'] = FALSE;
+
+  // Set desired "Clone Source"
+  if (arg(4) == 'clone' && !empty($project->environments[arg(5)])) {
+    $source_env = $project->environments[arg(5)];
+
+    $form['hosting_settings']['install']['method']['#default_value'] = 'clone';
+    $form['hosting_settings']['install']['clone_source']['#default_value'] = $source_env->drush_alias;
+    $form['git_ref']['#default_value'] = $source_env->git_ref;
+
+    drupal_set_title(t('Clone environment !name?', [
+      '!name' => $source_env->name,
+    ]));
+
+    $form['form_title'] = array(
+      '#markup' => t('Clone Environment !link', [
+        '!link' => l($source_env->project_name .'.'. $source_env->name, $source_env->uri, [
+          'attributes' => [
+            '_target' => 'blank',
+          ],
+        ]),
+      ]),
+      '#prefix' => '<h3>',
+      '#suffix' => '</h3>',
+      '#weight' => -1000,
+    );
+  }
 }
 
 /**
