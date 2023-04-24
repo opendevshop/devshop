@@ -94,7 +94,7 @@ function devshop_pull_default_webhook($project_node) {
   foreach ($project->environments as $environment) {
 
     // If "pull disabled" is set, or if the git ref isn't for this environment, don't trigger a deploy.
-    if (empty($environment->hosting_settings['deployment']['methods']['continuous']) || (isset($git_ref) && $git_ref != $environment->git_ref)) {
+    if (empty($environment->hosting_settings['deployment']['continuous']) || (isset($git_ref) && $git_ref != $environment->git_ref)) {
       continue;
     }
 

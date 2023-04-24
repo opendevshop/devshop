@@ -1241,7 +1241,7 @@ function devshop_github_webhook($project_node) {
           if (
 //            @TODO: Improve this. If a site install failed, it shows up as "disabled", so we should still do a git pull.
             $git_ref == $environment->git_ref &&
-            $environment->hosting_settings['deployment']['methods']['continuous'] &&
+            $environment->hosting_settings['deployment']['continuous'] &&
             !in_array($environment->git_ref, $project->settings->git['tags'])
           ) {
             $environments_to_pull[] = $environment->name;

@@ -783,7 +783,7 @@ function devshop_bitbucket_webhook($project_node) {
         foreach ($project->environments as $environment_name => $environment) {
 
           // Only pull if deploy is not disabled or if environment is tracking a tag.
-          if ($git_ref == $environment->git_ref && $environment->hosting_settings['deployment']['methods']['continuous'] && !in_array($environment->git_ref, $project->settings->git['tags'])) {
+          if ($git_ref == $environment->git_ref && $environment->hosting_settings['deployment']['continuous'] && !in_array($environment->git_ref, $project->settings->git['tags'])) {
             $environments_to_pull[] = $environment->name;
 
 
