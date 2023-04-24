@@ -171,6 +171,9 @@ Feature: Create a project and check settings
 
     When I run drush "hosting-tasks --force --fork=0 --strict=0"
 
+    Then I click "Verify Site"
+    When I run drush "hosting-tasks --force --fork=0 --strict=0"
+
     Given I am on "http://composer.standard.devshop.local.computer"
     # Standard profile has "Welcome!" on homepage.
     Then I should see "Welcome!"
