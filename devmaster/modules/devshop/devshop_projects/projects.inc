@@ -159,6 +159,7 @@ function devshop_project_load($node) {
           p.publish_path as root,
           p.publish_path as publish_path,
           p.git_reference as git_ref,
+          p.git_reference as git_reference,
           p.git_remote as git_url,
           p.git_root as repo_path,
           p.git_refs,
@@ -220,6 +221,8 @@ function devshop_project_load($node) {
     // Unserialize environment settings.
     $environment->hosting_settings = $environment->hosting_settings ? unserialize($environment->hosting_settings) : [];
     $environment->settings = (object) unserialize($environment->settings);
+
+    $environment->git_ref_type = hosting_git_ref_type($environment);
 
     // Get last task
 //    $environment->last_task_node = node_load($environment->last_task_nid);
