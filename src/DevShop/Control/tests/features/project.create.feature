@@ -170,6 +170,7 @@ Feature: Create a project and check settings
     Then I should see "Installed with standard"
 
     When I run drush "hosting-tasks --force --fork=0 --strict=0"
+    Then I reload the page
 
     Then I click "Verify Site"
     When I run drush "hosting-tasks --force --fork=0 --strict=0"
