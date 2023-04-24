@@ -100,7 +100,7 @@ function devshop_projects_create_wizard($step = NULL) {
 
     $messages_to_user = [];
     foreach ($messages as $message) {
-      if ($message->type == 'p_info') {
+      if ($message->type == 'p_command_log') {
         $messages_to_user[] = $message->message;
       }
     }

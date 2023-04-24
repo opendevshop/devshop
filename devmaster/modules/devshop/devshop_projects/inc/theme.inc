@@ -574,7 +574,7 @@ function devshop_task_get_messages($task_node) {
         $outputs[$command]['icon'] .= ' fa-spin';
       }
       continue;
-    } elseif ($record->type == 'p_info') {
+    } elseif ($record->type == 'p_command_log') {
       $outputs[$command]['output'] .= $record->message;
       $outputs[$command]['status'] = 'default';
       $outputs[$command]['icon'] = 'gear fa-spin';

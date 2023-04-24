@@ -18,7 +18,7 @@ function drush_aegir_cloud_packet_pre_hosting_task() {
             if (empty($task->ref->ip_addresses)) {
 
                 drush_log('Acquiring IP Addresses', 'p_command');
-                drush_log("Waiting for IP Address...\n", 'p_info');
+                drush_log("Waiting for IP Address...\n", 'p_command_log');
 
                 // Loop until we have an IP address.
                 while (empty($task->ref->ip_addresses)) {
@@ -63,7 +63,7 @@ function drush_aegir_cloud_packet_pre_hosting_task() {
                 if (isset($device->provisioningEvents )) {
                     foreach ($device->provisioningEvents as $event) {
                         if (!empty($event->id) && empty($completed_events[$event->type])) {
-                            drush_log((int) $device->provisioningPercentage . "% | " . $event->body . "\n", 'p_info');
+                            drush_log((int) $device->provisioningPercentage . "% | " . $event->body . "\n", 'p_command_log');
 
                             // Save provider data
                             $task->ref->no_verify = TRUE;
