@@ -746,7 +746,7 @@ class RoboFile extends \Robo\Tasks {
     }
 
     // Uninstall composer vendor code?
-    if (!$this->input()->isInteractive() || $this->confirm("Composer uninstall DevShop Control?")) {
+    if (!$this->input()->isInteractive() || $this->confirm("Composer uninstall DevShop Control?", false)) {
       $this->taskExec("composer uninstall")
         ->dir("src/DevShop/Control")
         ->run();

@@ -64,7 +64,7 @@ function hosting_bitbucket_queue($count) {
  */
 function devshop_bitbucket_create_all_pr_environments($project_node) {
 
-  // Load all PRs from GitHub API
+  // Load all PRs from BitBucket API
   $project = $project_node->project;
   try {
     $list = devshop_bitbucket_client()->repositories()
@@ -95,8 +95,8 @@ function devshop_bitbucket_create_all_pr_environments($project_node) {
     $site_url = url("node/{$environment->site}", array('absolute' => true));
 
     // Get PR ID, if it already has one.
-    if (!empty($environment->bitbucket_pull_request->id)) {
-      $environment_pr_number = $environment->bitbucket_pull_request->id;
+    if (!empty($environment->bitbucket_pull_request->number)) {
+      $environment_pr_number = $environment->bitbucket_pull_request->number;
       $environment_pr_slug = "pr{$environment_pr_number}";
     }
     else {
@@ -216,85 +216,30 @@ function devshop_bitbucket_create_all_pr_environments($project_node) {
 
   }
 
-  // If pull_request_environments_method method set to "_primary", and live_environment is not set,throw an error.
-  if ($project->settings->bitbucket['pull_request_environments_method'] == '_primary' && empty($project->settings->live['live_environment'])) {
-    return drush_set_error("DRUSH_FRAMEWORK_ERROR", 'PR environments set to clone "Primary Environment", but there is none configured. Visit Project Settings > General Settings and choose a Primary Environment.');
-  }
-
-  //  If pull_request_environments_method method set to "_primary", reset 'pull_request_environments_method' to the name of the primary environment.
-  elseif ($project->settings->bitbucket['pull_request_environments_method'] == '_primary' && !empty($project->settings->live['live_environment'])) {
-    $primary_env_name = $project->settings->live['live_environment'];
-    $project->settings->bitbucket['pull_request_environments_method'] = $primary_env_name;
-  }
-
   // Step 2: For all PRS that do not have an environment, create one.
   foreach ($prs_to_create_environments_for as $slug => $pr) {
-    drush_log("Creating environment for PR $pr->number ...", "ok");
-    $branch = $pr->head->ref;
+    drush_log("Creating environment for PR $pr->id ...", "ok");
+    $branch = $pr->source->branch->name;
 
     // If PR has different remote URL, set it.
-    if ($pr->head->repo->fork) {
-      // Try to match project URL scheme
-      if (strpos($project->git_url, 'git://') === 0){
-        $remote_url = $pr->head->repo->git_url;
-      }
-      elseif (strpos($project->git_url, 'git@') === 0){
-        $remote_url = $pr->head->repo->ssh_url;
-      }
-      else {
-        $remote_url = $pr->head->repo->clone_url;
-      }
+    if ($pr->source->repository->full_name != $pr->destination->repository->full_name ) {
+      $remote_url = strtr($project->git_url, [
+        $pr->destination->repository->full_name => $pr->source->repository->full_name,
+      ]);
     }
 
     // If not a fork, use the same git_ref as project.
     else {
-      $remote_url = $project->git_ref;
+      $remote_url = $project->git_url;
     }
 
     // @TODO: Create a "PR Env pattern" setting.
     $environment_name = $slug;
 
-    // If method is "install"...
-    if ($project->settings->bitbucket['pull_request_environments_method'] == 'devshop__bitbucket__install') {
 
-      // Create environment then save PR data.
-      // @TODO: Unify this into one function.
-      $environment = hosting_create_environment($project, $environment_name, $branch, NULL, NULL, 'create', $remote_url);
-      //      DevShopGitHubApi::createDeployment($environment, 'queued');
-      devshop_bitbucket_save_pr_env_data($pr, $environment);
-
-      drush_log("Environment $environment_name created for $project_node->title via installation profile.", "ok");
-    }
-    // If environment exists for "pull_request_environments_method" setting, clone it.
-    elseif (isset($project->environments[$project->settings->bitbucket['pull_request_environments_method']])) {
-      $source_env = $project->settings->bitbucket['pull_request_environments_method'];
-
-      // Create environment then save PR data.
-      // @TODO: Unify this into one function.
-      $environment = hosting_create_environment($project, $environment_name, $branch, $source_env, NULL, 'create', $remote_url);
-
-      //      DevShopGitHubApi::createDeployment($environment, 'queued');
-      devshop_bitbucket_save_pr_env_data($pr, $environment);
-      drush_log("Environment $environment_name created for $project_node->title via cloning $source_env...", "ok");
-
-      // Queue up a "deploy" task so that the same hooks are run post-clone.
-      // @TODO: Decide if a setting is needed to control this behavior.
-      // @TODO: Reduce duplication with the github webhook.
-      // @TODO: Make this a global setting for all "clone" environment installs.
-      drush_log("PR environment scheduled for deployment: $environment->name $environment->git_ref [$site_url]", "ok");
-      hosting_add_task($environment->site, 'deploy', array(
-        'git_ref' => $branch,
-      ));
-
-    }
-    // If environment does not exist, note that error.
-    elseif (!isset($project->environments[$project->settings->bitbucket['pull_request_environments_method']])) {
-      drush_log("No environment found named {$project->settings->bitbucket['pull_request_environments_method']}", "warning");
-    }
-    // If "pull_request_environments_method" is something else, we don't know what to do.
-    else {
-      drush_log("Unknown PR environment creation method: {$project->settings->bitbucket['pull_request_environments_method']}", "warning");
-    }
+    // Create "environment". (site node)
+    $environment = hosting_create_environment($project, $environment_name, $branch, NULL, NULL, 'create', $remote_url);
+    devshop_bitbucket_save_pr_env_data($pr, $environment);
   }
 
   // Process $prs_to_create_environments_for

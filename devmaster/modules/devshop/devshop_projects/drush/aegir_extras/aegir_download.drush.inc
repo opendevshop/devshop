@@ -128,9 +128,9 @@ function aegir_download_drush_pm_post_download($drupal_project, $release) {
 
   $project_name = d()->project;
   $project = (object) d("@project_{$project_name}")->project;
-  $environment = (object) $project->environments[d()->environment];
+  $environment = (object) $project->environments[d()->hosting_environment];
 
-  if (d()->environment && drush_get_option('commit', FALSE)) {
+  if (d()->hosting_environment && drush_get_option('commit', FALSE)) {
     drush_log(dt('[DEVSHOP] Committing new module...'), 'ok');
 
     $message = drush_get_option('message', dt('Committed by DevShop: ') . $drupal_project['name']);

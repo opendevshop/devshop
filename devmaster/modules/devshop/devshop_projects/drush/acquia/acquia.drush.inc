@@ -13,7 +13,7 @@
  */
 function drush_acquia_post_provision_deploy($branch = '') {
 
-  if (d()->type == 'site'){
+  if (d()->type == 'site' && d()->environment_settings && d()->project){
 
     if (empty($branch)) {
       $branch = d()->platform->git_ref;
@@ -21,16 +21,10 @@ function drush_acquia_post_provision_deploy($branch = '') {
 
     $project_name = d()->project;
     $project = (object) d("@project_{$project_name}")->project;
-    $environment = (object) $project->environments[d()->environment];
+    $environment = (object) $project->environments[d()->hosting_environment];
 
     // Respect environment settings.
     if ($environment->settings['deploy']['acquia_hooks'] != 1) {
-      return;
-    }
-
-    // If project has no path to drupal, we know it's not acquia.
-    if ($project->drupal_path != 'docroot') {
-      drush_log('[DEVSHOP] Acquia Cloud skipped.', 'ok');
       return;
     }
 
@@ -38,6 +32,9 @@ function drush_acquia_post_provision_deploy($branch = '') {
     $cloud_hooks_path = $environment->repo_path . '/hooks';
     if (file_exists($cloud_hooks_path)) {
       drush_log('[DEVSHOP] Acquia Cloud Hooks detected...', 'ok');
+    }
+    else {
+      return;
     }
 
     // Collect scripts to run.

@@ -34,9 +34,9 @@ function devshop_project_create_step_environments($form, &$form_state) {
   );
   $form['project'] = array(
     '#tree' => TRUE,
+    '#theme' => 'devshop_projects_create_settings_form',
   );
   $form['project']['environments'] = array(
-    '#theme' => 'devshop_projects_create_settings_form',
     '#tree' => TRUE,
     '#prefix' => '<div id="environments-wrapper">',
     '#suffix' => '</div>',
@@ -87,6 +87,17 @@ function devshop_project_create_step_environments($form, &$form_state) {
     );
   }
   $form['project']['environments']['NEW']['name']['#attributes']['autofocus'] = 'autofocus';
+
+  $environment_options = array_keys($project->environments);
+  $environment_options = array_combine($environment_options,$environment_options);
+
+  $form['project']['primary_environment'] = [
+    '#type' => 'radios',
+    '#title' => t('Primary Environment'),
+    '#options' => $environment_options,
+    '#default_value' => key($environment_options),
+  ];
+
   return $form;
 }
 
@@ -130,6 +141,9 @@ function devshop_project_create_step_environments_validate(&$form, &$form_state)
       }
     }
   }
+
+//  dsm($form_state['values']);
+//  form_set_error('', 'wtf');
 }
 
 ///**
@@ -179,6 +193,10 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
   // Get project and reset properties..
   $project_node = node_load($form_state['values']['nid'], NULL, TRUE);
   $project = $project_node->project;
+  
+  // No more settings form on step 3 page.
+  // $project->hosting_settings += $form_state['values']['hosting_settings'];
+    
   if (isset($form_state['project']->code_path) && empty($project->code_path)) {
     $project->code_path = $form_state['project']->code_path;
   }
@@ -199,19 +217,26 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
     }
 
     $project->environments = $environments;
-    ctools_object_cache_set('project', 'devshop_project', $project);
     $form_state['redirect'] = 'projects/add/environments';
   }
   else {
     foreach ($environments as $name => $environment) {
       $environment = (object) $environment;
       $environment->settings = (object) $environment->settings;
+      $environment->settings->install_method = $form_state['values']['install_method'];
+
       $name = trim($environment->name);
       if (!empty($name)) {
         hosting_create_environment($project, $name, $environment->git_ref, NULL, $environment->settings, 'create', $environment->git_remote, TRUE);
       }
     }
   }
+
+  // Save primary environment.
+  $project->settings->primary_environment = $form_state['values']['project']['primary_environment'];
+
+  ctools_object_cache_set('project', 'devshop_project', $project);
+
 }
 
 /**
@@ -223,7 +248,6 @@ function devshop_project_environment_create_form_element($project, $environment)
 
   $element = array(
     '#tree' => TRUE,
-    '#theme' => 'devshop_projects_settings_table',
   );
 
   // Environment properties

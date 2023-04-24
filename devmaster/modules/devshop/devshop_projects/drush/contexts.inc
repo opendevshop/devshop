@@ -139,12 +139,6 @@ function devshop_projects_hosting_site_context_options(&$task) {
     $task->context_options['environment_settings'] = $task->ref->environment->settings;
     $task->context_options['group'] = $task->ref->project->name;
   }
-
-  // If install task is set to force-reinstall, pass to drush options.
-  if ($task->task_type == 'install' && $task->task_args['force-reinstall']) {
-    $task->options['force-reinstall'] = 1;
-  }
-
 }
 
 /**

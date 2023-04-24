@@ -62,14 +62,19 @@
       <small><a href="http://<?php print $project->settings->live['live_domain']; ?>" target="_blank">http://<?php print $project->settings->live['live_domain']; ?></a></small>
     </li>
     <?php endif; ?>
+    <?php if ($project->hosting_settings['install']['profile']): ?>
     <li>
       <strong>Install Profile</strong>
-      <small><?php print $project->install_profile ?></small>
+      <small><?php print $project->hosting_settings['install']['profile'] ?></small>
     </li>
+    <?php endif; ?>
+
+    <?php if (variable_get('devshop_projects_ui_show_basepath', false)): ?>
     <li data-toggle="tooltip" data-placement="bottom" title="<?php print t('The source code for each environment will be placed into subfolders of this folder.');?>">
       <strong>Base Path</strong>
       <small><?php print $project->code_path ?></small>
     </li>
+    <?php endif; ?>
 
     <!-- Drush Info -->
     <li class="pull-right">
@@ -90,7 +95,7 @@
 
               <!-- Download button -->
               <p>
-                <a href="<?php print $aliases_url; ?>" class="btn btn-primary"><?php print t('Download Alias File'); ?></a> or copy to <code>~/.drush/<?php print $project->name; ?>.aliases.drushrc.php</code>.
+                <a href="<?php print $aliases_url; ?>" class="btn btn-primary"><?php print t('Download Alias File'); ?></a> or copy to <code>~/.drush/sites/<?php print $project->name; ?>.site.yml</code> or in your project codebase at <code>./drush/sites/self.site.yml</code>.
               </p>
 
               <textarea cols="40" rows="10" class='form-control' onlick="this.select()"><?php print $drush_aliases; ?></textarea>

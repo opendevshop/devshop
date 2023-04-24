@@ -23,6 +23,14 @@ include_once('tasks/deploy.inc');
 use Symfony\Component\Yaml\Yaml;
 
 /**
+ * @param $types
+ *
+ */
+function devshop_projects_hosting_context_types_alter(&$types) {
+  $types[] = 'project';
+}
+
+/**
  * Implements hook_init().
  *
  * Adds a css file.
@@ -170,30 +178,16 @@ function devshop_environment_menu_first_items($environment, $tasks) {
     }
 
     $items[] = 'deploy';
-  }
-
-  // Load test task, if it exists
-  if (drupal_valid_path("hosting_confirm/{$environment->site}/site_test")) {
-    $href = "hosting_confirm/{$environment->site}/site_test";
-    $url = url($href, array(
-      'query' => array(
-        'token' => drupal_get_token($user->uid),
-        'redirect' => 'task-page',
-      )
-    ));
-    $title = $tasks['test']['title'];
-    if (isset($tasks['test']['icon'])) {
-      $icon = '<i class="fa fa-' . $tasks['test']['icon'] . '""></i>';
-    }
-    else {
-      $icon = '';
-    }
-    $items[] = <<<HTML
-      <a href="$url">
-            $icon $title
-      </a>
-HTML;
+    $items[] = 'test';
     $items[] = '<div class="divider"></div>';
+    $items[] = 'install';
+    $items[] = 'backup';
+    $items[] = 'disable';
+    $items[] = 'delete';
+    $items[] = '<div class="divider"></div>';
+    $items[] = 'git-branch';
+    $items[] = 'git-tag';
+    $items[] = 'git-commit';
   }
 
   // Add aegir items to items
@@ -225,20 +219,6 @@ HTML;
 //          'html' => TRUE,
 //        )
 //      );
-    }
-
-    // Add disable or delete task based on hosting variable.
-    if (!variable_get('hosting_require_disable_before_delete', TRUE)) {
-      $items[] = 'disable';
-      $items[] = 'delete';
-    } else {
-
-      if ($environment->site_status == HOSTING_SITE_DISABLED) {
-        $items[] = 'enable';
-        $items[] = 'delete';
-      } elseif (empty($environment->settings->locked)) {
-        $items[] = 'disable';
-      }
     }
 
     $items[] = '<div class="divider"></div>';
@@ -785,22 +765,6 @@ function _devshop_projects_project_has_module($node, $module) {
 }
 
 /**
- * Helper to get a project node by name.
- */
-function devshop_load_project_by_name($name) {
-  $nid = db_select('node', 'n')
-    ->fields('n', array('nid'))
-    ->condition('type', 'project')
-    ->condition('title', $name)
-    ->condition('status', 1)
-    ->execute()
-    ->fetchField()
-  ;
-  $node = node_load($nid);
-  return $node;
-}
-
-/**
  * Generate an environment's URL from project and environment name using the domain name pattern.
  *
  * @param $project
@@ -880,4 +844,73 @@ function devshop_public_key_valid_fingerprint($devshop_key = '') {
   }
 
   return $devshop_sshkey['fingerprint'];
+}
+
+/**
+ * Implements hook_hosting_clone_source_options_alter()
+ * @param $options
+ * @param $target
+ *
+ * @return void
+ * @see hosting_site_install_methods_form_element()
+ */
+function devshop_projects_hosting_clone_source_options_alter(&$options, $target) {
+
+  if (!isset($target->project)) {
+    return;
+  }
+
+  // If project has no environments yet.
+  $primary_label = t('Primary Environment');
+
+  // If primary environnment setting is set...
+  if ($target->project->settings->primary_environment ?? FALSE) {
+
+    // and an environment exists by that name...
+    $primary = $target->project->settings->primary_environment;
+    if (isset($target->project->environments[$primary])) {
+      // Set the label to include the site.
+      $primary_alias = $target->project->environments[$primary]->drush_alias;
+      $primary_label = t('Primary Environment: !primary', ['!primary' => $options[$primary_alias]]);
+    }
+    else {
+      // No environment exists with the name set in primary environment. Tell user to check settings.
+      $primary_label = t('Primary Environment: Not found. Check !link', [
+        '!link' => l(t('Project Settings'), "node/{$target->project->nid}/edit", [
+          'query' => drupal_get_destination(),
+        ])
+      ]);
+    }
+  }
+  // Add "Primary" option to list.
+  $options = [
+    '_primary' => $primary_label,
+  ] + $options;
+
+  // Only show sites that are in the same project.
+  foreach ($options as $alias => $label) {
+    if ($alias != '_other' && $alias != '_primary' && !isset($target->project->environment_aliases[$alias])) {
+      unset($options[$alias]);
+    }
+  }
+
+  // Add other aliases to the clone source.
+  if (isset($target->project->settings->aliases)) {
+    foreach ($target->project->settings->aliases as $alias => $data) {
+      $link = l('<i class="fa fa-external-link"></i> ' . $data['uri'], 'http://' . $data['uri'], array(
+          'html' => TRUE,
+          'attributes' => array(
+            'target' => '_blank',
+            'class' => array('btn-text'),
+          ),
+        )) . '</small>';
+      $remote = t('Unknown');
+      $options["@{$target->project->name}.{$alias}"] = "<span>{$alias}</span> <small class='git-ref text-muted'><i class='fa fa-globa'></i> $remote</small> <small>$link</small>";
+    }
+ }
+
+  // Put back _other, on the end.
+  $option_other = $options['_other'];
+  unset($options['_other']);
+  $options['_other'] = $option_other;
 }

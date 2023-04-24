@@ -108,7 +108,7 @@ function devshop_projects_settings_form($form, &$form_state) {
 
   $form['projects']['hosting_require_disable_before_delete'] = array(
     '#prefix' => '<label>' . t('Disabling and Deleting Sites') . '</label>',
-    '#title' => t('Sites must be disabled sites before they can be deleted.'),
+    '#title' => t('Sites must be disabled before they can be deleted.'),
     '#description' => t("If checked, a site must be disabled before it is deleted. <em>Recommended. If not checked, DevShop users can delete any site.</em>"),
     '#type' => 'checkbox',
     '#default_value' => variable_get('hosting_require_disable_before_delete', TRUE),

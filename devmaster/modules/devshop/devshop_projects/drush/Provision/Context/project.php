@@ -4,6 +4,7 @@
  * Class for the platform context.
  */
 class Provision_Context_project extends Provision_Context {
+  public $type = 'project';
   public $parent_key = 'server';
 
   function getEnvironment($name) {

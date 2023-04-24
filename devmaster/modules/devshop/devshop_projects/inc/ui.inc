@@ -40,7 +40,7 @@ function devshop_projects_projects_page($show_inactive = FALSE) {
     $first_environment = current($project->environments);
     if ($first_environment) {
       $platform_node = node_load($first_environment->platform);
-      $version = $platform_node->release->version?: t('unknown');
+      $version = $platform_node->release->version ?? t('unknown');
     }
     else {
       $version = '';
@@ -62,7 +62,7 @@ HTML;
 
       // Live URL
       $live_domain = $project->settings->live['live_domain'];
-      $live_environment = $project->settings->live['live_environment'];
+      $live_environment = $project->settings->primary_environment;
 
       if ($live_domain) {
         $domain = $live_domain;
@@ -91,7 +91,7 @@ HTML;
       $row[] = "<span class='text-muted'><i class='fa fa-drupal'></i>
  $version 
       <br />
-      <small class='install-profile'>$project->install_profile</small>
+      <small class='install-profile'>{$project->hosting_settings['install']['profile']}</small>
 </button>";
 
     // Git URL
@@ -270,7 +270,6 @@ function devshop_environment_menu($environment) {
 
     $items[] = 'verify';
     $items[] = 'flush_cache';
-    $items[] = 'rebuild_registry';
     $items[] = 'run_cron';
     $items[] = 'update';
     $items[] = '<div class="divider"></div>';
@@ -285,7 +284,7 @@ function devshop_environment_menu($environment) {
 
   // Add all actions from hook_devshop_environment_menu()
   foreach ($items as $item) {
-    if (isset($tasks[$item])) {
+      if (isset($tasks[$item])) {
 
       // Special handling for delete/disable/enable
       if ($item == 'disable' || $item == 'enable') {
@@ -315,11 +314,16 @@ function devshop_environment_menu($environment) {
       else {
         $icon = '';
       }
-      $output_items[] = <<<HTML
+
+      // Trick hosting_task_menu_access_csrf() into seeing the token.
+      $_GET['token'] = drupal_get_token($user->uid);
+      if (drupal_valid_path($href)) {
+          $output_items[] = <<<HTML
       <a href="$url">
             $icon $title
       </a>
 HTML;
+      }
     }
     else {
       $output_items[] = $item;
@@ -412,7 +416,7 @@ function devshop_hosting_site_goto_link($node) {
 //  $project = node_load($node->environment->project_nid);
 
   // If this is the live environment, use the live domain.
-  if ($node->environment->name == $node->project->settings->live['live_environment']) {
+  if ($node->environment->name == $node->project->settings->primary_environment) {
     $url = $node->project->settings->live['live_domain'];
   }
   // If environment aliases are enabled
