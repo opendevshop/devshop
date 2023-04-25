@@ -76,8 +76,7 @@ Feature: Create a project and check settings
     # Then print last drush output
     Then drush output should not contain "This task is already running, use --force"
 
-    And I reload the page
-    When I click "dev"
+    Then I am at "hosting/c/composerdevdevshoplocalcomputer"
     Then I click "Verify Site"
     When I run drush "hosting-tasks --force --fork=0 --strict=0"
 
