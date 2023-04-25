@@ -2148,23 +2148,23 @@
         },
         {
             "name": "drupal/drupal",
-            "version": "7.96.0",
+            "version": "7.97.0",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/drupal.git",
-                "reference": "7.96"
+                "reference": "7.97"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/drupal-7.96.zip",
-                "reference": "7.96",
-                "shasum": "66956d147c037d5f016e1d33d52f1b1ca18252cc"
+                "url": "https://ftp.drupal.org/files/projects/drupal-7.97.zip",
+                "reference": "7.97",
+                "shasum": "4749311df12aef4c008f092fddf194818c3b214f"
             },
             "type": "drupal-core",
             "extra": {
                 "drupal": {
-                    "version": "7.96",
-                    "datestamp": "1681926133",
+                    "version": "7.97",
+                    "datestamp": "1682075527",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -7073,16 +7073,16 @@
         },
         {
             "name": "pyrech/composer-changelogs",
-            "version": "v2.0.0",
+            "version": "v2.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pyrech/composer-changelogs.git",
-                "reference": "14b08841efd3ba1d113fd999db5fa0001318c2fc"
+                "reference": "f5ee2ad86dcfcc90b3aa1e3b37e5e2064b348204"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pyrech/composer-changelogs/zipball/14b08841efd3ba1d113fd999db5fa0001318c2fc",
-                "reference": "14b08841efd3ba1d113fd999db5fa0001318c2fc",
+                "url": "https://api.github.com/repos/pyrech/composer-changelogs/zipball/f5ee2ad86dcfcc90b3aa1e3b37e5e2064b348204",
+                "reference": "f5ee2ad86dcfcc90b3aa1e3b37e5e2064b348204",
                 "shasum": ""
             },
             "require": {
@@ -7124,9 +7124,9 @@
             ],
             "support": {
                 "issues": "https://github.com/pyrech/composer-changelogs/issues",
-                "source": "https://github.com/pyrech/composer-changelogs/tree/v2.0.0"
+                "source": "https://github.com/pyrech/composer-changelogs/tree/v2.1.0"
             },
-            "time": "2023-02-04T15:44:22+00:00"
+            "time": "2023-04-21T10:34:02+00:00"
         },
         {
             "name": "ralouphie/getallheaders",
