@@ -8,6 +8,11 @@ devmaster_skip_upgrade: true
 # The default for local development.
 php_version: "8.1"
 
+xdebug_enabled: true
+php_xdebug_remote_enable: true
+php_xdebug_remote_connect_back: true
+php_xdebug_version: "3.2.1"
+
 ## Uncomment to reinstall hostmaster instance on every robo up.
 ## I'm leaving this commented because otherwise it would reinstall every time.
 ## If you want to reinstall on robo up, use `bin/robo up --force-reinstall`

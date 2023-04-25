@@ -100,11 +100,11 @@ function devshop_projects_create_wizard($step = NULL) {
 
     $messages_to_user = [];
     foreach ($messages as $message) {
-      if ($message->type == 'p_info') {
+      if ($message->type == 'p_command_log') {
         $messages_to_user[] = $message->message;
       }
     }
-    $project->verify_error = theme('devshop_ascii', array('output' => implode('\n', $messages_to_user)));
+    $project->verify_error = theme('hosting_ascii', array('output' => implode('\n', $messages_to_user)));
 
 
     // If not on the first step, go to it.
@@ -215,7 +215,11 @@ function devshop_projects_create_wizard_finish(&$form_state) {
 
   $project = &$form_state['project'];
   $project_node = node_load($project->nid);
+  $project_node->hosting_settings = $form_state['values']['hosting_settings'];
 
+  // Save create wizard cache object
+  $project->project = $project;
+  
   // Set to not verify and to publish.
   $project_node->no_verify = TRUE;
   $project_node->status = 1;

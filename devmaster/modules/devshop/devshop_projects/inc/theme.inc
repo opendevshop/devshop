@@ -37,11 +37,6 @@ function devshop_projects_theme() {
       ),
       'template' => 'project-add',
     ),
-    'devshop_ascii' => array(
-      'variables' => array(
-        'output' => '',
-      ),
-    ),
     'devshop_task' => array(
       'variables' => array(
           'task' => NULL,
@@ -93,29 +88,34 @@ function theme_devshop_projects_settings_form($form) {
  * @TODO: Fold into theme_devshop_projects_settings_form()
  */
 function theme_devshop_projects_create_settings_form($vars) {
-
   $form = $vars['form'];
   $rows = array();
   $header = array();
-  foreach (element_children($form) as $env_name) {
+  foreach (element_children($form['environments']) as $env_name) {
     $row = array();
+    $header['primary'] = 'Primary';
     $header['name'] = 'Name';
     $header['git_ref'] = t('Branch/Tag');
 
-    $name_element = $form[$env_name]['name'];
-    $git_ref_element = $form[$env_name]['git_ref'];
-    $settings_element = $form[$env_name]['settings'];
+    $name_element = $form['environments'][$env_name]['name'];
+    $git_ref_element = $form['environments'][$env_name]['git_ref'];
+    $settings_element = $form['environments'][$env_name]['settings'];
 
+    $primary_radio = $form['primary_environment'][$env_name];
+    $primary_radio['#title'] = '';
+    $primary_radio['#attributes']['class'][] = 'pull-right';
+    
+    $row[] = drupal_render($primary_radio);
     $row[] = drupal_render($name_element);
     $row[] = drupal_render($git_ref_element);
 
     foreach (element_children($settings_element) as $setting) {
       if (!isset($header[$setting])) {
-        $header[$setting] = isset($form[$env_name]['settings'][$setting]['#title']) ? $form[$env_name]['settings'][$setting]['#title'] : '';
+        $header[$setting] = isset($form['environments'][$env_name]['settings'][$setting]['#title']) ? $form['environments'][$env_name]['settings'][$setting]['#title'] : '';
       }
-      $form[$env_name]['settings'][$setting]['#title'] = '';
+      $form['environments'][$env_name]['settings'][$setting]['#title'] = '';
 
-      $element = $form[$env_name]['settings'][$setting];
+      $element = $form['environments'][$env_name]['settings'][$setting];
       $row[] = drupal_render($element);
     }
     $rows[] = $row;
@@ -127,7 +127,6 @@ function theme_devshop_projects_create_settings_form($vars) {
           'class' => array('table', 'project-environments-table'),
       )
   ));
-
   return $output;
 }
 
@@ -180,7 +179,7 @@ function devshop_projects_preprocess_node(&$vars) {
       $form = drupal_get_form('hosting_task_retry_form', $vars['node']->nid);
       $vars['retry'] = $form;
 
-      if ($vars['node']->task_type == 'install' && !$vars['node']->environment->settings->locked && ($vars['node']->task_status == HOSTING_TASK_SUCCESS || $vars['node']->task_status == HOSTING_TASK_WARNING)) {
+      if ($vars['node']->task_type == 'install' && !$vars['node']->environment->hosting_settings['general']['protected'] && ($vars['node']->task_status == HOSTING_TASK_SUCCESS || $vars['node']->task_status == HOSTING_TASK_WARNING)) {
           $vars['retry'] = [
             '#type' => 'link',
             '#title' => t('Reinstall'),
@@ -192,7 +191,7 @@ function devshop_projects_preprocess_node(&$vars) {
             ),
           ];
       }
-      elseif ($vars['node']->task_type == 'install' && $vars['node']->environment->settings->locked) {
+      elseif ($vars['node']->task_type == 'install' && $vars['node']->task_status != HOSTING_TASK_ERROR && $vars['node']->environment->hosting_settings['general']['protected']) {
         $vars['retry'] = array(
           '#children' => t('Site is protected.'),
           '#type' => 'container',
@@ -398,8 +397,8 @@ function devshop_projects_preprocess_node_project(&$vars){
     $vars['webhook_ago'] = t('@time ago', array('@time' => $interval));
   }
 
-  if ($project->settings->deploy['method'] == 'queue') {
-    $vars['queued_ago'] = hosting_format_interval(variable_get('hosting_queue_pull_last_run', FALSE));
+  if (!empty($project->settings->deploy['method'])) {
+    $vars['queued_ago'] = hosting_format_interval(variable_get('hosting_queue_git_last_run', FALSE));
   }
 
   // Webhook status output.
@@ -488,11 +487,11 @@ HTML;
 
   // Prepare environments output
   // Render live environment first.
-  if (isset($project->settings->live) && $project->settings->live['live_environment'] && isset($project->environments[$project->settings->live['live_environment']])) {
-    $environments = [$project->environments[$project->settings->live['live_environment']]];
+  if (isset($project->settings->live) && $project->settings->primary_environment && isset($project->environments[$project->settings->primary_environment])) {
+    $environments = [$project->environments[$project->settings->primary_environment]];
 
     $remaining = $vars['node']->project->environments;
-    unset($remaining[$project->settings->live['live_environment']]);
+    unset($remaining[$project->settings->primary_environment]);
     $environments += $remaining;
   }
   else {
@@ -514,15 +513,15 @@ HTML;
     $vars['project_messages'] = $project->messages;
   }
 
-  if (isset($vars['node']->project->settings->deploy['default_hooks']) && !$vars['node']->project->settings->deploy['allow_environment_deploy_config'] && count(array_filter($vars['node']->project->settings->deploy['default_hooks'])) == 0) {
-    $vars['project_messages'][] = array(
-      'message' => t('No deploy hooks are configured for this project. If new code is deployed, you will have to run update.php manually. Check your !link.', array(
-        '!link' => l(t('Project Settings'),"node/{$vars['node']->nid}/edit"),
-      )),
-      'icon' => '<i class="fa fa-exclamation-triangle"></i>',
-      'type' => 'warning',
-    );
-  }
+//  if (isset($vars['node']->project->settings->deploy['default_hooks']) && !$vars['node']->project->settings->deploy['allow_environment_deploy_config'] && count(array_filter($vars['node']->project->settings->deploy['default_hooks'])) == 0) {
+//    $vars['project_messages'][] = array(
+//      'message' => t('No deploy hooks are configured for this project. If new code is deployed, you will have to run update.php manually. Check your !link.', array(
+//        '!link' => l(t('Project Settings'),"node/{$vars['node']->nid}/edit"),
+//      )),
+//      'icon' => '<i class="fa fa-exclamation-triangle"></i>',
+//      'type' => 'warning',
+//    );
+//  }
 
   if (!isset($vars['project_extra_items']) || !is_array($vars['project_extra_items'])) {
     $vars['project_extra_items'] = array();
@@ -575,7 +574,7 @@ function devshop_task_get_messages($task_node) {
         $outputs[$command]['icon'] .= ' fa-spin';
       }
       continue;
-    } elseif ($record->type == 'p_info') {
+    } elseif ($record->type == 'p_command_log') {
       $outputs[$command]['output'] .= $record->message;
       $outputs[$command]['status'] = 'default';
       $outputs[$command]['icon'] = 'gear fa-spin';
@@ -651,7 +650,7 @@ function devshop_task_get_messages($task_node) {
     }
 
     // Convert ASCII to HTML
-    $output = theme('devshop_ascii', array('output' => $data['output']));
+    $output = theme('hosting_ascii', array('output' => $data['output']));
 
     if (!empty($output)) {
       $body = "<div class='panel-body panel-type-{$data['type']} panel-ansii'>$output</div>";
@@ -772,52 +771,13 @@ function template_preprocess_devshop_project_nav(&$vars) {
   }
 
   // Add "refresh branches" link if project is manual deploy mode or is missing a webhook
-  if (isset($project->settings->deploy) && $project->settings->deploy['method'] == 'manual' || empty($project->settings->deploy['last_webhook'])) {
+  if (isset($project->settings->deploy['method']) && $project->settings->deploy['method'] == 'manual' || empty($project->settings->deploy['last_webhook'])) {
     $link_refresh = l(t('Refresh branches'), 'hosting_confirm/' . $node->nid . '/project_verify', array('attributes' => array('class' => array('refresh-link')), 'query' => array('token' => drupal_get_token($user->uid))));
     array_unshift($vars['branches_items'], $link_refresh);
   }
 
   // Scrub git urls
   $vars['safe_git_url'] = scrub_repo_url($project->git_url);
-}
-
-/**
- * Output pretty console themed ASCII.
- *
- * Usage:
- *   theme('devshop_ascii', $string);
- */
-function theme_devshop_ascii($vars) {
-  $string = $vars['output'];
-  if (empty($string)) {
-    return $string;
-  }
-
-  // Prepare ASCII Converter
-  $theme = new SolarizedXTermTheme();
-  $styles = $theme->asCss();
-  $styles .= ".ansi_box { overflow: auto; padding: 10px 15px; font-family: monospace; }";
-
-  drupal_add_html_head("<style>$styles</style>");
-  $converter = new AnsiToHtmlConverter($theme);
-  $output = $converter->convert($string);
-  
-  // Make URLs clickable:
-  $filter = new stdClass();
-  $filter->settings = [
-    'filter_url_length' => 1000,
-  ];
-  $output = _filter_url($output, $filter);
-  
-  // Change linebreaks to <br> tags.
-  $output = strtr($output, array(
-    '\n' => '<br />',
-  ));
-
-  return <<<HTML
-  <pre class="ansi_color_bg_black ansi_color_fg_white ansi_box">$output</pre>
-HTML;
-
 }
 
 /**
@@ -877,6 +837,12 @@ function devshop_projects_preprocess_environment(&$vars) {
   // Look for all available source environments
   foreach ($vars['project']->environments as $source_environment) {
     if ($source_environment->site) {
+      $source_environment->sync_link = url("hosting_confirm/$environment->site/site_sync", [
+        'query' => [
+          'token' => drupal_get_token($user->uid),
+          'source' => $source_environment->site,
+        ]
+      ]);
       $vars['source_environments'][$source_environment->name] = $source_environment;
     }
   }
@@ -910,7 +876,7 @@ function devshop_projects_preprocess_environment(&$vars) {
     $environment->class = 'disabled';
     $environment->list_item_class = 'disabled';
   }
-  elseif ($environment->name == $project->settings->live['live_environment']) {
+  elseif ($environment->name == $project->settings->primary_environment) {
     $environment->class = ' live-environment';
     $environment->list_item_class = 'info';
   }
@@ -951,15 +917,7 @@ function devshop_projects_preprocess_environment(&$vars) {
     //    $text = "<i class='fa fa-{$task->icon}'></i> {$task->type_name} <span class='small'>{$task->status_name}</span> <em class='small pull-right'><i class='fa fa-calendar'></i> {$task->ago}</em>";
     $items[] = theme('devshop_task', array('task' => $task));
   }
-  $environment->task_logs = l('<i class="fa fa-list"></i> ' . t('Task Logs'), "node/$environment->site/tasks", array(
-    'html' => TRUE,
-    'attributes' => array(
-      'class' => array(
-        'list-group-item',
-      ),
-    ),
-  ));
-  $environment->task_logs .= '<div class="tasks-wrapper">' . implode("\n", $items) . '</div>';
+  $environment->task_logs = '<div class="tasks-wrapper">' . implode("\n", $items) . '</div>';
 
   // Set a class showing the environment as active.
   if ($environment->active_tasks > 0) {
@@ -979,10 +937,10 @@ function devshop_projects_preprocess_environment(&$vars) {
   //  }
 
   // No hooks configured.
-  if (isset($project->settings->deploy) && $project->settings->deploy['allow_environment_deploy_config'] && $environment->site_status == HOSTING_SITE_ENABLED && isset($environment->settings->deploy) && count(array_filter($environment->settings->deploy)) == 0) {
+  if (count(array_filter($environment->hosting_settings['deployment']['steps'] ?? [])) == 0) {
     $vars['warnings'][] = array(
-      'text' => t('No deploy hooks are configured. Check !link.', array(
-        '!link' => l(t('Environment Settings'), "node/{$environment->site}/edit"),
+      'text' => t('No Deploy Steps are enabled. Check !link.', array(
+        '!link' => l(t('Settings'), "node/{$environment->site}/edit", ['fragment' => 'edit-hosting-settings-deployment']),
       )),
       'type' => 'warning',
     );
@@ -1251,6 +1209,17 @@ function devshop_projects_preprocess_environment(&$vars) {
   if ($environment->git_url != $project->git_url) {
     $vars['git_origin'] = $environment->git_url;
   }
+
+  $vars['create_git_branch_url'] = url("hosting_confirm/{$environment->site}/site_git-branch", array(
+    'query' => array(
+      'token' => drupal_get_token($user->uid),
+    )
+  ));
+  $vars['create_git_tag_url'] = url("hosting_confirm/{$environment->site}/site_git-tag", array(
+    'query' => array(
+      'token' => drupal_get_token($user->uid),
+    )
+  ));
 }
 
 /**
@@ -1403,7 +1372,7 @@ function devshop_projects_preprocess_page(&$vars){
     }
 
     // For node/%/* pages where node is site or platform, use the environment name as title2
-    if (($vars['node']->type == 'site' || $vars['node']->type == 'platform')&& isset($vars['node']->environment)){
+    if (isset($vars['node']->type) && ($vars['node']->type == 'site' || $vars['node']->type == 'platform')&& isset($vars['node']->environment)){
 
       $vars['title2_url'] = url('node/' . $vars['node']->environment->site);
       $vars['title2'] = l($vars['node']->environment->name, $vars['title2_url']);

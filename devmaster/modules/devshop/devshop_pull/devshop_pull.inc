@@ -94,7 +94,7 @@ function devshop_pull_default_webhook($project_node) {
   foreach ($project->environments as $environment) {
 
     // If "pull disabled" is set, or if the git ref isn't for this environment, don't trigger a deploy.
-    if ($environment->settings->pull_disabled || (isset($git_ref) && $git_ref != $environment->git_ref)) {
+    if (empty($environment->hosting_settings['deployment']['continuous']) || (isset($git_ref) && $git_ref != $environment->git_ref)) {
       continue;
     }
 
@@ -129,34 +129,6 @@ function _devshop_pull_callback_url($node) {
  */
 function _devshop_pull_hash_create($node) {
   return md5($node->title . $node->nid);
-}
-
-/**
- * Prepares a "Pull Code" task for a project.
- *
- * @param $project_nid
- *   A project nid.
- *
- * Platforms in a project must be enabled to have this command run on them.
- */
-function devshop_pull_project($project_nid) {
-
-  $project_node = node_load($project_nid);
-
-  $args = array('environments' => '');
-
-  foreach ($project_node->project->environments as $name => $environment) {
-    if (!$environment->data->pull_disabled) {
-      $args['environments'] .= $environment->name . ' ';
-    }
-  }
-  $args['environments'] = trim($args['environments']);
-  if (!empty($args['environments'])) {
-    hosting_add_task($project_nid, 'devshop-pull', $args);
-  }
-  else {
-    print "No environments configured to pull! Aborting.";
-  }
 }
 
 if (!function_exists('getallheaders')) {

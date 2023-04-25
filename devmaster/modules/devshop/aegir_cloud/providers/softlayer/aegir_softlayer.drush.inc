@@ -21,7 +21,7 @@ function drush_aegir_softlayer_pre_hosting_task() {
             if (empty($task->ref->ip_addresses)) {
 
             drush_log('Acquiring IP Addresses', 'p_command');
-            drush_log("Waiting for IP Address...\n", 'p_info');
+            drush_log("Waiting for IP Address...\n", 'p_command_log');
 
             // Loop until we have an IP address.
             while (empty($task->ref->ip_addresses)) {

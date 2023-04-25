@@ -214,7 +214,7 @@ class InstallDevmaster extends Command
       ->addOption(
         'git_reset', NULL, InputOption::VALUE_OPTIONAL,
         'Reset working changes in the git repository.',
-        FALSE
+        TRUE
       )
 
       // path_to_drush

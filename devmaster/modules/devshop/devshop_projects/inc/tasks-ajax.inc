@@ -45,9 +45,23 @@ function devshop_tasks_json_endpoint($node) {
         ],
       ];
       break;
-      
+
+    case "site":
+      if (!empty($node->environment)) {
+        $tasks = [];
+        foreach ($node->environment->tasks_list as $task) {
+          $task->rendered = theme('devshop_task', array('task' => $task));
+          $tasks[] = $task;
+        }
+
+        $data['environments'][$node->environment->name] = [
+          'name' => 'name',
+          'tasks' => $tasks,
+        ];
+      }
+      break;
   }
-  if ($_GET['debug']) {
+  if (isset($_GET['debug'])) {
     print_r($data);
   }
   print json_encode($data);
