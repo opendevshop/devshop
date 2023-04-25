@@ -101,17 +101,6 @@ function devshop_testing_hosting_tasks() {
 //}
 
 /**
- * Implementation of hook_hosting_task_TASK_TYPE_form().
- *
- * Our parameters are added in devshop_testing_form_alter()
- */
-function hosting_task_test_form($node) {
-// $form = devshop_testing_form_elements($node->project, $node->environment->name);
-  $form = array();
-  return $form;
-}
-
-/**
  * Implements hook_form_alter().
  */
 function devshop_testing_form_alter(&$form, &$form_state, $form_id) {
