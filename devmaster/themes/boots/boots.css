@@ -740,10 +740,6 @@ form > div > fieldset > legend {
 
 }
 
-html.js fieldset.collapsed {
-    height: 2em;
-}
-
 .btn-urls {
   max-width: 63%;
   text-overflow: ellipsis;
