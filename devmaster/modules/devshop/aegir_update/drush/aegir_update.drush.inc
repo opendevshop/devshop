@@ -24,9 +24,10 @@ function aegir_update_drush_command() {
 function drush_aegir_update_provision_update_drupal() {
   drush_errors_on();
 
-    $path = d()->platform->repo_path? d()->platform->repo_path: d()->platform->root;
+    $path = drush_get_option('git_root');
+    $packages = drush_get_option('packages');
     if (file_exists($path . '/composer.json')) {
-      provision_process('composer update', $path);
+      provision_process(drush_get_option('composer_update_command', "composer update --ansi --no-progress") . " " . $packages, $path);
     }
     elseif (drush_drupal_major_version(d()->root) <= 7) {
       provision_backend_invoke(d()->name, 'pm-update');
@@ -41,8 +42,12 @@ function drush_aegir_update_provision_update_drupal() {
  */
 function drush_aegir_update_pre_hosting_task($task) {
   $task = &drush_get_context('HOSTING_TASK');
-  if ($task->task_type == 'update_drupal' && !empty($task->task_args['commit'])) {
-    // Pass the argument provision_git expects.
-    $task->options['commit'] = $task->task_args['commit'];
+  if ($task->task_type == 'update_drupal') {
+    $task->options['packages'] = $task->task_args['packages'];
+    
+    if (!empty($task->task_args['commit'])) {
+      // Pass the argument provision_git expects.
+      $task->options['commit'] = $task->task_args['commit'];
+    }
   }
 }

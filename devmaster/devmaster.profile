@@ -257,9 +257,6 @@ function devmaster_bootstrap() {
 
 function devmaster_task_finalize() {
 
-  // Set composer_autoloader path to vendor.
-  variable_set('composer_autoloader', '../vendor/autoload.php');
-
   // Enable "boots" theme.
   drupal_set_message(st('Enabling "boots" theme'));
   $theme = 'boots';
@@ -322,9 +319,12 @@ function devmaster_task_finalize() {
   // Rebuild node access permissions.
   node_access_rebuild();
 
-  // Disable hosting tasks queue. QueueD will handle it asyncronously now.
-  variable_set('hosting_queue_tasks_enabled', false);
-  variable_set('hosting_queue_git_enabled', false);
+  // Enable hosting tasks queue
+  variable_set('hosting_queue_tasks_enabled', true);
+  variable_set('hosting_queue_git_enabled', true);
+  variable_set('hosting_queue_tasks_items', 15);
+  
+  variable_set('hosting_require_disable_before_delete', false);
 
 }
 

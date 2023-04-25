@@ -6,29 +6,23 @@
 function devshop_project_aliases($project) {
   $output = '<?php
 ';
-
+  $aliases = [];
   foreach ($project->environments as $name => $environment) {
+    $site = node_load($environment->site);
+    $aliases[$name] = [
+      'root' => $environment->root,
+      'uri' => $environment->uri,
+      'host' => $environment->remote_host,
+      'user' => 'aegir',
+      'options' => [
+        'path-aliases' => [
+          '%files' => $site->file_public_path,
+        ]
+      ]
+    ];
 
-    $remote_user = 'aegir';
-    $remote_host = $environment->remote_host;
-    $root = $environment->root;
-    $uri = $environment->uri;
-    $file_path = "sites/{$environment->uri}/files";
-
-    $output .= <<<PHP
-\$aliases['$name'] = array(
-  'root' => '$root',
-  'uri' => '$uri',
-  'remote-user' => '$remote_user',
-  'remote-host' => '$remote_host',
-  'path-aliases' => array(
-    '%files' => '$file_path',
-  ),
-);
-
-PHP;
   }
-
+  $output = \Symfony\Component\Yaml\Yaml::dump($aliases, 8, 2);
   return $output;
 }
 

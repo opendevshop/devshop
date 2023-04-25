@@ -154,32 +154,6 @@ function devshop_bitbucket_form_project_node_form_alter(&$form, &$form_state, $f
       ),
     ),
   );
-
-  // Pull Request Environment method.
-  // $form['bitbucket']['pull_request_environments_method'] = array(
-
-  $environments = array_keys($node->project->environments);
-  $options = array(
-    t('Install Drupal') => array(
-        'devshop__bitbucket__install' => empty($node->project->install_profile)? t('Default install profile.'): $node->project->install_profile,
-    ),
-    t('Clone another environment') => array(),
-  );
-
-  if (empty($environments)) {
-    $options[t('Clone another environment')][] = t('No environments available.');
-  }
-  else {
-    $options[t('Clone another environment')] = array_combine($environments, $environments);
-  }
-  $form['project']['settings']['bitbucket']['pull_request_environments_method'] = array(
-      '#type' => 'select',
-      '#title' => t('Pull Request Environment Creation Method'),
-      '#default_value' => isset($node->project->settings->bitbucket) ?
-          $node->project->settings->bitbucket['pull_request_environments_method'] : 'devshop__bitbucket__install',
-      '#description' => t('Select the method for creating the pull request environments.'),
-      '#options' => $options,
-  );
 }
 
 /**
@@ -535,57 +509,6 @@ function devshop_bitbucket_form_devshop_project_create_step_git_alter(&$form, &$
   }
 }
 
-
-/**
- * Implements hook_form_FORM_ID_alter() for project_node_form().
- */
-function devshop_bitbucket_form_devshop_project_create_step_sites_alter(&$form, &$form_state) {
-//
-//  // Return if project isn't ready.
-//  if (empty($form['install_profile'])) {
-//    return;
-//  }
-//
-//  // Return if there is no bitbucket token
-//  $bitbucket_token = variable_get('devshop_bitbucket_token', '');
-//  if (empty($bitbucket_token)) {
-//    return;
-//  }
-//
-//  // Load project and bitbucket
-//  $project_node = node_load($form['nid']['#value']);
-//  $project = $project_node->project;
-//
-//  // Return if provider is not bitbucket.
-//  if ($project->git_provider != 'bitbucket') {
-//    return;
-//  }
-//
-//  // Return if deploy method is not webhook.
-//  if ($project->settings->deploy['method'] != 'webhook') {
-//    return;
-//  }
-//
-//  $repo = $project->bitbucket_owner . '/' . $project->bitbucket_repo;
-//  $repo_url = "http://bitbucket.com/" . $repo;
-//
-//  $form['bitbucket_webhook'] = array(
-//    '#title' => t('Setup bitbucket Webhook'),
-//    '#description' => t('Leave this box checked to automatically add a webhook to your bitbucket Repository !link.', array(
-//      '!link' => l($repo, $repo_url, array(
-//          'attributes' => array(
-//            'target' => '_blank',
-//          ),
-//      ))
-//    )),
-//    '#type' => 'checkbox',
-//    '#default_value' => 1,
-//  );
-//
-//  $form['#validate'][] = 'devshop_bitbucket_project_create_webhook';
-//  $form['#submit'][] = 'devshop_bitbucket_project_create_webhook';
-}
-
 /**
  * Extra submit hook for last step of project create form.
  */
@@ -779,7 +702,7 @@ function devshop_bitbucket_save_pr_env_data($pr, $environment) {
   try {
     watchdog('devshop_bitbucket', t('Pull Request saved for environment !nid !env.', array(
       '!nid' => $environment->site,
-      '!env' => l($environment->uri, "node/{$info->site_nid}"),
+      '!env' => l($environment->name, "node/{$info->site_nid}"),
     )));
     drupal_write_record('hosting_devshop_bitbucket_pull_requests', $info, $update);
     return TRUE;
@@ -860,14 +783,12 @@ function devshop_bitbucket_webhook($project_node) {
         foreach ($project->environments as $environment_name => $environment) {
 
           // Only pull if deploy is not disabled or if environment is tracking a tag.
-          if ($git_ref == $environment->git_ref && !$environment->settings->pull_disabled && !in_array($environment->git_ref, $project->settings->git['tags'])) {
+          if ($git_ref == $environment->git_ref && $environment->hosting_settings['deployment']['methods']['continuous'] && !in_array($environment->git_ref, $project->settings->git['tags'])) {
             $environments_to_pull[] = $environment->name;
 
 
             // Default args to the environments deploy settings.
             $args = $environment->settings->deploy;
-            $args['git_ref'] = $environment->git_ref;
-
             if (isset($environment->site) && $node = node_load($environment->site)) {
               hosting_add_task($environment->site, 'deploy', $args);
             }
@@ -912,20 +833,7 @@ function devshop_bitbucket_webhook($project_node) {
               }
             }
             else {
-              // If method is "install"...
-              if ($project->settings->bitbucket['pull_request_environments_method'] == 'devshop__bitbucket__install') {
-                hosting_create_environment($project, $environment_name, $branch);
-                $message .= "Environment $environment_name created for $project_node->title via installation profile.\n";
-              }
-              // Otherwise, it is a clone from live.
-              elseif (isset($project->environments[$project->settings->bitbucket['pull_request_environments_method']] )) {
-                $source_env = $project->settings->bitbucket['pull_request_environments_method'];
-                hosting_create_environment($project, $environment_name, $branch, $source_env);
-                $message .= "Environment $environment_name created for $project_node->title via cloning $source_env \n";
-              }
-              else {
-                $message .= 'Unable to determine what to do! Check "Pull Request Environment Method" setting.';
-              }
+              hosting_create_environment($project, $environment_name, $branch);
             }
 //
 //            $owner = $project->bitbucket_owner;
@@ -981,7 +889,7 @@ function devshop_bitbucket_webhook($project_node) {
 //              // @TODO: Once we add "deploy hooks" to "Project Settings: Environment Defaults" we will have to change this.
 //
 //              // If live environment is set to run tests on deploy...
-//              $live_environment = $project->settings->live['live_environment'];
+//              $live_environment = $project->settings->primary_environment;
 //              if ($project->environments[$live_environment]->settings->deploy['test']) {
 //                $params = new stdClass();
 //                $params->state = 'pending';
@@ -1358,6 +1266,9 @@ function devshop_bitbucket_form_devshop_project_create_step_environments_alter(&
       '#type' => 'value',
       '#value' => $pr,
     );
+
+    $form['project']['primary_environment']['#options'][$env_name] = $env_name;
+
   }
 
   // Merge environments fields together to put PRs on top.

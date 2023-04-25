@@ -12,12 +12,22 @@ if [ -z "$self" ]; then
     self="$selfArg"
 fi
 
+dir=$(cd "${self%[/\\]*}" > /dev/null; cd '../scripts' && pwd)
+
+PATH="$PATH:$dir"
+
 usage() {
   echo -n "${scriptName} [OPTION]... [FILE]...
 
 Returns true if local working copy is behind the git remote.
 "
 }
+
+BRANCH_OR_TAG=`git-ref-type`
+if  [ "$BRANCH_OR_TAG" != "branch" ]; then
+  echo "Not on a branch."
+  exit 1
+fi
 
 git fetch
 BEHIND=$(git rev-list HEAD..FETCH_HEAD --count)

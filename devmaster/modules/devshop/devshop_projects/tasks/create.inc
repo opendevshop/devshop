@@ -15,7 +15,7 @@
  * @param $new_environment_branch
  *   What git branch to track. If FALSE, will not fork.
  * @param $source_environment
- *   If desired, the environment to clone. (Copy the database and create a new branch from)
+ *   If desired, the environment to clone. (Copy the database and create a new branch from) Can be the environment name or a full drush alias, as long as it is within the project.
  */
 function hosting_create_environment($project, $new_environment_name, $new_environment_branch = NULL, $source_environment = NULL, $settings = NULL, $action = 'create', $git_remote_url = NULL, $create_site = TRUE) {
   $settings = (object) $settings;
@@ -62,6 +62,12 @@ function hosting_create_environment($project, $new_environment_name, $new_enviro
     $site->name = $user->name;
     $site->client = HOSTING_DEFAULT_CLIENT;
     $site->settings = $settings;
+    
+    // Load defaults from project. 
+    // @TODO: replace "settings" with this.
+    $site->hosting_settings = $project->hosting_settings;
+    
+    $site->profile = $settings->install_method['install_profile'] ?? '';
 
     // Attach a new platform node.
     $site->platform_node = $platform;
@@ -92,6 +98,15 @@ function hosting_create_environment($project, $new_environment_name, $new_enviro
 //    $branch = $new_environment_branch;
 //  }
 
+  // Allow source environment param to be a drush alias.
+  if (strpos($source_environment, '@') === 0) {
+    foreach ($project->environments as $e) {
+      if ($source_environment == $e->system_alias) {
+        $source_environment = $e->name;
+      }
+    }
+  }
+
   // If $source_environment is set, and the environment by that name exists, create a new environment.
   if (isset($project->environments[$source_environment])) {
     $source_environment = $project->environments[$source_environment];
@@ -105,17 +120,15 @@ function hosting_create_environment($project, $new_environment_name, $new_enviro
 
     // We assume since this is a clone, it does not need to be locked, and it should be auto-pulling.
     // Unlock the environment... @TODO: Should this be a project setting?
-    // Make sure pull_disabled isn't on.
-    $environment->settings->locked = 0;
-    $environment->settings->pull_disabled = 0;
+    $environment->hosting_settings['general']['protected'] = 0;
 
     // If the source environment was installed from a profile, we have to change
     // "install_method" so that it installs by cloning the source site, not by
     // the "profile" install_method.
-    if ($source_environment->settings->install_method['method'] == 'profile') {
+    if (!empty($source_environment->settings->install_method['method']) && $source_environment->settings->install_method['method'] == 'profile') {
       $environment->settings->install_method = array(
         'method' => 'clone',
-        'clone_source' => $source_environment->system_alias
+        'clone_source' => $source_environment->drush_alias
       );
     }
     else {
@@ -125,7 +138,7 @@ function hosting_create_environment($project, $new_environment_name, $new_enviro
     }
 
     if ($action == 'fork') {
-      $environment->settings->branch_to_fork = $source_environment->git_ref;
+      $environment->settings->branch_to_fork = $source_environment->git_refence;
     }
   }
   else {
@@ -138,19 +151,9 @@ function hosting_create_environment($project, $new_environment_name, $new_enviro
     // Use settings passed in to this function.
     $environment->settings = $settings;
 
-    // Save profile to install_method.
-    $environment->settings->install_method['method'] = 'profile';
-    $environment->settings->install_method['profile'] = $project->install_profile;
+    // Use install_method from project.
+    $environment->settings->install_method = $project->settings->install_method;
 
-  }
-
-  // Get platform verify task
-  $environment->last_task = 0;
-  if (isset($site->nid)) {
-    $tasks = hosting_get_tasks('rid', $site->nid);
-    if (is_array($tasks)) {
-      $environment->last_task = current($tasks)->nid;
-    }
   }
 
   $environment->project_nid = $project->nid;
