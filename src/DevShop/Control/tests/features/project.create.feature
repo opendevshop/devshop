@@ -76,13 +76,9 @@ Feature: Create a project and check settings
     # Then print last drush output
     Then drush output should not contain "This task is already running, use --force"
 
-    And I reload the page
-    Then I should see the link "dev"
-#    Given I go to "http://dev.composer.devshop.travis"
-#    When I click "Visit Environment"
-
-# @TODO: Fix our site installation.
-#    Then I should see "No front page content has been created yet."
+    Then I am at "hosting/c/composerdevdevshoplocalcomputer"
+    Then I click "Verify Site"
+    When I run drush "hosting-tasks --force --fork=0 --strict=0"
 
     When I click "Create New Environment"
     And I fill in "testenv" for "Environment Name"
@@ -169,6 +165,10 @@ Feature: Create a project and check settings
     Then I press "Create New Environment"
     Then I should see "Installed with standard"
 
+    When I run drush "hosting-tasks --force --fork=0 --strict=0"
+    Then I reload the page
+
+    Then I click "Verify Site"
     When I run drush "hosting-tasks --force --fork=0 --strict=0"
 
     Given I am on "http://composer.standard.devshop.local.computer"
