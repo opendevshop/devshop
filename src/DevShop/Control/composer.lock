@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f847968e0d9f0395ddcceddabd9e2704",
+    "content-hash": "537c973b70482282561146dff86d3ffd",
     "packages": [
         {
             "name": "behat/behat",
@@ -9684,6 +9684,7 @@
         "drupal/hosting": 20,
         "drupal/hosting_filemanager": 20,
         "drupal/hosting_statsd": 10,
+        "drupal/hosting_tasks_extra": 20,
         "drupal/provision": 20
     },
     "prefer-stable": true,

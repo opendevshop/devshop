@@ -178,16 +178,38 @@ function devshop_environment_menu_first_items($environment, $tasks) {
     }
 
     $items[] = 'deploy';
-    $items[] = 'test';
-    $items[] = '<div class="divider"></div>';
-    $items[] = 'install';
     $items[] = 'backup';
     $items[] = 'disable';
     $items[] = 'delete';
+    $items[] = 'install';
     $items[] = '<div class="divider"></div>';
     $items[] = 'git-branch';
     $items[] = 'git-tag';
     $items[] = 'git-commit';
+  }
+
+  // Load test task, if it exists
+  if (drupal_valid_path("hosting_confirm/{$environment->site}/site_test")) {
+    $href = "hosting_confirm/{$environment->site}/site_test";
+    $url = url($href, array(
+      'query' => array(
+        'token' => drupal_get_token($user->uid),
+        'redirect' => 'task-page',
+      )
+    ));
+    $title = $tasks['test']['title'];
+    if (isset($tasks['test']['icon'])) {
+      $icon = '<i class="fa fa-' . $tasks['test']['icon'] . '""></i>';
+    }
+    else {
+      $icon = '';
+    }
+    $items[] = <<<HTML
+      <a href="$url">
+            $icon $title
+      </a>
+HTML;
+    $items[] = '<div class="divider"></div>';
   }
 
   // Add aegir items to items
