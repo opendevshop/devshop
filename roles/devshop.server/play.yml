@@ -11,21 +11,24 @@
   # See https://docs.ansible.com/ansible/latest/user_guide/playbooks_variables.html#variable-precedence-where-should-i-put-a-variable
   vars:
     devshop_server_role: 'devshop.server'
+    devshop_playbook_message: 
+      - "Repo: {{ devshop_cli_repo }}"
+      - "Path: {{ devshop_cli_path }}"
+      - "Version: {{ devshop_version }}"
+      - "CLI Version: {{ devshop_cli_version }}"
+      - "PHP Version: {{ php_version }}"
+      - "Tags: {{ ansible_run_tags }}"
+      - "ansible_nodename: {{ ansible_nodename }}"
+      - "OS: {{ ansible_distribution }} {{ ansible_distribution_version }} / {{ ansible_os_family }}"
+          
 
   vars_files:
     - ../../vars.yml
 
   pre_tasks:
-    - name: "opendevshop.devmaster"
+    - name: "Welcome to the DevShop Playbook."
       debug:
-        msg:
-          - "DevShop.Server playbook starting now..."
-          - "  Repo: {{ devshop_cli_repo }}"
-          - "  Path: {{ devshop_cli_path }}"
-          - "  Version: {{ devshop_version }}"
-          - "  CLI Version: {{ devshop_cli_version }}"
-          - "  PHP Version: {{ php_version }}"
-          - "  Tags: {{ ansible_run_tags }}"
+        msg: "{{ devshop_playbook_message }}"
       tags: [always]
 
     - name: "DevShop Playbook: Runtime"
@@ -128,4 +131,12 @@
 
     # Always run everything. Tags inside the roles will limit tasks run.
     - role: opendevshop.devmaster
+      tags: [always]
+
+
+  post_tasks:
+  
+    - name: "DevShop Playbook Complete!"
+      debug:
+        msg: "{{ devshop_playbook_message }}"
       tags: [always]

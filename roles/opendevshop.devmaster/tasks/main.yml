@@ -292,12 +292,12 @@
 #    dest: '{{ php_cli_ini_path }}'
 #    line: 'date.timezone = America/Chicago'
 #  when: ansible_os_family == "RedHat"
-
-- name: "opendevshop.devmaster"
-  debug:
-    msg:
-      - "Ansible Playbook run complete!"
-      - "  Repo: {{ devshop_cli_repo }}"
-      - "  Path: {{ devshop_cli_path }}"
-      - "  Version: {{ devshop_version }}"
-      - "  CLI Version: {{ devshop_cli_version }}"
+#
+#- name: "opendevshop.devmaster"
+#  debug:
+#    msg:
+#      - "Ansible Playbook run complete!"
+#      - "  Repo: {{ devshop_cli_repo }}"
+#      - "  Path: {{ devshop_cli_path }}"
+#      - "  Version: {{ devshop_version }}"
+#      - "  CLI Version: {{ devshop_cli_version }}"
