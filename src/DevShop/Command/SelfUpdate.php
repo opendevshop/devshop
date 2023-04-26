@@ -2,6 +2,8 @@
 
 namespace DevShop\Command;
 
+use DevShop\Component\Common\GitHubRepositoryAwareTrait;
+use DevShop\Component\Common\GitRepositoryAwareTrait;
 use DevShop\Console\Command;
 
 use Phar;
@@ -29,6 +31,8 @@ use TQ\Vcs\Cli\CallResult;
 
 class SelfUpdate extends Command
 {
+    use GitHubRepositoryAwareTrait;
+    
   // @TODO: We don't have self-update fully working in PHAR mode.
   // The URL of the DevShop Version manifest.  See the gh-pages branch.
   const MANIFEST_FILE = 'http://opendevshop.github.io/devshop/manifest.json';
@@ -117,16 +121,16 @@ EOT
       }
 
       // Bail if there are working copy changes ignoring untracked files, or if repo is ahead.
-      $is_ahead = strpos($this->callGit('status', array('--short', '--branch'))->getStdOut(), 'ahead') !== FALSE;
+      $is_ahead = strpos($this->repository->callGit('status', array('--short', '--branch'))->getStdOut(), 'ahead') !== FALSE;
       $is_dirty = $this->getRepository()->isDirty();
       if  (!$input->getOption('ignore-working-copy-changes') && $is_ahead) {
         $this->IO->block('Your local clone of the DevShop source code has un-pushed commits.', 'WARNING', 'fg=white;bg=yellow', ' ', true);
-        $output->write($this->callGit('status')->getStdOut());
+        $output->write($this->repository->callGit('status')->getStdOut());
         throw new RuntimeException("Cancelling self-update to avoid losing your commits. Run 'git push' to save your commits or use the --ignore-working-copy-changes option to skip this check.");
       }
       elseif (!$input->getOption('ignore-working-copy-changes') && $is_dirty) {
         $this->IO->block('DevShop source code git repository is "dirty".', 'WARNING', 'fg=white;bg=yellow', ' ', true);
-        $output->write($this->callGit('status')->getStdOut());
+        $output->write($this->repository->callGit('status')->getStdOut());
         throw new RuntimeException("There are changes to your working copy at $path. Commit or revert the changes, or use the --ignore-working-copy-changes option to skip this check.");
       }
 
@@ -135,12 +139,12 @@ EOT
         $output->writeln('<comment>Target version is the same as PR Branch. Skipping git checkout.</comment>');
       }
       else {
-        $this->callGit('fetch', array(
+        $this->repository->callGit('fetch', array(
            '--all',
            '--tags',
         ), 'Unable to fetch tags.');
 
-        $this->callGit('checkout', array(
+        $this->repository->callGit('checkout', array(
           $target_version,
         ), sprintf('Checkout of target version "%s" failed.', $target_version));
 
@@ -148,7 +152,7 @@ EOT
         // This is the better than using git pull because it can handle force pushed branches.
         try {
           $this->getRepository()->getCurrentBranch();
-          $this->callGit('reset', array(
+          $this->repository->callGit('reset', array(
             '--hard',
             sprintf('origin/%s', $target_version),
           ), sprintf('Unable to reset working copy to target version "%s".', $target_version));
