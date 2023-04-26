@@ -1,12 +1,12 @@
 #
 # DevShop Role Container Dockerfile Template
 #
-ARG DEVSHOP_CONTAINER_FROM=ubuntu:20.04
+ARG DEVSHOP_CONTAINER_FROM=ubuntu:22.04
 FROM $DEVSHOP_CONTAINER_FROM
 ARG DEVSHOP_CONTAINER_FROM
 
 LABEL maintainer="Jon Pugh"
-RUN echo "Building container from Dockerfile.ubuntu2004, from $DEVSHOP_CONTAINER_FROM ..."
+RUN echo "Building container from Dockerfile.ubuntu2204, from $DEVSHOP_CONTAINER_FROM ..."
 
 ARG DEBIAN_FRONTEND=noninteractive
 
