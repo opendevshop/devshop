@@ -21,18 +21,20 @@
     }
   ],
   "require": {
-    "cpliakas/git-wrapper": "~1.0",
-    "knplabs/github-api": "^3.8",
-    "php-http/guzzle7-adapter": "^1.1",
+    "bitbucket/client": "^4.1",
+    "guzzlehttp/guzzle": "^6",
+    "knplabs/github-api": "^3.9||^1.0",
     "sensiolabs/ansi-to-html": "^1.1",
-    "symfony/process": "^3.4",
-    "symfony/yaml": "^3.4",
+    "symfony/yaml": "^4.4",
     "toin0u/digitalocean-v2": "^2.3"
   },
   "minimum-stability": "dev",
   "prefer-stable": true,
   "config": {
-    "sort-packages": true
+    "sort-packages": true,
+    "platform": {
+      "php": "7.4.0"
+    }
   },
   "extra": {
     "installer-paths": {

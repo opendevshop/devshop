@@ -11,7 +11,9 @@
   # See https://docs.ansible.com/ansible/latest/user_guide/playbooks_variables.html#variable-precedence-where-should-i-put-a-variable
   vars:
     devshop_server_role: 'devshop.server'
-    php_version: "7.4"
+
+  vars_files:
+    - ../../vars.yml
 
   pre_tasks:
     - name: "opendevshop.devmaster"
@@ -23,7 +25,25 @@
           - "  Version: {{ devshop_version }}"
           - "  CLI Version: {{ devshop_cli_version }}"
           - "  PHP Version: {{ php_version }}"
+          - "  Tags: {{ ansible_run_tags }}"
       tags: [always]
+
+    - name: "DevShop Playbook: Runtime"
+      when:
+        - "'runtime' in ansible_run_tags"
+      debug:
+        msg: |
+          Tag "runtime" detected.
+      tags: [always]
+
+    - name: "DevShop Playbook: Buildtime"
+      when:
+        - "'buildtime' in ansible_run_tags"
+      debug:
+        msg: |
+          Tag "buildtime" detected.
+      tags: [always]
+
 
     - name: Set all Debian systems to use python3 as the interpretor, and python3-mysqldb for mysql_python_package_debian.
       when:
@@ -31,6 +51,7 @@
       set_fact:
         mysql_python_package_debian: python3-mysqldb
         ansible_python_interpreter: python3
+      tags: [always]
 
     - name: Set build time variables
       set_fact:
@@ -38,6 +59,7 @@
         mysql_enabled_on_startup: false
       when:
         - ('runtime' not in ansible_run_tags)
+      tags: [always]
 
     # Copied from geerlingguy.mysql variables.yml so it will run at runtime.
     - name: Include OS-specific variables.
@@ -73,31 +95,36 @@
       tags: [always]
 
     - role: geerlingguy.mysql
-      tags: [always]
+      tags: [buildtime]
 
     - role: geerlingguy.repo-remi
       when: ansible_os_family == 'RedHat'
+      tags: [buildtime]
 
     - role: geerlingguy.apache
-      tags: [always]
+      tags: [buildtime]
 
     - role: geerlingguy.php-versions
-      tags: [always]
+      tags: [buildtime]
 
     - role: geerlingguy.php
-      tags: [always]
+      tags: [buildtime]
+
+    - role: geerlingguy.php-xdebug
+      when: xdebug_enabled | default(false)
+      tags: [buildtime]
 
     - role: geerlingguy.php-mysql
-      tags: [always]
+      tags: [buildtime]
 
     - role: geerlingguy.composer
-      tags: [always]
+      tags: [buildtime]
 
     - role: geerlingguy.supervisor
-      tags: [always]
+      tags: [buildtime]
 
     - role: opendevshop.apache
-      tags: [always]
+      tags: [buildtime]
 
     # Always run everything. Tags inside the roles will limit tasks run.
     - role: opendevshop.devmaster

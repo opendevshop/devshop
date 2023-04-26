@@ -5,6 +5,7 @@
  */
 function devshop_pull_callback($project_hosting_context, $hash) {
 
+  module_load_include('module', 'hosting_git');
   module_load_include('inc', 'hosting_git_pull', 'hosting_git_pull.webhook');
 
   // Load the project node & list of allowed IPs
@@ -22,11 +23,11 @@ function devshop_pull_callback($project_hosting_context, $hash) {
     $status = DEVSHOP_PULL_STATUS_INVALID_CODE;
   }
   // Make sure the project has pull callback enabled
-  if ($deploy_settings['method'] != 'webhook') {
+  if (empty($deploy_settings['webhooks'])) {
     $message = "Project not configured to use webhook deployment.";
   }
   // Make sure the client's IP address is on the list
-  else if (!hosting_git_pull_webhook_ip_access()) {
+  elseif (!devshop_pull_webhook_ip_access()) {
     $message = ip_address() . " is not authorized to invoke a webhook request.";
     $status = DEVSHOP_PULL_STATUS_ACCESS_DENIED;
   }
@@ -93,7 +94,7 @@ function devshop_pull_default_webhook($project_node) {
   foreach ($project->environments as $environment) {
 
     // If "pull disabled" is set, or if the git ref isn't for this environment, don't trigger a deploy.
-    if ($environment->settings->pull_disabled || (isset($git_ref) && $git_ref != $environment->git_ref)) {
+    if (empty($environment->hosting_settings['deployment']['continuous']) || (isset($git_ref) && $git_ref != $environment->git_ref)) {
       continue;
     }
 
@@ -113,31 +114,6 @@ function devshop_pull_default_webhook($project_node) {
 }
 
 /**
- * Check whether a given ip address matches a list of allowed ip addresses, some of which
- * may be CIDR.
- *
- * @param $ip
- *   The ip addy to test.
- * @param $list
- *   The list to test against.
- */
-function devshop_pull_ip_match($ip, $list) {
-  foreach ($list as $cidr) {
-    if (trim($ip) === trim($cidr)) {
-      return TRUE;
-    }
-    @list($net, $mask) = explode('/', trim($cidr));
-    if (isset($mask)) {
-      $bitmask = ~((1 << (32 - $mask)) - 1);
-      if ((ip2long($net) & $bitmask) == (ip2long($ip) & $bitmask)) {
-        return TRUE;
-      }
-    }
-  }
-  return FALSE;
-}
-
-/**
  * Create the full URL that is displayed in the project node view
  * and given to the GitHub WebHook to invoke a pull after a commit.
  */
@@ -153,34 +129,6 @@ function _devshop_pull_callback_url($node) {
  */
 function _devshop_pull_hash_create($node) {
   return md5($node->title . $node->nid);
-}
-
-/**
- * Prepares a "Pull Code" task for a project.
- *
- * @param $project_nid
- *   A project nid.
- *
- * Platforms in a project must be enabled to have this command run on them.
- */
-function devshop_pull_project($project_nid) {
-
-  $project_node = node_load($project_nid);
-
-  $args = array('environments' => '');
-
-  foreach ($project_node->project->environments as $name => $environment) {
-    if (!$environment->data->pull_disabled) {
-      $args['environments'] .= $environment->name . ' ';
-    }
-  }
-  $args['environments'] = trim($args['environments']);
-  if (!empty($args['environments'])) {
-    hosting_add_task($project_nid, 'devshop-pull', $args);
-  }
-  else {
-    print "No environments configured to pull! Aborting.";
-  }
 }
 
 if (!function_exists('getallheaders')) {

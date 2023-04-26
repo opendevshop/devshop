@@ -180,14 +180,14 @@
 
     <div class="environment-header list-group-item list-group-item-<?php print $environment->list_item_class ?>">
 
-      <?php  if (isset($environment->github_pull_request)): ?>
-        <img src="<?php print $environment->github_pull_request->pull_request_object->user->avatar_url ?>" width="32" height="32" class="environment-avatar">
+      <?php  if (isset($environment->image)): ?>
+        <img src="<?php print $environment->image ?>" width="32" height="32" class="environment-avatar">
       <?php endif; ?>
 
       <!-- Environment Name -->
         <a href="<?php print $environment->site? url("node/$environment->site"): url("node/$environment->platform"); ?>" class="environment-link" title="<?php print t('Environment: ') . $environment->name; ?>">
 
-          <?php if ($environment->name == $project->settings->live['live_environment']): ?>
+          <?php if ($environment->name == $project->settings->primary_environment): ?>
             <i class="fa fa-bolt" title="<?php print t('Primary Environment'); ?>"></i>
           <?php endif; ?>
 
@@ -196,34 +196,15 @@
 
       <div class="environment-status">
 
-      <?php
-      // If we detect a currently running deploy...
-      if (isset($environment->tasks['deploy'])):
-        $task = current($environment->tasks['deploy']);
-
-        if (($environment->git_ref != $task->task_args['git_ref'] || $environment->git_ref != $environment->git_ref_stored) && ($task->task_status == HOSTING_TASK_QUEUED || $task->task_status == HOSTING_TASK_PROCESSING)): ?>
-        <span title="<?php print t('Deploying from @source to @target...', array('@source' => $environment->git_ref, '@target' => $task->task_args['git_ref'])); ?>">
-          <a href="<?php print $environment->git_ref_url; ?>" class="environment-meta-data environment-git-ref btn btn-text" target="_blank"  title="<?php print t('Current actual git ref.'); ?>">
-            <i class='fa fa-<?php print $environment->git_ref_type == 'tag'? 'tag': 'code-fork'; ?>'></i><?php print (!empty($environment->git_ref_stored)? $environment->git_ref_stored: $environment->git_ref); ?>
-          </a>
-          <i class="fa fa-caret-right text-muted small"></i>
-          <a href="<?php print $environment->git_ref_url; ?>" class="environment-meta-data environment-git-ref btn btn-text" target="_blank"  title="<?php print t('Desired git ref.'); ?>">
-          <i class='fa fa-<?php print $project->settings->git['refs'][$task->task_args['git_ref']] == 'tag'? 'tag': 'code-fork'; ?>'></i><?php print $task->task_args['git_ref']; ?>
-          </a>
-          </span>
-
-          <?php else: ?>
-            <a href="<?php print $environment->git_ref_url; ?>" class="environment-meta-data environment-git-ref btn btn-text" target="_blank" title="<?php print t('Git !type: ', array('!type' => $environment->git_ref_type)) . $environment->git_ref; ?>">
-            <i class='fa fa-<?php print $environment->git_ref_type == 'tag'? 'tag': 'code-fork'; ?>'></i><?php print $environment->git_ref; ?>
+        <?php if (isset($environment->hosting_settings['general']['protected']) && $environment->hosting_settings['general']['protected']): ?>
+          <a class="environment-meta-data btn btn-text" title="<?php print t('This site is protected.'); ?>">
+            <i class="fa fa-lock"></i><?php print t('Protected') ?>
           </a>
         <?php endif; ?>
 
-      <?php else: ?>
         <a href="<?php print $environment->git_ref_url; ?>" class="environment-meta-data environment-git-ref btn btn-text" target="_blank" title="<?php print t('Git !type: ', array('!type' => $environment->git_ref_type)) . $environment->git_ref; ?>">
           <i class='fa fa-<?php print $environment->git_ref_type == 'tag'? 'tag': 'code-fork'; ?>'></i><?php print $environment->git_ref; ?>
         </a>
-      <?php endif; ?>
-
 
         <?php if ($environment->version): ?>
             <a href="<?php print url("node/$environment->platform"); ?>"  title="Drupal version <?php print $environment->version; ?>" class="environment-meta-data environment-drupal-version btn btn-text">
@@ -235,10 +216,8 @@
             <a class="environment-meta-data btn btn-text">Disabled</a>
         <?php endif; ?>
 
-        <?php if (isset($environment->settings->locked) && $environment->settings->locked): ?>
-            <a class="environment-meta-data btn btn-text" title="<?php print t('This database is locked.'); ?>">
-          <i class="fa fa-lock"></i><?php print t('Locked') ?>
-        </a>
+        <?php if ($environment->site_status == HOSTING_SITE_DELETED): ?>
+            <a class="environment-meta-data btn btn-text">Deleted</a>
         <?php endif; ?>
 
         <?php if (drupal_valid_path("node/{$environment->site}/errors")): ?>
@@ -421,13 +400,13 @@
                                 <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu btn-git-ref" role="menu">
-                              <?php if (user_access('create platform git-checkout task') || user_access('create platform git-tag task')): ?>
+                              <?php if (user_access('create site git-branch task') || user_access('create site git-tag task')): ?>
                                 <li class="create-git-ref"><label><?php print t('Create'); ?>
-                              <?php if (user_access('create platform git-checkout task')): ?>
-                                  <a href="/hosting_confirm/<?php print $environment->platform ?>/platform_git-checkout?create=1" class="btn btn-sm"><i class="fa fa-code-fork"></i> <?php print t('Branch'); ?></a>
+                              <?php if (user_access('create site git-branch task')): ?>
+                                  <a href="<?php print $create_git_branch_url ?>" class="btn btn-sm"><i class="fa fa-code-fork"></i> <?php print t('Branch'); ?></a>
                               <?php endif; ?>
-                              <?php if (user_access('create platform git-tag task')): ?>
-                                <a href="/hosting_confirm/<?php print $environment->platform ?>/platform_git-tag" class="btn btn-sm"><i class="fa fa-tag"></i> <?php print t('Tag'); ?></a>
+                              <?php if (user_access('create site git-tag task')): ?>
+                                <a href="<?php print $create_git_tag_url ?>" class="btn btn-sm"><i class="fa fa-tag"></i> <?php print t('Tag'); ?></a>
                               <?php endif; ?>
                                   </label></li>
                               <?php endif; ?>
@@ -453,18 +432,18 @@
                                 <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu" role="menu">
-                                <?php if (isset($environment->settings->locked) && $environment->settings->locked): ?>
+                                <?php if (isset($environment->hosting_settings['general']['protected']) && $environment->hosting_settings['general']['protected']): ?>
                                     <li><label><?php print t('This environment is locked. You cannot deploy data here.'); ?></label></li>
                                 <?php elseif (count($source_environments) == 0): ?>
                                     <li><label><?php print t('No other environments available.'); ?></label></li>
                                 <?php else: ?>
-                                    <li><label><?php print t('Deploy data from'); ?></label></li>
+                                    <li><label><?php print t('Sync data from'); ?></label></li>
                                     <?php foreach ($source_environments as $source): ?>
                                         <?php if ($source->name == $environment->name) continue; ?>
-                                        <li><a href="/hosting_confirm/<?php print $environment->site ?>/site_sync/?source=<?php print $source->site ?>">
-                                                <?php if ($project->settings->live['live_environment'] == $source->name): ?>
+                                        <li><a href="<?php print $source->sync_link ?>">
+                                                <?php if ($project->settings->primary_environment == $source->name): ?>
                                                     <i class="fa fa-bolt deploy-db-indicator"></i>
-                                                <?php elseif (isset($source->settings->locked) && $source->settings->locked): ?>
+                                                <?php elseif (isset($source->hosting_settings['general']['protected']) && $source->hosting_settings['general']['protected']): ?>
                                                     <i class="fa fa-lock deploy-db-indicator"></i>
                                                 <?php endif; ?>
 
@@ -670,12 +649,13 @@ sites/all/drush/drushrc.php
                     </a>
                     <?php endif; ?>
                   </div>
-                  <?php print t('Below is the current git status of the codebase at <code>@path</code>', array('@path' => $environment->repo_path)); ?>
+                  <?php print t('Git status of the codebase at <code>@path</code> as of @ago ago.', array(
+                          '@path' => $environment->repo_path,
+                          '@ago' => format_interval(time() - $environment->verified),
+                  )); ?>
                 </div>
 
-                <?php print theme('devshop_ascii', array('output' => $environment->git_commit)); ?>
-                <?php print theme('devshop_ascii', array('output' => $environment->git_status)); ?>
-                <?php print theme('devshop_ascii', array('output' => $environment->git_diff)); ?>
+                <?php print theme('hosting_ascii', array('output' => $environment->git_status)); ?>
 
                 <p>
                   <?php print $note; ?>

@@ -61,21 +61,21 @@ function devshop_github_install() {
       if (devshop_github_token_is_valid($token)) {
         variable_set('devshop_github_token', $token);
         drupal_set_message(t('GitHub token was found and saved. Visit !link to check settings.', array(
-            '!link' => l(t('the settings page'), 'admin/devshop'),
+            '!link' => l(t('the settings page'), 'admin/hosting'),
         )));
 
         devshop_github_refresh_repositories();
       }
       else {
         drupal_set_message(t('GitHub token was found but invalid. Visit !link to set a new token.', array(
-            '!link' => l(t('the settings page'), 'admin/devshop'),
+            '!link' => l(t('the settings page'), 'admin/hosting'),
         )), 'warning');
       }
     }
     else {
       // Display a message about setting a github personal token.
       drupal_set_message(t('DevShop GitHub module has been enabled.  You must add an access token to enable full functionality at !link.', array(
-          '!link' => l(t('the settings page'), 'admin/devshop'),
+          '!link' => l(t('the settings page'), 'admin/hosting'),
       )));
     }
 }

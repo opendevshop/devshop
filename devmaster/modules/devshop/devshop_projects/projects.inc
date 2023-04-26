@@ -34,12 +34,13 @@ function devshop_projects_entity_load($entities, $type) {
         }
 
         $query = db_query("
-SELECT
-  project_nid, name, n.title as project_name FROM {hosting_devshop_project_environment} e
+SELECT project_nid, site, name as environment, n.title as project_name 
+  FROM {hosting_devshop_project_environment} e
+  LEFT JOIN {hosting_site} s ON s.nid = e.site
   LEFT JOIN {node} n ON e.project_nid = n.nid
   WHERE site  = :site
-    OR platform = :platform
     OR project_nid = :project
+    OR s.platform = :platform
 ", array(
           ':site' => $nid,
           ':platform' => $nid,
@@ -52,13 +53,13 @@ SELECT
         if ($entity->type == 'task' && !empty($result)) {
           $entity->project = $result->project_nid;
           $entity->project_name = $result->project_name;
-          $entity->environment = $result->name;
+          $entity->environment = $result->environment;
         }
         else if (isset($result->project_nid)) {
           $project_node = node_load($result->project_nid);
           if (!empty($project_node->project)) {
-            if (isset($project_node->project->environments[$result->name])) {
-              $entity->environment = $project_node->project->environments[$result->name];
+            if (isset($project_node->project->environment_nids[$result->site])) {
+              $entity->environment = $project_node->project->environment_nids[$result->site];
             }
             $entity->project = $project_node->project;
           }
@@ -91,7 +92,12 @@ function devshop_project_load($node) {
   // Load up all project settings.
   $project->name = $node->project_name;
   $project->settings = (object) unserialize($project->settings);
+  
+  // Load hosting.module core property into project object so all other things can load it.
+  $project->hosting_settings = $node->hosting_settings;
 
+  // Set install_profile.
+  $project->install_profile = $project->settings->install_method['install_profile'] ?? '';
 
   // Create "refs" array to determine ref type.
   $project->settings->git['refs'] = array();
@@ -104,7 +110,8 @@ function devshop_project_load($node) {
   }
 
   // Git Repo Host
-  if (strpos($project->git_url, 'github.com') !== FALSE) {
+  // @TODO: Allow other github URLs (ie for enterprise)
+  if (isset($project->git_url) && strpos($project->git_url, 'github.com') !== FALSE) {
     $project->git_provider = 'github';
     $project->git_repo_url = strtr($project->git_url, array(
       'git@github.com:' => 'http://github.com/',
@@ -118,13 +125,18 @@ function devshop_project_load($node) {
     $project->github_repo = $parts[2];
 
   }
-  elseif (strpos($project->git_url, variable_get('bitbucket_repo_url_trigger_word', 'bitbucket.org')) !== FALSE) {
+  elseif (isset($project->git_url) && strpos($project->git_url, 'bitbucket.org') !== FALSE) {
     $project->git_provider = 'bitbucket';
     $project->git_repo_url = strtr($project->git_url, array(
-      'git@bitbucket.com:' => 'http://bitbucket',
+      'git@bitbucket.org:' => 'http://bitbucket.org/',
       'git://' => 'http://',
       '.git' => '',
     ));
+    $parts = explode('/', parse_url($project->git_repo_url, PHP_URL_PATH));
+    if ($parts[1] && $parts[2]) {
+      $project->bitbucket_owner = $parts[1];
+      $project->bitbucket_repo = $parts[2];
+    }
   }
   else {
     $project->git_provider = 'git';
@@ -138,15 +150,22 @@ function devshop_project_load($node) {
       SELECT
           e.*,
           s.status as site_status,
+          s.verified as verified,
           p.status as platform_status,
           p.nid as platform,
           cp.name as platform_context,
           cs.name as site_context,
+          cs.settings as hosting_settings,
           p.publish_path as root,
           p.publish_path as publish_path,
           p.git_reference as git_ref,
+          p.git_reference as git_reference,
           p.git_remote as git_url,
           p.git_root as repo_path,
+          p.git_refs,
+          p.git_sha,
+          p.git_last,
+          p.git_status,
           http.title as remote_host,
           sn.title as uri,
           http.title as web_server,
@@ -154,18 +173,17 @@ function devshop_project_load($node) {
           db.title as db_server,
           db.nid as db_server_nid,
           s.db_name,
-          s.profile as install_profile,
+          s.profile,
           pn.title as project_name,
           sn.created as created,
           s.vid,
           sn.title as system_domain,
-          a.redirection as redirect_domain,
-          e.last_task as last_task_nid
+          a.redirection as redirect_domain
         FROM {hosting_devshop_project_environment} e
         LEFT JOIN {hosting_site} s ON e.site = s.nid
         LEFT JOIN {hosting_context} cs ON s.nid = cs.nid
         LEFT JOIN {node} sn ON s.vid = sn.vid
-        LEFT JOIN {hosting_platform} p ON s.platform = p.nid OR e.platform = p.nid
+        LEFT JOIN {hosting_platform} p ON s.platform = p.nid
         LEFT JOIN {hosting_context} cp ON p.nid = cp.nid
         LEFT JOIN {node} http ON p.web_server = http.nid
         LEFT JOIN {node} db ON s.db_server = db.nid
@@ -173,22 +191,23 @@ function devshop_project_load($node) {
         LEFT JOIN {hosting_site_alias} a ON a.vid = s.vid
         WHERE project_nid = :nid 
           AND e.name != ''
-          AND (
-            s.status IN (:site_status)
-            OR s.verified = 0 
-            OR s.nid IS NULL
-          ) 
+          AND s.status IN (:site_status)
         ORDER BY
-          name;   ", array(
+          name, sn.created DESC;   ", array(
     ':nid' => $node->nid,
 
     // Query includes sites that are either enabled, disabled, queued, unverified, or have no site NID.
     ':site_status' => [
       HOSTING_SITE_DISABLED,
       HOSTING_SITE_QUEUED,
-      HOSTING_SITE_ENABLED
+      HOSTING_SITE_ENABLED,
+      HOSTING_SITE_DELETED
     ]
   ));
+  $environments = [];
+  $environment_nids = [];
+  $environment_aliases = [];
+  $deleted_environments = [];
   foreach ($environment_data as $environment) {
 
     // Site dashboard URL.
@@ -200,22 +219,29 @@ function devshop_project_load($node) {
     $environment->drush_alias = "@{$project->name}.{$environment->name}";
 
     // Unserialize environment settings.
+    $environment->hosting_settings = $environment->hosting_settings ? unserialize($environment->hosting_settings) : [];
     $environment->settings = (object) unserialize($environment->settings);
 
+    $environment->git_ref_type = hosting_git_ref_type($environment);
+
     // Get last task
-    $environment->last_task_node = node_load($environment->last_task_nid);
+//    $environment->last_task_node = node_load($environment->last_task_nid);
 
     // Get all tasks, keyed by type.
     $environment->tasks = devshop_get_tasks($environment);
 
     // Create tasks list, keyed by VID
-    $environment->tasks_list = array();
+    $tasks_list = array();
     foreach ($environment->tasks as $task_type => $tasks) {
-      foreach ($tasks as $task) {
-        $environment->tasks_list[$task->nid] = $task;
+      foreach ($tasks as $task_nid => $task) {
+        $tasks_list[$task_nid] = $task;
       }
     }
-    krsort($environment->tasks_list);
+    krsort($tasks_list);
+
+    $environment->tasks_list = $tasks_list;
+    reset($environment->tasks_list);
+    $environment->last_task_node = current($environment->tasks_list);
 
     // The URL that the branch or tag links to.
     if ($project->git_provider == 'github') {
@@ -248,6 +274,7 @@ function devshop_project_load($node) {
     else {
       $environment->version = t('unknown');
     }
+    $environment->version = '';
 
     // @TODO: Make "servers" more abstract so we can add many more.
     // HTTP Server
@@ -328,36 +355,36 @@ function devshop_project_load($node) {
     // System Alias
     $environment->system_alias = '@' . $environment->system_domain;
 
-    // If per-environment hooks config is not allowed, load it from the project.
-    if (isset($project->settings->deploy) && !$project->settings->deploy['allow_environment_deploy_config']) {
-      $environment->settings->deploy = $project->settings->deploy['default_hooks'];
-    }
+//    // If per-environment hooks config is not allowed, load it from the project.
+//    if (isset($project->settings->deploy) && !$project->settings->deploy['allow_environment_deploy_config']) {
+//      $environment->settings->deploy = $project->settings->deploy['default_hooks'];
+//    }
 
-    // Load Install Method and info.
-    if (!empty($environment->settings->install_method['import'])) {
-      $environment->install_method = 'import';
-    }
-    elseif (isset($environment->settings->install_method['method'])) {
-      $environment->install_method = $environment->settings->install_method['method'];
-    }
-    else {
-      $environment->install_method = 'profile';
-    }
-
+    $environment->install_method = $environment->hosting_settings['install']['method'] ?? '';
     switch ($environment->install_method) {
 
       // Install Method: Clone
       case 'clone':
-        $environment->clone_source = $environment->settings->install_method['clone_source'];
+        $environment->clone_source = $environment->hosting_settings['install']['clone_source'];
 
         // Load clone source for "other".
         if ($environment->clone_source == '_other') {
-          $environment->clone_source = $environment->settings->install_method['clone_source_drush'];
+          $environment->clone_source = $environment->hosting_settings['install']['clone_source_drush'];
         }
 
+        list($clone_proj, $clone_env) = explode('.', $environment->clone_source);
+          
         // Load clone source nid and environment name.
-        $environment->clone_source_node = db_query("SELECT nid, e.name FROM {hosting_context} h LEFT JOIN hosting_devshop_project_environment e ON h.nid = e.site WHERE h.name = :name", array(':name' => ltrim($environment->clone_source, '@')))->fetchObject();
-
+        $environment->clone_source_node = db_query("SELECT e.site as nid, e.name, p.title FROM 
+            hosting_devshop_project_environment e 
+            LEFT JOIN hosting_site s ON e.site = s.nid 
+            LEFT JOIN node p ON e.project_nid = p.nid 
+                WHERE e.name = :name AND p.title = :project AND s.status = :status", array(
+          ':name' => ltrim($clone_env, '@'),
+          ':project' => ltrim($clone_proj, '@'),
+          ':status' => HOSTING_SITE_ENABLED,
+        ))->fetchObject();
+        
         // If no site node was found with the selected alias, display the alias.
         if (empty($environment->clone_source_node->name)) {
           $source_label = $environment->clone_source;
@@ -384,23 +411,11 @@ function devshop_project_load($node) {
 
       // Install Method: "Profile"
       case "profile":
-      default:
+        
+        $environment->install_method_label = t('Installed with !profile', array(
+          '!profile' => empty($environment->profile) ? t('default') : $environment->profile,
+        ));
 
-        // We don't know package ID until platform verifies.
-        if ($environment->install_profile == 0 && !empty($environment->settings->install_method['profile'])) {
-          $environment->install_method_label = t('Installed with !profile', array(
-            '!profile' => $environment->settings->install_method['profile'],
-          ));
-        }
-        elseif (!empty($environment->settings->install_method['profile'])) {
-          $profile = node_load($environment->install_profile);
-          $environment->install_method_label = t('Installed with !profile', array(
-            '!profile' => l($profile->title, "node/{$environment->install_profile}"),
-          ));
-        }
-        else {
-          $environment->install_method_label = '';
-        }
         break;
     }
 
@@ -421,29 +436,28 @@ function devshop_project_load($node) {
     // Save to project environments collection.
     drupal_alter('devshop_environment', $environment, $project);
 
-    // Only add to project if not deleted
-    if ($environment->site_status != HOSTING_SITE_DELETED) {
-      // @TODO: Finish up the classes!
-      // $environments[$environment->name] = new \DevShop\Environment\Environment($environment);
-
+    // Save environments to project.
+    if ($environment->site_status == HOSTING_SITE_DELETED) {
+      $deleted_environments[$environment->site] = $environment;
+    }
+    else {
+      if (isset($environments[$environment->name])) {
+        watchdog('devshop_projects', t('There are two enabled environments named %name in project %nid (Sites %nids)', array(
+          '%nid' => $environment->project_nid,
+          '%name' => $environment->name,
+          '%nids' => $environment->site . ' and ' , $environments[$environment->name]->site,
+        )));
+      }
       $environments[$environment->name] = $environment;
     }
+    $environment_nids[$environment->site] = $environment;
+    $environment_aliases[$environment->drush_alias] = $environment;
   }
 
-  // Put live environment at the top.
-  if (!empty($environments) && isset($project->settings->live) && $project->settings->live['live_environment'] && isset($environments[$project->settings->live['live_environment']])) {
-    $project->environments = array();
-    $live_env = $project->settings->live['live_environment'];
-    $project->environments[$live_env] = $environments[$live_env];
-    unset($environments[$live_env]);
-    $project->environments += $environments;
-  }
-  elseif (!empty($environments)) {
-    $project->environments = $environments;
-  }
-  elseif (!empty($node->title)) {
-    $project->environments = array();
-  }
+  $project->environments = $environments;
+  $project->environment_nids = $environment_nids;
+  $project->environment_aliases = $environment_aliases;
+  $project->environments_deleted = $deleted_environments;
 
   // Make project name and status available.
   $project->name = $node->title;

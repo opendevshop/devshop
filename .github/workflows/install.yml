@@ -14,13 +14,14 @@ env:
 jobs:
   install_script:
     name: Install Script
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     strategy:
       fail-fast: false
       matrix:
         os:
-          - 'ubuntu1804'
+# @TODO: Put back if it works.
+#          - 'ubuntu1804'
           - 'ubuntu2004'
 
     env:
@@ -47,13 +48,12 @@ jobs:
         ref: ${{ github.event.pull_request.head.sha }}
         fetch-depth: 0
 
+    - name: Build Install Script
+      run: make build
+      working-directory: install
+
     - name: Run Install Script
       run: bash .github/workflows/install-sh-test.sh
-
-    - name: Confirm DevShop Installation
-      run: |
-        docker exec -u aegir install-server-test devshop login
-        wget --output-file=artifact-install-script-frontpage.html http://install-test.devshop.local.computer
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v2

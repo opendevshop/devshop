@@ -1,34 +1,20 @@
 ---
-
-- name: DevShop Control | Clear drush caches
+- name: Clear drush caches
   command: "{{ drush_executable_path }} cc drush"
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
-  register: drush_cache_clear
-  changed_when: drush_cache_clear.stdout | length > 0
-  tags: [runtime]
-
-- name: DevShop Control | Clear all caches
-  command: "{{ drush_executable_path }} {{ devshop_control_drush_alias }} cc all"
-  become: true
-  become_user: "{{ aegir_user_name }}"
-  become_method: "{{ ansible_become_method_aegir }}"
-  register: drush_cache_clear
-  changed_when: drush_cache_clear.stdout | length > 0
-  tags: [runtime]
 
 - name: DevShop Control | Save GitHub Token
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
-  command: "{{ drush_executable_path }} {{ devshop_control_drush_alias }} vset devshop_github_token {{ devshop_github_token }}"
+  command: "drush {{ devshop_control_drush_alias }} vset devshop_github_token {{ devshop_github_token }}"
   when:
     - devshop_github_token is defined
-    - devshop_github_token | length > 0
+    - devshop_github_token | string | length > 0
   # @TODO: The "when" condition is not getting picked up, so let's ignore errors here for now. See #422.
   ignore_errors: true
-  tags: [runtime]
 
 - name: DevShop Control | Run all outstanding tasks
   become: true
@@ -37,7 +23,6 @@
   command: "{{ drush_executable_path }} {{ devshop_control_drush_alias }} hosting-tasks --force"
   register: devshop_ansible_command_output
   changed_when: devshop_ansible_command_output.stdout | length > 0
-  tags: [runtime]
 
 - name: Ensure hosting-dispatch crontab is setup
   become: true
@@ -46,14 +31,12 @@
   command: "{{ drush_executable_path }} {{ devshop_control_drush_alias }} hosting-setup -y"
   register: devshop_ansible_command_output
   changed_when: devshop_ansible_command_output.stdout | length > 0
-  tags: [runtime]
 
 - name: Ensure Supervisor is started after install (if configured).
   service:
     name: supervisord
     state: started
   when: supervisor_started
-  tags: [runtime]
 
 - name: DevShop.Support | Save License Key
   become: true
@@ -61,7 +44,6 @@
   become_method: "{{ ansible_become_method_aegir }}"
   command: "{{ drush_executable_path }} {{ devshop_control_drush_alias }} vset devshop_support_license_key {{ devshop_support_license_key }}"
   when: devshop_support_license_key | length > 0
-  tags: [runtime]
 
 - name: DevShop.Support | Validate License Key to setup support modules.
   become: true
@@ -69,7 +51,6 @@
   become_method: "{{ ansible_become_method_aegir }}"
   command: "{{ drush_executable_path }} {{ devshop_control_drush_alias }} hosting-devshop_support"
   when: devshop_support_license_key | length > 0
-  tags: [runtime]
 
 - name: Save SSH key as variable
   shell: "{{ drush_executable_path }} {{ devshop_control_drush_alias }} vset devshop_public_key \"$(cat ~/.ssh/id_rsa.pub)\" --yes"
@@ -78,7 +59,6 @@
   become_method: "{{ ansible_become_method_aegir }}"
   register: devshop_ansible_command_output
   changed_when: devshop_ansible_command_output.stdout | length > 0
-  tags: [runtime]
 
 - name: Set git user name
   git_config:
@@ -88,7 +68,6 @@
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
-  tags: [runtime]
 
 - name: Set git user email
   git_config:
@@ -98,7 +77,6 @@
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
-  tags: [runtime]
 
 - name: Set git config push.default simple
   git_config:
@@ -108,11 +86,15 @@
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
-  tags: [runtime]
 
-- name: Verify DevShop Control site
-  command: "{{ drush_executable_path }} {{ devshop_control_drush_alias }} provision-verify"
-  become: true
-  become_user: "{{ aegir_user_name }}"
-  become_method: "{{ ansible_become_method_aegir }}"
-  tags: [runtime]
+#- name: Verify DevShop Control site
+#  command: "{{ drush_executable_path }} {{ devshop_control_drush_alias }} provision-verify"
+#  become: true
+#  become_user: "{{ aegir_user_name }}"
+#  become_method: "{{ ansible_become_method_aegir }}"
+#
+#- name: Clear drush caches
+#  command: "{{ drush_executable_path }} cc drush"
+#  become: true
+#  become_user: "{{ aegir_user_name }}"
+#  become_method: "{{ ansible_become_method_aegir }}"

@@ -1,59 +1,46 @@
 <?php
 
 /**
- * bitbucket API key form.
- * @return array()
+ * Page callback for "get all repos" link.
  */
-function devshop_bitbucket_settings_form($form, &$form_state) {
-  $form['devshop_bitbucket_token'] = array(
-    '#title' => t('bitbucket API Token'),
-    '#type' => 'password',
-    '#description' => t('A bitbucket API Token or Personal Access Token'),
-    '#default_value' => variable_get('devshop_bitbucket_token', ''),
-  );
-  $bitbucket_url = "https://bitbucket.com/settings/tokens";
-  $form['help'] = array(
-      '#markup' => t('Manage your tokens under account settings at !link.', array(
-        '!link' => l($bitbucket_url, $bitbucket_url, array('attributes' => array('target' => '_blank'))),
-      )) . '</p><p>' . t('Be sure to select the following Oauth Scopes: <em>repo, repo:status, repo:deployment, public_repo, write:public_key, write_repo_hook</em>'),
-      '#prefix' => '<div class="well well-sm"><p>',
-      '#suffix' => '</p></div>',
-  );
+function devshop_bitbucket_get_repositories_page() {
 
+  devshop_bitbucket_refresh_repositories();
+  drupal_goto('admin/hosting');
+}
 
-  // Warn the user if this is empty.
-  $token = variable_get('devshop_bitbucket_token', '');
-  if (empty($token)) {
-    $form['devshop_bitbucket_token']['#description'] .= ' <em class="warning">' . t('No Token was found.') . '</em>';
-    $form['devshop_bitbucket_token']['#description'] .= '  ' . l(t('Create a new token'), 'https://bitbucket.com/settings/tokens/new', array('attributes' => array('target' => '_blank')));
-  }
-  else {
-    $form['devshop_bitbucket_token']['#suffix'] .= ' <em class="text-success">' . t('Your token is saved.') . '</em>';
-  }
+/**
+ * Get a list of all repos a user can access.
+ */
+function devshop_bitbucket_refresh_repositories() {
 
-  // Test for public key access.
-  if (!empty($token)) {
-
-    $form['bitbucket_public_keys'] = array(
-        '#markup' => '',
+  try {
+    $client = devshop_bitbucket_client();
+    $api = $client->repositories();
+    $params = array(
+      'role' => 'member',
+      'pagelen' => 1000,
+    );
+    $repos = $api->list($params);
+    foreach ($repos['values'] as $repo) {
+      $available_repos[$repo['full_name']] = array(
+        'url'  => $repo['links']['clone'][1]['href'],
+        'org' => $repo['workspace']['slug'],
+      );
+    }
+    
+    $count = count($available_repos);
+    $r = array(
+      '@count' => $count,
     );
 
-    if (devshop_bitbucket_check_key()) {
-        $form['bitbucket_public_keys']['#markup'] = ' <div class="alert alert-success">' . t('The DevShop Public SSH Key has been found in your bitbucket account.') . '</div>';
-    }
-    else {
-        $form['bitbucket_public_keys']['#markup'] = t('The DevShop Public SSH Key was not found in your account.') . '  ';
-
-        $form['bitbucket_public_keys']['#markup'] .= '</div>';
-        $form['bitbucket_public_keys']['#prefix'] = '<div class="alert alert-danger">';
-        $form['bitbucket_public_keys']['#suffix'] = l('<i class="fa fa-bitbucket"></i> ' . t('Add devshop public key to your bitbucket account'), 'admin/devshop/bitbucket/add-key', array(
-            'attributes' => array(
-              'class' => array('btn btn-primary btn-large'),
-            ),
-            'html' => TRUE,
-          )) . '</div>';
-    }
+    variable_set('devshop_bitbucket_all_repositories', $available_repos);
+    drupal_set_message(t('Found @count_string.', array(
+      '@count_string' => format_plural($count, '1 repository', t('@count repositories', $r)),
+    )));
   }
-
-  return system_settings_form($form);
+  catch (\Exception $e) {
+    drupal_set_message($e->getMessage(), 'error');
+    drupal_set_message('Code ' . $e->getCode(), 'error');
+  }
 }

@@ -2,7 +2,6 @@
 include 'step-1.inc';
 include 'step-2.inc';
 include 'step-3.inc';
-include 'step-4.inc';
 
 
 /**
@@ -29,7 +28,7 @@ function devshop_projects_create_wizard($step = NULL) {
   }
 
   // Create default project object
-  if (empty($project) || !isset($project->git_url)) {
+  if (empty($project) || empty($project->git_url)) {
     // set form to first step -- we have no data
     $step = current(array_keys($form_info['order']));
     $project = new stdClass();
@@ -59,7 +58,10 @@ function devshop_projects_create_wizard($step = NULL) {
     $project_node = node_load($project->nid, NULL, TRUE);
 
     if ($project_node->project) {
+      // But save environments from the cache object because we don't save those to the node anymore.
+      $environments = $project->environments;
       $project = $project_node->project;
+      $project->environments = (array) $environments;
     }
     else {
       $project = new stdClass();
@@ -96,12 +98,13 @@ function devshop_projects_create_wizard($step = NULL) {
   if ($project->verify_task_status == HOSTING_TASK_ERROR && !empty($project_node->nid)) {
     $messages = db_query("SELECT * FROM {hosting_task_log} WHERE nid = :nid AND type LIKE :type ORDER BY vid, lid", array(':nid' => $project->verify_task_nid, ':type' => 'p_%'));
 
+    $messages_to_user = [];
     foreach ($messages as $message) {
-      if ($message->type == 'p_info') {
+      if ($message->type == 'p_command_log') {
         $messages_to_user[] = $message->message;
       }
     }
-    $project->verify_error = theme('devshop_ascii', array('output' => implode('\n', $messages_to_user)));
+    $project->verify_error = theme('hosting_ascii', array('output' => implode('\n', $messages_to_user)));
 
 
     // If not on the first step, go to it.
@@ -143,7 +146,6 @@ function devshop_projects_create_wizard_info() {
       'git_url' => t('Step 1: Source Code'),
       'settings' => t('Step 2: Settings'),
       'environments' => t('Step 3: Environments'),
-      'sites' => t('Step 4: Install Profile'),
     ),
     'forms' => array(
       'git_url' => array(
@@ -154,9 +156,6 @@ function devshop_projects_create_wizard_info() {
       ),
       'environments' => array(
         'form id' => 'devshop_project_create_step_environments'
-      ),
-      'sites' => array(
-        'form id' => 'devshop_project_create_step_sites'
       ),
     ),
   );
@@ -216,20 +215,11 @@ function devshop_projects_create_wizard_finish(&$form_state) {
 
   $project = &$form_state['project'];
   $project_node = node_load($project->nid);
+  $project_node->hosting_settings = $form_state['values']['hosting_settings'];
 
-  // Save the extra options to the project node.
-  $project_node->project->install_profile = $form_state['values']['install_profile'];
-
-  // Create the site nodes, saving to the environment.
-  // @TODO: Can we speed things up here by only running install for the first,
-  // then  "Cloning" to create the rest?
-  foreach ($project_node->project->environments as $environment_name => &$environment) {
-    // @TODO: Does this set the http_server as well?? Doesn't look like it.
-    $db_server = $environment->db_server_nid;
-    $site_node = devshop_projects_create_site($project_node->project, node_load($environment->platform), $environment_name, $db_server);
-    $environment->site = $site_node->nid;
-  }
-
+  // Save create wizard cache object
+  $project->project = $project;
+  
   // Set to not verify and to publish.
   $project_node->no_verify = TRUE;
   $project_node->status = 1;
@@ -264,7 +254,7 @@ function devshop_projects_add_status($type = 'platform') {
   $nids = array();
 
   // When checking project...
-  if ($type == 'project') {
+  if ($type == 'project' && isset($project_node->nid)) {
     $tasks = hosting_get_tasks('rid', $project_node->nid);
     $last_task = array_shift($tasks);
     $status = _hosting_parse_error_code($last_task->task_status);
@@ -274,7 +264,7 @@ function devshop_projects_add_status($type = 'platform') {
     );
 
     $return['tasks_complete'] = $last_task->task_status == HOSTING_TASK_SUCCESS || $last_task->task_status == HOSTING_TASK_ERROR || $last_task->task_status == HOSTING_TASK_WARNING;
-    $return['tasks_success'] = $last_task->task_status == HOSTING_TASK_SUCCESS;
+    $return['tasks_success'] = $last_task->task_status == HOSTING_TASK_SUCCESS || $last_task->task_status == HOSTING_TASK_WARNING;
     drupal_json_output($return);
     exit;
   }
@@ -286,19 +276,11 @@ function devshop_projects_add_status($type = 'platform') {
     $button = '';
     foreach ($project_node->project->environments as $name => $environment) {
       $platform = node_load($environment->platform);
-      $profiles_shortnames = hosting_get_profiles($platform->nid, 'short_name');
-      if (is_array($profiles_shortnames) && !empty($profiles_shortnames)) {
-        $install_profiles = array_combine($profiles_shortnames, (array) hosting_get_profiles($platform->nid));
-      }
-      else {
-        $install_profiles = array();
-      }
 
       $last_task = hosting_get_most_recent_task($platform->nid, 'verify');
       $return['tasks'][$name] = array(
         'link' => devshop_get_logs_and_permalink($last_task),
         'version' => !empty($platform->release->version) && $last_task->task_status == HOSTING_TASK_SUCCESS || $last_task->task_status == HOSTING_TASK_WARNING? $platform->release->version: $last_task->status_name,
-        'profiles' => implode(', ', $install_profiles),
       );
       // If task is not completed, mark all tasks not complete.
       if ($last_task->task_status == HOSTING_TASK_ERROR) {

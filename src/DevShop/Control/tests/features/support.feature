@@ -23,6 +23,6 @@ Feature: Anonymous Homepage
 #    Then I should see "License Status: Active"
 #
 #    When I am logged in as a user with the "administrator" role
-#    Given I am at "admin/devshop/support"
+#    Given I am at "admin/hosting/support"
 #    Then I should see "DevShop.Support"
 #    And the "DevShop Support License Key" field should contain "automated_testing_license_key"

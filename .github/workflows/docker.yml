@@ -1,0 +1,109 @@
+---
+name: Docker Hub
+
+on:
+  workflow_dispatch:
+    
+  pull_request:
+    branches:
+      # This workflow will only run on pull requests for branch test/docker/actions.
+      - test/docker/actions
+  push:
+    branches:
+      - 1.x
+  schedule:
+    - cron: "10 1 * * 0"
+
+jobs:
+  # Test the image builds and works correctly.
+#  test:
+#    name: Test
+#    runs-on: ubuntu-20.04
+#    defaults:
+#      run:
+#        working-directory: docker
+#
+#    steps:
+#      - uses: actions/checkout@v2
+#
+#      - name: Test building image.
+#        run: docker-compose build
+#
+#      - name: Run the built image.
+#        run: >-
+#          docker-compose up -d
+#
+#      - name: Verify Ansible is accessible in the built image.
+#        run: docker-compose exec -t env TERM=xterm ansible --version
+
+  # If on main branch, build and release image.
+  release:
+    name: Release
+    runs-on: ubuntu-20.04
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os_slug:
+          # ubuntu2004 docker builds fail. 
+          # Ensure MySQL is stopped after initial install....
+          #   localhost failed | msg: Service is in unknown state
+          # - ubuntu2004
+          - ubuntu1804
+
+        php_version:
+          - "7.4"
+          - "8.0"
+          - "8.1"
+
+    # if: github.ref == 'refs/heads/1.x'
+
+    steps:
+      - name: Checkout sourcecode.
+        uses: actions/checkout@v2
+
+      - name: Save info to vars file.
+        run: |
+          echo "devshop_version: '${{ github.ref_name }}'" >> vars.yml
+          echo "php_version: '${{ matrix.php_version }}'" >> vars.yml
+          cat vars.yml
+
+      # github.head_ref is the PR branch name.
+      - name: Prepare Pull Request-only environment
+        if: github.event_name=='pull_request'
+        run: |
+          echo "php_version: '${{ matrix.php_version }}'" >> vars.yml
+          echo "devshop_version: ${{ github.head_ref }}" >> vars.ci.yml
+          echo "devshop_cli_repo: ${{ github.event.pull_request.head.repo.clone_url }}" >> vars.ci.yml
+          echo "GIT_REF=${{ github.head_ref }}" >> $GITHUB_ENV
+          git switch --create ${{ github.head_ref }}
+
+      - name: Set Container Tags
+        run: |
+          echo DOCKER_TAGS=devshop/server:php${{ matrix.php_version }} >> $GITHUB_ENV
+
+      - name: Set 'latest' tag.
+        if: matrix.php_version=='8.0'
+        run: |
+          echo DOCKER_TAGS=devshop/server:php${{ matrix.php_version }},devshop/server:latest >> $GITHUB_ENV
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v4
+        with:
+          context: ./
+          file: ./docker/Dockerfile.${{ matrix.os_slug }}
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ env.DOCKER_TAGS }}

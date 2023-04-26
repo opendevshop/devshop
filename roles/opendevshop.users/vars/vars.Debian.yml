@@ -10,3 +10,4 @@ devshop_prerequisite_packages:
   - dirmngr
   - curl
   - wget
+  - rsync

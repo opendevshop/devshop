@@ -33,7 +33,7 @@ function drush_devshop_post_provision_deployEXAMPLE($branch = '') {
 
     $project_name = d()->project;
     $project = (object) d("@project_{$project_name}")->project;
-    $environment = (object) $project->environments[d()->environment];
+    $environment = (object) $project->environments[d()->hosting_environment];
 
     drush_log("[CUSTOM] Successfully checked out $branch to environment $environment->name in project $project_name.", 'ok');
 

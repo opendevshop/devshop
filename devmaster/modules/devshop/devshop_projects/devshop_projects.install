@@ -106,17 +106,10 @@ function devshop_projects_schema() {
       ),
       'site' => array(
         'type' => 'int',
-        'not null' => FALSE,
+        'not null' => TRUE,
         'default' => 0,
         'unsigned' => TRUE,
         'description' => 'The node ID of the site for this environment.',
-      ),
-      'platform' => array(
-        'type' => 'int',
-        'not null' => FALSE,
-        'default' => 0,
-        'unsigned' => TRUE,
-        'description' => 'The node ID of the platform for this environment.',
       ),
       'settings' => array(
         'type' => 'text',
@@ -124,19 +117,8 @@ function devshop_projects_schema() {
         'size' => 'big',
         'description' => 'A serialized array of settings for this environment.',
       ),
-      'last_task' => array(
-        'type' => 'text',
-        'not null' => FALSE,
-        'size' => 'big',
-        'description' => 'The NID of the last task that should be displayed on an environment.',
-      ),
     ),
-    'unique keys' => array(
-      'project_nid_name' => array(
-        'project_nid',
-        'name',
-      ),
-    ),
+    'primary key' => array('site'),
   );
   return $schema;
 }
@@ -497,4 +479,49 @@ function devshop_projects_update_7011 () {
   variable_set('menu_options_platform', []);
   variable_set('menu_options_server', []);
   variable_set('menu_options_project', []);
+}
+
+/**
+ * Use a primary key for environments table.
+ */
+function devshop_projects_update_7100() {
+  db_drop_unique_key('hosting_devshop_project_environment', 'project_nid_name');
+  db_add_primary_key('hosting_devshop_project_environment', array('site'));
+}
+
+/**
+ * Drop redundant platform column from projects table.
+ */
+function devshop_projects_update_7101() {
+  db_drop_field('hosting_devshop_project_environment', 'platform');
+}
+
+/**
+ * Drop redundant last_task column from projects table.
+ */
+function devshop_projects_update_7102() {
+  db_drop_field('hosting_devshop_project_environment', 'last_task');
+}
+
+/**
+ * Enable hosting tasks queue so that tasks can run in parallel if needed.
+ */
+function devshop_projects_update_7103() {
+  variable_set('hosting_queue_tasks_enabled', true);
+  variable_set('hosting_queue_tasks_items', 15);
+}
+
+/**
+ * Enable git tasks.
+ */
+function devshop_projects_update_7104() {
+    module_enable(['hosting_git']);
+}
+
+/**
+ * Uninstall devshop_tests module.
+ */
+function devshop_projects_update_7105() {
+    module_disable(['devshop_testing', 'devshop_dothooks']);
+    drupal_uninstall_modules(['devshop_testing', 'devshop_dothooks']);
 }

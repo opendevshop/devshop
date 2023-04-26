@@ -64,7 +64,7 @@ class PowerProcess extends BaseProcess {
      *
      * @final since version 3.3
      */
-    public function run($callback = null, $env = [])
+    public function run(callable $callback = null, array $env = []): int
     {
         // Handle a null $env variable.
         if (!array($env)) {

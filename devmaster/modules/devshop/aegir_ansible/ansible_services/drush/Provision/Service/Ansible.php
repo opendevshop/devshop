@@ -61,7 +61,7 @@ class Provision_Service_Ansible extends Provision_Service {
 
     $exit = $ansible->execute(function ($type, $buffer) {
       if (drush_get_option('is-devshop', FALSE)) {
-        drush_log($buffer, 'p_info');
+        drush_log($buffer, 'p_command_log');
       }
       else {
         print $buffer;

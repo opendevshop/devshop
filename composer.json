@@ -18,16 +18,17 @@
     ],
     "require": {
         "php": "^7.1||^8.0",
-        "drush/drush": "^8",
         "ext-json": "*",
         "devshop/git-split": "@dev",
-        "devshop/github-api-cli": "@dev",
         "devshop/yaml-tasks": "@dev",
         "devshop/power-process": "@dev",
-        "drupal/provision": "4.x-dev",
         "psr/cache": "^1.0",
         "symfony/deprecation-contracts": "^2.5",
-        "symfony/options-resolver": "^4.4"
+        "symfony/options-resolver": "^4.4",
+        "devshop/bin-tools": "1.x-dev",
+        "php-http/httplug": "^2.3",
+        "devshop/git-traits": "1.x-dev",
+        "drush/drush": "^10.6"
     },
     "replace": {
         "drupal/drupal": "*"
@@ -47,7 +48,11 @@
         },
         {
             "type": "path",
-            "url": "src/DevShop/Component/ComposerCommon"
+            "url": "scripts"
+        },
+        {
+            "type": "path",
+            "url": "src/DevShop/Component/GitTraits"
         },
         {
             "type": "path",
@@ -76,6 +81,9 @@
         "allow-plugins": {
             "devshop/git-split": true,
             "devshop/yaml-tasks": true
+        },
+        "platform": {
+            "php": "7.4.0"
         }
     },
     "extra": {
@@ -89,7 +97,7 @@
                 "roles/opendevshop.devmaster": "https://github.com/opendevshop/ansible-role-devmaster.git",
                 "roles/opendevshop.users": "https://github.com/opendevshop/ansible-role-user.git",
                 "scripts": "https://github.com/devshop-packages/bin-tools.git",
-                "src/DevShop/Component/ComposerCommon": "https://github.com/devshop-packages/composer-common.git",
+                "src/DevShop/Component/GitTraits": "https://github.com/devshop-packages/git-traits.git",
                 "src/DevShop/Component/GitHubApiCli": "https://github.com/devshop-packages/github-api-cli.git",
                 "src/DevShop/Component/GitSplit": "https://github.com/devshop-packages/git-split.git",
                 "src/DevShop/Component/PowerProcess": "https://github.com/devshop-packages/power-process.git",
@@ -116,9 +124,6 @@
         ],
         "post-install-cmd": [
             "DevShop\\Composer::installControl"
-        ],
-        "post-update-cmd": [
-            "DevShop\\Composer::updateControl"
         ],
         "roles:update": [
             "DevShop\\Composer::updateRoles"

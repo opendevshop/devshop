@@ -21,7 +21,7 @@ function drush_aegir_digitalocean_pre_hosting_task() {
 
             // Load DNS from digitalocean API on every verify.
             drush_log('Preparing DNS...', 'p_command');
-            drush_log("Waiting for IP Address from DigitalOcean API...\n", 'p_info');
+            drush_log("Waiting for IP Address from DigitalOcean API...\n", 'p_command_log');
             $public_ip_address = null;
             $new_ips = [];
 
@@ -100,7 +100,7 @@ function drush_aegir_digitalocean_pre_hosting_task() {
             while (!$completed) {
               sleep(3);
               $device = $droplet->getById($service->provider_server_identifier);
-              drush_log("Droplet status: $device->status \n", 'p_info');
+              drush_log("Droplet status: $device->status \n", 'p_command_log');
 
               // Save provider data
               $task->ref->no_verify = TRUE;
@@ -121,7 +121,7 @@ function drush_aegir_digitalocean_pre_hosting_task() {
               sleep(3);
               $hostname = gethostbyaddr($public_ip_address);
               // If gethostbyaddr returns the hostname, we are done.
-              drush_log("gethostbyaddr($public_ip_address): $hostname \n", 'p_info');
+              drush_log("gethostbyaddr($public_ip_address): $hostname \n", 'p_command_log');
 
               if ($hostname == $task->ref->title) {
                 $completed = TRUE;

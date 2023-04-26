@@ -104,48 +104,40 @@ function devshop_project_create_step_git($form, $form_state) {
   $pubkey = variable_get('devshop_public_key', '');
   
   // If we don't yet have the server's public key saved as a variable...
-  if (empty($pubkey)) {
-    $output = t("This DevShop doesn't yet know your server's public SSH key. To import it, run the following command on your server as <code>aegir</code> user:");
-    $command = 'drush @hostmaster vset devshop_public_key "$(cat ~/.ssh/id_rsa.pub)" --yes';
-    $output .= "<div class='command'><input size='160' value='$command' onclick='this.select()' /></div>";
+  if (empty($pubkey) && drupal_valid_path('admin/hosting')) {
+    drupal_set_message(t("DevShop can display it's Public Key for you when creating projects, to make granting access to your git repositories easier. However, this DevShop does not know the it's public key. To fix this, check !settings. ", [
+      '!settings' => l(t('DevShop Settings: Public Key'), 'admin/hosting', ['fragment' => 'edit-public-key']),
+    ]), 'warning');
   }
-  else {
-    $msg = t('If you haven\'t granted this server access to your Git repository, you should do so now using it\'s public SSH key:');
 
-    $link = l(t('Edit devshop public key'), 'admin/devshop', array(
-      'query' => array(
-        'destination' => $_GET['q'],
-      ),
-      'attributes' => array(
-        'class' => array('btn btn-default')
-      ),
-    ));
-    $output = <<<HTML
-  <div class="alert alert-warning"><p>$msg </p>
-  <textarea cols="80" id="rsa" onclick='this.select()' class="pull-left">$pubkey</textarea> $link
-  </div>
-HTML;
-  }
-  
-  // Add info about connecting to Repo
-  $form['connect']  = array(
-    '#markup'=> $output,
+  $form['welcome'] = array(
+    '#type' => 'container',
+    '#attributes' => [
+      'class' => ['alert alert-info alert-project-welcome']
+    ],
+    'hi' => [
+      '#markup' => '<h2 class="title">' . t("Start a new DevShop Project.") . '</h2><p>' . t("A project represents your website. DevShop keeps track of the source code for your website so it can launch copies of it quickly.") . '</p>',
+    ]
   );
 
-  $tips[] = t('For best results, use the !link project as a starting point for Composer based projects.', [
-    '!link' => l(t('DevShop Composer Template'), 'https://github.com/opendevshop/devshop-composer-template', array(
+  $tips[] = t('For best results, use a composer project such as !link.', [
+    '!link' => l(t('Drupal Composer Project Template'), 'https://github.com/drupal-composer/drupal-project', array(
       'attributes' => array(
         'target' => '_blank',
       )
     )),
   ]);
+  $tips[] = t('Code is cloned on the server using the <code>aegir</code> user. Access is handled there.');
+  $tips[] = t('If a composer.json file is found in the root of the project, <code>composer install</code> will be run automatically.');
+  $tips[] = t("If your repository is not public, make sure your server has SSH access. Check the !link to see this server's public key.", array(
+    '!link' => l(t('DevShop Settings'), 'admin/hosting'),
+  ));
+  $form['welcome']['tips'] = [
+    '#theme' => 'item_list',
+    '#items' => $tips,
+  ];
 
-  $form['welcome'] = array(
-    '#markup' => '<h2 class="title">' . t("Start a new DevShop Project.") . '</h2><p>' . t("A project represents your website. DevShop keeps track of the source code for your website so it can launch copies of it quickly.") . '</p>',
-    '#prefix' => '<div class="alert alert-success alert-project-welcome">',
-    '#suffix' => '</div>',
-    '#weight' => -1000,
-  );
+
 
   $options = module_invoke_all('devshop_project_git_repo_options');
   $form['source'] = array(
@@ -157,14 +149,15 @@ HTML;
     ),
   );
   $form['source']['git_source'] = array(
-    '#title' => t('Choose the source of your code'),
-    '#type' => 'radios',
+    '#type' => count($options) == 1? 'value': 'radios',
     '#options' => $options,
     '#description' => t(''),
-    '#default_value'=> 'custom',
+//    '#default_value'=> key($options),
+    '#default_value' => 'choice',
   );
 
   $form['source']['git_url'] = array(
+    '#access' => !empty($options['custom']),
     '#type' => 'textfield',
     '#required' => 1,
     '#title' => t('Git Repository URL'),
@@ -181,7 +174,24 @@ HTML;
       ),
     ),
   );
-
+  $repos = explode(PHP_EOL, variable_get('devshop_project_create_choice_options', 'git@github.com:opendevshop/drupal-project.git'));
+  $default_group = t('Choose a repository...');
+  foreach ($repos as $repo_name => $remote) {
+    $repo_options[$default_group][$remote] = $remote;
+  }
+  $form['source']['choice'] = array(
+    '#access' => !empty($options['custom']),
+    '#type' => 'select',
+    '#options' => $repo_options,
+    '#default_value' => $project->git_url,
+    '#states' => array(
+      'visible' => array(
+        ':input[name="git_source"]' => array(
+          'value' => 'choice'
+        ),
+      ),
+    ),
+  );
 
   // We have to tell the front-end what type of field so we can assign the right event.
   drupal_add_js(array(
@@ -192,21 +202,6 @@ HTML;
     ),
   ), 'setting');
 
-  $tips[] = t('Use the "ssh" url whenever possible. For example: <code>git@github.com:opendevshop/repo.git</code>');
-  $tips[] = t('You can use a repository with a full Drupal stack committed, in the root or in a sub folder');
-  $tips[] = t('If a composer.json file is found in the root of the project, <code>composer install</code> will be run automatically.');
-  $tips[] = t("If your repository is not public, make sure your server has SSH access. Check the !link to see this server's public key.", array(
-    '!link' => l(t('DevShop Settings'), 'admin/devshop'),
-  ));
-  $tips = theme('item_list', array('items' => $tips));
-
-
-  $form['tips'] = array(
-      '#markup' => $tips,
-      '#prefix' => '<div class="alert alert-info">',
-      '#suffix' => '</div>',
-    '#weight' => 10,
-  );
   return $form;
 }
 
@@ -215,7 +210,8 @@ HTML;
  */
 function devshop_projects_devshop_project_git_repo_options() {
   return array(
-    'custom' => t('Git repository URL'),
+    'choice' => t('Select a git repository'),
+    'custom' => t('Enter a git repository URL'),
   );
 }
 
@@ -264,26 +260,11 @@ function devshop_project_create_step_git_validate(&$form, &$form_state) {
       )));
     }
   }
-  
-//
-//  // CODE PATH & BASE URL
-//  // Code path and base url must be unique
-//  if (db_query('SELECT n.nid FROM {hosting_devshop_project} d LEFT JOIN {node} n ON d.nid = n.nid WHERE status = :status AND code_path = :code_path;', array(':status' => 1, ':code_path' => $form_state['values']['code_path']))->fetchField()) {
-//    form_set_error('code_path', t('Another project already has this code path.  Code path must be unique.'));
-//  }
-//  if (db_query('SELECT n.nid FROM {hosting_devshop_project} d LEFT JOIN {node} n ON d.nid = n.nid WHERE status = :status AND base_url = :base_url;', array(':status' => 1, ':base_url' => $form_state['values']['base_url']))->fetchField()) {
-//    form_set_error('base_url', t('Another project already has this base url.  Base URL must be unique.'));
-//  }
-//
-//  // If custom code paths are not allowed, set the value here using the project name.
-//  if (!variable_get('devshop_projects_allow_custom_code_path', FALSE)) {
-//    form_set_value($form['code_path'], variable_get('devshop_project_base_path', '/var/aegir/projects') . '/' . $project_name, $form_state);
-//  }
-//
-//  // If custom base URLs are not allowed, set the value here using the project name.
-//  if (!variable_get('devshop_projects_allow_custom_base_url', FALSE)) {
-//    form_set_value($form['base_url'], devshop_projects_url($project_name), $form_state);
-//  }
+
+  // Set git_url from choice.
+  if ($form_state['values']['git_source'] == 'choice' && !empty($form_state['values']['choice'])) {
+    form_set_value($form['source']['git_url'], $form_state['values']['choice'], $form_state);
+  }
 }
 
 /**

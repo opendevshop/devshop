@@ -27,14 +27,19 @@ function devshop_project_create_step_environments($form, &$form_state) {
     '#type' => 'value',
     '#value' => $project->nid,
   );
+  $form['message'] = array(
+    '#prefix' => "<div class='alert alert-info'>",
+    '#suffix' => '</div>',
+    '#markup' => t('Create as many new environments as you would like. You can create and destroy environments at any time.'),
+  );
   $form['project'] = array(
     '#tree' => TRUE,
+    '#theme' => 'devshop_projects_create_settings_form',
   );
   $form['project']['environments'] = array(
-    '#theme' => 'devshop_projects_create_settings_form',
     '#tree' => TRUE,
     '#prefix' => '<div id="environments-wrapper">',
-    '#suffix' => '<p>' . t('Create as many new environments as you would like. For example: "dev", "test", and "live". You can create more later on if needed.') . '</p></div>',
+    '#suffix' => '</div>',
   );
 
   // If there was a problem with loading branches or tags, hide the form and show a link to re-verify.
@@ -59,14 +64,10 @@ function devshop_project_create_step_environments($form, &$form_state) {
     $project->environments['NEW'] = array();
   }
   foreach ($project->environments as $name => $environment) {
-    // No platforms exist yet
-    if ($name == 'NEW') {
-      $env_title = '';
+    if (empty($name)) {
+      continue;
     }
-    else {
-      $env_title = $name;
-    }
-
+    $environment = convert_to_object($environment);
     $form['project']['environments'][$name] = devshop_project_environment_create_form_element($project, $environment);
 
     // Add Environment
@@ -76,9 +77,27 @@ function devshop_project_create_step_environments($form, &$form_state) {
       '#name' => 'add_environment',
       '#prefix' => '<div class="project-add-environment-button">',
       '#suffix' => '</div>',
+      '#states' => array(
+        'visible' => array(
+          ':input[name="project[environments][NEW][name]"]' => array(
+            'filled' => true,
+          )
+        )
+      )
     );
   }
   $form['project']['environments']['NEW']['name']['#attributes']['autofocus'] = 'autofocus';
+
+  $environment_options = array_keys($project->environments);
+  $environment_options = array_combine($environment_options,$environment_options);
+
+  $form['project']['primary_environment'] = [
+    '#type' => 'radios',
+    '#title' => t('Primary Environment'),
+    '#options' => $environment_options,
+    '#default_value' => key($environment_options),
+  ];
+
   return $form;
 }
 
@@ -113,7 +132,7 @@ function devshop_project_create_step_environments_validate(&$form, &$form_state)
     }
 
     // Reject if empty
-    if (count($values['project']['environments']) < 1) {
+    if (count($form_state['values']['project']['environments']) < 1) {
       if ($form_state['clicked_button']['#name'] == 'add_environment') {
         form_set_error('project][environments][NEW][name', t('Name this environment before you add another.'));
       }
@@ -123,7 +142,8 @@ function devshop_project_create_step_environments_validate(&$form, &$form_state)
     }
   }
 
-
+//  dsm($form_state['values']);
+//  form_set_error('', 'wtf');
 }
 
 ///**
@@ -173,6 +193,10 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
   // Get project and reset properties..
   $project_node = node_load($form_state['values']['nid'], NULL, TRUE);
   $project = $project_node->project;
+  
+  // No more settings form on step 3 page.
+  // $project->hosting_settings += $form_state['values']['hosting_settings'];
+    
   if (isset($form_state['project']->code_path) && empty($project->code_path)) {
     $project->code_path = $form_state['project']->code_path;
   }
@@ -183,101 +207,47 @@ function devshop_project_create_step_environments_submit(&$form, &$form_state) {
   // Save environments data
   $environments = $form_state['values']['project']['environments'];
 
-  // If NEW environment name was submitted, add it to the env array with name as key, then unset NEW environment.
-  if (!empty($environments['NEW']['name'])) {
-    $new_environment_name = $environments['NEW']['name'];
-    $environments[$new_environment_name] = $environments['NEW'];
-  }
-  unset($environments['NEW']);
-
-  // Rebuild $environments array ensuring "name" field is used as array key.
-  foreach ($environments as $name => $environment) {
-    if ($name != $environment['name']) {
-      $environments[$environment['name']] = $environment;
-      unset($environments[$name]);
-    }
-  }
-
-  // Delete all existing environments
-  db_delete('hosting_devshop_project_environment')
-    ->condition('project_nid', $project_node->nid)
-    ->execute();
-
   // Create all environments
-  foreach ($environments as $name => $environment) {
-    $environment = (object) $environment;
-    $environment->settings = (object) $environment->settings;
-    $name = trim($environment->name);
-
-    // @TODO: VALIDATE CONTEXT DOES NOT EXIST!!
-    if (!empty($name)) {
-      if (!empty($environment->settings->git_remote)) {
-        $git_remote = $environment->settings->git_remote;
-      } else {
-        $git_remote = null;
-      }
-
-      if (!empty($environment->platform)) {
-        // RECREATE the env RECORD in the database if platform NID already exists.
-        $id = db_insert('hosting_devshop_project_environment')
-          ->fields(array(
-            'project_nid' => $form_state['values']['nid'],
-            'name' => $environment->name,
-            'platform' => $environment->platform,
-            'settings' => serialize($environment->settings),
-          ))
-          ->execute();
-        hosting_add_task($environment->platform, 'verify');
-      }
-      else {
-        // CREATE the environment OBJECT, including a new platform and DB record.
-        drupal_set_message(t('Creating environment %name', array(
-          '%name' => $name,
-        )));
-        hosting_create_environment($project, $name, $environment->git_ref, NULL, $environment->settings, 'create', $git_remote, FALSE); ;
-      }
-    }
-  }
-
-  // Go back to the same page.
   if ($form_state['clicked_button']['#name'] == 'add_environment') {
-    drupal_goto('projects/add/environments');
+
+    if (isset($environments['NEW']) && !empty($environments['NEW']['name'])) {
+      $new_name = $environments['NEW']['name'];
+      $environments[$new_name] = $environments['NEW'];
+      unset($environments['NEW']);
+    }
+
+    $project->environments = $environments;
+    $form_state['redirect'] = 'projects/add/environments';
+  }
+  else {
+    foreach ($environments as $name => $environment) {
+      $environment = (object) $environment;
+      $environment->settings = (object) $environment->settings;
+      $environment->settings->install_method = $form_state['values']['install_method'];
+
+      $name = trim($environment->name);
+      if (!empty($name)) {
+        hosting_create_environment($project, $name, $environment->git_ref, NULL, $environment->settings, 'create', $environment->git_remote, TRUE);
+      }
+    }
   }
 
-  // For all removed platforms, trigger a delete task
-  $removed_environments = array_diff_key($project->environments, $environments);
-  foreach ($removed_environments as $environment_name => $settings) {
-    $platform_nid = $settings->platform;
-    $platform_node = node_load($platform_nid);
+  // Save primary environment.
+  $project->settings->primary_environment = $form_state['values']['project']['primary_environment'];
 
-    // Determine what to do here based on task status...
-    // if verify task hasn't even run yet (and has never run) we can just delete
-    // the platform node.
-    if (empty($platform_node->verified)) {
-      node_delete($platform_node->nid);
-    }
-    // Create 'delete' task for the removed platform
-    else if ($platform_nid) {
-      hosting_add_task($platform_nid, 'delete');
-    }
-  }
+  ctools_object_cache_set('project', 'devshop_project', $project);
 
-
-  // Remove default "task" messages.
-  drupal_set_message('Environments saved! Now preparing codebases...');
 }
-
 
 /**
  *
  */
 function devshop_project_environment_create_form_element($project, $environment) {
 
-  $name = $environment->name;
+  $name = isset($environment->name) ? $environment->name : '';
 
   $element = array(
     '#tree' => TRUE,
-    '#theme' => 'devshop_projects_settings_table',
   );
 
   // Environment properties

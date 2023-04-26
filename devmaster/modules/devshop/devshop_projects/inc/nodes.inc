@@ -21,6 +21,21 @@ function devshop_projects_node_info() {
   return $types;
 }
 
+function devshop_projects_node_prepare($node) {
+  
+  // Load up project hosting settings on create site page.
+  if ($node->type == 'site' && arg(1) == 'add' && !empty(arg(3))) {
+    $project = devshop_projects_load_by_name(arg(3));
+    $node->hosting_settings = $project->hosting_settings;
+    $node->project = $project->project;
+
+    // When cloning an environment, inherit it's settings.
+    if (arg(4) == 'clone' && !empty($project->project->environments[arg(5)])) {
+      $node->hosting_settings = $project->project->environments[arg(5)]->hosting_settings;
+    }
+  }
+}
+
 /**
  * Implements hook_node_load().
  *
@@ -60,8 +75,7 @@ function devshop_projects_node_load($nodes, $types) {
         $node->duration = format_interval(time() - $node->executed, 1);
       }
       elseif ($node->task_status == HOSTING_TASK_QUEUED) {
-        $node->duration = t('Queued for %time',
-          array('%time' => format_interval(time() - $node->changed), 1));
+        $node->duration = t('Queued for %time', array('%time' => format_interval(time() - $node->changed)));
       }
       else {
         $node->duration = format_interval($node->delta, 1);
@@ -96,7 +110,7 @@ function devshop_projects_node_load($nodes, $types) {
       $node->task_date = format_date($executed);
 
       // Set task type
-      $node->type_name = $task_types[$refs_types[$node->rid]][$node->task_type]['title'];
+      $node->type_name = !empty($task_types[$refs_types[$node->rid]][$node->task_type])? $task_types[$refs_types[$node->rid]][$node->task_type]['title']: $node->task_type;
 
       // If platform's first verify...
       if (isset($node->ref) && $node->ref->type == 'platform' && $node->ref->verified == 0) {
@@ -119,30 +133,21 @@ function devshop_projects_node_load($nodes, $types) {
 
       $node->project = devshop_project_load($node);
     }
-    elseif ($node->type == 'site') {
-
-      // @TODO: Check if this is ever needed now that install_method is in core aegir.
-      // Load install method into an easy to access property.
-      if (empty($node->install_method) && isset($node->environment->settings->install_method)) {
-        $node->install_method = $node->environment->settings->install_method['method'];
+    elseif ($node->type == 'site' && !empty($node->project)) {
+      // For sites without hosting_settings, load from project. 
+      if (empty($node->hosting_settings) && !empty($node->project->hosting_settings)) {
+        $node->hosting_settings = $node->project->hosting_settings;
       }
 
-      // If profile ID is empty but name is stored, load to $node->profile_name so that provision will load it.
-      if (empty($node->profile) && !empty($node->environment->settings->install_method['profile'])) {
-        $node->profile_name = $node->environment->settings->install_method['profile'];
+      // Override drush alias.
+      if (isset($node->environment->drush_alias)) {
+        $node->drush_alias = $node->environment->drush_alias;
       }
+
+      // Override hosting_group and hosting_environment.
+      $node->hosting_group = $node->project->name;
+      $node->hosting_environment = $node->environment->name;
     }
-  }
-}
-
-/**
- * When install tasks are created, add "force-reinstall" task argument.
- *
- * @param $node
- */
-function devshop_projects_node_presave($node) {
-  if ($node->type == 'task' && $node->task_type == 'install' && $node->is_new) {
-    $node->task_args['force-reinstall'] = 1;
   }
 }
 
@@ -169,7 +174,12 @@ function devshop_projects_node_insert($node) {
       drupal_goto("node/{$site->project->nid}");
     }
   }
-
+// @TODO: Fix this.
+//  // On site insert, inherit hosting_settings from the project.
+//  if ($node->type == 'site' && empty($node->hosting_settings) && !empty($node->project->hosting_settings)) {
+//    $node->hosting_settings = $node->project->hosting_settings;
+//  }
+    
   if ($node->type != 'project') {
     return;
   }
@@ -178,13 +188,14 @@ function devshop_projects_node_insert($node) {
     hosting_add_task($node->nid, 'verify');
   }
 
+  // @TODO: Move all to hosting_settings.
   $info = new stdClass();
   $info->nid = $node->nid;
   $info->git_url = $node->project->git_url;
   $info->code_path = hosting_path_normalize($node->project->code_path);
   $info->drupal_path = hosting_path_normalize($node->project->drupal_path);
   $info->base_url = $node->project->base_url;
-  $info->install_profile = $node->project->install_profile;
+  $info->install_profile = $node->project->settings->install_method['install_profile'] ?? '';
 
   // Save serialized data, minus environments
   $info->settings = serialize($node->project->settings);
@@ -192,10 +203,10 @@ function devshop_projects_node_insert($node) {
   drupal_write_record('hosting_devshop_project', $info);
 
   // Save hosting context
-  if (!$node->old_vid) {
+  if (!isset($node->old_vid) || empty($node->old_vid)) {
 
     // Save the "hosting context", which includes setting the path alias.
-    $name = ($node->hosting_name) ? $node->hosting_name : $node->title;
+    $name = !empty($node->hosting_name) ? $node->hosting_name : $node->title;
 
     // Ensure "project_" prefix on hosting context name.
     if (strpos($name, 'project_') !== 0) {
@@ -263,7 +274,7 @@ function devshop_projects_node_update($node) {
   $info->code_path = hosting_path_normalize($project->code_path);
   $info->drupal_path = hosting_path_normalize($project->drupal_path);
   $info->base_url = $project->base_url;
-  $info->install_profile = $project->install_profile? $project->install_profile: $project->settings->default_environment['install_profile'];
+  $info->install_profile = $project->hosting_settings['install']['profile'];
 
   // Save serialized data, minus environments
   $info->settings = serialize($project->settings);
@@ -273,6 +284,8 @@ function devshop_projects_node_update($node) {
   if (empty($node->no_verify)) {
     hosting_add_task($node->nid, 'verify');
   }
+  
+  hosting_context_register($node->nid, $node->hosting_name, $node->hosting_settings);
 
   $project_node = node_load($node->nid, NULL, TRUE);
 
@@ -326,9 +339,9 @@ function devshop_projects_node_delete($node) {
 
   // When a platform or site node is FULLY deleted, remove the environment record.
   // This should never happen, site and platform nodes are never fully deleted.
-  if (($node->type == 'site' || $node->type == 'platform') && !empty($node->project)) {
+  if (($node->type == 'site') && !empty($node->project)) {
     db_delete('hosting_devshop_project_environment')
-      ->condition($node->type, $node->nid)
+      ->condition('site', $node->nid)
       ->execute();
   }
 }
@@ -361,9 +374,7 @@ function devshop_environment_save(stdClass &$environment) {
   $info->project_nid = $environment->project_nid;
   $info->name = $environment->name;
   $info->site = $environment->site;
-  $info->platform = $environment->platform;
   $info->settings = serialize($environment->settings);
-  $info->last_task = $environment->last_task;
 
   // Check for existing records
   $result = db_select('hosting_devshop_project_environment', 'e')
@@ -374,7 +385,7 @@ function devshop_environment_save(stdClass &$environment) {
     ->fetchField()
   ;
 
-  $keys = $result? array('project_nid', 'name'): array();
+  $keys = $result? array('site'): array();
 
   // Save environment record.
   if (drupal_write_record('hosting_devshop_project_environment', $info, $keys)) {
@@ -387,16 +398,3 @@ function devshop_environment_save(stdClass &$environment) {
   }
 }
 
-/**
- * Helper to save last task info.
- */
-function devshop_environment_save_last_task($environment) {
-
-  db_update('hosting_devshop_project_environment')
-    ->fields(array(
-      'last_task' => $environment->last_task,
-    ))
-    ->condition('name', $environment->name)
-    ->condition('project_nid', $environment->project_nid)
-    ->execute();
-}

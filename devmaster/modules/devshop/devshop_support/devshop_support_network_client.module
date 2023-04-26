@@ -7,7 +7,7 @@ require_once('license.inc');
  */
 function devshop_support_network_client_menu() {
 
-    $items['admin/devshop/support'] = array(
+    $items['admin/hosting/support'] = array(
         'title' => 'DevShop Support',
         'description' => 'Configure DevShop Support.',
         'page callback' => 'drupal_get_form',
@@ -15,7 +15,7 @@ function devshop_support_network_client_menu() {
         'access arguments' => array('administer devshop support'),
         'type' => MENU_LOCAL_TASK,
     );
-    $items['admin/devshop/support/activate/%'] = array(
+    $items['admin/hosting/support/activate/%'] = array(
         'title' => 'DevShop Support Activate License',
         'page callback' => 'devshop_support_network_client_activate_support_callback',
         'page arguments' => array(4),
@@ -48,7 +48,7 @@ function devshop_support_network_client_activate_support_callback($license) {
     drupal_set_message(t('License Key and Hostname verified! Your DevShop server is now supported!'));
   }
 
-  drupal_goto('admin/devshop/support');
+  drupal_goto('admin/hosting/support');
 }
 
 
@@ -480,7 +480,7 @@ function devshop_support_network_client_settings_form_validate_key($element, &$f
   else {
     drupal_set_message(t('License Key and Hostname verified! Your DevShop server is now supported!'));
   }
-  $form_state['redirect'] = 'admin/devshop/support';
+  $form_state['redirect'] = 'admin/hosting/support';
 }
 
 /**
@@ -559,7 +559,7 @@ function devshop_support_network_client_page_alter(&$page) {
 
 
   // On the homepage, put the block on the left.
-  if (current_path() == 'projects' || current_path() == 'admin/devshop/support') {
+  if (current_path() == 'projects' || current_path() == 'admin/hosting/support') {
 
     if (empty($page['sidebar_first'])) {
       $page['sidebar_first'] = array(
@@ -580,7 +580,7 @@ function devshop_support_network_client_page_alter(&$page) {
 function devshop_support_network_client_preprocess_page(&$variables) {
 
   // On the homepage, put the block on the left.
-  if (current_path() == 'projects' || current_path() == 'admin/devshop/support') {
+  if (current_path() == 'projects' || current_path() == 'admin/hosting/support') {
 //
 //    if (isset($variables['page']['sidebar_first'])) {
 //      $variables['page']['sidebar_first']['devshop_support_network_client_devshop_support_license_status'] = $variables['page']['footer']['devshop_network_client_support_devshop_support_license_status'];

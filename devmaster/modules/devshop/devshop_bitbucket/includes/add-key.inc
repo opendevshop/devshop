@@ -11,14 +11,14 @@ function devshop_bitbucket_add_key_to_account($form, &$form_state) {
 
     if (empty($token)) {
         drupal_set_message('bitbucket API Token is not set.', 'error');
-        drupal_goto('admin/devshop/bitbucket');
+        drupal_goto('admin/hosting');
         return;
     }
 
     // If key was already found, skip.
     if (devshop_bitbucket_check_key()) {
         drupal_set_message('SSH Key was found already on your account.', 'error');
-        drupal_goto('admin/devshop/bitbucket');
+        drupal_goto('admin/hosting');
         return;
     }
 
@@ -44,9 +44,9 @@ function devshop_bitbucket_add_key_to_account($form, &$form_state) {
 
     if ($return['verified']) {
         drupal_set_message('SSH Key added to your account.');
-        drupal_goto('admin/devshop/bitbucket');
+        drupal_goto('admin/hosting');
     } else {
         drupal_set_message('Something went wrong. SSH Key was not added to your account.', 'error');
-        drupal_goto('admin/devshop/bitbucket');
+        drupal_goto('admin/hosting');
     }
 }

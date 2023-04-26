@@ -68,7 +68,7 @@ function devshop_hosting_install_footer_menu() {
     ;
 
     // Add links.
-    $links["admin/devshop"] = $t('DevShop Settings');
+    $links["admin/hosting"] = $t('DevShop Settings');
     $links["node/$nid"] = $t('Hostmaster Dashboard');
     $links['https://docs.opendevshop.com'] = $t('Documentation');
     $links['https://gitter.im/opendevshop/devshop'] = $t('Chat');
@@ -284,7 +284,7 @@ function devshop_hosting_update_7104() {
 function devshop_hosting_update_7105() {
   $menu_item = array(
     'link_title' => t('DevShop Settings'),
-    'link_path' => 'admin/devshop',
+    'link_path' => 'admin/hosting',
     'menu_name' => 'devshop-footer-links',
     'description' => t("Manage this DevShop's Settings"),
     'weight' => -1,

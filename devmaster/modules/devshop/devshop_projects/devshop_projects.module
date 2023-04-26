@@ -23,6 +23,14 @@ include_once('tasks/deploy.inc');
 use Symfony\Component\Yaml\Yaml;
 
 /**
+ * @param $types
+ *
+ */
+function devshop_projects_hosting_context_types_alter(&$types) {
+  $types[] = 'project';
+}
+
+/**
  * Implements hook_init().
  *
  * Adds a css file.
@@ -62,8 +70,11 @@ function devshop_projects_init() {
   }
 
   // If on the projects page, or a project or site node...
-  if (arg(0) == 'node' && is_numeric(arg(1))) {
-    $node = node_load(arg(1));
+  $node = menu_get_object();
+  if ($node) {
+    drupal_add_js(array(
+      'nid' => $node->nid,
+    ), 'setting');
     if ($node->type == 'project' || $node->type == 'site' || $node->type == 'task') {
       drupal_add_js(drupal_get_path('module', 'devshop_projects') . '/inc/task-ajax.js');
 
@@ -167,30 +178,16 @@ function devshop_environment_menu_first_items($environment, $tasks) {
     }
 
     $items[] = 'deploy';
-  }
-
-  // Load test task, if it exists
-  if (drupal_valid_path("hosting_confirm/{$environment->site}/site_test")) {
-    $href = "hosting_confirm/{$environment->site}/site_test";
-    $url = url($href, array(
-      'query' => array(
-        'token' => drupal_get_token($user->uid),
-        'redirect' => 'task-page',
-      )
-    ));
-    $title = $tasks['test']['title'];
-    if (isset($tasks['test']['icon'])) {
-      $icon = '<i class="fa fa-' . $tasks['test']['icon'] . '""></i>';
-    }
-    else {
-      $icon = '';
-    }
-    $items[] = <<<HTML
-      <a href="$url">
-            $icon $title
-      </a>
-HTML;
+    $items[] = 'test';
     $items[] = '<div class="divider"></div>';
+    $items[] = 'install';
+    $items[] = 'backup';
+    $items[] = 'disable';
+    $items[] = 'delete';
+    $items[] = '<div class="divider"></div>';
+    $items[] = 'git-branch';
+    $items[] = 'git-tag';
+    $items[] = 'git-commit';
   }
 
   // Add aegir items to items
@@ -222,20 +219,6 @@ HTML;
 //          'html' => TRUE,
 //        )
 //      );
-    }
-
-    // Add disable or delete task based on hosting variable.
-    if (!variable_get('hosting_require_disable_before_delete', TRUE)) {
-      $items[] = 'disable';
-      $items[] = 'delete';
-    } else {
-
-      if ($environment->site_status == HOSTING_SITE_DISABLED) {
-        $items[] = 'enable';
-        $items[] = 'delete';
-      } elseif (empty($environment->settings->locked)) {
-        $items[] = 'disable';
-      }
     }
 
     $items[] = '<div class="divider"></div>';
@@ -285,7 +268,7 @@ function devshop_projects_node_access($node, $op, $account) {
  */
 function devshop_projects_menu() {
   //Settings page.
-  $items['admin/devshop'] = array(
+  $items['admin/hosting'] = array(
     'title' => 'DevShop Settings',
     'description' => 'Default values for use in creation project',
     'page callback' => 'drupal_get_form',
@@ -295,9 +278,10 @@ function devshop_projects_menu() {
     'file path' => drupal_get_path('module', 'devshop_projects') . '/inc',
     'type' => MENU_NORMAL_ITEM,
   );
-  $items['admin/devshop/settings'] = array(
+  $items['admin/hosting/devshop'] = array(
     'title' => t('DevShop Settings'),
     'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => -10,
   );
 
   $items['projects'] = array(
@@ -387,16 +371,51 @@ function devshop_projects_menu() {
 //  );
 
   // Ajax endpoint for reloads
-  $items['devshop/tasks'] = array(
-      'page callback' => 'devshop_projects_tasks_status_json',
-      'page arguments' => array(2),
-      'description' => '',
-      'access arguments' => array('access task logs'),
+  $items['data/%node'] = array(
+      'page callback' => 'devshop_tasks_json_endpoint',
+      'page arguments' => array(1),
+      'access callback' => 'node_access',
+      'access arguments' => array('view', 1),
       'file' => 'tasks-ajax.inc',
       'file path' => drupal_get_path('module', 'devshop_projects') . '/inc',
   );
 
   return $items;
+}
+
+/**
+ * Implements hook_menu_alter().
+ *
+ * Replaces node/add/project with a ctools wizard.
+ */
+function devshop_projects_menu_alter(&$items) {
+  $items['node/add/project']['page callback'] = 'devshop_projects_create_wizard';
+  $items['node/add/project']['page arguments'] = array(3);
+  $items['node/add/project']['file'] = 'create-wizard.inc';
+  $items['node/add/project']['file path'] = drupal_get_path('module', 'devshop_projects') . '/inc';
+
+  // Hosting now hides all but migrate and clone tasks.
+  $path = sprintf("hosting_confirm/%hosting_%s_wildcard/site_deploy", 'deploy', 'deploy', 'deploy');
+  $items[$path]['access callback'] = 'devshop_hosting_task_menu_access_csrf';
+
+  // Redirect hosting/task/% to the node
+  $items['hosting/task/%'] = array(
+      'page callback' => 'drupal_goto_nid',
+      'page arguments' => array(2),
+      'access callback' => TRUE,
+  );
+
+  if (isset($items['admin/hosting/cloud'])) {
+    $items['admin/hosting/cloud'] = $items['admin/hosting/cloud'];
+    $items['admin/hosting/cloud']['weight'] = 10;
+  }
+
+  $items['admin/hosting/settings']['title'] = t('Aegir Settings');
+  $items['admin/hosting/settings']['weight'] = -2;
+
+  $items['admin/hosting/features']['type'] = MENU_LOCAL_TASK;
+  $items['admin/hosting/features']['title'] = t('Aegir Features');
+  $items['admin/hosting/features']['weight'] = -1;
 }
 
 /**
@@ -553,33 +572,6 @@ function devshop_projects_hosting_task_confirm_form_page($nid, $task) {
 }
 
 /**
- * Implements hook_menu_alter().
- *
- * Replaces node/add/project with a ctools wizard.
- */
-function devshop_projects_menu_alter(&$items) {
-  $items['node/add/project']['page callback'] = 'devshop_projects_create_wizard';
-  $items['node/add/project']['page arguments'] = array(3);
-  $items['node/add/project']['file'] = 'create-wizard.inc';
-  $items['node/add/project']['file path'] = drupal_get_path('module', 'devshop_projects') . '/inc';
-
-  // Hosting now hides all but migrate and clone tasks.
-  $path = sprintf("hosting_confirm/%hosting_%s_wildcard/site_deploy", 'deploy', 'deploy', 'deploy');
-  $items[$path]['access callback'] = 'devshop_hosting_task_menu_access_csrf';
-
-  // Redirect hosting/task/% to the node
-  $items['hosting/task/%'] = array(
-    'page callback' => 'drupal_goto_nid',
-    'page arguments' => array(2),
-    'access callback' => TRUE,
-  );
-
-  $items['admin/devshop/cloud'] = $items['admin/hosting/cloud'];
-  $items['admin/devshop/cloud']['weight'] = 10;
-
-}
-
-/**
  * Helper to redirect to a node page.
  * @param $nid
  */
@@ -685,9 +677,7 @@ function devshop_projects_create_site($project, $platform_node, $environment_nam
   $node->db_server = $server;
 
   $node->platform = $platform_node->nid;
-
-  // Lookup this platforms install profile
-  $node->profile = db_query('SELECT nid FROM {hosting_package} WHERE short_name = :short_name', array(':short_name' => $project->install_profile))->fetchField();
+  $node->profile = $project->install_profile ? : '';
 
   // @TODO: Improve site language handling?
   $node->site_language = !empty($user->language) ? $user->language : 'en';
@@ -707,20 +697,6 @@ function devshop_projects_create_site($project, $platform_node, $environment_nam
       '%message' => $e->getMessage(),
     )));
   }
-
-  // Lookup install task to use it for last task.
-  $tasks = hosting_get_tasks('rid', $node->nid);
-  
-  // Update environment with our site
-  db_update('hosting_devshop_project_environment')
-    ->fields(array(
-      'site' => $node->nid,
-      'last_task' =>  current($tasks)->nid,
-    ))
-    ->condition('project_nid', $project->nid)
-    ->condition('name', $environment_name)
-    ->execute();
-
   return $node;
 }
 
@@ -789,42 +765,6 @@ function _devshop_projects_project_has_module($node, $module) {
 }
 
 /**
- * Reset all environment's "last task" to the NID.
- */
-function devshop_reset_last_tasks () {
-
-  // Lookup all environments
-  $results = db_query('SELECT * FROM {hosting_devshop_project_environment}')->fetchAllAssoc('site');
-  foreach ($results as $result) {
-    $nid = db_query("SELECT t.nid FROM hosting_task t WHERE rid = :platform OR rid = :site ORDER BY t.vid DESC", array(
-      ':site' => $result->site,
-      ':platform' => $result->platform,
-    ))->fetchField();
-
-    if (!empty($result->name)) {
-      $result->last_task = $nid;
-      devshop_environment_save_last_task($result);
-    }
-  }
-}
-
-/**
- * Helper to get a project node by name.
- */
-function devshop_load_project_by_name($name) {
-  $nid = db_select('node', 'n')
-    ->fields('n', array('nid'))
-    ->condition('type', 'project')
-    ->condition('title', $name)
-    ->condition('status', 1)
-    ->execute()
-    ->fetchField()
-  ;
-  $node = node_load($nid);
-  return $node;
-}
-
-/**
  * Generate an environment's URL from project and environment name using the domain name pattern.
  *
  * @param $project
@@ -879,4 +819,98 @@ function convert_to_object($thing) {
   $yml = Yaml::dump($thing, 2, 2, Yaml::DUMP_OBJECT_AS_MAP);
   $object = Yaml::parse($yml, Yaml::PARSE_OBJECT_FOR_MAP);
   return $object;
+}
+
+/**
+ * Check that we are getting a fingerprint at all first.
+ * @return bool|string
+ * @throws \SSHKeyParseException
+ */
+function devshop_public_key_valid_fingerprint($devshop_key = '') {
+
+  if (empty($devshop_key)) {
+    $devshop_key = variable_get('devshop_public_key', '');
+  }
+
+  if (empty($devshop_key)) {
+    return FALSE;
+  }
+
+  try {
+    $devshop_sshkey = sshkey_parse($devshop_key);
+  }
+  catch (\SSHKeyParseException $e) {
+    return FALSE;
+  }
+
+  return $devshop_sshkey['fingerprint'];
+}
+
+/**
+ * Implements hook_hosting_clone_source_options_alter()
+ * @param $options
+ * @param $target
+ *
+ * @return void
+ * @see hosting_site_install_methods_form_element()
+ */
+function devshop_projects_hosting_clone_source_options_alter(&$options, $target) {
+
+  if (!isset($target->project)) {
+    return;
+  }
+
+  // If project has no environments yet.
+  $primary_label = t('Primary Environment');
+
+  // If primary environnment setting is set...
+  if ($target->project->settings->primary_environment ?? FALSE) {
+
+    // and an environment exists by that name...
+    $primary = $target->project->settings->primary_environment;
+    if (isset($target->project->environments[$primary])) {
+      // Set the label to include the site.
+      $primary_alias = $target->project->environments[$primary]->drush_alias;
+      $primary_label = t('Primary Environment: !primary', ['!primary' => $options[$primary_alias]]);
+    }
+    else {
+      // No environment exists with the name set in primary environment. Tell user to check settings.
+      $primary_label = t('Primary Environment: Not found. Check !link', [
+        '!link' => l(t('Project Settings'), "node/{$target->project->nid}/edit", [
+          'query' => drupal_get_destination(),
+        ])
+      ]);
+    }
+  }
+  // Add "Primary" option to list.
+  $options = [
+    '_primary' => $primary_label,
+  ] + $options;
+
+  // Only show sites that are in the same project.
+  foreach ($options as $alias => $label) {
+    if ($alias != '_other' && $alias != '_primary' && !isset($target->project->environment_aliases[$alias])) {
+      unset($options[$alias]);
+    }
+  }
+
+  // Add other aliases to the clone source.
+  if (isset($target->project->settings->aliases)) {
+    foreach ($target->project->settings->aliases as $alias => $data) {
+      $link = l('<i class="fa fa-external-link"></i> ' . $data['uri'], 'http://' . $data['uri'], array(
+          'html' => TRUE,
+          'attributes' => array(
+            'target' => '_blank',
+            'class' => array('btn-text'),
+          ),
+        )) . '</small>';
+      $remote = t('Unknown');
+      $options["@{$target->project->name}.{$alias}"] = "<span>{$alias}</span> <small class='git-ref text-muted'><i class='fa fa-globa'></i> $remote</small> <small>$link</small>";
+    }
+ }
+
+  // Put back _other, on the end.
+  $option_other = $options['_other'];
+  unset($options['_other']);
+  $options['_other'] = $option_other;
 }

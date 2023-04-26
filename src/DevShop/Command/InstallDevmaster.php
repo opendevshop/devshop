@@ -211,6 +211,11 @@ class InstallDevmaster extends Command
         'git_docroot', NULL, InputOption::VALUE_OPTIONAL,
         'Path to document root exposed to web server.'
       )
+      ->addOption(
+        'git_reset', NULL, InputOption::VALUE_OPTIONAL,
+        'Reset working changes in the git repository.',
+        TRUE
+      )
 
       // path_to_drush
       ->addOption(
@@ -221,6 +226,10 @@ class InstallDevmaster extends Command
       ->addOption(
         'force-reinstall', NULL, InputOption::VALUE_NONE,
         'Delete any existing site with the specified URI'
+      )
+      ->addOption(
+        'fail-if-unknown-version', NULL, InputOption::VALUE_NONE,
+        'Available if you really need to fail the command when the chosen version is not found in the remote.'
       )
     ;
   }
@@ -264,8 +273,8 @@ class InstallDevmaster extends Command
 
     // If version was not specified, lookup the latest.
     if (empty($version)) {
-      $version = $this->getLatestVersion();
-      $output->writeln("Checking for latest version... $version");
+      $output->writeln('Checking for latest version...');
+      $input->setOption('devshop_version', $this->getLatestVersion());
     }
 
     // Validate chosen version
@@ -276,10 +285,11 @@ class InstallDevmaster extends Command
       $input->setOption('git_reference', $version);
     }
     catch (\Exception $e) {
-      $output->writeln('<error>' . $e->getMessage() . '</error>');
-      exit(1);
+      $output->writeln('<warning>' . "Version $version does not exist in git repository {$this->getRepoSlug()}." . '</warning>');
+      if ($input->getOption('fail-if-unknown-version')) {
+        exit(1);
+      }
     }
-
 
     // site
     if (!$input->getOption('site')) {
@@ -552,6 +562,7 @@ class InstallDevmaster extends Command
       'git_root' => $this->input->getOption('git_root'),
       'git_remote' => $this->input->getOption('git_remote'),
       'git_reference' => $this->input->getOption('git_reference'),
+      'git_reset' => $this->input->getOption('git_reset'),
       'git_docroot' => $this->input->getOption('git_docroot'),
     ));
 
@@ -601,6 +612,7 @@ PHP;
     // Determine home path and path to alias file.
     $drush_path = $this->input->getOption('drush-path');
     $home = $this->input->getOption('aegir_root');
+    $devshop_control_root = $this->input->getOption('root');
     $path_to_alias_file = "{$home}/.drush/{$name}.alias.drushrc.php";
 
     // Notify user.
@@ -618,7 +630,7 @@ PHP;
       $options = $this->input->getOption('force-reinstall')? '--force-reinstall --verbose': '--verbose';
       $this->output->writeln("");
       $this->output->writeln("Running <comment>{$drush_path} @{$name} provision-install --client_email={$client_email} {$options}</comment> ...");
-      $process = $this->getProcess("{$drush_path} @{$name} provision-install --client_email={$client_email} {$options}");
+      $process = $this->getProcess("{$drush_path} --root={$devshop_control_root} @{$name} provision-install --client_email={$client_email} {$options}");
       $process->setTimeout(NULL);
 
       // Ensure process runs sucessfully.
@@ -637,12 +649,15 @@ PHP;
 
     // Run provision-verify
     $drush_path = $this->input->getOption('drush-path');
+    $devshop_control_root = $this->input->getOption('root');
+
     $this->output->writeln("");
     $this->output->writeln("Running <comment>drush @{$name} provision-verify</comment> ...");
 
     // Set to --verbose or use other options to see provision-verify logs when running devmaster:install (for debugging).
     $provision_verify_options = '--verbose';
-    $process = $this->getProcess("{$drush_path} @{$name} provision-verify $provision_verify_options");
+    $process = $this->getProcess("{$drush_path} --root={$devshop_control_root} @{$name} provision-verify $provision_verify_options");
+    $process->setWorkingDirectory($devshop_control_root);
     $process->setTimeout(NULL);
 
     if ($this->runProcess($process)) {
@@ -664,25 +679,13 @@ PHP;
    *   Run `drush hosting-setup`
    */
   private function finalize() {
-
-    // Run `drush cc drush`
     $drush_path = $this->input->getOption('drush-path');
-    if ($this->runProcess(new Process("{$drush_path} cc drush"))) {
-      $this->output->writeln("");
-      $this->output->writeln("Running <comment>drush cc drush</comment>: <info>Done</info>");
-      $this->output->writeln("");
-    }
-    else {
-      $this->output->writeln("");
-      $this->output->writeln("<error>Unable to run drush cc drush. Cannot continue.</error>");
-      $this->output->writeln("");
-      exit(1);
-    }
+    $root = $this->input->getOption('root');
 
     // Run `drush @hostmaster hosting-setup`
     // @see install.hostmaster.inc: 275
     $master_drush_alias = $this->input->getOption('master_drush_alias');
-    if ($this->runProcess(new Process("{$drush_path} @{$master_drush_alias} hosting-setup -y"))) {
+    if ($this->runProcess(new Process("{$drush_path} --root={$root} @{$master_drush_alias} hosting-setup -y"))) {
       $this->output->writeln("");
       $this->output->writeln("Running <comment>drush @{$master_drush_alias} hosting-setup</comment>: <info>Done</info>");
       $this->output->writeln("");
@@ -694,15 +697,15 @@ PHP;
       exit(1);
     }
 
-    // Run `drush @hostmaster cc drush`
-    if ($this->runProcess(new Process("{$drush_path} @{$master_drush_alias} cc drush"))) {
+    // Run `drush cc drush`
+    if ($this->runProcess(new Process("{$drush_path} cc drush"))) {
       $this->output->writeln("");
-      $this->output->writeln("Running <comment>drush @{$master_drush_alias} cc drush</comment>: <info>Done</info>");
+      $this->output->writeln("Running <comment>drush cc drush</comment>: <info>Done</info>");
       $this->output->writeln("");
     }
     else {
       $this->output->writeln("");
-      $this->output->writeln("<error>Unable to run drush @{$master_drush_alias} cc drush. Cannot continue.</error>");
+      $this->output->writeln("<error>Unable to run drush cc drush. Cannot continue.</error>");
       $this->output->writeln("");
       exit(1);
     }

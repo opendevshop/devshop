@@ -30,22 +30,24 @@ function aegir_update_permission() {
  * @return mixed
  */
 function hosting_task_update_drupal_form() {
+    drupal_set_title(t('Update composer packages?'));
     $form = array();
-    $form['note'] = array(
-      '#markup' => t('This will run the command <code>drush pm-update</code> on your Drupal site.'),
-      '#prefix' => '<p>',
-      '#suffix' => '</p>',
-    );
     $form['warning'] = array(
       '#markup' => t('Running this task may have unexpected consequences. It is not recommended to run on a production site.'),
       '#prefix' => '<div class="alert alert-warning"><i class="fa fa-warning"></i> ',
       '#suffix' => '</div>',
+    );
+    $form['packages'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Packages to update'),
+      '#description' => t('Enter a list of packages you would like to update. Leave blank to try updating all of them.'),
     );
     $form['commit'] = array(
       '#type' => 'checkbox',
       '#title' => t('Commit & Push all changes'),
       '#description' => t('After running the update, commit and push all changes.'),
       '#default_value' => 1,
+      '#access' => user_access('create git_commit task'),
     );
     return $form;
 }
@@ -66,7 +68,6 @@ function aegir_update_post_hosting_update_drupal_task($task, $data) {
       ));
   }
 
-  hosting_add_task($task->ref->platform, 'verify');
   hosting_add_task($task->ref->nid, 'verify');
 }
 
@@ -76,7 +77,7 @@ function aegir_update_post_hosting_update_drupal_task($task, $data) {
  * Defines the list of tasks that appear under the gear icon.
  */
 function aegir_update_devshop_environment_menu($environment) {
-
+    $items = [];
     if ($environment->site && $environment->site_status == HOSTING_SITE_ENABLED) {
         $items[] = 'update_drupal';
     }

@@ -11,9 +11,6 @@
                     if (platform.version) {
                         jQuery('#version-' + i).html(platform.version);
                     }
-                    if (platform.profiles) {
-                        jQuery('#profiles-' + i).html(platform.profiles);
-                    }
                     if (platform.link) {
                         jQuery('#status-' + i).replaceWith(platform.link);
                     }
