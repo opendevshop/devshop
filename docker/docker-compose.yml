@@ -9,7 +9,7 @@ services:
       dockerfile: "docker/Dockerfile.${OS:-ubuntu2004}"
       args:
         # see .env files for defaults.
-        - DEVSHOP_CONTAINER_FROM
+        # - DEVSHOP_CONTAINER_FROM
         - DEVSHOP_DOCKER_COMMAND_BUILD_ARG
         - ANSIBLE_EXTRA_VARS_ARG
         - ANSIBLE_TAGS_ARG
