@@ -51,7 +51,7 @@ function devshop_bitbucket_hosting_task_update_status($task, $status) {
 
       $params->key = 'deploy';
       $params->url = url("node/$task->nid", ['absolute' => true]);
-      $params->description = t('Visit !url', array('!url' => $task->ref->environment->url));
+      $params->description = $task->ref->environment->url;
       
       $build_status = $client->repositories()->workspaces($environment->bitbucket_owner)->commit($environment->bitbucket_repo)->statuses($sha)->build()->create((array) $params);
       
