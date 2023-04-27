@@ -68,10 +68,6 @@ function devshop_project_create_step_settings($form, &$form_state) {
     ),
   ), 'setting');
 
-  // Remove "live environment" selector.
-  $form['project']['codebase']['live_environment']['#type'] = 'value';
-  $form['project']['codebase']['live_environment']['#suffix'] = '';
-
   return $form;
 }
 
@@ -85,33 +81,6 @@ function devshop_project_create_step_settings_validate(&$from, &$form_state) {
 
 /**
  * STEP 2: Submit
- *
- * If webroot or git url was updated, update platforms path.
  */
 function devshop_project_create_step_settings_submit(&$form, &$form_state) {
-
-  // Update any platforms if the path to drupal changed
-  if ($form['project']['codebase']['drupal_path']['#default_value'] != $form_state['values']['project']['drupal_path'] || $form['project']['git_url']['#default_value'] != $form_state['values']['project']['git_url']) {
-    $environments = db_query("
-      SELECT
-          e.platform, e.name
-        FROM {hosting_devshop_project_environment} e
-        WHERE project_nid = :nid
-        ", array(
-      ':nid' => $form_state['values']['nid']
-    ))->fetchAll();
-    foreach ($environments as $environment) {
-      $platform = node_load($environment->platform);
-      $platform->publish_path = $form_state['values']['project']['code_path'] . DIRECTORY_SEPARATOR . $environment->name . DIRECTORY_SEPARATOR . $form_state['values']['project']['drupal_path'];
-      $platform->git_remote = $form_state['values']['project']['git_url'];
-      $platform->git_docroot = $form_state['values']['project']['drupal_path'];
-      node_save($platform);
-    }
-    $count = count($environments);
-    if ($count) {
-      drupal_set_message(t('Document root and git repo URL updated for @count.', array(
-        '@count' => format_plural($count, t('1 site'), t( '@count sites', array('@count' => $count))),
-      )));
-    }
-  }
 }

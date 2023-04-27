@@ -15,6 +15,7 @@ supervisor_programs:
     # See https://github.com/Supervisor/supervisor/blob/master/supervisor/skel/sample.conf for options
     configuration: |
       user={{ aegir_user_name }}
+      directory={{ devshop_control_git_root }}
       numprocs=1
       # @TODO: hosting-queue-runner script was supposed to stay running until the site was ready for the drush hosting-task command.
       startretries=100
@@ -24,4 +25,4 @@ supervisor_programs:
       autorestart=TRUE
       killasgroup=true
       stopasgroup=true
-      environment=PATH="$PATH:/usr/local/bin:/usr/bin:/bin:{{ devshop_cli_bin_path }}",HOME="{{ aegir_user_home }}",USER="{{ aegir_user_name }}"
+      environment=PATH="$PATH:/usr/local/bin:/usr/bin:/bin:{{ devshop_cli_bin_path }}:{{ devshop_cli_scripts_path }}",HOME="{{ aegir_user_home }}",USER="{{ aegir_user_name }}"

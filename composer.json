@@ -17,22 +17,21 @@
         }
     ],
     "require": {
-        "php": "^7.1",
-        "knplabs/github-api": "^1.4",
-        "drush/drush": "^8",
+        "php": "^7.1||^8.0",
         "ext-json": "*",
-        "devshop/docker-bin-tools": "@dev",
         "devshop/git-split": "@dev",
-        "devshop/github-api-cli": "@dev",
-        "devshop/bin-tools": "@dev",
         "devshop/yaml-tasks": "@dev",
         "devshop/power-process": "@dev",
-        "drupal/provision": "4.x-dev"
+        "psr/cache": "^1.0",
+        "symfony/deprecation-contracts": "^2.5",
+        "symfony/options-resolver": "^4.4",
+        "devshop/bin-tools": "1.x-dev",
+        "php-http/httplug": "^2.3",
+        "devshop/git-traits": "1.x-dev",
+        "drush/drush": "^10.6"
     },
     "replace": {
         "drupal/drupal": "*"
-    },
-    "require-dev": {
     },
     "suggest": {
         "mouf/nodejs-installer": "Use to install nodejs into the devshop bin dir using composer."
@@ -49,15 +48,11 @@
         },
         {
             "type": "path",
-            "url": "docker/bin"
-        },
-        {
-            "type": "path",
             "url": "scripts"
         },
         {
             "type": "path",
-            "url": "src/DevShop/Component/ComposerCommon"
+            "url": "src/DevShop/Component/GitTraits"
         },
         {
             "type": "path",
@@ -82,10 +77,14 @@
     ],
     "config": {
         "bin-dir": "bin",
-        "platform": {
-            "php": "7.1.3"
+        "sort-packages:": "true",
+        "allow-plugins": {
+            "devshop/git-split": true,
+            "devshop/yaml-tasks": true
         },
-        "sort-packages:": "true"
+        "platform": {
+            "php": "7.4.0"
+        }
     },
     "extra": {
         "git-split": {
@@ -98,7 +97,7 @@
                 "roles/opendevshop.devmaster": "https://github.com/opendevshop/ansible-role-devmaster.git",
                 "roles/opendevshop.users": "https://github.com/opendevshop/ansible-role-user.git",
                 "scripts": "https://github.com/devshop-packages/bin-tools.git",
-                "src/DevShop/Component/BehatExtension": "https://github.com/devshop-packages/behat-extension.git",
+                "src/DevShop/Component/GitTraits": "https://github.com/devshop-packages/git-traits.git", "src/DevShop/Component/BehatExtension": "https://github.com/devshop-packages/behat-extension.git",
                 "src/DevShop/Component/ComposerCommon": "https://github.com/devshop-packages/composer-common.git",
                 "src/DevShop/Component/GitHubApiCli": "https://github.com/devshop-packages/github-api-cli.git",
                 "src/DevShop/Component/GitSplit": "https://github.com/devshop-packages/git-split.git",
@@ -118,10 +117,6 @@
             "rm -rf vendor bin/*",
             "echo 'Done.'"
         ],
-        "reinstall": [
-            "@uninstall",
-            "@composer install --prefer-source --ansi"
-        ],
         "develop:prepare": [
             "DevShop\\Composer::prepareDevelopmentEnvironment"
         ],
@@ -130,9 +125,6 @@
         ],
         "post-install-cmd": [
             "DevShop\\Composer::installControl"
-        ],
-        "post-update-cmd": [
-            "DevShop\\Composer::updateControl"
         ],
         "roles:update": [
             "DevShop\\Composer::updateRoles"

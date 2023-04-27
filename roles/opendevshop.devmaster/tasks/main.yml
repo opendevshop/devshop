@@ -7,32 +7,29 @@
       - "  Path: {{ devshop_cli_path }}"
       - "  Version: {{ devshop_version }}"
       - "  CLI Version: {{ devshop_cli_version }}"
-  tags: [always]
+      - "  Tags: {{ ansible_run_tags }}"
+
 
 - name: Detect current server hostname.
   command: "hostname --fqdn"
   register: _server_hostname_fqdn_command
   failed_when: "_server_hostname_fqdn_command.stdout is undefined"
   become: false
-  tags: [always]
 
 - name: Set server_hostname variable from current server hostname.
   set_fact:
     server_hostname: "{{ _server_hostname_fqdn_command.stdout }}"
   when: server_hostname is not defined
-  tags: [always]
 
 - name: Display server_hostname.
   debug:
     msg: "{{ server_hostname }}"
-  tags: [always]
 
 - name: Set Server Hostname
   hostname:
     name: "{{ server_hostname }}"
   when: server_hostname | length > 0
   ignore_errors: "{{ server_hostname_ignore_errors }}"
-  tags: [runtime]
 
 # This is done so the roles will be visible when ansible config is the default.
 # There are too many ways to configure the roles path. If we just put the files
@@ -71,6 +68,25 @@
   pip:
     name: '{{ devshop_pip_packages }}'
     state: present
+
+# This happens when /usr/share/devshop is in a volume and the container user doesn't work yet.
+- name: Configure Git to set devshop as a safe directory to avoid "dubious ownership" claims.
+  git_config:
+    scope: global
+    name: safe.directory
+    value: "{{ devshop_cli_path }}"
+
+- name: "Retrieve git information"
+  git:
+    repo: "{{ devshop_cli_repo }}"
+    dest: "{{ devshop_cli_path }}"
+    clone: no
+    update: no
+  register: devshop_installed_git_info
+
+- name: Git Information
+  debug:
+    msg: "{{ devshop_installed_git_info }}"
 
 - name: Detect currently installed version of DevShop.
   command: "{{ devshop_cli_path }}/scripts/branch-or-tag"
@@ -123,54 +139,44 @@
     force: "{{ not devshop_cli_skip_update }}"
   when: not devshop_cli_skip_update
 
-- name: "Configure Composer Globally"
-  command: "{{ php_executable }} {{ composer_path }} {{ devshop_cli_composer_install_command }}"
-  # Changed: true is so we don't fail ansible lint.
-  changed_when: true
-  tags: [always]
-  args:
-    chdir: "{{ item }}"
-  with_items:
-    - "{{ devshop_cli_path }}"
-
-- name: "Install DevShop dependencies with composer"
-  command: "{{ php_executable }} {{ composer_path }} {{ devshop_cli_composer_install_command }}"
-  # Changed: true is so we don't fail ansible lint.
-  changed_when: true
-  tags: [always]
-  args:
-    chdir: "{{ item }}"
-  with_items:
-    - "{{ devshop_cli_path }}"
-
-- name: Ensure DevShop Control code is owned by aegir user.
+- name: Ensure DevShop Control code is owned by platform user.
   file:
     state: directory
     path: "{{ item }}"
     group: "{{ aegir_user_name }}"
     owner: "{{ aegir_user_name }}"
     recurse: true
-  when: devshop_control_git_root is match(devshop_cli_path)
-  tags: [always]
   with_items:
-    - "{{ devshop_control_git_root }}"
-    - "{{ devshop_cli_path }}/devmaster"
+    - "{{ devshop_cli_path }}"
+
+- name: "Composer Install DevShop Source"
+  command: "{{ php_executable }} {{ composer_path }} {{ devshop_cli_composer_install_command }}"
+  # Changed: true is so we don't fail ansible lint.
+  changed_when: true
+  args:
+    chdir: "{{ item }}"
+  with_items:
+    - "{{ devshop_cli_path }}"
+  become: true
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
 
 - name: Add DevShop bin directory to Path
   copy:
     dest: /etc/profile.d/devshop-cli-path.sh
     content: 'PATH=$PATH:{{ devshop_cli_path }}/bin'
-  tags: [always]
   args:
     mode: 0644
 
-- name: Add DevShop bin via symlink so path does not matter.
+- name: Link bin scripts in system bin directories.
   file:
-    src: "{{ devshop_cli_path }}/bin/devshop"
-    dest: "{{ local_bin_path }}/devshop"
+    src: "{{ devshop_cli_path }}/bin/{{ item }}"
+    dest: "{{ local_bin_path }}/{{ item }}"
     state: link
     force: true
-  tags: [always]
+  with_items: 
+    - devshop
+    - drush
 
 - name: Debug environment
   command: "env"
@@ -180,99 +186,84 @@
   changed_when: true
 
 - name: Create Global Drush Configuration Folder
-  tags: [always]
   file:
     path: "/etc/drush"
     mode: 0755
     state: directory
 
 - name: Create Global Drush Configuration File
-  tags: [always]
   template:
     src: drushrc.php.j2
     dest: "/etc/drush/drushrc.php"
     mode: 0655
 
-- name: Check drush status
-  command: "{{ drush_bin_path }} status"
-  become: true
-  become_user: "{{ aegir_user_name }}"
-  become_method: "{{ ansible_become_method_aegir }}"
-  changed_when: true
+#- name: Ensure /var/aegir is owned by aegir user.
+#  file:
+#    state: directory
+#    path: "{{ aegir_user_home }}"
+#    group: "{{ aegir_user_name }}"
+#    owner: "{{ aegir_user_name }}"
 
-- name: Ensure /var/aegir is owned by aegir user.
-  file:
-    state: directory
-    path: "{{ aegir_user_home }}"
-    group: "{{ aegir_user_name }}"
-    owner: "{{ aegir_user_name }}"
-  tags: [runtime]
+#- name: Ensure DevShop Control code is owned by aegir user.
+#  file:
+#    state: directory
+#    path: "{{ item }}"
+#    group: "{{ aegir_user_name }}"
+#    owner: "{{ aegir_user_name }}"
+#    recurse: true
+#  when: devshop_control_git_root is match(devshop_cli_path)
+#  with_items:
+#    - "{{ devshop_control_git_root }}"
+#    - "{{ devshop_cli_path }}/devmaster"
 
-- name: Ensure DevShop Control code is owned by aegir user.
+- name: Create home subfolders
   file:
-    state: directory
     path: "{{ item }}"
-    group: "{{ aegir_user_name }}"
-    owner: "{{ aegir_user_name }}"
-    recurse: true
-  when: devshop_control_git_root is match(devshop_cli_path)
-  tags: [runtime]
-  with_items:
-    - "{{ devshop_control_git_root }}"
-    - "{{ devshop_cli_path }}/devmaster"
-
-- name: Create /var/aegir/.drush
-  file:
-    path: "{{ aegir_user_home }}/.drush/commands"
     owner: "{{ aegir_user_name }}"
     group: "{{ aegir_user_name }}"
     mode: 0744
     state: directory
-  tags: [runtime]
+  with_items:
+    - "{{ aegir_user_home }}/.drush/commands"
+    - "{{ aegir_user_home }}/.drush/sites"
 
-- name: Install required drush packages.
-  command: |
-    {{ drush_bin_path }} dl {{ item.key }}-{{ item.value }} --destination={{ aegir_user_home }}/.drush/commands --package-handler={{ drush_dl_method }}
-  with_dict: "{{ devshop_drush_packages }}"
-  changed_when: true
-  ignore_errors: true
-  become: true
-  become_user: "{{ aegir_user_name }}"
-  become_method: "{{ ansible_become_method_aegir }}"
-  tags: [runtime]
+#- name: Install required drush packages.
+#  command: |
+#    {{ drush_executable_path }} dl {{ item.key }}-{{ item.value }} --destination={{ aegir_user_home }}/.drush/commands --package-handler={{ drush_dl_method }}
+#  with_dict: "{{ devshop_drush_packages }}"
+#  changed_when: true
+#  ignore_errors: true
+#  become: true
+#  become_user: "{{ aegir_user_name }}"
+#  become_method: "{{ ansible_become_method_aegir }}"
+#
 
 - name: Setup Drush Bash Enhancements
-  command: "{{ drush_bin_path }} init --yes"
+  command: "{{ drush_executable_path }} init --yes"
   changed_when: true
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
-  tags: [runtime]
 
 - name: "Remove existing DevShop Control Source Code from {{ devshop_control_git_root }} before installing, if requested."
   when: devshop_danger_remove_devmaster
   file:
     path: "{{ devshop_control_git_root }}"
     state: absent
-  tags: [never, remove-devmaster, rebuild-devmaster]
-
-- name: Clear the drush cache.
-  command: "{{ drush_bin_path }} cc drush"
-  changed_when: true
-  become: true
-  become_user: "{{ aegir_user_name }}"
-  become_method: "{{ ansible_become_method_aegir }}"
-  tags: [runtime]
 
 - name: "Install DevShop Web Interface"
   include_tasks: "install-devmaster.yml"
-  tags: [runtime]
-  when: not devmaster_skip_install|bool
+  # Skip this step if "buildtime" tag is specified.
+  when:
+  - not devmaster_skip_install|bool
+  - "'buildtime' not in ansible_run_tags"
 
-- name: Configure DevShop Web Interface
-  tags: [runtime]
+- name: "Configure DevShop Web Interface"
   include_tasks: "config-devmaster.yml"
-  when: not devmaster_skip_install|bool
+  # Skip this step if "buildtime" tag is specified..
+  when:
+  - not devmaster_skip_install|bool
+  - "'buildtime' not in ansible_run_tags"
 
 - name: Ensure privacy of SSH Keys
   file: path=/var/aegir/{{ item.path }} mode={{ item.mode }}
@@ -310,4 +301,3 @@
       - "  Path: {{ devshop_cli_path }}"
       - "  Version: {{ devshop_version }}"
       - "  CLI Version: {{ devshop_cli_version }}"
-  tags: [always]

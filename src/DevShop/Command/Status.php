@@ -62,26 +62,6 @@ class Status extends Command
       $output->writeln(trim($process->getOutput()));
     }
 
-    // Check for provision
-    $output->write("<comment>Checking for Provision...  </comment>");
-
-    if ($this->user == 'aegir') {
-      $process = new Process('drush help provision-save');
-    }
-    else {
-      $process = new Process('sudo su - aegir -c "drush help provision-save"');
-    }
-
-    $process->run();
-    if (!$process->isSuccessful()) {
-      $output->writeln("<error>Provision not detected.</error>");
-      $output->writeln($process->getErrorOutput());
-      $error = TRUE;
-    }
-    else {
-      $output->writeln("<info>Provision is installed.</info>");
-    }
-
     // Check for devmaster
     $output->write("<comment>Checking for DevMaster...  </comment>");
     if ($this->user == 'aegir') {

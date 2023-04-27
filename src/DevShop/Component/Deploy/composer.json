@@ -16,17 +16,17 @@
     }
   ],
   "require": {
-    "php": "^7.1",
+    "php": "^7.1||^8.0",
     "consolidation/robo": "^1.0",
-    "devshop/composer-common": "1.x-dev",
+    "devshop/git-traits": "1.x-dev",
     "eloquent/composer-config-reader": "^2.1"
   },
   "require-dev": {
   },
   "repositories": {
-    "devshop/composer-common": {
+    "devshop/git-traits": {
       "type": "path",
-      "url": "../ComposerCommon"
+      "url": "../GitTraits"
     }
   },
   "extra": {

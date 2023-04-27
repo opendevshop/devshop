@@ -4,33 +4,67 @@
  * @file devshop_bitbucket.module
  */
 
+require_once('includes/queue.inc');
+require_once('includes/forms.inc');
+
 //require_once 'vendor/autoload.php';
+
+/**
+ * Get a BitBucket client.
+ *
+ * If a devshop_bucket_token is not found, it will attempt to use the Public API.
+ *
+ * @param bool $must_authenticate
+ *   Set to TRUE if the client must authenticate with a token. If TRUE and token
+ *   is not present, an Exception will be thrown.
+ *
+ * @return \Bitbucket\Client
+ * @throws Exception
+ */
+function devshop_bitbucket_client($token = null) {
+  $client = new Bitbucket\Client();
+  $auth_method = variable_get('devshop_bitbucket_authentication_method', '');
+  $user = variable_get('devshop_bitbucket_app_username');
+  $password = variable_get('devshop_bitbucket_app_password');
+  $bitbucket_token = $token ? : devshop_bitbucket_token();
+
+  // Set token in client.
+  try {
+    if ($auth_method == 'password' && $user && $password) {
+      $client->authenticate(
+        Bitbucket\Client::AUTH_HTTP_PASSWORD,
+        $user,
+        $password
+      );
+    }
+    elseif ($bitbucket_token) {
+      $client->authenticate(
+        Bitbucket\Client::AUTH_OAUTH_TOKEN,
+        $bitbucket_token
+      );
+    }
+    return $client;
+  }
+  catch (\Exception $e) {
+    // If error, set_message and throw the exception upstream.
+    drupal_set_message(t('Error validating BitBucket token: ') . $e->getMessage(), 'error');
+    throw $e;
+  }
+}
 
 /**
  * Implements hook_menu().
  */
 function devshop_bitbucket_menu() {
   $items = array();
-//
-//  $items['admin/devshop/bitbucket'] = array(
-//    'title' => 'BitBucket',
-//    'description' => 'DevShop BitBucket Integration Settings',
-//    'page callback' => 'drupal_get_form',
-//    'page arguments' => array('devshop_bitbucket_settings_form'),
-//    'access arguments' => array('administer projects'),
-//    'file' => 'admin.inc',
-//    'file path' => drupal_get_path('module', 'devshop_bitbucket') . '/includes',
-//    'type' => MENU_LOCAL_TASK,
-//  );
-//  $items['admin/devshop/bitbucket/add-key'] = array(
-//    'title' => 'Add public key to bitbucket Account',
-//    'page callback' => 'drupal_get_form',
-//    'page arguments' => array('devshop_bitbucket_add_key_to_account'),
-//    'access arguments' => array('administer projects'),
-//    'file' => 'add-key.inc',
-//    'file path' => drupal_get_path('module', 'devshop_bitbucket') . '/includes',
-//    'type' => MENU_CALLBACK,
-//  );
+  $items['admin/hosting/bitbucket/load-repos'] = array(
+    'title' => 'Load all repos that the user has access to.',
+    'page callback' => 'devshop_bitbucket_get_repositories_page',
+    'access arguments' => array('administer projects'),
+    'file' => 'admin.inc',
+    'file path' => drupal_get_path('module', 'devshop_bitbucket') . '/includes',
+    'type' => MENU_CALLBACK,
+  );
   return $items;
 }
 
@@ -39,6 +73,7 @@ function devshop_bitbucket_menu() {
  */
 function devshop_bitbucket_form_project_node_form_alter(&$form, &$form_state, $form_id) {
   $node = $form['#node'];
+  $project = $node->project;
 
   if ($node->project->git_provider != 'bitbucket') {
     return;
@@ -51,51 +86,397 @@ function devshop_bitbucket_form_project_node_form_alter(&$form, &$form_state, $f
       '#collapsible' => TRUE,
       '#collapsed' => arg(1) != $node->nid,
       '#title' => t('BitBucket Integration'),
+      '#weight' => -11,
   );
 
-  // Pull Requests create environments?
-  // $form['bitbucket']['pull_request_environments'] = array(
+  // If Pull Requests were found in the environment, enable PR environments by default.
+  $prs = [];
+  try {
+
+    $client = devshop_bitbucket_client();
+
+    $prs = $client->repositories()
+      ->workspaces($project->bitbucket_owner)
+      ->pullRequests($project->bitbucket_repo)
+      ->list()
+    ;
+  }
+  catch (\Exception $e) {
+    drupal_set_message(t("Something went wrong when looking up PRs: for the repo !link: %message", array(
+      '!link' => l("{$node->project->bitbucket_owner}/{$node->project->bitbucket_repo}", $node->project->git_repo_url),
+      '%message' => $e->getMessage(),
+    )), 'error');
+  }
+  
+  $pr_count = count($prs['values']);
+  if (!isset($node->project->settings->bitbucket) && $pr_count > 0) {
+    $node->project->settings->bitbucket = array(
+      'pull_request_environments' => true,
+      'pull_request_environments_delete' => true,
+    );
+  }
+
   $form['project']['settings']['bitbucket']['pull_request_environments'] = array(
       '#type' => 'checkbox',
-      '#title' => t('Create Environments for Pull Requests'),
+      '#title' => t('Create Pull Request Environments'),
       '#default_value' => isset($node->project->settings->bitbucket) ? $node->project->settings->bitbucket['pull_request_environments'] : FALSE,
-      '#description' => t('If using bitbucket, create a new environment when a new Pull Request is created.'),
+      '#description' => t('Create a new environment when a new Pull Request is created.'),
+  );
+  
+  $form['project']['settings']['bitbucket']['pr_alert'] = array(
+    '#prefix' => '<div class="alert alert-info">',
+    '#suffix' => '</div>',
+    'note' => array(
+      '#markup' =>  format_plural($pr_count, t('There is 1 open Pull Request in your project.'), t('There are @count open Pull Requests in your project')),
+    ),
+    'link' => array(
+      '#prefix' => '<div>',
+      '#suffix' => '</div>',
+      '#type' => 'link',
+      '#href' => $project->git_repo_url . '/pull-requests',
+      '#title' => t('View Pull Requests'),
+      '#attributes' => array(
+        'target' => '_blank',
+      )
+    )
   );
 
   // Delete Pull Request environments?
   // $form['bitbucket']['pull_request_environments_delete'] = array(
   $form['project']['settings']['bitbucket']['pull_request_environments_delete'] = array(
-      '#type' => 'checkbox',
-      '#title' => t('Delete Pull Request Environments'),
-      '#default_value' => isset($node->project->settings->bitbucket) ? $node->project->settings->bitbucket['pull_request_environments_delete'] : FALSE,
-      '#description' => t('When Pull Requests are closed, delete the environment.'),
-  );
-
-  // Pull Request Environment method.
-  // $form['bitbucket']['pull_request_environments_method'] = array(
-
-  $environments = array_keys($node->project->environments);
-  $options = array(
-    t('Install Drupal') => array(
-        'devshop__bitbucket__install' => empty($node->project->install_profile)? t('Default install profile.'): $node->project->install_profile,
+    '#type' => 'checkbox',
+    '#title' => t('Delete Environments for Closed Pull Requests'),
+    '#default_value' => isset($node->project->settings->bitbucket) ? $node->project->settings->bitbucket['pull_request_environments_delete'] : FALSE,
+    '#description' => t('When Pull Requests are closed, delete the environment.'),
+    '#states' => array(
+      'visible' => array(
+        ':input[name="project[settings][bitbucket][pull_request_environments]"]' => array('checked' => TRUE),
+      ),
     ),
-    t('Clone another environment') => array(),
+  );
+}
+
+/**
+ * BitBucket API key form.
+ * @return array()
+ */
+function devshop_bitbucket_form_devshop_projects_settings_form_alter(&$form, &$form_state, $form_id) {
+
+  $token = devshop_bitbucket_token() ? : variable_get('devshop_bitbucket_app_username', '');
+  $app_username = variable_get('devshop_bitbucket_app_username', '');
+  $app_password = variable_get('devshop_bitbucket_app_password', '');
+
+  
+  try {
+    $client = devshop_bitbucket_client();
+    $latest_repos = $client->repositories()->list([
+      'role' => 'member'
+    ]);
+    $token_valid = !empty($latest_repos['values']);
+
+    $latest_repo = current($latest_repos['values']);
+    $repo_count = count($latest_repos['values']);
+    
+    if ($latest_repo) {
+      $repo_link = l($latest_repo['full_name'], $latest_repo['links']['html']['href'], array(
+        'attributes' => array(
+          'target' => '_blank')));  
+    }
+    else {
+      $repo_link = '';
+    }
+    
+    $scopes = $client->getLastResponse()->getHeader('X-Oauth-Scopes');
+    $api_error = NULL;
+  }
+  catch (Exception $e) {
+    $api_error = $e->getMessage();
+    $repo_count = 0;
+    $scopes = array();
+    $token_valid = false;
+  }
+
+  $ssh_key = variable_get('devshop_public_key', '');
+
+  $t = array(
+    '%scopes' => implode(', ', (array) $scopes),
+    '!create_token' => l(t('Create new token'), 'https://id.atlassian.com/manage-profile/security/api-tokens', array(
+      'attributes' => array(
+        'target' => '_blank'))),
+    '!create_password' => l(t('Create new app password'), 'https://bitbucket.org/account/settings/app-passwords/', array(
+      'attributes' => array(
+        'target' => '_blank'))),
+    '!docs_auth' => l(t('BitBucket Authorization Documentation'), 'https://developer.atlassian.com/cloud/bitbucket/rest/intro/', array(
+      'attributes' => array(
+        'target' => '_blank'))),
+    '!docs_app_password' => l(t('BitBucket App Passwords Documentation'), 'https://developer.atlassian.com/cloud/bitbucket/rest/intro/#app-passwords', array(
+      'attributes' => array(
+        'target' => '_blank'))),
+    '!docs_tokens' => l(t('BitBucket Access Tokens Documentation'), 'https://developer.atlassian.com/cloud/bitbucket/rest/intro/#access-tokens', array(
+      'attributes' => array(
+        'target' => '_blank'))),
+    '!manage_keys' => l(t('BitBucket SSH Keys'), 'https://bitbucket.org/account/settings/ssh-keys/', array(
+      'attributes' => array(
+        'target' => '_blank'))),
+    '!manage_passwords' => l(t('BitBucket App Passwords'), 'https://bitbucket.org/account/settings/ssh-keys/', array(
+      'attributes' => array(
+        'target' => '_blank'))),
+    '!devshop_settings' => l(t('DevShop Public Key'), current_path(), array(
+      'fragment' => 'edit-server')),
+    '!devshop_add_key' => l(t('Add DevShop Public Key to BitBucket'), 'admin/hosting/bitbucket/add-key', array(
+      'attributes' => array(
+      ),
+      'query' => array('destination' => current_path()))),
   );
 
-  if (empty($environments)) {
-    $options[t('Clone another environment')][] = t('No environments available.');
+  if ($repo_count == 1) {
+    $t['!repo_access'] = $repo_link;
+  }
+  elseif ($repo_count == 0) {
+    $t['!repo_access'] = t('no repositories');
+  }
+  elseif ($repo_count < 10) {
+    $t['!repo_access'] = t('!first and @other', array(
+      '!first' => $repo_link,
+      '@other' => format_plural($repo_count - 1, t('1 other repository'), t('@count other repositories')),
+    ));
   }
   else {
-    $options[t('Clone another environment')] = array_combine($environments, $environments);
+    $t['!repo_access'] = t('!first and more than 10 other repositories', array(
+      '!first' => $repo_link,
+    ));
   }
-  $form['project']['settings']['bitbucket']['pull_request_environments_method'] = array(
-      '#type' => 'select',
-      '#title' => t('Pull Request Environment Creation Method'),
-      '#default_value' => isset($node->project->settings->bitbucket) ?
-          $node->project->settings->bitbucket['pull_request_environments_method'] : 'devshop__bitbucket__install',
-      '#description' => t('Select the method for creating the pull request environments.'),
-      '#options' => $options,
+
+  $form['bitbucket'] = array(
+    '#title' => t('BitBucket Integration'),
+    '#type' => 'fieldset',
+    '#group' => 'settings',
+    '#weight' => $token? -10: -2,
   );
+
+  $form['bitbucket']['features']  = array(
+    '#weight' => -10,
+    '#type' => 'container',
+    '#attributes' => array(
+      'class' => array(
+        'alert alert-info'
+      )
+    )
+  );
+  $form['bitbucket']['features']['list'] = array(
+    '#theme' => 'item_list',
+    '#prefix' => '<i class="fa fa-question-circle fa-2x pull-left"></i><div>' . t('DevShop integrates with BitBucket to provide a number of features:'),
+    '#suffix' => '</div>',
+    '#items' => array(
+      t('Loads a list of available repositories for creating new projects.'),
+      t('Post task status to BitBucket Build Status.'),
+      t('Create environments from Pull Requests.'),
+    ),
+    '#attributes' => array(
+      'class' => array('text text-dark')
+    )
+  );
+
+  $form['bitbucket']['help'] = array(
+    '#title' => t('API Access'),
+    '#description' => t('DevShop can connect to BitBucket with one of 2 methods: App Passwords and Access Tokens. View !docs_auth for more information.', $t),
+    '#type' => 'item',
+  );
+  $form['bitbucket']['devshop_bitbucket_authentication_method'] = array(
+    '#title' => t('Authentication Method'),
+    '#type' => 'radios',
+    '#options' => array(
+      'token' => t('Access Token'),
+      'password' => t('App Password'),
+    ),
+    '#default_value' => variable_get('devshop_bitbucket_authentication_method', 'token'),
+  );
+  $form['bitbucket']['tokens'] = array(
+    '#type' => 'container',
+    '#states' => array(
+      'visible' => array(
+        ':input[name=devshop_bitbucket_authentication_method]' => array(
+          'value' => 'token',
+        )
+      )
+    )
+  );
+
+  $form['bitbucket']['tokens']['help'] = array(
+    '#type' => 'item',
+    '#description' => t('Access Tokens can be created for Repositories, Projects, or Workspaces. To create a new token, visit your repository, project, or workspace settings page, then click "Access tokens".', $t),
+  );
+  $form['bitbucket']['tokens']['devshop_bitbucket_token'] = array(
+    '#type' => 'password',
+    '#title' => t('Bitbucket Access Token'),
+    '#description' => t('The access token to use when connecting to BitBucket.', $t),
+    '#maxlength' => '1024',
+    '#default_value' => variable_get('devshop_bitbucket_token', ''),
+    '#element_validate' => array(
+      'devshop_bitbucket_settings_form_validate_api',
+    ),
+    '#attributes' => array(
+      'placeholder' => $token? t('Replace the current BitBucket Token'): t('Enter a BitBucket Access Token'),
+    ),
+  );
+  $form['bitbucket']['passwords'] = array(
+    '#type' => 'container',
+    '#states' => array(
+      'visible' => array(
+        ':input[name=devshop_bitbucket_authentication_method]' => array(
+          'value' => 'password',
+        )
+      )
+    ),
+  );
+  $form['bitbucket']['passwords']['help'] = array(
+    '#type' => 'item',
+    '#description' => t('Using an app password allows DevShop to make API calls as your Bitbucket account to all repositories the user can access.'),
+  );
+  $form['bitbucket']['passwords']['devshop_bitbucket_app_username'] = array(
+    '#title' => t('BitBucket Username'),
+    '#description' => t('The username to use when connecting to the BitBucket API.'),
+    '#type' => 'textfield',
+    '#default_value' => variable_get('devshop_bitbucket_app_username', ''),
+    '#attributes' => array(
+      'placeholder' => t('Enter a BitBucket username.'),
+    ),
+  );
+  $form['bitbucket']['passwords']['devshop_bitbucket_app_password'] = array(
+    '#type' => 'password',
+    '#title' => t('App Password'),
+    '#description' => t('An app password for this user. !create_password', $t),
+    '#default_value' => variable_get('devshop_bitbucket_app_password', ''),
+    '#element_validate' => array(
+      'devshop_bitbucket_settings_form_validate_app_password',
+    ),
+    '#attributes' => array(
+      'placeholder' => $app_password? t('Replace the current BitBucket App Password'): t('Enter a BitBucket App Password'),
+    ),
+  );
+  // Test for public key access.
+  if (empty($token)) {
+    $access_message = t('Token: not set up.');
+    $access_class = 'warning';
+    $access_icon = 'warning';
+    $access_note = t('Enter a token to connect this DevShop to your BitBucket repositories.');
+  }
+  elseif (!$token_valid) {
+    $access_message = t('Connection Unsuccessful.');
+    $access_class = 'danger';
+    $access_icon = 'warning';
+    $access_note = t('The BitBucket credentials are invalid or has expired.');
+  }
+  else {
+    $access_message = t('Connection Successful');
+    $access_class = 'success';
+    $access_icon = 'check';
+    $access_note = t('Connected to BitBucket API, with access to !repo_access. Scopes: %scopes.', $t);
+  }
+
+  $form['bitbucket']['key_status'] = array(
+    '#type' => 'item',
+    '#weight' => -1,
+    '#title' => $access_message,
+    '#prefix' => "<div class='alert alert-$access_class'><i class='fa fa-$access_icon pull-left'></i>",
+    '#description' => $access_note,
+    '#suffix' => '</div>',
+  );
+  
+  $repos = variable_get('devshop_bitbucket_all_repositories', array());
+  $count = count($repos);
+  $class = $count? 'success': 'warning';
+  $icon = $count? 'check': 'warning';
+  $form['bitbucket']['message'] = array(
+    '#access'=> $token_valid,
+    '#prefix' => "<div class='alert alert-{$class}'><i class='fa fa-$icon'></i> ",
+    '#suffix' => '</div>',
+    '#markup' => $count == 0 ?
+      t('Click "Refresh Repositories" to load BitBucket information into DevShop.'):
+      format_plural($count, t('DevShop can access 1 repository.'), t('DevShop can access @count repositories.'))
+  );
+
+  $form['bitbucket']['refresh'] = array(
+    '#access' => $token_valid,
+    '#markup' => l(t('Refresh Repositories'), 'admin/hosting/bitbucket/load-repos', array(
+      'query' => drupal_get_destination(),
+      'attributes' => array(
+        'class' => array('btn btn-default'),
+      ))),
+  );
+
+  $options = [];
+  foreach ($repos as $repo) {
+    $url = $repo['url'];
+    $options[$repo['org']][$url] = $url;
+  }
+  $form['bitbucket']['devshop_bitbucket_available_repositories'] = array(
+    '#title' => t('Available BitBucket Repositories'),
+    '#description' => t('Select the repos to make available to users when creating projects.'),
+    '#type' => 'select',
+    '#multiple' => true,
+    '#options' => $options,
+    '#default_value' => variable_get('devshop_bitbucket_available_repositories', array()),
+    '#bootstrap_ignore_pre_render' => TRUE,
+    '#attributes' => array(
+      'data-placeholder' => t('Select some repositories.'),
+    ),
+  );
+
+  if (empty($options)) {
+    $form['bitbucket']['devshop_bitbucket_available_repositories']['#type'] = 'item';
+    $form['bitbucket']['devshop_bitbucket_available_repositories']['#markup'] = $token_valid?
+      t('No repositories were loaded. Click "Refresh Repositories"'):
+      t('Add a valid token to get started.');
+  }
+  
+  return system_settings_form($form);
+}
+
+/**
+ * Retrieve the app password or token from either environment variable or drupal variable.
+ * @return mixed
+ */
+function devshop_bitbucket_token() {
+
+  // If ENV var is set, use that instead
+  if (!empty($_SERVER['BITBUCKET_TOKEN'])) {
+    $token = $_SERVER['BITBUCKET_TOKEN'];
+  }
+  else {
+    $token = variable_get('devshop_bitbucket_token', '');
+  }
+
+  // If ENV var is set, use that instead
+  if (!empty($_SERVER['BITBUCKET_APP_PASSWORD'])) {
+    $token = $_SERVER['BITBUCKET_APP_PASSWORD'];
+  }
+  else {
+    $token = variable_get('devshop_bitbucket_app_password', '');
+  }
+
+  return $token;
+}
+
+
+/**
+ * Check if a token is valid. Checks the stored token if none is passed in.
+ *
+ * @param null $token
+ *   A specific token to check.
+ *
+ * @return bool
+ */
+function devshop_bitbucket_authenticated() {
+  try {
+    $client = devshop_bitbucket_client();
+    $client->repositories()->list(array('member'));
+    //
+    return true;
+  }
+  catch (\Exception $e) {
+    return false; 
+  }
 }
 
 /**
@@ -103,82 +484,29 @@ function devshop_bitbucket_form_project_node_form_alter(&$form, &$form_state, $f
  */
 function devshop_bitbucket_form_devshop_project_create_step_git_alter(&$form, &$form_state, $form_id) {
 
-  // Look for Token
-//  $token = variable_get('devshop_bitbucket_token', '');
-//
-//  if (empty($token)) {
-//    $form['connect']['#description'] = ' <div class="alert alert-danger">' . t('bitbucket API Token was not found.') . ' ' . l(t('Configure DevShop bitbucket Settings'), 'admin/devshop/bitbucket') . '</div>';
-//    return;
-//  }
-//
-//  if (devshop_bitbucket_check_key()) {
-//    $form['connect']['#description'] = ' <div class="alert alert-success">' . t('The DevShop Public SSH Key has been found in your bitbucket account.') . '</div>';
-//  }
-//  else {
-//    $form['connect']['#description'] = t('The DevShop Public SSH Key was not found in your account.') . '  ';
-//
-//    $form['connect']['#description'] .= l(t('Add devshop public key to your bitbucket account'), 'admin/devshop/bitbucket/add-key', array(
-//            'query' => array(
-//              'destination' => $_GET['q'],
-//            ),
-//            'attributes' => array(
-//                'class' => 'btn btn-success'
-//            ),
-//        )) . '</div>';
-//    $form['connect']['#prefix'] = '<div class="alert alert-danger">';
-//    $form['connect']['#suffix'] = '</div>';
-//  }
-}
+  $key_exists = devshop_bitbucket_token();
+  $key_valid = devshop_bitbucket_authenticated();
 
+  if ($key_exists && !$key_valid && drupal_valid_path('admin/hosting')) {
+    drupal_set_message(t('Your BitBucket API Token is invalid. Check !settings.', [
+      '!settings' => l(t('DevShop Settings'), 'admin/hosting'),
+    ]), 'error');
+  } 
+  elseif (!$key_exists && drupal_valid_path('admin/hosting')) {
+    drupal_set_message(t('BitBucket API Integration has not been enabled. Check !settings to enable additional features.', [
+      '!settings' => l(t('DevShop Settings'), 'admin/hosting'),
+    ]), 'warning');
+  }
 
-/**
- * Implements hook_form_FORM_ID_alter() for project_node_form().
- */
-function devshop_bitbucket_form_devshop_project_create_step_sites_alter(&$form, &$form_state) {
-//
-//  // Return if project isn't ready.
-//  if (empty($form['install_profile'])) {
-//    return;
-//  }
-//
-//  // Return if there is no bitbucket token
-//  $bitbucket_token = variable_get('devshop_bitbucket_token', '');
-//  if (empty($bitbucket_token)) {
-//    return;
-//  }
-//
-//  // Load project and bitbucket
-//  $project_node = node_load($form['nid']['#value']);
-//  $project = $project_node->project;
-//
-//  // Return if provider is not bitbucket.
-//  if ($project->git_provider != 'bitbucket') {
-//    return;
-//  }
-//
-//  // Return if deploy method is not webhook.
-//  if ($project->settings->deploy['method'] != 'webhook') {
-//    return;
-//  }
-//
-//  $repo = $project->bitbucket_owner . '/' . $project->bitbucket_repo;
-//  $repo_url = "http://bitbucket.com/" . $repo;
-//
-//  $form['bitbucket_webhook'] = array(
-//    '#title' => t('Setup bitbucket Webhook'),
-//    '#description' => t('Leave this box checked to automatically add a webhook to your bitbucket Repository !link.', array(
-//      '!link' => l($repo, $repo_url, array(
-//          'attributes' => array(
-//            'target' => '_blank',
-//          ),
-//      ))
-//    )),
-//    '#type' => 'checkbox',
-//    '#default_value' => 1,
-//  );
-//
-//  $form['#validate'][] = 'devshop_bitbucket_project_create_webhook';
-//  $form['#submit'][] = 'devshop_bitbucket_project_create_webhook';
+  $options = [];
+  $repos = variable_get('devshop_bitbucket_available_repositories', array());
+  if (empty($repos)) {
+    $repos = variable_get('devshop_bitbucket_all_repositories', array());
+  }
+  
+  foreach ($repos as $repo_name => $repo) {
+    $form['source']['choice']['#options']['BitBucket: ' . $repo['org']][$repo['url']] = $repo_name;
+  }
 }
 
 /**
@@ -238,30 +566,26 @@ function devshop_bitbucket_project_create_webhook($form, $form_state) {
  * Implements hook_node_load().
  */
 function devshop_bitbucket_node_load($nodes, $types) {
-  if (count(array_intersect(array('project'), $types))) {
-    foreach ($nodes as $nid => $node) {
+  foreach ($nodes as $nid => &$node) {
+    if ($node->type == 'project' && $node->project->git_provider == 'bitbucket') {
 
       // Look for a pull request object.
-      $pull_requests = db_query('SELECT * FROM {hosting_devshop_bitbucket_pull_requests} WHERE project_nid = :project_nid', array(':project_nid' => $nid));
+      $pull_requests = db_query('SELECT * FROM {hosting_devshop_bitbucket_pull_requests} prs
+        LEFT JOIN {hosting_devshop_project_environment} e ON prs.site_nid = e.site 
+        WHERE e.project_nid = :project_nid', [':project_nid' => $nid]);
       foreach ($pull_requests as $pull_request) {
         if (!empty($pull_request->pull_request_object)) {
           $pull_request->pull_request_object = unserialize($pull_request->pull_request_object);
-          if (isset($node->project->environments[$pull_request->environment_name])) {
-            $node->project->environments[$pull_request->environment_name]->bitbucket_pull_request = $pull_request;
+          
+          if (isset($node->project->environment_nids[$pull_request->site_nid])) {
+            $environment = &$node->project->environment_nids[$pull_request->site_nid];
+            $environment->bitbucket_pull_request = $pull_request;
+            $environment->image = $pull_request->pull_request_object->author->links->avatar->href;
           }
         }
       }
-
-      // Parse bitbucket owner and repo.
-      if (isset($node->project) && $node->project->git_provider == 'bitbucket') {
-        $node->project->bitbucket_owner =
-          $parts = explode('/', parse_url($node->project->git_repo_url, PHP_URL_PATH));
-        $node->project->bitbucket_owner = $parts[1];
-        $node->project->bitbucket_repo = $parts[2];
-      }
     }
   }
-
 }
 
 /**
@@ -319,6 +643,74 @@ function devshop_bitbucket_node_update($node) {
 //  }
 }
 
+
+/**
+ * Implements hook_node_insert().
+ *
+ * When submitting from the Site form, and user selects a PR branch, "pull_request" is populated with the PR object.
+ */
+function devshop_bitbucket_node_insert($node) {
+
+  if ($node->type == 'site' && !empty($node->settings->pull_request) && isset($node->settings->pull_request['destination'])) {
+
+    $environment = new stdClass();
+    $environment->name = $node->environment_name;
+    $environment->site = $node->nid;
+
+    if (!empty($node->pull_request)) {
+      $pr_data = convert_to_object($node->pull_request);
+    }
+    elseif (!empty($node->settings->pull_request)) {
+      $pr_data = convert_to_object($node->settings->pull_request);
+    }
+    else {
+      return;
+    }
+    
+    if (!devshop_bitbucket_save_pr_env_data($pr_data, $environment)) {
+      throw new \Exception('Unable to save bitbucket PR data: ' . print_r($pr_data, 1));
+    }
+  }
+}
+
+/**
+ * @param $pr
+ * @param $environment
+ */
+function devshop_bitbucket_save_pr_env_data($pr, $environment) {
+  $info = new stdClass();
+  $info->site_nid = $environment->site;
+  $info->number = $pr->id;
+  $info->pull_request_object = serialize($pr);
+
+  // Last minute check for existing PR info
+  $results = db_select('hosting_devshop_bitbucket_pull_requests', 'pr')
+    ->condition('number', $pr->id)
+    ->fields('pr', array('number'))
+    ->execute()
+    ->fetchAssoc();
+
+  // If there are results, save $update param for drupal_write_record().
+  if (empty($results)) {
+    $update = array();
+  }
+  else {
+    $update = array('number');
+  }
+
+  // Save environment record.
+  try {
+    watchdog('devshop_bitbucket', t('Pull Request saved for environment !nid !env.', array(
+      '!nid' => $environment->site,
+      '!env' => l($environment->name, "node/{$info->site_nid}"),
+    )));
+    drupal_write_record('hosting_devshop_bitbucket_pull_requests', $info, $update);
+    return TRUE;
+  }
+  catch (\PDOException $e) {
+    return FALSE;
+  }
+}
 
 /**
  *
@@ -391,14 +783,12 @@ function devshop_bitbucket_webhook($project_node) {
         foreach ($project->environments as $environment_name => $environment) {
 
           // Only pull if deploy is not disabled or if environment is tracking a tag.
-          if ($git_ref == $environment->git_ref && !$environment->settings->pull_disabled && !in_array($environment->git_ref, $project->settings->git['tags'])) {
+          if ($git_ref == $environment->git_ref && $environment->hosting_settings['deployment']['continuous'] && !in_array($environment->git_ref, $project->settings->git['tags'])) {
             $environments_to_pull[] = $environment->name;
 
 
             // Default args to the environments deploy settings.
             $args = $environment->settings->deploy;
-            $args['git_ref'] = $environment->git_ref;
-
             if (isset($environment->site) && $node = node_load($environment->site)) {
               hosting_add_task($environment->site, 'deploy', $args);
             }
@@ -443,20 +833,7 @@ function devshop_bitbucket_webhook($project_node) {
               }
             }
             else {
-              // If method is "install"...
-              if ($project->settings->bitbucket['pull_request_environments_method'] == 'devshop__bitbucket__install') {
-                hosting_create_environment($project, $environment_name, $branch);
-                $message .= "Environment $environment_name created for $project_node->title via installation profile.\n";
-              }
-              // Otherwise, it is a clone from live.
-              elseif (isset($project->environments[$project->settings->bitbucket['pull_request_environments_method']] )) {
-                $source_env = $project->settings->bitbucket['pull_request_environments_method'];
-                hosting_create_environment($project, $environment_name, $branch, $source_env);
-                $message .= "Environment $environment_name created for $project_node->title via cloning $source_env \n";
-              }
-              else {
-                $message .= 'Unable to determine what to do! Check "Pull Request Environment Method" setting.';
-              }
+              hosting_create_environment($project, $environment_name, $branch);
             }
 //
 //            $owner = $project->bitbucket_owner;
@@ -512,7 +889,7 @@ function devshop_bitbucket_webhook($project_node) {
 //              // @TODO: Once we add "deploy hooks" to "Project Settings: Environment Defaults" we will have to change this.
 //
 //              // If live environment is set to run tests on deploy...
-//              $live_environment = $project->settings->live['live_environment'];
+//              $live_environment = $project->settings->primary_environment;
 //              if ($project->environments[$live_environment]->settings->deploy['test']) {
 //                $params = new stdClass();
 //                $params->state = 'pending';
@@ -717,28 +1094,246 @@ function devshop_bitbucket_webhook($project_node) {
 }
 
 /**
- * Check the bitbucket account for an SSH key.
+ * Element validation for app password.
  *
- * @return bool
+ * @param $element
+ * @param $form_state
+ * @param $form
  */
-function devshop_bitbucket_check_key() {
-//  $devshop_key = variable_get('devshop_public_key', '');
-//  $token = variable_get('devshop_bitbucket_token', '');
-//
-//  $client = new \bitbucket\Client();
-//  $client->authenticate($token, bitbucket\Client::AUTH_HTTP_TOKEN);
-//
-//  try {
-//    $keys = $client->currentUser()->keys()->all();
-//  }
-//    // Happens when user has no public keys.
-//  catch (\bitbucket\Exception\RuntimeException $e) {
-//    return FALSE;
-//  }
-//
-//  foreach ($keys as $key) {
-//    if (strpos($devshop_key, $key['key']) === 0) {
-//      return TRUE;
-//    }
-//  }
+function devshop_bitbucket_settings_form_validate_app_password($element, &$form_state, $form)
+{
+
+}
+
+/**
+ * Element validation for access token.
+ *
+ * @param $element
+ * @param $form_state
+ * @param $form
+ */
+function devshop_bitbucket_settings_form_validate_api($element, &$form_state, $form) {
+
+  // If no token in form element, keep the existing variable.
+  $token = $form_state['values']['devshop_bitbucket_token'];
+  if (empty($token)) {
+    form_set_value($element, variable_get('devshop_bitbucket_token'), $form_state);
+  }
+  
+  // If no app password in form element, keep existing variable.
+  $password = $form_state['values']['devshop_bitbucket_app_password'];
+  if (empty($password)) {
+    form_set_value($form['bitbucket']['passwords']['devshop_bitbucket_app_password'], variable_get('devshop_bitbucket_app_password'), $form_state);
+  }
+  
+  // If App Password mthod
+
+  $client = devshop_bitbucket_client();
+
+  $app_user = $form_state['values']['devshop_bitbucket_app_username'];
+  $app_password = $form_state['values']['devshop_bitbucket_app_password'];
+  if ($form_state['values']['devshop_bitbucket_authentication_method'] == 'password') {
+    $client = new Bitbucket\Client();
+    $client->authenticate(
+      Bitbucket\Client::AUTH_HTTP_PASSWORD,
+      $app_user,
+      $app_password
+    );
+  }
+  else {
+    $client = new Bitbucket\Client();
+    $client->authenticate(
+      Bitbucket\Client::AUTH_OAUTH_TOKEN,
+      $token
+    );
+  }
+
+  try {
+
+      // Get all repos where key owner is a member.
+      $data = $client->repositories()->list([
+        'role' => 'member'
+      ]);
+      $scopes = $client->getLastResponse()->getHeader('X-Oauth-Scopes');
+      drupal_set_message(t('Successully connected to BitBucket API with scopes: %scopes', array(
+        '%scopes' => implode(', ', $scopes),
+      )));
+  }
+  catch (Exception $e) {
+    form_error($element,  t('BitBucket Token was rejected: %message', array(
+      '%message' => $e->getMessage(),
+    )));
+  }
+}
+
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ *
+ * Alters devshop_project_create_step_environments form.
+ */
+function devshop_bitbucket_form_devshop_project_create_step_environments_alter(&$form, &$form_state, $form_id) {
+
+  $project = &$form_state['project'];
+
+  // Return if provider is not bitbucket.
+  if ($project->git_provider != 'bitbucket' || !$project->settings->bitbucket['pull_request_environments']) {
+    return;
+  }
+  
+  $client = devshop_bitbucket_client();
+  
+  $prs = $client->repositories()
+    ->workspaces($project->bitbucket_owner)
+    ->pullRequests($project->bitbucket_repo)
+    ->list()
+  ;
+
+  $prs_url = $project->git_repo_url . '/pull-requests';
+  $environment_forms = [];
+  foreach ($prs['values'] as $pr) {
+    // Prepare environment objects
+    $env_name = "pr{$pr['id']}";
+    // If PR environment already exists, load it.
+    if (isset($project->environments[$env_name])) {
+      $environment = convert_to_object($project->environments[$env_name]);
+    }
+    else {
+      $environment = new stdClass();
+      $environment->name = "pr{$pr['id']}";
+      $environment->git_ref = $pr['source']['branch']['name'];
+      $project->environments[$environment->name] = $environment;
+    }
+
+    // Use NEW form elements as the template.
+    $environment_forms[$environment->name] = $form['project']['environments']['NEW'];
+    //        $environment_forms[$environment->name]['platform']['#value'] = $environment->platform;
+
+    // Create a disabled textfield for display to user, and convert original element to "value" type so the info is passed.
+    $environment_forms[$environment->name]['name']['#default_value'] = $environment->name;
+    $environment_forms[$environment->name]['name']['#attributes']['disabled'] = true;
+
+    $environment_forms[$environment->name]['git_ref']['#value'] = $environment->git_ref;
+    $environment_forms[$environment->name]['git_ref']['#type'] = 'value';
+    $icon = $project->settings->git['refs'][$environment->git_ref] == 'branch' ? 'code-fork': 'tag';
+
+    $environment_forms[$environment->name]['git_ref']['info']['ref'] = array(
+      '#theme' => 'link',
+      '#text' => "<em class='fa fa-$icon'></em> " . $environment->git_ref,
+      '#path' => $pr['links']['html']['href'],
+      '#options' => array(
+        'html' => true,
+        'attributes' => array(
+          'target' => '_blank',
+          'class' => array(
+            'btn btn-default btn-sm'
+          ),
+        ),
+      ),
+    );
+    $environment_forms[$environment->name]['git_ref']['info']['pr'] = array(
+      '#theme' => 'link',
+      '#text' => "<img src='{$pr['author']['links']['avatar']['href']}' width='28' class='img-responsive img-thumbnail'> PR" . $pr['id'] . htmlentities($pr['title']),
+      '#path' => $pr['links']['html']['href'],
+      '#options' => array(
+        'html' => true,
+        'attributes' => array(
+          'target' => '_blank',
+          'class' => array(
+            'btn btn-text'
+          ),
+        ),
+      ),
+    );
+
+    // If PR has different remote URL, set it.
+    $source_name = $pr['source']['repository']['full_name'];
+    $destination_name = $pr['destination']['repository']['full_name'];
+    if ($source_name != $destination_name) {
+      $remote_url = str_replace($destination_name, $source_name, $project->git_url);
+    }
+    else {
+      $remote_url = $project->git_url;
+    }
+
+    $environment_forms[$environment->name]['settings']['git_remote'] = array(
+      '#type' => 'value',
+      '#value' => $remote_url,
+    );
+
+    // Save data for devshop_github_node_insert() to process.
+    $environment_forms[$environment->name]['settings']['pull_request'] = array(
+      '#type' => 'value',
+      '#value' => $pr,
+    );
+
+    $form['project']['primary_environment']['#options'][$env_name] = $env_name;
+
+  }
+
+  // Merge environments fields together to put PRs on top.
+  $form['project']['environments'] = array_merge($form['project']['environments'], $environment_forms);
+  
+  $settings_link = l(t('Change Project Settings'), 'projects/add/settings', array(
+    'fragment' => 'edit-project-settings-bitbucket',
+  ));
+  
+  $prs_link = l(t('View Pull Requests on BitBucket.org'), $prs_url, array(
+    'attributes' => array('target' => '_blank')
+  ));
+  
+  // Project with PR environments disabled.
+  if (empty($project->settings->bitbucket['pull_request_environments'])) {
+    $pr_count = count($prs);
+    $count_note = format_plural($pr_count, t('There is 1 open Pull Request in your project'), t('There are @count open Pull Requests in your project'));
+    
+    $form['pr_environments']['pr_alert'] = array(
+      '#prefix' => '<div class="alert alert-warning">',
+      '#suffix' => '</div>',
+      '#theme' => 'item_list',
+      '#items' => array(
+        t('@prs, but Pull Request Environments are not enabled for this project.', array(
+          '@prs' => $count_note,
+        )),
+        $prs_link,
+        $settings_link,
+      ),
+    );
+  }
+  // Project configured to maintain all PR environments.
+  elseif (!empty($project->settings->bitbucket['pull_request_environments'])) {
+
+    $form['pr_environments']['pr_alert'] = array(
+      '#prefix' => '<div class="alert alert-info">',
+      '#suffix' => '</div>',
+      '#theme' => 'item_list',
+      '#items' => array(
+        t('Project is configured to create environments for every open Pull Request.'),
+        $prs_link,
+        $settings_link,
+      ),
+    );
+  }
+}
+
+/**
+ * Preprocessor for environment template.
+ */
+function devshop_bitbucket_preprocess_environment(&$vars) {
+
+  $environment = &$vars['environment'];
+  if (isset($environment->bitbucket_pull_request)) {
+    $environment->class .= ' pull-request';
+    $vars['warnings'][] = array(
+      'type' => 'info',
+      'icon' => 'bitbucket',
+      'text' => l($environment->bitbucket_pull_request->pull_request_object->title, $environment->bitbucket_pull_request->pull_request_object->links->html->href, array(
+        'absolute' => TRUE,
+        'attributes' => array(
+          'target' => '_blank',
+          'title' => t('Visit this Pull Request on Bitbucket'),
+        ),
+      )),
+    );
+  }
 }

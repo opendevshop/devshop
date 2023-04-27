@@ -2,8 +2,8 @@
 
 # Supervisor isn't always installed at this point in the play, so allow errors.
 - name: "User ID Change: Stop supervisord"
-  service:
-    name: supervisord
+  supervisorctl:
+    name: hosting-queue-runner
     state: stopped
   ignore_errors: true
 

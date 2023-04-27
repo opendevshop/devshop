@@ -21,14 +21,13 @@ jobs:
   yaml-tasks:
     name: YamlTasks
 
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         php-versions:
-          - '7.1'
-          - '7.2'
-          - '7.3'
           - '7.4'
+          - '8.0'
+          - '8.1'
 
     # Set working directory for entire file. https://github.community/t5/GitHub-Actions/use-working-directory-for-entire-job/td-p/36759
     env:
@@ -64,8 +63,6 @@ jobs:
     - name: Install dependencies
       working-directory: ${{env.working-directory}}
       run: |
-        composer config repositories.power-process '{"type": "path","url": "../PowerProcess"}'
-        composer require devshop/power-process
         composer install --prefer-dist --no-progress --no-suggest
 
     - name: Run Yaml Tasks
@@ -77,20 +74,19 @@ jobs:
         PROVISION_PROCESS_OUTPUT: direct
       run: |
         chmod +x yaml-tasks
-        ./yaml-tasks  --ansi -v --hostname=github.com --status-url=${GITHUB_RUN_LOG_URL}#step:7:1
-        ./yaml-tasks --tasks-file tests.yml --ansi -v --hostname=github.com --status-url=${GITHUB_RUN_LOG_URL}#step:7:1
+        ./yaml-tasks --dry-run --ansi -v --hostname=github.com --status-url=${GITHUB_RUN_LOG_URL}#step:7:1
+        ./yaml-tasks --dry-run --tasks-file tests.yml --ansi -v --hostname=github.com --status-url=${GITHUB_RUN_LOG_URL}#step:7:1
 
   power-process:
     name: PowerProcess
 
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         php-versions:
-          - '7.1'
-          - '7.2'
-          - '7.3'
           - '7.4'
+          - '8.0'
+          - '8.1'
 
     # Set working directory for entire file. https://github.community/t5/GitHub-Actions/use-working-directory-for-entire-job/td-p/36759
     env:
@@ -138,21 +134,24 @@ jobs:
   github-api-cli:
     name: GitHubApiCli
 
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         php-versions:
-          - '7.1'
-          - '7.2'
-          - '7.3'
           - '7.4'
+          - '8.0'
+          - '8.1'
 
     # Set working directory for entire file. https://github.community/t5/GitHub-Actions/use-working-directory-for-entire-job/td-p/36759
     env:
       working-directory: ./src/DevShop/Component/GitHubApiCli
 
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v3
+# Uncomment this to see deployments in devshop pull requests.
+# It gets too noisy  run builds on the PR's HEAD commits,
+#        with:
+#          ref: ${{ github.event.pull_request.head.ref }}
 
       - name: Install PHP
         uses: shivammathur/setup-php@v2
@@ -184,6 +183,14 @@ jobs:
         run: composer install --prefer-dist --no-progress --no-suggest
         working-directory: ${{env.working-directory}}
 
+#      - name: Test GitHub Deploy Start
+#        working-directory: ${{env.working-directory}}
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.INPUT_GITHUB_TOKEN }}
+#        run: |
+#          ./github deploy:start -n --description="GitHub API CLI tests begun" --environment=${{ matrix.php-versions }}.github.com
+#          ./github deploy:update -n --state=in_progress
+
       - name: Test GitHub Cli
         working-directory: ${{env.working-directory}}
         env:
@@ -191,21 +198,27 @@ jobs:
         run: |
           ./github whoami
 
-  ComposerCommon:
-    name: ComposerCommon
+#      - name: Test GitHub Deploy Success
+#        working-directory: ${{env.working-directory}}
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.INPUT_GITHUB_TOKEN }}
+#        run: |
+#          ./github deploy:update -n --state=success
 
-    runs-on: ubuntu-18.04
+  GitTraits:
+    name: GitTraits
+
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         php-versions:
-          - '7.1'
-          - '7.2'
-          - '7.3'
           - '7.4'
+          - '8.0'
+          - '8.1'
 
     # Set working directory for entire file. https://github.community/t5/GitHub-Actions/use-working-directory-for-entire-job/td-p/36759
     env:
-      working-directory: ./src/DevShop/Component/ComposerCommon
+      working-directory: ./src/DevShop/Component/GitTraits
 
     steps:
       - uses: actions/checkout@v1
@@ -250,14 +263,13 @@ jobs:
   ControlProject:
     name: ControlProject
 
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         php-versions:
-          - '7.1'
-          - '7.2'
-          - '7.3'
           - '7.4'
+          - '8.0'
+          - '8.1'
     env:
       working-directory: ./src/DevShop/Component/ControlProject
       devmaster-directory: ../../../devmaster
@@ -315,7 +327,7 @@ jobs:
         # Match the command in ./roles/opendevshop.devshop/tasks/main.yml
         run: |
           composer config repositories.devmaster path ${GITHUB_WORKSPACE}/devmaster
-          composer require devshop/devmaster:dev-${GIT_REF}
+          composer require devshop/devmaster:${GIT_REF}-dev
           composer install --no-dev --no-progress --prefer-source
         working-directory: ${{env.working-directory}}
 

@@ -1,0 +1,30 @@
+---
+- name: Converge
+  hosts: all
+  become: true
+
+  vars:
+    php_enable_webserver: false
+    php_opcache_enable: "0"
+
+    # Use Composer global install.
+    drush_launcher_install: false
+    drush_composer_global_install: true
+    drush_composer_update: true
+
+  pre_tasks:
+
+    - name: Update apt cache.
+      apt: update_cache=true cache_valid_time=600
+      when: ansible_os_family == 'Debian'
+
+    - name: Ensure unzip is installed.
+      package: name=unzip state=present
+
+  roles:
+    - role: geerlingguy.repo-remi
+      when: ansible_os_family == 'RedHat'
+    - role: geerlingguy.php-versions
+    - role: geerlingguy.php
+    - role: geerlingguy.composer
+    - role: geerlingguy.drush

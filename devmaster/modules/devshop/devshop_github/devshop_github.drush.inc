@@ -193,7 +193,7 @@
 ////    try {
 ////      $token = variable_get('devshop_github_token', '');
 ////      $client = new \Github\Client();
-////      $client->authenticate($token, Github\Client::AUTH_HTTP_TOKEN);
+////      $client->authenticate($token, \Github\AuthMethod::ACCESS_TOKEN);
 ////
 ////      $params = new stdClass();
 //      if ($status == HOSTING_TASK_SUCCESS || $status == HOSTING_TASK_WARNING) {

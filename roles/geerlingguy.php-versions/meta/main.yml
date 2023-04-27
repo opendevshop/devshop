@@ -2,6 +2,7 @@
 dependencies: []
 
 galaxy_info:
+  role_name: php-versions
   author: geerlingguy
   description: Allows different PHP versions to be installed.
   company: "Midwestern Mac, LLC"

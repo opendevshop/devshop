@@ -99,6 +99,6 @@ class GitSplitComposerCommand extends BaseCommand
    */
   protected function execute(InputInterface $input, OutputInterface $output)
   {
-    $this->command->execute($input, $output);
+    return $this->command->execute($input, $output);
   }
 }

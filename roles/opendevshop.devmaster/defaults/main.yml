@@ -38,10 +38,16 @@ server_hostname_ignore_errors: true
 devshop_cli_repo: http://github.com/opendevshop/devshop.git
 devshop_cli_skip_update: false
 devshop_cli_path: /usr/share/devshop
-devshop_cli_bin_path: "{{ devshop_cli_path }}/bin"
-devshop_cli_composer_install_command: "install --no-interaction"
 
-drush_bin_path: "{{ devshop_cli_bin_path }}/drush"
+# Use real folder paths so not to depend on composer install
+devshop_cli_scripts_path: "{{ devshop_cli_path }}/scripts"
+devshop_cli_bin_path: "{{ devshop_cli_path }}/bin"
+devshop_cli_executable_path: "{{ devshop_cli_path }}/bin/devshop"
+
+# Drush for DevShop Control
+drush_executable_path: "{{ devshop_control_git_root }}/bin/drush"
+
+devshop_cli_composer_install_command: "install --no-interaction"
 
 aegir_server_webserver: apache
 
@@ -76,6 +82,7 @@ devshop_cli_version: "{{ devshop_version }}"
 devshop_control_git_remote: "{{ devshop_cli_repo }}"
 devshop_control_git_root: "{{ devshop_cli_path }}"
 devshop_control_git_reference: "{{ devshop_version }}"
+devshop_control_git_reset: 0
 
 # Relative path to docroot. This is usually just "web" but we want devshop-control and devshop to share source code, and aegir to know where the git repo is.
 devshop_control_git_docroot: "src/DevShop/Control/web"
@@ -98,7 +105,7 @@ devshop_control_install_options: ""
 devshop_install_profile: devmaster
 
 devmaster_upgrade_command: |
-  {{ devshop_cli_bin_path }}/devshop devmaster:upgrade {{ devshop_version }} -n --run-from-playbooks
+  {{ devshop_cli_executable_path }} devmaster:upgrade {{ devshop_version }} -n --run-from-playbooks
 
 devmaster_test_command: "{{ devshop_cli_path }}/tests/devshop-tests.sh"
 
@@ -118,7 +125,7 @@ ansible_share_path: /usr/share/ansible
 devshop_support_license_key: ""
 
 # The path to the script to use for the Hosting Task Queue Runner. See opendevshop/devshop/bin/hosting-queue-runner
-hosting_queue_runner_bin_path: "{{ devshop_cli_bin_path }}/hosting-queue-runner"
+hosting_queue_runner_bin_path: "{{ devshop_cli_path }}/scripts/hosting-queue-runner"
 
 # Triggers the removal of devshop_control_git_root: `rm -rf {{ devshop_control_git_root }}`
 devshop_danger_remove_devmaster: false

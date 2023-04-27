@@ -8,6 +8,12 @@ body.admin-menu .navbar-static-top {
   z-index: 3;
 }
 
+h4 {
+  font-weight: bold;
+  font-size: 1.5em;
+  margin: .5em 0px 1.5em 0em;
+}
+
 .environment-wrapper {
   min-width: 330px;
 }
@@ -75,6 +81,19 @@ body.admin-menu .navbar-static-top {
 }
 .environment.disabled .list-group-item-info {
   background-color: whitesmoke !important;
+}
+
+.environment.deleted {
+  border: dashed 1px #e5e5e5;
+}
+
+.environment.deleted .list-group-item-disabled {
+  background-color: white !important;
+  border: none;
+}
+.environment.deleted .list-group-item-info {
+  background-color: white !important;
+  border: none;
 }
 
 .table-controls {
@@ -719,10 +738,6 @@ form > div > fieldset {
 form > div > fieldset > legend {
     /*padding: 20px 0px 0px;*/
 
-}
-
-html.js fieldset.collapsed {
-    height: 2em;
 }
 
 .btn-urls {
@@ -1389,4 +1404,31 @@ form .well .form-type-radios .form-type-radio
 
 kbd.alert {
   display: block;
+}
+
+#devshop-projects-settings-form fieldset ul {
+    list-style: none;
+    margin: 0;
+    padding-left: 0;
+}
+#devshop-projects-settings-form fieldset ul li {
+    padding-bottom: 1em;
+}
+#devshop-projects-settings-form p {
+    padding-top: 1em;
+}
+#devshop-projects-settings-form .alert > div,
+#devshop-projects-settings-form .alert > ul
+{
+    padding-left: 2.5em;
+}
+#devshop-projects-settings-form .btn-group a {
+    padding: 1em;
+    display: inline-block;
+}
+
+#devshop-projects-settings-form .alert li {
+}
+#auth_box input[type="text"], #auth_box input[type="password"] {
+  width: initial;
 }

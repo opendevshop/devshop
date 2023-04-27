@@ -1,0 +1,40 @@
+{
+  "name": "devshop/git-traits",
+  "type": "library",
+  "description": "Traits to make classes git-aware.",
+  "keywords": [],
+  "homepage": "https://getdevshop.com",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Jon Pugh",
+      "email": "jon@thinkdrop.net"
+    },
+    {
+      "name": "DevShop Community",
+      "homepage": "https://github.com/opendevshop/devshop/graphs/contributors"
+    }
+  ],
+  "require": {
+    "php": "^7.1||^8.0",
+    "knplabs/github-api": "^3.9||^1.0",
+    "teqneers/php-stream-wrapper-for-git": "^2.0@dev",
+    "guzzlehttp/guzzle": "^6",
+    "php-http/guzzle6-adapter": "^2.0@dev",
+    "http-interop/http-factory-guzzle": "^1.2",
+    "php-http/discovery": "~1.14.0",
+    "eloquent/composer-config-reader": "^3.0"
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-master": "1.x-dev"
+    }
+  },
+  "autoload": {
+    "psr-4": {
+      "DevShop\\Component\\Common\\": "src/"
+    }
+  },
+  "bin": [
+  ]
+}

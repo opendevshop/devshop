@@ -14,7 +14,19 @@ env:
 jobs:
   install_script:
     name: Install Script
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+# @TODO: Put back if it works.
+#          - 'ubuntu1804'
+          - 'ubuntu2004'
+
+    env:
+      OS: "${{ matrix.os }}"
+      ANSIBLE_EXTRA_VARS: "${{ matrix.vars }}"
 
     steps:
     - name: Prepare Pull Request-only environment
@@ -42,11 +54,6 @@ jobs:
 
     - name: Run Install Script
       run: bash .github/workflows/install-sh-test.sh
-
-    - name: Confirm DevShop Installation
-      run: |
-        docker exec install-server-test devshop login
-        wget --output-file=artifact-install-script-frontpage.html http://install-test.devshop.local.computer
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v2

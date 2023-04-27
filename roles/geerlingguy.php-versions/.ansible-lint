@@ -1,3 +1,5 @@
 skip_list:
-  - '306'
-  - '503'
+  - 'yaml'
+  - 'risky-shell-pipe'
+  - 'no-handler'
+  - 'role-name'

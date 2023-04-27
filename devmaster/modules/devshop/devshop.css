@@ -128,3 +128,7 @@ body.node-type-project a.hosting-goto-site-link {
   font-size: 10pt;
   text-transform: uppercase;
 }
+
+.text-dark {
+    color: #333;
+}

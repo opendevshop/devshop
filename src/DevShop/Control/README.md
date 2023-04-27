@@ -2,4 +2,4 @@
 
 This is the default DevShop web interface code.
 
-See ./src/DevShop/Component/ControlProject for the custom template.
+To create a custom DevShop Control site, use the [`devshop/control-project`](../Component/ControlProject) as a template project.

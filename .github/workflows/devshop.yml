@@ -11,7 +11,6 @@ on:
 env:
   # Set ANSIBLE_VERBOSITY to 1,2 or 3 when needed for development.
   ANSIBLE_VERBOSITY: 0
-#  COMPOSE_FILE: "docker-compose.yml:docker-compose.tests.yml"
   DEBUG_COMMAND: "docker-compose exec -T devshop.server systemctl status --no-pager"
   GITHUB_TOKEN: ${{ secrets.INPUT_GITHUB_TOKEN }}
   GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}
@@ -24,151 +23,37 @@ env:
   DOCKER_COMMAND_POST: "echo 'GitHub Actions Container was launched.'"
 
   # Load vars from the vars.ci.yml file.
+  ANSIBLE_PLAYBOOK_COMMAND_OPTIONS_ARG: "--extra-vars=@/usr/share/devshop/vars.ci.yml"
   ANSIBLE_PLAYBOOK_COMMAND_OPTIONS: "--extra-vars=@/usr/share/devshop/vars.ci.yml"
   GIT_REF: 1.x
 
+  # Prevents including docker-compose.override, which is for local development.
+  COMPOSE_FILE: docker-compose.yml:docker-compose.ci.yml
+
 jobs:
-  test:
-    name: "Test DevShop"
-    strategy:
-      fail-fast: false
-      matrix:
-        vars:
-          # @TODO: Open a PR with the failing PHP versions to fix support.
-          # - 'php_version=7.1'
-          - 'php_version=7.2'
-          - 'php_version=7.3'
-          # - 'php_version=7.4'
-        os:
-          - 'ubuntu1804'
-          # Sorry, centos. You must wait until the next PR.
-          # - 'centos7'
-    env:
-      OS: "${{ matrix.os }}"
-      HOSTNAME: "devshop.${{ github.event.pull_request.number }}.${{ matrix.os }}.actions.github.com"
-      ANSIBLE_EXTRA_VARS: "${{ matrix.vars }}"
-
-    runs-on: ubuntu-18.04
-    steps:
-      # By default, actions/checkout uses the current SHA for the branch it is testing. See on.push.branches: 1.x
-      # https://github.com/opendevshop/devshop/runs/1517209717?check_suite_focus=true#step:2:465
-      # For Pull Requests, actions/checkout will use a Merge SHA by default.
-      # This code sets ref to the PR head SHA instead, so it matches what developers see.
-      - name: Check Out Sourcecode
-        uses: actions/checkout@v2
-        if: github.event_name!='pull_request'
-
-      # Fetch all branches and tags so composer can resolve the version.
-      - name: Check Out Pull Request Sourcecode
-        uses: actions/checkout@v2
-        if: github.event_name=='pull_request'
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
-          fetch-depth: 0
-
-      - name: Prepare Pull Request-only environment
-        if: github.event_name=='pull_request'
-        run: |
-          echo "devshop_version: ${{ github.head_ref }}" >> vars.ci.yml
-          echo "devshop_cli_repo: ${{ github.event.pull_request.head.repo.clone_url }}" >> vars.ci.yml
-          echo "GIT_REF=${{ github.head_ref }}" >> $GITHUB_ENV
-          echo "ANSIBLE_VERBOSITY=2" >> $GITHUB_ENV
-          git switch --create ${{ github.head_ref }}
-
-      # Launch DevShop Server Container
-      - name: "Launch & Prepare a pre-built 'devshop/server:${{ matrix.os }}' container"
-        working-directory: roles
-        # "docker-compose pull" is needed because the if the image does not exist locally, "docker-compose" will try to build.
-        # "--no-build" is needed because docker-compose will build the image by default.
-        run: |
-          set -x
-          docker-compose pull --quiet devshop.server
-          docker-compose up --no-build --detach devshop.server
-          docker-compose exec -T devshop.server rm -rf \
-            /usr/share/devshop \
-            /etc/ansible/roles \
-            /etc/ansible/play.yml \
-            /var/aegir/* \
-            /var/aegir/.* \
-            /usr/local/bin/docker-* \
-
-          echo "Checking git status in /usr/share/devshop inside container:"
-          docker cp ../ roles_devshop.server_1:/usr/share/devshop/
-          docker cp devshop.server/inventory roles_devshop.server_1:/etc/ansible/hosts
-          echo "Checking git status in /usr/share/devshop after copying devshop source into container:"
-          docker-compose exec -T --workdir /usr/share/devshop devshop.server git status
-          docker-compose exec -T devshop.server chown aegir:aegir /usr/share/devshop -R
-
-          sleep 3
-          docker-compose logs
-          docker-compose exec -T devshop.server /usr/share/devshop/scripts/devshop-logo "GitHub Actions Container populated with code. Running SHA ${GITHUB_PR_SHA}"
-
-      - name: "Review Container Environment"
-        working-directory: roles
-        run: |
-          git status
-          git log -1
-          docker-compose exec -T devshop.server env
-          docker-compose exec -T devshop.server systemctl status --no-pager
-          sleep 4
-
-      # @TODO: If ansible roles code has been changed, change ANSIBLE_SKIP_TAGS=none.
-      - name: "Install DevShop (devshop.server/play.yml --tags=runtime)"
-        working-directory: roles
-
-        # Since the container is launched with a new DEVSHOP_DOCKER_COMMAND_RUN, run the default.
-        run: |
-          docker-compose exec -T devshop.server bash -c '${DEFAULT_DEVSHOP_DOCKER_COMMAND_RUN}'
-
-      - name: "Test DevShop"
-        working-directory: roles
-        run: docker-compose exec -T --user aegir devshop.server /usr/share/devshop/tests/devshop-tests.sh
-
-      - name: Save Docker Logs as Artifacts
-        working-directory: roles
-        if: always()
-        run: |
-          docker ps -a >        ../artifact-docker-ps.log && \
-          $DEBUG_COMMAND >      ../artifact-debug-command-output.log && \
-          docker-compose logs > ../artifact-docker-compose.log
-
-      - name: Upload Log Artifacts
-        uses: actions/upload-artifact@v2
-        if: always()
-        with:
-          name: DockerLogs
-          path: artifact-*
-
-      - name: Upload Test Artifacts
-        uses: actions/upload-artifact@v2
-        if: always()
-        with:
-          name: TestFailures
-          path: ./.github/test-artifacts
-
-
   docker:
-    name: "Build DevShop"
+    name: "${{ matrix.action }} PHP ${{ matrix.php }}"
     # description: Build every docker container, then install DevShop to confirm they work.
     strategy:
       fail-fast: false
       matrix:
-        vars:
-          # @TODO: Open a PR with the failing PHP versions to fix support.
-          # - 'php_version=7.1'
-          - 'php_version=7.2'
-          - 'php_version=7.3'
-          # - 'php_version=7.4'
+        php:
+          - '7.4'
+          - '8.0'
+          - '8.1'
+        action:
+          - Build
+#          - Test
         os:
-          - 'ubuntu1804'
-          # Sorry, centos. You must wait until the next PR.
-          # - 'centos7'
+#           - 'ubuntu1804'
+          - 'ubuntu2004'
     env:
       OS: "${{ matrix.os }}"
+      DEVSHOP_DOCKER_IMAGE:  "devshop/server:php${{ matrix.php }}"
       HOSTNAME: "devshop.${{ github.event.pull_request.number }}.${{ matrix.os }}.actions.github.com"
-      ANSIBLE_EXTRA_VARS: "${{ matrix.vars }}"
+      ANSIBLE_EXTRA_VARS: "php_version=${{ matrix.php }}"
 
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     steps:
       # By default, actions/checkout uses the current SHA for the branch it is testing. See on.push.branches: 1.x
       # https://github.com/opendevshop/devshop/runs/1517209717?check_suite_focus=true#step:2:465
@@ -186,70 +71,75 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
 
+      # github.ref_name is the branch name on branch builds.
+      # On PRs ref_name is `PR#/merge`.
+      - name: Prepare Non Pull Request-only environment
+        if: github.event_name!='pull_request'
+        run: |
+          echo "php_version: '${{ matrix.php }}'" >> vars.ci.yml
+          echo "devshop_version: ${{ github.ref_name }}" >> vars.ci.yml
+
+      # github.head_ref is the PR branch name.
       - name: Prepare Pull Request-only environment
         if: github.event_name=='pull_request'
         run: |
+          echo "php_version: '${{ matrix.php }}'" >> vars.ci.yml
           echo "devshop_version: ${{ github.head_ref }}" >> vars.ci.yml
           echo "devshop_cli_repo: ${{ github.event.pull_request.head.repo.clone_url }}" >> vars.ci.yml
+
+      - name: Prepare Pull Request-only environment
+        if: github.event_name=='pull_request'
+        run: |
           echo "GIT_REF=${{ github.head_ref }}" >> $GITHUB_ENV
-          echo "ANSIBLE_VERBOSITY=2" >> $GITHUB_ENV
           git switch --create ${{ github.head_ref }}
-
-      # Build "base"
-      - name: "Build devshop/base:${{ matrix.os }} Container"
+          chmod 777 ./.github/test-artifacts
+      
+      - name: "vars.ci.yml"
+        run: cat vars.ci.yml
+        
+      # Build "devshop.server"
+      - name: "Build devshop/server:php${{ matrix.php }}"
         working-directory: docker
-        run: docker-compose build base
+        run: docker-compose build
+        if: matrix.action == 'Build'
 
-      # Build "ansible"
-      - name: "Build devshop/ansible:${{ matrix.os }} Container"
+      - name: "Pull devshop/server:php${{ matrix.php }}"
         working-directory: docker
-        run: docker-compose build ansible
-
-      # Build "core"
-      - name: "Build devshop/core:${{ matrix.os }} Container"
-        working-directory: docker
-        run: docker-compose build core
-
-      # Build "role"
-      - name: "Build devshop/role:${{ matrix.os }} Container"
-        working-directory: docker
-        run: docker-compose build role
-
-      # Build DevShop Role Images
-      - name: "Build devshop/server:${{ matrix.os }} Container"
-        working-directory: roles
-        run: docker-compose build devshop.server
+        run: docker-compose pull
+        if: matrix.action == 'Test'
 
       # Launch Container
-      - name: "Launch a freshly built devshop/server:${{ matrix.os }} container"
-        working-directory: roles
+      - name: "Launch a freshly built devshop/server:php${{ matrix.php }} container"
+        working-directory: docker
         run: |
           docker-compose up --detach devshop.server
           sleep 3
           docker-compose logs
-          docker-compose exec -T devshop.server chown aegir:aegir /usr/share/devshop -R
           docker-compose exec -T devshop.server /usr/share/devshop/scripts/devshop-logo "GitHub Actions Container populated with code. Running SHA ${GITHUB_PR_SHA}"
 
       - name: "Review Container Environment"
-        working-directory: roles
+        working-directory: docker
         run: |
+          docker-compose ps -a
+          docker ps -a
+          docker inspect docker_devshop.server_1
           docker-compose exec -T devshop.server env
           docker-compose exec -T devshop.server systemctl status --no-pager
           sleep 4
 
       - name: "Install DevShop (devshop.server/play.yml --tags=runtime)"
-        working-directory: roles
+        working-directory: docker
 
         # Since the container is launched with a new DEVSHOP_DOCKER_COMMAND_RUN, run the default.
         run: |
           docker-compose exec -T devshop.server bash -c '${DEFAULT_DEVSHOP_DOCKER_COMMAND_RUN}'
 
       - name: "Test DevShop"
-        working-directory: roles
+        working-directory: docker
         run: docker-compose exec -T --user aegir devshop.server /usr/share/devshop/tests/devshop-tests.sh
 
       - name: Save Docker Logs as Artifacts
-        working-directory: roles
+        working-directory: docker
         if: always()
         run: |
           docker ps -a >        ../artifact-docker-ps.log && \

@@ -34,12 +34,14 @@ mysql_enablerepo: ""
 #   - mysql-server
 #   - MySQL-python
 
+mysql_python_package_debian: python3-mysqldb
+
 # MySQL connection settings.
 mysql_port: "3306"
 mysql_bind_address: '0.0.0.0'
 mysql_skip_name_resolve: false
 mysql_datadir: /var/lib/mysql
-mysql_sql_mode: ''
+mysql_sql_mode: ~
 # The following variables have a default value depending on operating system.
 # mysql_pid_file: /var/run/mysqld/mysqld.pid
 # mysql_socket: /var/lib/mysql/mysql.sock
@@ -116,6 +118,8 @@ mysql_users: []
 #     host: 127.0.0.1
 #     password: secret
 #     priv: *.*:USAGE
+
+mysql_disable_log_bin: false
 
 # Replication settings (replication is only enabled if master/user have values).
 mysql_server_id: "1"

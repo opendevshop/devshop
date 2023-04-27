@@ -2,6 +2,7 @@
 
 namespace DevShop\Component\GitHubApiCli;
 
+use Github\AuthMethod;
 use Github\Client as GitHubApiClient;
 
 class GitHubApiCli
@@ -44,7 +45,7 @@ class GitHubApiCli
     // @TODO: Allow password auth?
     // Only attempt authentication if there is a token.
     if (!empty($this->getToken())) {
-      $this->apiClient->authenticate($this->getToken(), null, GitHubApiClient::AUTH_HTTP_TOKEN);
+      $this->apiClient->authenticate($this->getToken(), null, AuthMethod::ACCESS_TOKEN);
     }
 
     // Skip SSL verification if ENV var is found.
@@ -55,9 +56,9 @@ class GitHubApiCli
     // Set options or headers from CLI or config options.
     // @see Client::options
     // Using pattern from HttpClient::clearHeaders()
-    $this->apiClient->setHeaders([
-      'Accept' => sprintf('application/vnd.github.%s+json', $this->apiVersion),
-    ]);
+//    $this->apiClient->setHeaders([
+//      'Accept' => sprintf('application/vnd.github.%s+json', $this->apiVersion),
+//    ]);
 
   }
 

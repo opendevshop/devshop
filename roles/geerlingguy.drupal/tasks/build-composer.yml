@@ -13,6 +13,7 @@
   copy:
     src: "{{ drupal_composer_path }}"
     dest: "/tmp/drupalvm-composer.json"
+    mode: 0644
   when: drupal_composer_path and not drupal_site_exists
   become: false
 
@@ -33,5 +34,8 @@
     command: require
     arguments: "{{ item }}"
     working_dir: "{{ drupal_composer_install_dir }}"
-  with_items: "{{ drupal_composer_dependencies|default([]) }}"
+  with_items: "{{ drupal_composer_dependencies | default([]) }}"
   become: false
+  environment:
+    COMPOSER_PROCESS_TIMEOUT: 1200
+    COMPOSER_MEMORY_LIMIT: '-1'

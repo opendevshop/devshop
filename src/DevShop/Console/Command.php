@@ -295,7 +295,7 @@ abstract class Command extends BaseCommand
     $client = new \Github\Client();
 
     try {
-      $ref = $client->getHttpClient()->get("repos/{$this->getRepoSlug()}/git/refs/heads/{$version}");
+      $ref = $client->getHttpClient()->get("/repos/{$this->getRepoSlug()}/git/refs/heads/{$version}");
       $branch_found = TRUE;
       $this->targetVersionRef = 'branch';
     }
@@ -309,7 +309,7 @@ abstract class Command extends BaseCommand
     }
 
     try {
-      $ref = $client->getHttpClient()->get("repos/{$this->getRepoSlug()}/git/refs/tags/{$version}");
+      $ref = $client->getHttpClient()->get("/repos/{$this->getRepoSlug()}/git/refs/tags/{$version}");
       $tag_found = TRUE;
       $this->targetVersionRef = 'tag';
     }

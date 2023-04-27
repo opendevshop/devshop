@@ -94,7 +94,7 @@ function devshop_provision_pre_flight($platform_name = NULL){
  */
 function devshop_provision_provision_drupal_config($uri, $data, $config = NULL) {
 
-  $environment = d()->environment;
+  $environment = d()->hosting_environment;
   $project = d()->project;
 
   return <<<PHP
@@ -144,7 +144,7 @@ function devshop_provision_provision_services() {
  */
 function devshop_provision_provision_apache_vhost_config($uri, $data) {
 
-  $environment = d()->environment;
+  $environment = d()->hosting_environment;
   $project = d()->project;
 
   if (empty($environment) || empty($project)) {
@@ -174,7 +174,7 @@ PHP;
  */
 function devshop_provision_provision_nginx_vhost_config($data) {
 
-  $environment = d()->environment;
+  $environment = d()->hosting_environment;
   $project = d()->project;
 
   if (empty($environment) || empty($project)) {
@@ -225,7 +225,7 @@ function drush_devshop_provision_pre_updatedb() {
   // It has a project property, but not the environment.
   // That is what the extra import task is for.
   // We can look for the missing environment
-  if (!empty(d()->project) && empty(d()->environment)) {
+  if (!empty(d()->project) && empty(d()->hosting_environment)) {
     drush_log('[DEVSHOP] New environment detected.  Rebuilding Registry.', 'ok');
     drush_invoke('registry-rebuild');
   }
@@ -381,78 +381,12 @@ function devshop_fqdn($host = NULL) {
   return strtolower(gethostbyaddr(gethostbyname($host)));
 }
 
-//
-//if (!function_exists('provision_autoload_register_prefix')) {
-//  /**
-//   * Register a PECL style prefix with the provision autoloader.
-//   *
-//   * @param string $prefix
-//   *   The class prefix to register.
-//   * @param string $dir
-//   *   The directory to search for the classes in.
-//   * @param bool $prepend
-//   *   If the directory should be searched first for the classes in the given
-//   *   prefix, set this to TRUE, otherwise, the default, FALSE, is fine.
-//   */
-//  function provision_autoload_register_prefix($prefix, $dir, $prepend = FALSE) {
-//
-//    // Get any current directories set for this prefix.
-//    $current_prefixes = provision_autoload()->getPrefixes();
-//    if (isset($current_prefixes[$prefix])) {
-//      $dirs = $current_prefixes[$prefix];
-//    }
-//    else {
-//      $dirs = array();
-//    }
-//
-//    // Now add the new one.
-//    if ($prepend) {
-//      array_unshift($dirs, $dir);
-//    }
-//    else {
-//      array_push($dirs, $dir);
-//    }
-//
-//    // Set the prefixes.
-//    provision_autoload()->addPrefix($prefix, $dirs);
-//  }
-//}
-//
-//if (!function_exists('provision_autoload')) {
-//  /**
-//   * Return an instance of the provision autoloader.
-//   *
-//   * This will instiatate an instance if it needs to.
-//   */
-//  function provision_autoload() {
-//    static $instance = NULL;
-//
-//    if (is_null($instance)) {
-//      $instance = new ClassLoader();
-//      // Activate the autoloader.
-//      $instance->register();
-//    }
-//
-//    return $instance;
-//  }
-//}
-
-/**
- * Implementation of drush_hook_provision_pre_COMMAND()
- * Calls drush_devshop_provision_pre_provision_verify()
- */
-function drush_devshop_provision_pre_provision_deploy() {
-  drush_devshop_provision_pre_provision_verify();
-}
-
 /**
  * Implementation of drush_hook_provision_pre_COMMAND()
  * for Verify tasks: Writes easier to use drush aliases for each project.
  */
-function drush_devshop_provision_pre_provision_verify() {
-  if (d()->type === 'project' || (!empty(d()->project) && d()->type === 'site' || d()->type === 'platform')) {
+function drush_devshop_provision_provision_install_validate() {
 
-  }
 }
 
 /**
@@ -460,47 +394,10 @@ function drush_devshop_provision_pre_provision_verify() {
  *
  * This function handles all of the alternative environment install methods.
  */
-function drush_devshop_provision_post_provision_install() {
-
-  // Install Method: Clone
-  // Sync from a drush alias.
-  drush_log('Installing environment with method: ' . d()->install_method , 'p_log');
-  if (d()->install_method == 'clone') {
-    drush_log(dt('Environment Clone initiated...'), 'p_log');
-    $clone_source = d()->environment_settings['install_method']['clone_source'];
-
-    // If "clone_source" is set to "_other", use the drush alias in "clone_source_drush".
-    if ($clone_source == '_other') {
-      $source = d()->environment_settings['install_method']['clone_source_drush'];
-    }
-    elseif (!empty($clone_source)) {
-      $source = d()->environment_settings['install_method']['clone_source'];
-    }
-    else {
-      return drush_set_error('DEVSHOP_ERROR', dt('Install_method"clone_source" was not set.'));
-    }
-
-    $destination = d()->name;
-    $command = "drush provision-sync $source $destination --database --files --update-uri --disable-rollback-backup --registry-rebuild";
-
-    // Build command based on environment settings.
-    if (d()->environment_settings['deploy']['update']) {
-      $command .= " --updatedb";
-    }
-    if (d()->environment_settings['deploy']['cache']) {
-      $command .= " --cache-clear";
-    }
-    if (d()->environment_settings['deploy']['revert']) {
-      $command .= " --features-revert-all";
-    }
-
-    provision_process($command, NULL, 'Cloning site from ' . d($source)->uri);
-    provision_process('drush cc drush', NULL, 'Clearing drush caches');
-//    devshop_drush_process_cache_clear($destination);
-  }
+function drush_devshop_provisionzz_post_provision_install() {
 
   // Install Method: import
-  elseif (d()->install_method == 'import') {
+  if (d()->install_method == 'import') {
 
 
     // If import source is a mysql URL:

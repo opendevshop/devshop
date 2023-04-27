@@ -1,47 +1,45 @@
-# DevShop Docker Images
-# Build Tool
-#
-# This docker-compose file is only for building containers.
-#
+# New.
 ---
-version: '2.2'
+version: '3'
 services:
-
-  # DevShop Base Image
-  # FROM ubuntu or centos
-  # The OS and SystemD changes to allow it to run in containers.
-  base:
-    image: "devshop/base:${OS:-latest}"
+  devshop.server:
+    image: ${DEVSHOP_DOCKER_IMAGE:-devshop/server:php8.1}
     build:
       context: ".."
-      dockerfile: "docker/base/Dockerfile.${OS:-ubuntu1804}"
+      dockerfile: "docker/Dockerfile.${OS:-ubuntu2004}"
+      args:
+        # see .env files for defaults.
+        - DEVSHOP_CONTAINER_FROM
+        - DEVSHOP_DOCKER_COMMAND_BUILD_ARG
+        - ANSIBLE_EXTRA_VARS_ARG
+        - ANSIBLE_TAGS_ARG
+        - ANSIBLE_PLAYBOOK_COMMAND_OPTIONS_ARG
+    hostname: devshop.local.computer
+    ports:
+      - "80:80"
+      - "443:443"
+      - "2222:22"
+      - "33066:3306"
+    privileged: true
+    entrypoint: /usr/share/devshop/docker/bin/docker-systemd-entrypoint
+    volumes:
+      - /var/lib/mysql
+      - /var/aegir
 
-  # DevShop Ansible Image
-  # devshop/base + ansible + python
-  ansible:
-    image: "devshop/ansible:${OS:-latest}"
-    depends_on:
-      - base
-    build:
-      context: ".."
-      dockerfile: "docker/ansible/Dockerfile.${OS:-ubuntu1804}"
+#    volumes:
+      # - /sys/fs/cgroup:/sys/fs/cgroup:ro
+      # Attempting tip from https://github.com/geerlingguy/docker-ubuntu2004-ansible/issues/18#issuecomment-1152157965
+      # - /sys/fs/cgroup:/sys/fs/cgroup:rw
 
-  # DevShop Core Image
-  # devshop/ansible + php + composer + devshop/cli
-  core:
-    image: "devshop/core:${OS:-latest}"
-    depends_on:
-      - ansible
-    build:
-      context: ".."
-      dockerfile: "docker/core/Dockerfile.${OS:-ubuntu1804}"
-
-  # DevShop Role Image
-  # devshop/core + tools to use any Ansible role at runtime.
-  role:
-    image: "devshop/role:${OS:-latest}"
-    depends_on:
-      - core
-    build:
-      context: ".."
-      dockerfile: "docker/role/Dockerfile.${OS:-ubuntu1804}"
+    environment:
+      - ANSIBLE_EXTRA_VARS
+      - ANSIBLE_TAGS=runtime
+      - ANSIBLE_VERBOSITY
+      - ANSIBLE_PLAYBOOK_COMMAND_OPTIONS
+      - ANSIBLE_PLAYBOOK=/usr/share/devshop/roles/devshop.server/play.yml
+      - DEVSHOP_DOCKER_COMMAND_RUN
+      - DOCKER_COMMAND_POST
+      - GITHUB_HEAD_REF
+      - DEVSHOP_TESTS_ARTIFACTS_PATH
+      # Setting this ensures the docker containers have this value, regardless if the container is an older image.
+      - DEVSHOP_ANSIBLE_GROUP_NAME=devshop_server

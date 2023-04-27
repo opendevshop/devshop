@@ -15,11 +15,16 @@ devshop-log "Drush Version: $(drush --version)"
 #echo "Node Version:     " && node --version
 #echo "NPM Version:      " && npm --version
 
+# Removing to see if this caused the fail in 9a9ed11ce28dbaccb28e9c8d1ae3e52d43820a26
+# devshop-log "Verifying Hostmaster Platform (includes composer install)..."
+# drush @hostmaster provision-verify
+
 # Run remaining tasks from install process.
 # Pause the task queue.
 devshop-log "Disabling hosting queue..."
 drush @hostmaster dis hosting_queued -y
 drush @hostmaster vset hosting_queued_paused 1
+drush @hostmaster vset hosting_queue_tasks_enabled 0
 
 #echo "DevShop | devshop-tests.sh | Verify hostmaster platform first..."
 #PLATFORM_ALIAS=`drush @hm php-eval "print d()->platform->name"`

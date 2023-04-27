@@ -1,7 +1,21 @@
 #!/usr/bin/env bash
 set -e
-DEVSHOP_PATH="$( cd "$(dirname "$0")"/.. ; pwd -P )"
-PATH="$DEVSHOP_PATH/bin:$DEVSHOP_PATH/scripts:$PATH"
+
+# Thank you composer for figuring this out!
+selfArg="$BASH_SOURCE"
+if [ -z "$selfArg" ]; then
+    selfArg="$0"
+fi
+
+self=$(realpath $selfArg 2> /dev/null)
+if [ -z "$self" ]; then
+    self="$selfArg"
+fi
+
+dir=$(cd "${self%[/\\]*}" > /dev/null; cd '../scripts' && pwd)
+
+PATH="$dir:$PATH"
+DEVSHOP_PATH=$(realpath $dir/..)
 
 # If /path/to/devshop/ANSIBLE_PLAYBOOK exists, use that path. Otherwise pass it directly.
 if [ -f "${DEVSHOP_PATH}/${ANSIBLE_PLAYBOOK}" ]; then
@@ -9,6 +23,7 @@ if [ -f "${DEVSHOP_PATH}/${ANSIBLE_PLAYBOOK}" ]; then
 fi
 
 ANSIBLE_PLAYBOOK=${ANSIBLE_PLAYBOOK:-"/etc/ansible/play.yml"}
+ANSIBLE_CONFIG=${ANSIBLE_CONFIG:-""}
 ANSIBLE_TAGS=${ANSIBLE_TAGS:-""}
 ANSIBLE_SKIP_TAGS=${ANSIBLE_SKIP_TAGS:-""}
 ANSIBLE_EXTRA_VARS=${ANSIBLE_EXTRA_VARS:-""}
@@ -40,6 +55,7 @@ echo "> Running ansible all --list-hosts --limit $DEVSHOP_ANSIBLE_GROUP_NAME:"
 ansible all --list-hosts --limit $DEVSHOP_ANSIBLE_GROUP_NAME
 
 devshop-logo "Running Ansible Playbook..."
+echo "ANSIBLE_CONFIG: $ANSIBLE_CONFIG"
 echo "ANSIBLE_PLAYBOOK: $ANSIBLE_PLAYBOOK"
 echo "ANSIBLE_TAGS: $ANSIBLE_TAGS"
 echo "ANSIBLE_SKIP_TAGS: $ANSIBLE_SKIP_TAGS"

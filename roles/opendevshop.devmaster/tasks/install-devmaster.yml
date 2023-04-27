@@ -16,7 +16,7 @@
   tags: [runtime]
 
 - name: Get DevShop Control root
-  command: "{{ devshop_cli_bin_path }}/devshop-site-info {{ devshop_control_drush_alias }} root"
+  command: "{{ devshop_cli_scripts_path }}/devshop-site-info {{ devshop_control_drush_alias }} root"
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
@@ -26,7 +26,7 @@
   tags: [runtime]
 
 - name: Get DevShop Control URI
-  command: "{{ devshop_cli_bin_path }}/devshop-site-info {{ devshop_control_drush_alias }} uri"
+  command: "{{ devshop_cli_scripts_path }}/devshop-site-info {{ devshop_control_drush_alias }} uri"
   become: true
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
@@ -58,7 +58,7 @@
 
 - name: Define devmaster_install_command.
   set_fact:
-    devmaster_install_command: "{{ devshop_cli_bin_path }}/devshop devmaster:install -n \
+    devmaster_install_command: "{{ devshop_cli_executable_path }} devmaster:install -n \
                                 --site={{ server_hostname }} \
                                 --aegir_db_host={{ database_host }} \
                                 --aegir_db_pass={{ mysql_root_password }} \
@@ -71,11 +71,12 @@
                                 --profile={{ devshop_install_profile }} \
                                 --root={{ devshop_control_publish_path }} \
                                 --devshop_version={{ devshop_version }} \
-                                --drush-path={{ devshop_cli_bin_path }}/drush \
+                                --drush-path={{ drush_executable_path }} \
                                 --git_root={{ devshop_control_git_root }} \
                                 --git_remote={{ devshop_control_git_remote }} \
                                 --git_reference={{ devshop_control_git_reference }}
-                                --git_docroot={{ devshop_control_git_docroot }}
+                                --git_docroot={{ devshop_control_git_docroot }} \
+                                --git_reset={{ devshop_control_git_reset }} \
                                 {{ devshop_control_install_options }}
 "
   when: devmaster_install_command is not defined
@@ -87,7 +88,7 @@
   tags: [runtime]
 
 - name: Wait for MySQL Server to be ready.
-  command: "{{ devshop_cli_bin_path }}/wait-mysql"
+  command: "{{ devshop_cli_scripts_path }}/wait-mysql"
   changed_when: true
   tags: [runtime]
   environment:
@@ -127,22 +128,4 @@
   when:
     - devmaster_site_uri | length > 0
     - not devmaster_skip_upgrade
-  tags: [runtime]
-
-- name: Clear the drush cache.
-  command: "{{ drush_bin_path }} cc drush"
-  become: true
-  become_user: "{{ aegir_user_name }}"
-  become_method: "{{ ansible_become_method_aegir }}"
-  register: drush_cache_clear
-  changed_when: drush_cache_clear.stdout | length > 0
-  tags: [runtime]
-
-- name: Clear all DevShop Control Caches.
-  command: "{{ drush_bin_path }} {{ devshop_control_drush_alias }} cc all"
-  become: true
-  become_user: "{{ aegir_user_name }}"
-  become_method: "{{ ansible_become_method_aegir }}"
-  register: devshop_cache_clear
-  changed_when: devshop_cache_clear.stdout | length > 0
   tags: [runtime]

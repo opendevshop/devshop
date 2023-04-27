@@ -1,0 +1,7 @@
+# Vars file.
+# The devshop.server playbook includes this file.
+#
+---
+
+# The default version of PHP to use.
+php_version: "8.1"
