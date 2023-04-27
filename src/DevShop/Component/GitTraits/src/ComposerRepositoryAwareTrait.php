@@ -20,6 +20,18 @@ trait ComposerRepositoryAwareTrait
   protected $composerPath = NULL;
 
   /**
+   * @param string $path
+   *
+   * @return $this
+   */
+  public function setComposerConfigFromPath(string $path) {
+    $reader = new ConfigurationReader;
+    $this->composerConfig =  $reader->read($path . '/composer.json');
+    $this->composerPath = $path;
+    return $this;
+  }
+  
+  /**
    * @param Configuration $config If left empty, Configuration object will be loaded from composer.json from the repository root.
    *
    * @return $this

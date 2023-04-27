@@ -12,6 +12,7 @@ devshop_prerequisite_packages:
   - python-pip
   - sudo
   - which
+  - rsync
 
 # Pass in a comma-separated list of repos to use (e.g. "remi,epel"). Used only
 # for RHEL/CentOS.

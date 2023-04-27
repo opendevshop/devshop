@@ -59,3 +59,10 @@
     home: "{{ aegir_user_home }}"
     generate_ssh_key: true
     uid: "{{ aegir_user_uid }}"
+
+- name: Ensure /var/aegir is owned by aegir user.
+  file:
+    state: directory
+    path: "{{ aegir_user_home }}"
+    group: "{{ aegir_user_name }}"
+    owner: "{{ aegir_user_name }}"

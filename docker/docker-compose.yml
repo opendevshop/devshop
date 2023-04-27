@@ -3,10 +3,10 @@
 version: '3'
 services:
   devshop.server:
-    image: ${DEVSHOP_DOCKER_IMAGE:-devshop/server:latest}
+    image: ${DEVSHOP_DOCKER_IMAGE:-devshop/server:php8.1}
     build:
       context: ".."
-      dockerfile: "docker/Dockerfile.${OS:-ubuntu1804}"
+      dockerfile: "docker/Dockerfile.${OS:-ubuntu2004}"
       args:
         # see .env files for defaults.
         - DEVSHOP_CONTAINER_FROM
@@ -33,7 +33,7 @@ services:
 
     environment:
       - ANSIBLE_EXTRA_VARS
-      - ANSIBLE_TAGS
+      - ANSIBLE_TAGS=runtime
       - ANSIBLE_VERBOSITY
       - ANSIBLE_PLAYBOOK_COMMAND_OPTIONS
       - ANSIBLE_PLAYBOOK=/usr/share/devshop/roles/devshop.server/play.yml

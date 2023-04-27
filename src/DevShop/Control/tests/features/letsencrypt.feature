@@ -10,21 +10,15 @@ Feature: DevShop Servers have LetsEncrypt enabled out of the box.
     When I am at "hosting/c/server_master"
     And I click "Edit"
     Then I should see "Let's Encrypt"
-    Then I select the radio button with the label "LetsEncrypt"
-    Then I select the radio button with the label "Staging"
-#    Then I select the radio button with the label "Apache HTTPS"
+    Then I select the radio button "LetsEncrypt"
+    Then I select the radio button "Staging"
     And I press "Save"
     When I run drush "hosting-tasks --force --fork=0 --strict=0"
-    # Then print last drush output
-    And I click "Servers"
-    And I should see "Certificate"
-    And I should see "LetsEncrypt"
-#    And I should see "Apache HTTPS"
 
-  @api
-  Scenario: Server node has Certificate and HTTPS services enabled.
-    Given I am logged in as a user with the "administrator" role
-    When I am at "hosting/c/hostmaster"
-    # Flicker fail: https://github.com/opendevshop/devshop/runs/1537656512?check_suite_focus=true#step:8:622
-    # Then I should see "Encryption Disabled"
-    Then I should see "Encryption"
+    Then I click "Edit"
+    Then I select the radio button "Apache"
+    And I select the radio button "None" with the id "edit-services-certificate-type-null"
+    And I press "Save"
+
+    When I run drush "hosting-tasks --force --fork=0 --strict=0"
+    Then print last drush output

@@ -4,9 +4,11 @@ version: '3'
 services:
   devshop.server:
     # Use the pre-built images for speed.
-    image: ${DEVSHOP_DOCKER_IMAGE:-devshop/server:php8.0}
+    image: ${DEVSHOP_DOCKER_IMAGE:-devshop/server:php8.1}
     command: devshop-ansible-playbook
     volumes:
       - ../:/usr/share/devshop
       - ../aegir-home:/var/aegir
       - $HOME/.ssh:/var/aegir/.ssh
+    environment:
+      - XDEBUG_CONFIG="remote_host=172.17.0.1 idekey=PHPSTORM"

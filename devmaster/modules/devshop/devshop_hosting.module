@@ -276,7 +276,7 @@ function devshop_hosting_login_reset($site_nid) {
     drupal_get_messages();
   }
   else {
-    $tasks = hosting_get_tasks('rid', $site_nid, 'login-reset');
+    $task = hosting_get_most_recent_task($site_nid, 'login-reset');
   }
 
   // Wait for it to complete
@@ -303,13 +303,13 @@ function devshop_hosting_login_reset($site_nid) {
        </h4>
      </div>
      <div class="modal-body">
-       <a href="$url" target="_blank" class="btn btn-primary">
+       <a href="$url" target="_blank" class="btn btn-primary btn-block">
          <i class="fa fa-sign-in"></i>
          $login_text
        </a>
      </div>
      <div class="modal-footer">
-       <button type="button" class="btn btn-default" data-dismiss="modal">$close</button>
+       <button type="button" class="btn btn-link" data-dismiss="modal">$close</button>
      </div>
    </div>
 HTML;

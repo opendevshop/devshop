@@ -68,10 +68,6 @@ function devshop_project_create_step_settings($form, &$form_state) {
     ),
   ), 'setting');
 
-  // Remove "live environment" selector.
-  $form['project']['codebase']['live_environment']['#type'] = 'value';
-  $form['project']['codebase']['live_environment']['#suffix'] = '';
-
   return $form;
 }
 

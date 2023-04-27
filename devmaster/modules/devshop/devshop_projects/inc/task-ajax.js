@@ -14,6 +14,9 @@
 
           $.getJSON(url, function (data) {
 
+              if (!data.environments) {
+                  return;
+              }
               $.each(data.environments, function (environment_name, environment) {
 
                   $.each(environment.tasks, function (key, task) {

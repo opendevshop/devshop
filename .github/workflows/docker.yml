@@ -2,7 +2,12 @@
 name: Docker Hub
 
 on:
+  workflow_dispatch:
+    
   pull_request:
+    branches:
+      # This workflow will only run on pull requests for branch test/docker/actions.
+      - test/docker/actions
   push:
     branches:
       - 1.x
@@ -40,6 +45,10 @@ jobs:
       fail-fast: false
       matrix:
         os_slug:
+          # ubuntu2004 docker builds fail. 
+          # Ensure MySQL is stopped after initial install....
+          #   localhost failed | msg: Service is in unknown state
+          # - ubuntu2004
           - ubuntu1804
 
         php_version:
@@ -47,18 +56,27 @@ jobs:
           - "8.0"
           - "8.1"
 
-    if: github.ref == 'refs/heads/1.x'
+    # if: github.ref == 'refs/heads/1.x'
 
     steps:
       - name: Checkout sourcecode.
         uses: actions/checkout@v2
 
       - name: Save info to vars file.
+        run: |
+          echo "devshop_version: '${{ github.ref_name }}'" >> vars.yml
+          echo "php_version: '${{ matrix.php_version }}'" >> vars.yml
+          cat vars.yml
+
+      # github.head_ref is the PR branch name.
+      - name: Prepare Pull Request-only environment
         if: github.event_name=='pull_request'
         run: |
-          echo "devshop_version: ${{ github.head_ref }}" >> vars.yml
-          echo "devshop_cli_repo: ${{ github.event.pull_request.head.repo.clone_url }}" >> vars.yml
-          cat vars.yml
+          echo "php_version: '${{ matrix.php_version }}'" >> vars.yml
+          echo "devshop_version: ${{ github.head_ref }}" >> vars.ci.yml
+          echo "devshop_cli_repo: ${{ github.event.pull_request.head.repo.clone_url }}" >> vars.ci.yml
+          echo "GIT_REF=${{ github.head_ref }}" >> $GITHUB_ENV
+          git switch --create ${{ github.head_ref }}
 
       - name: Set Container Tags
         run: |
@@ -82,7 +100,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build and push
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           context: ./
           file: ./docker/Dockerfile.${{ matrix.os_slug }}

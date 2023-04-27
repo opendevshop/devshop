@@ -19,6 +19,7 @@ php_packages_extra:
   - libapache2-mod-php8.0
   - libapache2-mod-php8.1
   - "php{{ php_version }}-bcmath"
+  - "php{{ php_version }}-intl"
 
 # opendevshop.apache/tasks/main.yml disables all the mods, then enables these.
 apache_mods_enabled:

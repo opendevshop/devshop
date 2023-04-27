@@ -18,7 +18,7 @@ function hosting_task_devshop_pull_form($node) {
 
   // Remove any environments where pull is disabled or is tracking a tag.
   foreach ($node->project->environments as $name => $environment) {
-    if (isset($form['environments']['#options'][$name]) && ($environment->settings->pull_disabled || in_array($environment->git_ref, $node->project->settings->git['tags']))) {
+    if (isset($form['environments']['#options'][$name]) && (empty($environment->hosting_settings['deployment']['continuous']) || in_array($environment->git_ref, $node->project->settings->git['tags']))) {
       unset($form['environments']['#options'][$name]);
     }
   }
