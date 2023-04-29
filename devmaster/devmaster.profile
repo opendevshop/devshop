@@ -11,7 +11,7 @@
 function devmaster_install() {
 
   // add support for nginx
-  if (d()->platform->server->http_service_type === 'nginx') {
+  if (d()->server->http_service_type === 'nginx') {
     module_enable(array('hosting_nginx'));
   }
 
@@ -53,7 +53,7 @@ function devmaster_bootstrap() {
   $node->services = array();
 
   /* Make it compatible with more than apache and nginx */
-  $master_server = d()->platform->server;
+  $master_server = d()->server;
 
   // Force https_apache
   hosting_services_add($node, 'http', 'https_apache', array(

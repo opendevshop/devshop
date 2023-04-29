@@ -251,7 +251,7 @@ class InstallDevmaster extends Command
     $output->writeln(' 1. Create aegir "contexts" (drush aliases) for:');
     $output->writeln('   - server_master (web server)');
     $output->writeln('   - server_localhost (db server)');
-    $output->writeln('   - platform_hostmaster (devmaster codebase)');
+//    $output->writeln('   - platform_hostmaster (devmaster codebase)');
     $output->writeln('   - hostmaster (devmaster site)');
     $output->writeln(' 2. Install the Devmaster site');
     $output->writeln(' 3. Setup a cron job to run `drush @hostmaster hosting-tasks.`');
@@ -536,9 +536,9 @@ class InstallDevmaster extends Command
       $server_master_db_service_type = 'mysql';
       $server_master_master_db = $master_db;
     }
-
+    $server = 'server_master';
     // Save @server_master
-    $this->saveContext('server_master', array(
+    $this->saveContext($server, array(
       'context_type'      => 'server',
       'remote_host'       => $this->input->getOption('aegir_host'),
       'aegir_root'        => $this->input->getOption('aegir_root'),
@@ -552,25 +552,17 @@ class InstallDevmaster extends Command
       'master_db'         => $server_master_master_db,
     ));
 
-    // Save Hostmaster Platform
-    $server = '@server_master';
-    $this->saveContext('platform_hostmaster', array(
-      'context_type'      => 'platform',
-      'server' => $server,
-      'web_server' => $server,
+    // Save Hostmaster Site context, and flag for installation, pre-verify.
+    $this->saveContext('hostmaster', array(
+      'context_type' => 'site',
+      'server' => "@{$server}",
+      'web_server' => "@{$server}",
       'root' => $this->input->getOption('root'),
       'git_root' => $this->input->getOption('git_root'),
       'git_remote' => $this->input->getOption('git_remote'),
       'git_reference' => $this->input->getOption('git_reference'),
       'git_reset' => $this->input->getOption('git_reset'),
       'git_docroot' => $this->input->getOption('git_docroot'),
-    ));
-
-    // Save Hostmaster Site context, and flag for installation, pre-verify.
-    $platform_name = '@platform_hostmaster';
-    $this->saveContext('hostmaster', array(
-      'context_type' => 'site',
-      'platform' => $platform_name,
       'db_server' => '@' . $db_server,
       'uri' => $this->input->getOption('site'),
       'root' => $this->input->getOption('root'),
