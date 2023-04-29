@@ -1,5 +1,5 @@
 {
-    "name": "devshop/control,
+    "name": "devshop/control",
     "description": "Web interface for DevShop",
     "type": "project",
     "license": "GPL-2.0-or-later",
