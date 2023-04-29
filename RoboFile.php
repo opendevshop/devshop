@@ -175,7 +175,7 @@ class RoboFile extends \Robo\Tasks {
    */
   private $writeRepos = [
     '.' => '',
-    'web/sites/all/drush/provision' => '7.x-4.x',
+    'web/sites/all/drush/provision' => '7.x-5.x',
     'web/sites/all/modules/contrib/hosting' => '7.x-4.x',
   ];
 
