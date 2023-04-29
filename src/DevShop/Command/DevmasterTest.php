@@ -67,6 +67,7 @@ class DevmasterTest extends Command {
     $process->setWorkingDirectory($tests_path);
 
     $env = $_SERVER;
+    $env['HTTP_HOST'] = 'devshop.local.computer';
     $env['BEHAT_PARAMS'] = json_encode(array(
       'extensions' => array(
         'Behat\\MinkExtension' => array(
