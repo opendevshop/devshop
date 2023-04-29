@@ -118,6 +118,13 @@
       failed_when: true
       tags: [always]
 
+- name: Add symlink to devshop-control
+  file:
+    state: link
+    force: true
+    src: "{{ devshop_cli_path }}"
+    path: "{{ devshop_aegir_symlink_path }}"
+
 - name: DevShop Control Upgrade Command
   debug:
     msg: "{{ devmaster_upgrade_command }}"

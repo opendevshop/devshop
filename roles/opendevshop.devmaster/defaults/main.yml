@@ -35,9 +35,12 @@ devshop_github_token: ''
 # server_hostname: devshop.local.computer
 server_hostname_ignore_errors: true
 
+# The CI and the web UI are the same repo. This will change.
 devshop_cli_repo: http://github.com/opendevshop/devshop.git
 devshop_cli_skip_update: false
 devshop_cli_path: /usr/share/devshop
+
+devshop_aegir_symlink_path: /var/aegir/devshop-control
 
 # Use real folder paths so not to depend on composer install
 devshop_cli_scripts_path: "{{ devshop_cli_path }}/scripts"
@@ -77,6 +80,7 @@ php_date_timezone: "America/New_York"
 devshop_version: 1.x
 devshop_cli_version: "{{ devshop_version }}"
 
+# @TODO: Move this stuff back to the top.
 # DevShop uses a built in Drupal stack for devmaster now.
 # These are the provision properties for git_remote, git_root, git_reference, and git_docroot.
 devshop_control_git_remote: "{{ devshop_cli_repo }}"
