@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a25f6d547c66ac4c47e7948201be0366",
+    "content-hash": "8c016e235bd268e77babba083d8e7519",
     "packages": [
         {
             "name": "behat/behat",
@@ -1471,6 +1471,54 @@
             "time": "2022-12-20T22:53:13+00:00"
         },
         {
+            "name": "devshop/bin-tools",
+            "version": "1.x-dev",
+            "dist": {
+                "type": "path",
+                "url": "scripts",
+                "reference": "e88ae94fbfb6d79b6a8f13b894e3d98bc0fbf5ce"
+            },
+            "bin": [
+                "branch-or-tag",
+                "devshop-ansible-playbook",
+                "devshop-chuid",
+                "devshop-line",
+                "devshop-log",
+                "devshop-logo",
+                "devshop-site-active",
+                "devshop-site-info",
+                "hosting-queue-runner",
+                "tail-file",
+                "wait-for",
+                "wait-mysql",
+                "wait-site"
+            ],
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.x-dev"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jon Pugh",
+                    "email": "jon@thinkdrop.net"
+                },
+                {
+                    "name": "DevShop Community",
+                    "homepage": "https://github.com/opendevshop/devshop/graphs/contributors"
+                }
+            ],
+            "description": "Useful shell scripts",
+            "homepage": "https://getdevshop.com",
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
             "name": "devshop/devmaster",
             "version": "1.x-dev",
             "dist": {
@@ -1529,21 +1577,15 @@
         },
         {
             "name": "devshop/git-split",
-            "version": "1.7.0-alpha4",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/devshop-packages/git-split.git",
-                "reference": "d94e7ca41c704d6dd2fb064d0ef8978444d03f53"
-            },
+            "version": "1.x-dev",
             "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/devshop-packages/git-split/zipball/d94e7ca41c704d6dd2fb064d0ef8978444d03f53",
-                "reference": "d94e7ca41c704d6dd2fb064d0ef8978444d03f53",
-                "shasum": ""
+                "type": "path",
+                "url": "src/DevShop/Component/GitSplit",
+                "reference": "f92048ef146d6c206b9d694bad260f0b01bfabbc"
             },
             "require": {
-                "composer-plugin-api": "^2.0",
-                "php": "^7.1"
+                "composer-plugin-api": "^1.0 || ^2.0",
+                "php": "^7.1||^8.0"
             },
             "require-dev": {
                 "symfony/console": "^4.4|^5.0"
@@ -1563,7 +1605,6 @@
                     "DevShop\\Component\\GitSplit\\": ""
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -1579,11 +1620,9 @@
             ],
             "description": "DevShop GitSplit Component",
             "homepage": "https://getdevshop.com",
-            "support": {
-                "issues": "https://github.com/devshop-packages/git-split/issues",
-                "source": "https://github.com/devshop-packages/git-split/tree/1.7.0-alpha4"
-            },
-            "time": "2020-11-06T17:22:41+00:00"
+            "transport-options": {
+                "relative": true
+            }
         },
         {
             "name": "devshop/git-traits",
@@ -1645,23 +1684,16 @@
         {
             "name": "devshop/power-process",
             "version": "1.x-dev",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/devshop-packages/power-process.git",
-                "reference": "f8d6bba0abcaf0ead537ee1ddbed12a511d68715"
-            },
             "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/devshop-packages/power-process/zipball/f8d6bba0abcaf0ead537ee1ddbed12a511d68715",
-                "reference": "f8d6bba0abcaf0ead537ee1ddbed12a511d68715",
-                "shasum": ""
+                "type": "path",
+                "url": "src/DevShop/Component/PowerProcess",
+                "reference": "d5e2cb99c249b7532dadd612596564ab8bec04b4"
             },
             "require": {
                 "consolidation/robo": "^2",
                 "php": "^7.1||^8.0",
                 "symfony/process": "^4.4"
             },
-            "default-branch": true,
             "bin": [
                 "run"
             ],
@@ -1676,7 +1708,6 @@
                     "DevShop\\Component\\PowerProcess\\": ""
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -1692,25 +1723,17 @@
             ],
             "description": "Enhanced Symfony Process component.",
             "homepage": "https://getdevshop.com",
-            "support": {
-                "issues": "https://github.com/devshop-packages/power-process/issues",
-                "source": "https://github.com/devshop-packages/power-process/tree/bug/bitbucket/integration"
-            },
-            "time": "2023-02-01T03:24:05+00:00"
+            "transport-options": {
+                "relative": true
+            }
         },
         {
             "name": "devshop/yaml-tasks",
             "version": "1.x-dev",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/devshop-packages/yaml-tasks.git",
-                "reference": "aab7faa5160274628c4cf2d4324139580b8a5a1b"
-            },
             "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/devshop-packages/yaml-tasks/zipball/aab7faa5160274628c4cf2d4324139580b8a5a1b",
-                "reference": "aab7faa5160274628c4cf2d4324139580b8a5a1b",
-                "shasum": ""
+                "type": "path",
+                "url": "src/DevShop/Component/YamlTasks",
+                "reference": "7ce33485d994de5192facf906ebe32e902f25ba4"
             },
             "require": {
                 "composer-plugin-api": "^1.0 || ^2.0",
@@ -1727,7 +1750,6 @@
             "require-dev": {
                 "squizlabs/php_codesniffer": "^3.5"
             },
-            "default-branch": true,
             "bin": [
                 "yaml-tasks"
             ],
@@ -1743,7 +1765,6 @@
                     "DevShop\\Component\\YamlTasks\\": ""
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -1759,11 +1780,9 @@
             ],
             "description": "Plugin to run commands from a YML file and pass to GitHub commit status API.",
             "homepage": "https://getdevshop.com",
-            "support": {
-                "issues": "https://github.com/devshop-packages/yaml-tasks/issues",
-                "source": "https://github.com/devshop-packages/yaml-tasks/tree/bug/bitbucket/integration"
-            },
-            "time": "2023-02-10T01:58:33+00:00"
+            "transport-options": {
+                "relative": true
+            }
         },
         {
             "name": "dflydev/dot-access-data",
@@ -10397,8 +10416,10 @@
     ],
     "minimum-stability": "dev",
     "stability-flags": {
+        "devshop/bin-tools": 20,
         "devshop/devmaster": 20,
         "devshop/git-split": 20,
+        "devshop/git-traits": 20,
         "devshop/power-process": 20,
         "devshop/yaml-tasks": 20,
         "drupal/admin_menu": 5,

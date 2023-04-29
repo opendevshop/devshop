@@ -27,6 +27,22 @@
         "type": "path",
         "url": "devmaster"
       },
+      "devshop/bin-tools": {
+        "type": "path",
+        "url": "scripts"
+      },
+      "devshop/git-split": {
+        "type": "path",
+        "url": "src/DevShop/Component/GitSplit"
+      },
+      "devshop/power-process": {
+        "type": "path",
+        "url": "src/DevShop/Component/PowerProcess"
+      },
+      "devshop/yaml-tasks": {
+        "type": "path",
+        "url": "src/DevShop/Component/YamlTasks"
+      },
       "behat": {
         "type": "vcs",
         "url":  "https://github.com/jonpugh/DrupalDriver.git"
@@ -45,10 +61,12 @@
         "composer/semver": "^1.4",
         "consolidation/robo": "^2",
         "cweagans/composer-patches": "^1.7",
+        "devshop/bin-tools": "1.x-dev",
         "devshop/devmaster": "1.x-dev",
-        "devshop/git-split": "@dev",
-        "devshop/power-process": "@dev",
-        "devshop/yaml-tasks": "@dev",
+        "devshop/git-split": "1.x-dev",
+        "devshop/git-traits": "1.x-dev",
+        "devshop/power-process": "1.x-dev",
+        "devshop/yaml-tasks": "1.x-dev",
         "drupal-composer/preserve-paths": "^0.1.6",
         "drupal/admin_menu": "@rc",
         "drupal/adminrole": "^1.1",
