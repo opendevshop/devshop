@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "23d35df66889f94a8b9a1bf0f17a96ba",
+    "content-hash": "a25f6d547c66ac4c47e7948201be0366",
     "packages": [
         {
             "name": "behat/behat",
@@ -1029,32 +1029,74 @@
         },
         {
             "name": "consolidation/log",
-            "version": "2.1.1",
+            "version": "1.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/consolidation/log.git",
-                "reference": "3ad08dc57e8aff9400111bad36beb0ed387fe6a9"
+                "reference": "b2e887325ee90abc96b0a8b7b474cd9e7c896e3a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/consolidation/log/zipball/3ad08dc57e8aff9400111bad36beb0ed387fe6a9",
-                "reference": "3ad08dc57e8aff9400111bad36beb0ed387fe6a9",
+                "url": "https://api.github.com/repos/consolidation/log/zipball/b2e887325ee90abc96b0a8b7b474cd9e7c896e3a",
+                "reference": "b2e887325ee90abc96b0a8b7b474cd9e7c896e3a",
                 "shasum": ""
             },
             "require": {
-                "php": ">=7.1.3",
-                "psr/log": "^1 || ^2",
-                "symfony/console": "^4 || ^5 || ^6"
+                "php": ">=5.4.5",
+                "psr/log": "^1.0",
+                "symfony/console": "^2.8|^3|^4"
             },
             "require-dev": {
-                "phpunit/phpunit": ">=7.5.20",
-                "squizlabs/php_codesniffer": "^3",
-                "yoast/phpunit-polyfills": "^0.2.0"
+                "g1a/composer-test-scenarios": "^3",
+                "php-coveralls/php-coveralls": "^1",
+                "phpunit/phpunit": "^6",
+                "squizlabs/php_codesniffer": "^2"
             },
             "type": "library",
             "extra": {
+                "scenarios": {
+                    "symfony4": {
+                        "require": {
+                            "symfony/console": "^4.0"
+                        },
+                        "config": {
+                            "platform": {
+                                "php": "7.1.3"
+                            }
+                        }
+                    },
+                    "symfony2": {
+                        "require": {
+                            "symfony/console": "^2.8"
+                        },
+                        "require-dev": {
+                            "phpunit/phpunit": "^4.8.36"
+                        },
+                        "remove": [
+                            "php-coveralls/php-coveralls"
+                        ],
+                        "config": {
+                            "platform": {
+                                "php": "5.4.8"
+                            }
+                        }
+                    },
+                    "phpunit4": {
+                        "require-dev": {
+                            "phpunit/phpunit": "^4.8.36"
+                        },
+                        "remove": [
+                            "php-coveralls/php-coveralls"
+                        ],
+                        "config": {
+                            "platform": {
+                                "php": "5.4.8"
+                            }
+                        }
+                    }
+                },
                 "branch-alias": {
-                    "dev-main": "2.x-dev"
+                    "dev-master": "1.x-dev"
                 }
             },
             "autoload": {
@@ -1075,9 +1117,9 @@
             "description": "Improved Psr-3 / Psr\\Log logger based on Symfony Console components.",
             "support": {
                 "issues": "https://github.com/consolidation/log/issues",
-                "source": "https://github.com/consolidation/log/tree/2.1.1"
+                "source": "https://github.com/consolidation/log/tree/master"
             },
-            "time": "2022-02-24T04:27:32+00:00"
+            "time": "2019-01-01T17:30:51+00:00"
         },
         {
             "name": "consolidation/output-formatters",
@@ -1196,48 +1238,54 @@
         },
         {
             "name": "consolidation/robo",
-            "version": "1.5.0",
+            "version": "2.0.0-alpha3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/consolidation/Robo.git",
-                "reference": "12bf6b608057604a283e9e597edfed36ba071631"
+                "reference": "36ec0ae4eaab9cbc408a62e49124f0c8e638b372"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/consolidation/Robo/zipball/12bf6b608057604a283e9e597edfed36ba071631",
-                "reference": "12bf6b608057604a283e9e597edfed36ba071631",
+                "url": "https://api.github.com/repos/consolidation/Robo/zipball/36ec0ae4eaab9cbc408a62e49124f0c8e638b372",
+                "reference": "36ec0ae4eaab9cbc408a62e49124f0c8e638b372",
                 "shasum": ""
             },
             "require": {
-                "consolidation/annotated-command": "^2.12.1 || ^4.1",
-                "consolidation/config": "^1.2.1",
-                "consolidation/log": "^1.1.1 || ^2",
-                "consolidation/output-formatters": "^3.5.1 || ^4.1",
-                "consolidation/self-update": "^1.1.5 || ^2",
-                "grasmash/yaml-expander": "^1.4",
-                "league/container": "^2.4.1",
-                "php": ">=5.5.0",
-                "symfony/console": "^2.8 || ^3 || ^4",
-                "symfony/event-dispatcher": "^2.5 || ^3 || ^4",
-                "symfony/filesystem": "^2.5 || ^3 || ^4",
-                "symfony/finder": "^2.5 || ^3 || ^4 || ^5",
-                "symfony/process": "^2.5 || ^3 || ^4"
+                "consolidation/annotated-command": "^2.11.0",
+                "consolidation/config": "^1.2",
+                "consolidation/log": "^1.1.1",
+                "consolidation/output-formatters": "^3.1.13",
+                "consolidation/self-update": "^1",
+                "grasmash/yaml-expander": "^1.3",
+                "league/container": "^2.2",
+                "php": ">=7",
+                "symfony/console": "^3.4|^4",
+                "symfony/event-dispatcher": "^3.4|^4",
+                "symfony/filesystem": "^3|^4",
+                "symfony/finder": "^3|^4",
+                "symfony/process": "^3|^4"
             },
-            "replace": {
-                "codegyre/robo": "< 1.0"
+            "conflict": {
+                "codegyre/robo": "*"
             },
             "require-dev": {
+                "codeception/aspect-mock": "^1|^2.1.1",
+                "codeception/base": "^2.3.7",
+                "codeception/verify": "^0.3.2",
                 "g1a/composer-test-scenarios": "^3",
+                "goaop/framework": "~2.1.2",
+                "goaop/parser-reflection": "^1.1.0",
                 "natxet/cssmin": "3.0.4",
+                "nikic/php-parser": "^3.1.5",
                 "patchwork/jsqueeze": "^2",
                 "pear/archive_tar": "^1.4.4",
                 "php-coveralls/php-coveralls": "^1",
-                "phpunit/phpunit": "^5.7.27",
-                "squizlabs/php_codesniffer": "^3"
+                "phpunit/php-code-coverage": "~2|~4",
+                "squizlabs/php_codesniffer": "^2.8"
             },
             "suggest": {
                 "henrikbjorn/lurker": "For monitoring filesystem changes in taskWatch",
-                "natxet/CssMin": "For minifying CSS files in taskMinify",
+                "natxet/cssmin": "For minifying CSS files in taskMinify",
                 "patchwork/jsqueeze": "For minifying JS files in taskMinify",
                 "pear/archive_tar": "Allows tar archives to be created and extracted in taskPack and taskExtract, respectively."
             },
@@ -1247,48 +1295,19 @@
             "type": "library",
             "extra": {
                 "scenarios": {
-                    "finder5": {
+                    "symfony3": {
                         "require": {
-                            "symfony/finder": "^5"
+                            "symfony/console": "^3"
                         },
                         "config": {
                             "platform": {
-                                "php": "7.2.5"
+                                "php": "7.0.11"
                             }
-                        }
-                    },
-                    "symfony4": {
-                        "require": {
-                            "symfony/console": "^4"
-                        },
-                        "config": {
-                            "platform": {
-                                "php": "7.1.3"
-                            }
-                        }
-                    },
-                    "symfony2": {
-                        "require": {
-                            "symfony/console": "^2.8"
-                        },
-                        "require-dev": {
-                            "phpunit/phpunit": "^4.8.36"
-                        },
-                        "remove": [
-                            "php-coveralls/php-coveralls"
-                        ],
-                        "config": {
-                            "platform": {
-                                "php": "5.5.9"
-                            }
-                        },
-                        "scenario-options": {
-                            "create-lockfile": "false"
                         }
                     }
                 },
                 "branch-alias": {
-                    "dev-master": "1.x-dev"
+                    "dev-master": "2.x-dev"
                 }
             },
             "autoload": {
@@ -1309,9 +1328,9 @@
             "description": "Modern task runner",
             "support": {
                 "issues": "https://github.com/consolidation/Robo/issues",
-                "source": "https://github.com/consolidation/Robo/tree/1.5.0"
+                "source": "https://github.com/consolidation/Robo/tree/master"
             },
-            "time": "2021-10-08T03:51:31+00:00"
+            "time": "2019-10-05T22:53:27+00:00"
         },
         {
             "name": "consolidation/self-update",
@@ -1509,6 +1528,64 @@
             }
         },
         {
+            "name": "devshop/git-split",
+            "version": "1.7.0-alpha4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/devshop-packages/git-split.git",
+                "reference": "d94e7ca41c704d6dd2fb064d0ef8978444d03f53"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/devshop-packages/git-split/zipball/d94e7ca41c704d6dd2fb064d0ef8978444d03f53",
+                "reference": "d94e7ca41c704d6dd2fb064d0ef8978444d03f53",
+                "shasum": ""
+            },
+            "require": {
+                "composer-plugin-api": "^2.0",
+                "php": "^7.1"
+            },
+            "require-dev": {
+                "symfony/console": "^4.4|^5.0"
+            },
+            "bin": [
+                "bin/git-split"
+            ],
+            "type": "composer-plugin",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.x-dev"
+                },
+                "class": "DevShop\\Component\\GitSplit\\Composer\\Plugin"
+            },
+            "autoload": {
+                "psr-4": {
+                    "DevShop\\Component\\GitSplit\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jon Pugh",
+                    "email": "jon@thinkdrop.net"
+                },
+                {
+                    "name": "DevShop Community",
+                    "homepage": "https://github.com/opendevshop/devshop/graphs/contributors"
+                }
+            ],
+            "description": "DevShop GitSplit Component",
+            "homepage": "https://getdevshop.com",
+            "support": {
+                "issues": "https://github.com/devshop-packages/git-split/issues",
+                "source": "https://github.com/devshop-packages/git-split/tree/1.7.0-alpha4"
+            },
+            "time": "2020-11-06T17:22:41+00:00"
+        },
+        {
             "name": "devshop/git-traits",
             "version": "1.x-dev",
             "source": {
@@ -1564,6 +1641,129 @@
                 "source": "https://github.com/devshop-packages/git-traits/tree/1.x"
             },
             "time": "2023-04-25T19:49:03+00:00"
+        },
+        {
+            "name": "devshop/power-process",
+            "version": "1.x-dev",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/devshop-packages/power-process.git",
+                "reference": "f8d6bba0abcaf0ead537ee1ddbed12a511d68715"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/devshop-packages/power-process/zipball/f8d6bba0abcaf0ead537ee1ddbed12a511d68715",
+                "reference": "f8d6bba0abcaf0ead537ee1ddbed12a511d68715",
+                "shasum": ""
+            },
+            "require": {
+                "consolidation/robo": "^2",
+                "php": "^7.1||^8.0",
+                "symfony/process": "^4.4"
+            },
+            "default-branch": true,
+            "bin": [
+                "run"
+            ],
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "DevShop\\Component\\PowerProcess\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jon Pugh",
+                    "email": "jon@thinkdrop.net"
+                },
+                {
+                    "name": "DevShop Community",
+                    "homepage": "https://github.com/opendevshop/devshop/graphs/contributors"
+                }
+            ],
+            "description": "Enhanced Symfony Process component.",
+            "homepage": "https://getdevshop.com",
+            "support": {
+                "issues": "https://github.com/devshop-packages/power-process/issues",
+                "source": "https://github.com/devshop-packages/power-process/tree/bug/bitbucket/integration"
+            },
+            "time": "2023-02-01T03:24:05+00:00"
+        },
+        {
+            "name": "devshop/yaml-tasks",
+            "version": "1.x-dev",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/devshop-packages/yaml-tasks.git",
+                "reference": "aab7faa5160274628c4cf2d4324139580b8a5a1b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/devshop-packages/yaml-tasks/zipball/aab7faa5160274628c4cf2d4324139580b8a5a1b",
+                "reference": "aab7faa5160274628c4cf2d4324139580b8a5a1b",
+                "shasum": ""
+            },
+            "require": {
+                "composer-plugin-api": "^1.0 || ^2.0",
+                "consolidation/robo": "^2",
+                "devshop/power-process": "@dev",
+                "ext-json": "*",
+                "guzzlehttp/guzzle": "^6",
+                "guzzlehttp/psr7": "^1.9",
+                "http-interop/http-factory-guzzle": "^1.2",
+                "knplabs/github-api": "^3.9||^1.0",
+                "php-http/guzzle6-adapter": "2.x-dev",
+                "teqneers/php-stream-wrapper-for-git": "^2.0"
+            },
+            "require-dev": {
+                "squizlabs/php_codesniffer": "^3.5"
+            },
+            "default-branch": true,
+            "bin": [
+                "yaml-tasks"
+            ],
+            "type": "composer-plugin",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.x-dev"
+                },
+                "class": "DevShop\\Component\\YamlTasks\\Composer\\Plugin"
+            },
+            "autoload": {
+                "psr-4": {
+                    "DevShop\\Component\\YamlTasks\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jon Pugh",
+                    "email": "jon@thinkdrop.net"
+                },
+                {
+                    "name": "DevShop Community",
+                    "homepage": "https://github.com/opendevshop/devshop/graphs/contributors"
+                }
+            ],
+            "description": "Plugin to run commands from a YML file and pass to GitHub commit status API.",
+            "homepage": "https://getdevshop.com",
+            "support": {
+                "issues": "https://github.com/devshop-packages/yaml-tasks/issues",
+                "source": "https://github.com/devshop-packages/yaml-tasks/tree/bug/bitbucket/integration"
+            },
+            "time": "2023-02-10T01:58:33+00:00"
         },
         {
             "name": "dflydev/dot-access-data",
@@ -6794,7 +6994,7 @@
         },
         {
             "name": "php-http/guzzle6-adapter",
-            "version": "v2.0.2",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-http/guzzle6-adapter.git",
@@ -6822,6 +7022,7 @@
                 "php-http/client-integration-tests": "^2.0 || ^3.0",
                 "phpunit/phpunit": "^7.4 || ^8.4"
             },
+            "default-branch": true,
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -10197,6 +10398,9 @@
     "minimum-stability": "dev",
     "stability-flags": {
         "devshop/devmaster": 20,
+        "devshop/git-split": 20,
+        "devshop/power-process": 20,
+        "devshop/yaml-tasks": 20,
         "drupal/admin_menu": 5,
         "drupal/aegir_config": 10,
         "drupal/cas_attributes": 5,
