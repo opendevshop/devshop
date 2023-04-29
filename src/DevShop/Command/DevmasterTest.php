@@ -122,7 +122,8 @@ class DevmasterTest extends Command {
 
     $process->setEnv($env);
 
-    $output->writeln(["Running $cmd with environment:"]);
+    $dir = getcwd();
+    $output->writeln(["Running $cmd in $dir with environment:"]);
     $output->writeln(var_export($env));
 
     $process->run(function ($type, $buffer) {
