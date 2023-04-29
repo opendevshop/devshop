@@ -66,7 +66,7 @@ class DevmasterTest extends Command {
       }
       else {
         // If no behat path is set, use the devmaster repository root / tests.
-        $input->setOption('behat-path', realpath($input->getOption('root') . '/../tests'));
+        $input->setOption('behat-path', realpath($input->getOption('root') . '/tests'));
       }
     }
     
