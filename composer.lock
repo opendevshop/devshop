@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f847968e0d9f0395ddcceddabd9e2704",
+    "content-hash": "dddd8f02f923167943c67a4348eaef76",
     "packages": [
         {
             "name": "behat/behat",
@@ -1110,7 +1110,7 @@
             "version": "1.x-dev",
             "dist": {
                 "type": "path",
-                "url": "../../../devmaster",
+                "url": "devmaster",
                 "reference": "5e86fd0fcf1ed80e5689ab85c6534ddab80df618"
             },
             "require": {
@@ -1168,12 +1168,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/devshop-packages/git-traits.git",
-                "reference": "acb59295fd1d299e3edf7ed9cc9ee3a8fc4c5762"
+                "reference": "79ebf092879ea59b45206c4625bec83745541d61"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/devshop-packages/git-traits/zipball/acb59295fd1d299e3edf7ed9cc9ee3a8fc4c5762",
-                "reference": "acb59295fd1d299e3edf7ed9cc9ee3a8fc4c5762",
+                "url": "https://api.github.com/repos/devshop-packages/git-traits/zipball/79ebf092879ea59b45206c4625bec83745541d61",
+                "reference": "79ebf092879ea59b45206c4625bec83745541d61",
                 "shasum": ""
             },
             "require": {
@@ -1217,7 +1217,7 @@
                 "issues": "https://github.com/devshop-packages/git-traits/issues",
                 "source": "https://github.com/devshop-packages/git-traits/tree/1.x"
             },
-            "time": "2023-03-16T16:52:03+00:00"
+            "time": "2023-04-25T19:49:03+00:00"
         },
         {
             "name": "dflydev/dot-access-data",
@@ -6077,16 +6077,16 @@
         },
         {
             "name": "php-http/cache-plugin",
-            "version": "1.7.5",
+            "version": "1.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-http/cache-plugin.git",
-                "reference": "63bc3f7242825c9a817db8f78e4c9703b0c471e2"
+                "reference": "6bf9fbf66193f61d90c2381b75eb1fa0202fd314"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-http/cache-plugin/zipball/63bc3f7242825c9a817db8f78e4c9703b0c471e2",
-                "reference": "63bc3f7242825c9a817db8f78e4c9703b0c471e2",
+                "url": "https://api.github.com/repos/php-http/cache-plugin/zipball/6bf9fbf66193f61d90c2381b75eb1fa0202fd314",
+                "reference": "6bf9fbf66193f61d90c2381b75eb1fa0202fd314",
                 "shasum": ""
             },
             "require": {
@@ -6097,14 +6097,9 @@
                 "symfony/options-resolver": "^2.6 || ^3.0 || ^4.0 || ^5.0 || ^6.0"
             },
             "require-dev": {
-                "phpspec/phpspec": "^5.1 || ^6.0"
+                "phpspec/phpspec": "^5.1 || ^6.0 || ^7.0"
             },
             "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.6-dev"
-                }
-            },
             "autoload": {
                 "psr-4": {
                     "Http\\Client\\Common\\Plugin\\": "src/"
@@ -6130,9 +6125,9 @@
             ],
             "support": {
                 "issues": "https://github.com/php-http/cache-plugin/issues",
-                "source": "https://github.com/php-http/cache-plugin/tree/1.7.5"
+                "source": "https://github.com/php-http/cache-plugin/tree/1.8.0"
             },
-            "time": "2022-01-18T12:24:56+00:00"
+            "time": "2023-04-28T10:56:55+00:00"
         },
         {
             "name": "php-http/client-common",
@@ -6997,16 +6992,16 @@
         },
         {
             "name": "psy/psysh",
-            "version": "v0.11.15",
+            "version": "v0.11.16",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bobthecow/psysh.git",
-                "reference": "5350ce0ec8ecf2c5b5cf554cd2496f97b444af85"
+                "reference": "151b145906804eea8e5d71fea23bfb470c904bfb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bobthecow/psysh/zipball/5350ce0ec8ecf2c5b5cf554cd2496f97b444af85",
-                "reference": "5350ce0ec8ecf2c5b5cf554cd2496f97b444af85",
+                "url": "https://api.github.com/repos/bobthecow/psysh/zipball/151b145906804eea8e5d71fea23bfb470c904bfb",
+                "reference": "151b145906804eea8e5d71fea23bfb470c904bfb",
                 "shasum": ""
             },
             "require": {
@@ -7067,9 +7062,9 @@
             ],
             "support": {
                 "issues": "https://github.com/bobthecow/psysh/issues",
-                "source": "https://github.com/bobthecow/psysh/tree/v0.11.15"
+                "source": "https://github.com/bobthecow/psysh/tree/v0.11.16"
             },
-            "time": "2023-04-07T21:57:09+00:00"
+            "time": "2023-04-26T12:53:57+00:00"
         },
         {
             "name": "pyrech/composer-changelogs",
@@ -9214,16 +9209,16 @@
         },
         {
             "name": "symfony/var-dumper",
-            "version": "v5.4.22",
+            "version": "v5.4.23",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/var-dumper.git",
-                "reference": "e2edac9ce47e6df07e38143c7cfa6bdbc1a6dcc4"
+                "reference": "9a8a5b6d6508928174ded2109e29328a55342a42"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/var-dumper/zipball/e2edac9ce47e6df07e38143c7cfa6bdbc1a6dcc4",
-                "reference": "e2edac9ce47e6df07e38143c7cfa6bdbc1a6dcc4",
+                "url": "https://api.github.com/repos/symfony/var-dumper/zipball/9a8a5b6d6508928174ded2109e29328a55342a42",
+                "reference": "9a8a5b6d6508928174ded2109e29328a55342a42",
                 "shasum": ""
             },
             "require": {
@@ -9283,7 +9278,7 @@
                 "dump"
             ],
             "support": {
-                "source": "https://github.com/symfony/var-dumper/tree/v5.4.22"
+                "source": "https://github.com/symfony/var-dumper/tree/v5.4.23"
             },
             "funding": [
                 {
@@ -9299,7 +9294,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-03-25T09:27:28+00:00"
+            "time": "2023-04-18T09:26:27+00:00"
         },
         {
             "name": "symfony/yaml",
