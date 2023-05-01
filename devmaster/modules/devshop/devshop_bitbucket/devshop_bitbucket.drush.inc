@@ -38,27 +38,31 @@ function devshop_bitbucket_hosting_task_update_status($task, $status) {
         '%command' => $command,
       ]), 'debug');
       
+      $t = [
+        '@env' => "{$task->ref->hosting_group}.{$task->ref->hosting_environment}"
+      ];
+      
       if ($status == HOSTING_TASK_PROCESSING) {
         $params->state = $state = 'INPROGRESS';
-        $params->name = t('DevShop Deploy: In Progress');
+        $params->name = t('DevShop Deploy to @env: In Progress', $t);
       }
       elseif ($status == HOSTING_TASK_SUCCESS || $status == HOSTING_TASK_WARNING) {
         $params->state = $state = 'SUCCESSFUL';
         if ($status == HOSTING_TASK_SUCCESS) {
-          $params->name = t('DevShop Deploy: Success');
+          $params->name = t('DevShop Deploy to @env: Success', $t);
         }
         else {
-          $params->name = t('DevShop Deploy: Success (with warnings)');
+          $params->name = t('DevShop Deploy to @env: Success (with warnings)', $t);
         }
       }
       else {
         $params->state = $state = 'FAILED';
-        $params->name = t('DevShop Deploy');
+        $params->name = t('DevShop Deploy to @env: Failed', $t);
       }
 
-      $params->key = 'deploy';
-      $params->url = url("node/$task->nid", ['absolute' => true]);
-      $params->description = $task->ref->environment->url;
+      $params->key = "deploy.{$task->ref->hosting_group}.{$task->ref->hosting_environment}";
+      $params->url = $task->ref->url;
+      $params->description = url("node/$task->nid", ['absolute' => true]);
       
       $build_status = $client->repositories()->workspaces($environment->bitbucket_owner)->commit($environment->bitbucket_repo)->statuses($sha)->build()->create((array) $params);
       
