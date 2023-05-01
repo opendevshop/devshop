@@ -9,19 +9,35 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
 
 class DevmasterTest extends Command {
-  
-  public $root;
-  public $uri;
-  
   protected function configure() {
     $this
       ->setName('devmaster:test')
       ->setDescription('Runs internal tests on this devmaster instance.')
       ->addOption(
+        'uri',
+        '',
+        InputOption::VALUE_OPTIONAL,
+        'The URI to use if @hostmaster alias is not found.',
+        'devshop.site'
+      )
+      ->addOption(
+        'root',
+        '',
+        InputOption::VALUE_OPTIONAL,
+        'The root path to the site to test, if @hostmaster alias is not found.',
+        '/var/aegir/devshop-control-1.x'
+      )
+      ->addOption(
         'name',
         '',
         InputOption::VALUE_OPTIONAL,
         'A test name to pass to bin/behat --name option'
+      )
+      ->addOption(
+        'behat-path',
+        '',
+        InputOption::VALUE_OPTIONAL,
+        'The absolute path to the tests to run. Defaults to DevShop CLI path.'
       )
     ;
   }
@@ -33,30 +49,51 @@ class DevmasterTest extends Command {
       if (empty($aliases['hostmaster'])) {
         throw new \Exception('Hostmaster alias not found.');
       }
-      $this->root = $aliases['hostmaster']['root'];
-      $this->uri = $aliases['hostmaster']['uri'];
+      $input->setOption('root', $aliases['hostmaster']['root']);
+      $input->setOption('uri', $aliases['hostmaster']['uri']);
     }
     else {
       $output->writeln("<error>Hostmaster alias not found.</error>");
       exit(1);
+    }
+    
+    // Check behat path.
+    if (empty($input->getOption('behat-path'))) {
+      
+      // Use environment variable if one exists.
+      if (!empty($_SERVER['BEHAT_PATH'])) {
+        $input->setOption('behat-path', $_SERVER['BEHAT_PATH']);
+      }
+      else {
+        // If no behat path is set, use the devmaster repository root / tests.
+        $input->setOption('behat-path', realpath($input->getOption('root') . '/../tests'));
+      }
+    }
+    
+    // Check that the behat path is valid.
+    if (!file_exists($input->getOption('behat-path') . '/behat.yml')) {
+      throw new \Exception('No behat.yml found at ' . $input->getOption('behat-path'));
+    }
+    else {
+      $output->writeln("Running Behat tests located at " . $input->getOption('behat-path'));
     }
   }
 
   protected function execute(InputInterface $input, OutputInterface $output) {
     parent::execute($input, $output);
 
-    $uri = $this->uri;
-    $root = $this->root;
-    $tests_path = realpath("$root/../tests");
+    $uri = $input->getOption('uri');
+    $root = $input->getOption('root');
 
     // Show git info
     $process = new Process('git log -3');
-    $process->setWorkingDirectory($tests_path);
+    $process->setWorkingDirectory($input->getOption('behat-path'));
     $process->run();
     echo $process->getOutput() . $process->getErrorOutput() ;
 
     // Run bin/behat
     $cmd = '../bin/behat --colors --format-settings=\'{"expand": true}\'';
+    
     if ($input->getOption('name')) {
       $cmd .= ' --name=' . $input->getOption('name');
     }
@@ -64,10 +101,9 @@ class DevmasterTest extends Command {
     // @TODO: require provision-ops/power-process
     $process = new Process($cmd);
     $process->setTimeout(NULL);
-    $process->setWorkingDirectory($tests_path);
+    $process->setWorkingDirectory($input->getOption('behat-path'));
 
     $env = $_SERVER;
-    $env['HTTP_HOST'] = 'devshop.local.computer';
     $env['BEHAT_PARAMS'] = json_encode(array(
       'extensions' => array(
         'Behat\\MinkExtension' => array(
@@ -86,7 +122,7 @@ class DevmasterTest extends Command {
 
     $process->setEnv($env);
 
-    $output->writeln(["Running $cmd in $tests_path with environment:"]);
+    $output->writeln(["Running $cmd with environment:"]);
     $output->writeln(var_export($env));
 
     $process->run(function ($type, $buffer) {
