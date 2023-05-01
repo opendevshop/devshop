@@ -28,9 +28,16 @@ function devshop_bitbucket_hosting_task_update_status($task, $status) {
       
       $client = devshop_bitbucket_client();
       $params = new stdClass();
-      // If task just started... 
-      $sha = $task->ref->git_sha;
 
+      $command = "git ls-remote origin {$task->ref->git_reference}";
+      list($sha, $null) = explode('	', provision_process($command, $task->ref->git_root));
+
+      drush_log(dt('Found remote SHA of %sha for branch %ref with command: %command', [
+        '%sha' => $sha,
+        '%ref' => $task->ref->git_reference,
+        '%command' => $command,
+      ]), 'debug');
+      
       if ($status == HOSTING_TASK_PROCESSING) {
         $params->state = $state = 'INPROGRESS';
         $params->name = t('DevShop Deploy: In Progress');
