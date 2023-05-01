@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f847968e0d9f0395ddcceddabd9e2704",
+    "content-hash": "9a7bf38c3e29983b11b8fe82f62e5556",
     "packages": [
         {
             "name": "behat/behat",
@@ -3453,11 +3453,11 @@
         },
         {
             "name": "drupal/provision",
-            "version": "dev-4.x",
+            "version": "dev-5.x",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/provision.git",
-                "reference": "2b9ccf55d0bdd68df4a8302413088561e86facad"
+                "reference": "0e748832701e1530482e380d1b387b8fd1ed91e5"
             },
             "require": {
                 "devshop/git-traits": "1.x-dev",
@@ -3473,11 +3473,11 @@
             "type": "drupal-drush",
             "extra": {
                 "branch-alias": {
-                    "dev-4.x": "4.x-dev"
+                    "dev-5.x": "5.x-dev"
                 },
                 "drupal": {
-                    "version": "7.x-4.0-beta2+167-dev",
-                    "datestamp": "1682776449",
+                    "version": "7.x-5.x-dev",
+                    "datestamp": "1682783851",
                     "security-coverage": {
                         "status": "not-covered",
                         "message": "Dev releases are not covered by Drupal security advisories."
@@ -9683,8 +9683,7 @@
         "drupal/drupal-driver": 20,
         "drupal/hosting": 20,
         "drupal/hosting_filemanager": 20,
-        "drupal/hosting_statsd": 10,
-        "drupal/provision": 20
+        "drupal/hosting_statsd": 10
     },
     "prefer-stable": true,
     "prefer-lowest": false,
