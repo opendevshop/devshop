@@ -89,7 +89,7 @@ devshop_control_git_reference: "{{ devshop_version }}"
 devshop_control_git_reset: 0
 
 # Relative path to docroot. This is usually just "web" but we want devshop-control and devshop to share source code, and aegir to know where the git repo is.
-devshop_control_git_docroot: "web"
+devshop_control_git_docroot: "src/DevShop/Control/web"
 
 # Path to drupal's index.php
 devshop_control_publish_path: "{{ devshop_control_git_root }}/{{ devshop_control_git_docroot }}"
