@@ -644,7 +644,7 @@ PHP;
     $devshop_control_root = $this->input->getOption('root');
 
     $this->output->writeln("");
-    $this->output->writeln("Running <comment>drush @{$name} provision-verify</comment> ...");
+    $this->output->writeln("Running <comment>drush @{$name} provision-verify</comment> in $devshop_control_root...");
 
     // Set to --verbose or use other options to see provision-verify logs when running devmaster:install (for debugging).
     $provision_verify_options = '--verbose';
