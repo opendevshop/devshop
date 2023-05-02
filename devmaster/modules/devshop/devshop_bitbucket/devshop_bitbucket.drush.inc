@@ -15,7 +15,7 @@ function drush_devshop_bitbucket_pre_hosting_task()
  */
 function devshop_bitbucket_hosting_task_update_status($task, $status) {
 
-  if ($task->task_type == 'deploy' || $task->task_type == 'test') {
+  if ($task->task_type == 'install' || $task->task_type == 'deploy' || $task->task_type == 'test') {
     $task->ref = node_load($task->rid);
     $environment = $task->ref->environment;
 
