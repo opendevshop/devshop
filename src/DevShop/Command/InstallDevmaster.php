@@ -555,6 +555,8 @@ class InstallDevmaster extends Command
     // Save Hostmaster Site context, and flag for installation, pre-verify.
     $this->saveContext('hostmaster', array(
       'context_type' => 'site',
+      'hosting_group' => 'hostmaster',
+      'hosting_environment' => 'default',
       'server' => "@{$server}",
       'web_server' => "@{$server}",
       'root' => $this->input->getOption('root'),
