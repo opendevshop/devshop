@@ -30,7 +30,7 @@ function devshop_bitbucket_hosting_task_update_status($task, $status) {
       $params = new stdClass();
 
       $command = "git ls-remote origin {$task->ref->git_reference}";
-      list($sha, $null) = explode('	', provision_process($command, $task->ref->git_root));
+      list($sha, $null) = explode('	', provision_process($command));
 
       drush_log(dt('Found remote SHA of %sha for branch %ref with command: %command', [
         '%sha' => $sha,
