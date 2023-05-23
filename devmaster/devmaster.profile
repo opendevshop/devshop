@@ -189,7 +189,8 @@ function devmaster_bootstrap() {
   $node->profile = $profile_name;
   
   // Don't run install task: Devmaster is already installed.
-  $node->no_install = true;
+  $node->import = true;
+  
   $node->hosting_name = 'hostmaster';
   $node->site_status = 1;
   $node->verified = 1;
