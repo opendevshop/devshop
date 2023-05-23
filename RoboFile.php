@@ -463,7 +463,7 @@ class RoboFile extends \Robo\Tasks {
             }
           }
           if ($repo->isDetached()) {
-            if ($branch == $this->io()->ask("<comment>$path</comment> git repo is detached. Would you like to check out a different branch?", $repo_branch)) {
+            if ($this->io()->confirm("<comment>$path</comment> git repo is detached. Would you like to check out $repo_branch?")) {
               $repo->callGit('checkout', $repo_branch);
             }
           }
