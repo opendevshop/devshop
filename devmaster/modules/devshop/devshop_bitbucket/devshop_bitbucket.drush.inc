@@ -19,7 +19,7 @@ function devshop_bitbucket_hosting_task_update_status($task, $status) {
     $task->ref = node_load($task->rid);
     $environment = $task->ref->environment;
 
-    if (empty($environment->bitbucket_owner)) {
+    if (empty($task->ref->environment) || empty($task->ref->environment->bitbucket_owner)) {
       return;
     }
 
