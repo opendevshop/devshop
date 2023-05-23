@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0084936730bee6d3fe7fdadf554de439",
+    "content-hash": "0f35c7bc52299609064611f6522330a5",
     "packages": [
         {
             "name": "behat/behat",
@@ -2606,11 +2606,17 @@
         },
         {
             "name": "drupal/hosting",
-            "version": "dev-4.x",
+            "version": "4.0.0-beta3",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/hosting.git",
-                "reference": "8368c219423da98ccef9f3a3e169497ca7788a1f"
+                "reference": "7.x-4.0-beta3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://ftp.drupal.org/files/projects/hosting-7.x-4.0-beta3.zip",
+                "reference": "7.x-4.0-beta3",
+                "shasum": "1c5160aa0c4d15bd3540c3a12b2dc8125c951dee"
             },
             "require": {
                 "drupal/drupal": "~7.0",
@@ -2638,15 +2644,12 @@
             ],
             "type": "drupal-module",
             "extra": {
-                "branch-alias": {
-                    "dev-4.x": "4.x-dev"
-                },
                 "drupal": {
-                    "version": "7.x-4.0-beta1+207-dev",
-                    "datestamp": "1684851779",
+                    "version": "7.x-4.0-beta3",
+                    "datestamp": "1684856328",
                     "security-coverage": {
                         "status": "not-covered",
-                        "message": "Dev releases are not covered by Drupal security advisories."
+                        "message": "Beta releases are not covered by Drupal security advisories."
                     }
                 }
             },
@@ -3453,11 +3456,17 @@
         },
         {
             "name": "drupal/provision",
-            "version": "dev-4.x",
+            "version": "4.0.0-beta3",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/provision.git",
-                "reference": "263acf2b22729379466733b0953dc1ec48a3acc2"
+                "reference": "7.x-4.0-beta3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://ftp.drupal.org/files/projects/provision-7.x-4.0-beta3.zip",
+                "reference": "7.x-4.0-beta3",
+                "shasum": "dd03fef26a263e8c4c874fecba6eab853296208b"
             },
             "require": {
                 "devshop/git-traits": "1.x-dev",
@@ -3472,15 +3481,12 @@
             },
             "type": "drupal-drush",
             "extra": {
-                "branch-alias": {
-                    "dev-4.x": "4.x-dev"
-                },
                 "drupal": {
-                    "version": "7.x-4.0-beta2+187-dev",
-                    "datestamp": "1684846280",
+                    "version": "7.x-4.0-beta3",
+                    "datestamp": "1684856298",
                     "security-coverage": {
                         "status": "not-covered",
-                        "message": "Dev releases are not covered by Drupal security advisories."
+                        "message": "Beta releases are not covered by Drupal security advisories."
                     }
                 }
             },
@@ -4427,16 +4433,16 @@
         },
         {
             "name": "gitonomy/gitlib",
-            "version": "v1.3.7",
+            "version": "v1.3.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/gitonomy/gitlib.git",
-                "reference": "00b57b79f02396aa4c7c163f76fe2bc48faebbb7"
+                "reference": "9fea656e75ad6e3452feb2cac46a6c1239cd7f74"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/gitonomy/gitlib/zipball/00b57b79f02396aa4c7c163f76fe2bc48faebbb7",
-                "reference": "00b57b79f02396aa4c7c163f76fe2bc48faebbb7",
+                "url": "https://api.github.com/repos/gitonomy/gitlib/zipball/9fea656e75ad6e3452feb2cac46a6c1239cd7f74",
+                "reference": "9fea656e75ad6e3452feb2cac46a6c1239cd7f74",
                 "shasum": ""
             },
             "require": {
@@ -4490,7 +4496,7 @@
             "description": "Library for accessing git",
             "support": {
                 "issues": "https://github.com/gitonomy/gitlib/issues",
-                "source": "https://github.com/gitonomy/gitlib/tree/v1.3.7"
+                "source": "https://github.com/gitonomy/gitlib/tree/v1.3.8"
             },
             "funding": [
                 {
@@ -4498,7 +4504,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-10-04T14:20:15+00:00"
+            "time": "2023-05-11T08:29:06+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
@@ -9681,10 +9687,8 @@
         "drupal/cas_attributes": 5,
         "drupal/devshop_stats": 20,
         "drupal/drupal-driver": 20,
-        "drupal/hosting": 20,
         "drupal/hosting_filemanager": 20,
-        "drupal/hosting_statsd": 10,
-        "drupal/provision": 20
+        "drupal/hosting_statsd": 10
     },
     "prefer-stable": true,
     "prefer-lowest": false,
