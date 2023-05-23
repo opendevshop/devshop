@@ -674,6 +674,20 @@ HTML;
       );
     }
   }
+  
+  // Tasks page.
+  if ($form_id == 'views_form_hosting_task_list_page_global') {
+      $form['select']['#type'] = 'container';
+      $form['select']['#weight'] = 100;
+  }
+  
+  // Tasks page exposed form. 
+  if ($form['#id'] == 'views-exposed-form-hosting-task-list-page-global') {
+    // @TODO: Enhance the date field.
+  }
+
+  // Uncomment to find the form ID you are looking for.
+  // dsm($form, $form_id);
 }
 
 /**
