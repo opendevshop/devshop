@@ -1,3 +1,0 @@
----
-apache_control: /usr/sbin/apachectl
-apache_user: apache

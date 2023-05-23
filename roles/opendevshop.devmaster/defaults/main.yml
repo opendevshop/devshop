@@ -138,6 +138,3 @@ devshop_danger_remove_devmaster: false
 # In the Dockerfile, "devshop_install_phase: buildtime" ansible vars is set.
 # If building other kinds of server images, where data won't be installed yet, use this variable.
 devshop_install_phase: runtime
-
-devshop_pip_packages:
-  - mysqlclient

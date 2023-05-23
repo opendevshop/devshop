@@ -1,8 +1,33 @@
 ---
-# Enable Aegir to access as a remote user.
+- name: Include version specific variables for Debian OS Family
+  include_vars: "vars.{{ ansible_os_family }}.yml"
+  when: ansible_os_family == "Debian"
+
+- name: Include version specific variables for RedHat OS Family
+  include_vars: "vars.{{ ansible_os_family }}{{ ansible_distribution_major_version }}.yml"
+  when: ansible_os_family == "RedHat"
 
 - name: Include OS-specific variables.
-  include_vars: "{{ ansible_os_family }}.yml"
+  include_vars: "vars.{{ ansible_os_family }}.yml"
+  when: ansible_os_family == "Debian"
+
+- name: Install extra packages
+  apt:
+    pkg: '{{ extra_packages }}'
+    state: present
+    update_cache: true
+  when: ansible_os_family == "Debian"
+
+- name: Install extra packages
+  yum:
+    name: '{{ extra_packages }}'
+    state: present
+  when: ansible_os_family == "RedHat"
+
+- name: Install pip packages
+  pip:
+    name: '{{ devshop_pip_packages }}'
+    state: present
 
 # This is copied from geerlingguy.php. It is run again here to ensure the
 # php_packages_extra variables from our roles are loaded.

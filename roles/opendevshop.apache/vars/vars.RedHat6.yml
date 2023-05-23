@@ -1,5 +1,7 @@
 ---
 apache_user: apache
+apache_control: /usr/sbin/apachectl
+
 apache_vhosts_version: "2.2"
 apache_packages:
   - httpd24
@@ -9,6 +11,7 @@ apache_packages:
 # Used to inject date.timezone.
 # ip_cli_ini_path: /opt/rh/php55/root/etc/php.ini
 
+# @TODO: Make this __extra_packages so people can override them.
 extra_packages:
   - git
   - patch

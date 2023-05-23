@@ -1,4 +1,16 @@
 ---
+local_bin_path: /usr/local/bin
+
+# @TODO: Make this __extra_packages so people can override them.
+extra_packages:
+  - git
+  - vim
+  - openssl
+  - patch
+  - postfix
+  - rsync
+  - zip
+
 # Used to set the devshop sudo configuration file and "aegir server restart command".
 apache_control: /usr/sbin/apache2ctl
 apache_user: www-data

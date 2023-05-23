@@ -1,10 +1,12 @@
 ---
 local_bin_path: /usr/local/sbin
 apache_user: apache
+apache_control: /usr/sbin/apachectl
 
 # Used to inject date.timezone.
 # ip_cli_ini_path: /opt/rh/php55/root/etc/php.ini
 
+# @TODO: Make this __extra_packages so people can override them.
 extra_packages:
   - git
   - patch
