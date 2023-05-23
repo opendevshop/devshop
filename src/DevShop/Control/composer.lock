@@ -2610,7 +2610,7 @@
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/hosting.git",
-                "reference": "30236ae472ec8f03ad7d5c801875b1e9a784b650"
+                "reference": "2d019e989260e22c50b1e2e09fb9368cc2b482d7"
             },
             "require": {
                 "drupal/drupal": "~7.0",
@@ -2642,8 +2642,8 @@
                     "dev-4.x": "4.x-dev"
                 },
                 "drupal": {
-                    "version": "7.x-4.0-beta1+204-dev",
-                    "datestamp": "1684847228",
+                    "version": "7.x-4.0-beta1+198-dev",
+                    "datestamp": "1683071143",
                     "security-coverage": {
                         "status": "not-covered",
                         "message": "Dev releases are not covered by Drupal security advisories."
@@ -3457,7 +3457,7 @@
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/provision.git",
-                "reference": "263acf2b22729379466733b0953dc1ec48a3acc2"
+                "reference": "856ec4e17a2da3800746c03990accd8c65c69b1a"
             },
             "require": {
                 "devshop/git-traits": "1.x-dev",
@@ -3476,8 +3476,8 @@
                     "dev-4.x": "4.x-dev"
                 },
                 "drupal": {
-                    "version": "7.x-4.0-beta2+187-dev",
-                    "datestamp": "1684846280",
+                    "version": "7.x-4.0-beta2+179-dev",
+                    "datestamp": "1682977686",
                     "security-coverage": {
                         "status": "not-covered",
                         "message": "Dev releases are not covered by Drupal security advisories."
