@@ -71,7 +71,7 @@
                                 --profile={{ devshop_install_profile }} \
                                 --root={{ devshop_control_publish_path }} \
                                 --devshop_version={{ devshop_version }} \
-                                --drush-path={{ devshop_control_git_root }}/bin/drush \
+                                --drush-path={{ devshop_control_publish_path }}/../bin/drush \
                                 --git_root={{ devshop_control_git_root }} \
                                 --git_remote={{ devshop_control_git_remote }} \
                                 --git_reference={{ devshop_control_git_reference }}
