@@ -103,7 +103,6 @@
         "drupal/core": "8.*"
     },
     "replace": {
-        "drupal/drupal": "*",
         "drupal/hosting_server": "3.180",
         "drupal/hosting_site": "3.180",
         "drupal/hosting_client": "3.180",
