@@ -49,7 +49,7 @@
         "drupal/devshop_stats": "@dev",
         "drupal/entity": "^1.9",
         "drupal/features": "^2.11",
-        "drupal/hosting": "4.x-dev",
+        "drupal/hosting": "4.0.0-beta3",
         "drupal/hosting_filemanager": "dev-1.x",
         "drupal/hosting_git": "^3.181",
         "drupal/hosting_https": "^3.182",
@@ -78,7 +78,8 @@
         "oomphinc/composer-installers-extender": "^2.0",
         "toin0u/digitalocean-v2": "~2.0",
         "devshop/devmaster": "^1.7||1.x-dev@dev",
-        "http-interop/http-factory-guzzle": "*"
+        "http-interop/http-factory-guzzle": "*",
+        "drupal/provision": "4.0.0-beta3"
     },
     "conflict": {
         "drupal/core": "8.*"
