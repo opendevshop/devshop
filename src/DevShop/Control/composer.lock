@@ -3467,6 +3467,7 @@
                 "url": "https://ftp.drupal.org/files/projects/provision-7.x-4.0-beta7.zip",
                 "reference": "7.x-4.0-beta7",
                 "shasum": "127db1568cd6613ed44cf19dd9ff39275242d799"
+
             },
             "require": {
                 "devshop/git-traits": "1.x-dev",
