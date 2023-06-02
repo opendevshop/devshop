@@ -175,8 +175,8 @@ class RoboFile extends \Robo\Tasks {
    */
   private $writeRepos = [
     '.' => '',
-    'src/DevShop/Control/web/sites/all/drush/provision' => '7.x-4.x',
-    'src/DevShop/Control/web/sites/all/modules/contrib/hosting' => '7.x-4.x',
+    'web/sites/all/drush/provision' => '7.x-4.x',
+    'web/sites/all/modules/contrib/hosting' => '7.x-4.x',
   ];
 
   /**
@@ -670,7 +670,7 @@ class RoboFile extends \Robo\Tasks {
       // Remove devmaster site folder
       $version = self::DEVSHOP_LOCAL_VERSION;
       $uri = self::DEVSHOP_LOCAL_URI;
-      $this->_exec("rm -rf ./src/DevShop/Control/web/sites/{$uri}");
+      $this->_exec("rm -rf ./web/sites/{$uri}");
       $this->_exec('cd docker && docker-compose kill');
       $this->_exec('cd docker && docker-compose rm -fv');
     }
@@ -686,7 +686,7 @@ class RoboFile extends \Robo\Tasks {
     }
 
     // Don't run when -n is specified,
-    $rm_command = "rm -rf src/DevShop/Control/web/sites/devshop.local.computer";
+    $rm_command = "rm -rf web/sites/devshop.local.computer";
     if (!$this->input()->isInteractive() || $this->confirm("Destroy Control Site settings folder? ($rm_command)")) {
       if ($this->_exec($rm_command)->wasSuccessful()) {
         $this->say("Sites/devshop.local.computer folder deleted.");

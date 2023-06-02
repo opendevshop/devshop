@@ -40,7 +40,7 @@ class Composer {
 
   static $drupalDevelopmentPaths = [
     'provision' => 'vendor/drupal/provision',
-    'hosting' => 'src/DevShop/Control/web/sites/all/modules/contrib/hosting',
+    'hosting' => 'web/sites/all/modules/contrib/hosting',
   ];
 
   /**
