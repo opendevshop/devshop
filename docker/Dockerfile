@@ -1,12 +1,12 @@
 #
 # DevShop Role Container Dockerfile Template
 #
-ARG DEVSHOP_CONTAINER_FROM=ubuntu:18.04
+ARG DEVSHOP_CONTAINER_FROM=ubuntu:20.04
 FROM $DEVSHOP_CONTAINER_FROM
 ARG DEVSHOP_CONTAINER_FROM
 
 LABEL maintainer="Jon Pugh"
-RUN echo "Building container from Dockerfile.ubuntu1804, from $DEVSHOP_CONTAINER_FROM ..."
+RUN echo "Building container from Dockerfile, from $DEVSHOP_CONTAINER_FROM ..."
 
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -74,8 +74,8 @@ ENV OUTPUT err
 RUN mkdir -p ${DEVSHOP_ANSIBLE_PATH}
 RUN rm -rf ${DEVSHOP_ANSIBLE_PATH}/hosts && ln -s ${DEVSHOP_PATH}/roles/devshop.server/inventory ${DEVSHOP_ANSIBLE_PATH}/hosts
 
-RUN ${DEVSHOP_PATH}/scripts/run-quiet ${DEVSHOP_PATH}/docker/bin/docker-systemd-prepare
-RUN ${DEVSHOP_PATH}/scripts/run-quiet ${DEVSHOP_PATH}/install/devshop-install-prerequisites.sh
+RUN ${DEVSHOP_PATH}/docker/bin/docker-systemd-prepare
+RUN ${DEVSHOP_PATH}/install/devshop-install-prerequisites.sh
 
 RUN echo "Running $DEVSHOP_ANSIBLE_INVENTORY_INFO_COMMAND ...\n" && \
   $DEVSHOP_ANSIBLE_INVENTORY_INFO_COMMAND

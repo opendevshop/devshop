@@ -240,7 +240,7 @@ class RoboFile extends \Robo\Tasks {
   public function build($folder = 'docker', $service = 'all', $opts = [
       'docker-image' => 'devshop/server:latest',
       'scratch' => FALSE,
-      'from' => 'devshop/server:latest',
+      'from' => 'ubuntu:18.04',
       'build-command' => NULL,
       'os' => NULL,
       'vars' => '',
