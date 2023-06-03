@@ -302,33 +302,12 @@ class RoboFile extends \Robo\Tasks {
       $this->yell('CENTOS DETECTED in BUILDTIME. Skipping playbook run in image build.', 40, 'red');
     }
 
-    // Runtime Environment for the docker-compose build command.
-    $opts['playbook-command-options'] = "--extra-vars=@/usr/share/devshop/vars.development.yml --extra-vars devshop_version={$branch} --extra-vars devshop_cli_version={$branch}";
-    $env_build = $this->generateEnvironmentArgs($opts);
-    print_r($env_build);
-
     # Add --no-cache if needed.
     $docker_compose_build_opts = "";
-
-    $provision_io = new \DevShop\Component\PowerProcess\PowerProcessStyle($this->input(), $this->output());
-    $process = new \DevShop\Component\PowerProcess\PowerProcess("docker-compose build $docker_compose_build_opts $service", $provision_io);
-    $process->setEnv($env_build);
-    $process->disableOutput();
-    $process->setTimeout(null);
-    $process->setTty(!empty($_SERVER['XDG_SESSION_TYPE']) && $_SERVER['XDG_SESSION_TYPE'] == 'tty');
-
-    // @TODO: Figure out why PowerProcess::mustRun() fails so miserably: https://github.com/opendevshop/devshop/pull/541/checks?check_run_id=518074346#step:7:45
-
-    // Run docker-compose build in docker and in roles folder.
-    foreach ($folders as $compose_files_path) {
-      $this->yell("Building in directory: $compose_files_path", 40, 'blue');
-      $process->setWorkingDirectory($compose_files_path);
-      $process->run();
-    }
-
-    if ($process->getExitCode() != 0) {
-      throw new \Exception('Process failed: ' . $process->getExitCodeText());
-    }
+    $this->taskExec('docker-compose')
+      ->arg('build')
+      ->dir('docker')
+      ->run();
 
   }
 
