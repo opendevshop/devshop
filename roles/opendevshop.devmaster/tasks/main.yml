@@ -178,7 +178,6 @@
     force: true
   with_items: 
     - devshop
-    - drush
 
 - name: Debug environment
   command: "env"
