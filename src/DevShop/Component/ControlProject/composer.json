@@ -51,8 +51,6 @@
         "drupal/features": "^2.11",
         "drupal/hosting": "4.x-dev",
         "drupal/hosting_filemanager": "dev-1.x",
-        "drupal/hosting_git": "^3.181",
-        "drupal/hosting_https": "^3.182",
         "drupal/hosting_logs": "^3.181",
         "drupal/hosting_site_backup_manager": "^3.180",
         "drupal/hosting_statsd": "@beta",
