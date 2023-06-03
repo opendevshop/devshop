@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "683524050464f2cab4acfc8c38fc4203",
+    "content-hash": "46512439390bfe0f90885a193e783820",
     "packages": [
         {
             "name": "behat/behat",
@@ -4057,17 +4057,11 @@
         },
         {
             "name": "drupal/provision",
-            "version": "4.0.0-beta3",
+            "version": "dev-4.x",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/provision.git",
-                "reference": "7.x-4.0-beta3"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/provision-7.x-4.0-beta3.zip",
-                "reference": "7.x-4.0-beta3",
-                "shasum": "dd03fef26a263e8c4c874fecba6eab853296208b"
+                "reference": "752ba78c1b2a89f8762131c30efd17dfcbdaf754"
             },
             "require": {
                 "devshop/git-traits": "1.x-dev",
@@ -4082,12 +4076,15 @@
             },
             "type": "drupal-drush",
             "extra": {
+                "branch-alias": {
+                    "dev-4.x": "4.x-dev"
+                },
                 "drupal": {
-                    "version": "7.x-4.0-beta3",
-                    "datestamp": "1684856298",
+                    "version": "7.x-4.0-beta6+1-dev",
+                    "datestamp": "1684958033",
                     "security-coverage": {
                         "status": "not-covered",
-                        "message": "Beta releases are not covered by Drupal security advisories."
+                        "message": "Dev releases are not covered by Drupal security advisories."
                     }
                 }
             },
@@ -10183,7 +10180,8 @@
         "drupal/drupal-driver": 20,
         "drupal/hosting": 20,
         "drupal/hosting_filemanager": 20,
-        "drupal/hosting_statsd": 10
+        "drupal/hosting_statsd": 10,
+        "drupal/provision": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,
