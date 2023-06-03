@@ -304,8 +304,15 @@ class RoboFile extends \Robo\Tasks {
 
     # Add --no-cache if needed.
     $docker_compose_build_opts = "";
+    // Runtime Environment for the docker-compose build command.
+    $opts['playbook-command-options'] = "--extra-vars=@/usr/share/devshop/vars.development.yml --extra-vars devshop_version={$branch} --extra-vars devshop_cli_version={$branch}";
+    $env_build = $this->generateEnvironmentArgs($opts);
+    print_r($env_build);
+
     $this->taskExec('docker-compose')
       ->arg('build')
+      ->arg('--no-cache')
+      ->env($env_build)
       ->dir('docker')
       ->run();
 
