@@ -148,6 +148,8 @@
     recurse: true
   with_items:
     - "{{ devshop_cli_path }}"
+  when:
+    - aegir_user_uid != aegir_user_uid_current or aegir_user_gid != aegir_user_gid_current
 
 - name: "Composer Install DevShop Source"
   command: "{{ php_executable }} {{ composer_path }} {{ devshop_cli_composer_install_command }}"
