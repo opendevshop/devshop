@@ -74,8 +74,8 @@ ENV OUTPUT err
 RUN mkdir -p ${DEVSHOP_ANSIBLE_PATH}
 RUN rm -rf ${DEVSHOP_ANSIBLE_PATH}/hosts && ln -s ${DEVSHOP_PATH}/roles/devshop.server/inventory ${DEVSHOP_ANSIBLE_PATH}/hosts
 
-RUN ${DEVSHOP_PATH}/scripts/run-quiet ${DEVSHOP_PATH}/docker/bin/docker-systemd-prepare
-RUN ${DEVSHOP_PATH}/scripts/run-quiet ${DEVSHOP_PATH}/install/devshop-install-prerequisites.sh
+RUN ${DEVSHOP_PATH}/docker/bin/docker-systemd-prepare
+RUN ${DEVSHOP_PATH}/install/devshop-install-prerequisites.sh
 
 RUN echo "Running $DEVSHOP_ANSIBLE_INVENTORY_INFO_COMMAND ...\n" && \
   $DEVSHOP_ANSIBLE_INVENTORY_INFO_COMMAND
