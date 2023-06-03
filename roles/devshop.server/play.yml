@@ -120,6 +120,9 @@
     - role: geerlingguy.composer
       tags: [buildtime]
 
+    - role: geerlingguy.drush
+      tags: [buildtime]
+
     - role: geerlingguy.supervisor
       tags: [buildtime]
 
