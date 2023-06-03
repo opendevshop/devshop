@@ -69,14 +69,6 @@ class DevmasterTest extends Command {
         $input->setOption('behat-path', realpath($input->getOption('root') . '/../tests'));
       }
     }
-    
-    // Check that the behat path is valid.
-    if (!file_exists($input->getOption('behat-path') . '/behat.yml')) {
-      throw new \Exception('No behat.yml found at ' . $input->getOption('behat-path'));
-    }
-    else {
-      $output->writeln("Running Behat tests located at " . $input->getOption('behat-path'));
-    }
   }
 
   protected function execute(InputInterface $input, OutputInterface $output) {
