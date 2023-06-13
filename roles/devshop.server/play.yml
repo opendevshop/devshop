@@ -107,7 +107,6 @@
     - role: geerlingguy.php-versions
       tags: [buildtime]
 
-    # NOTE: with this role set to buildtime, php version will not be changed when docker launches (runtime).
     - role: geerlingguy.php
       tags: [buildtime]
 
