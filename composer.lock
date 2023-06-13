@@ -1183,12 +1183,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/opendevshop/devshop.platform.git",
-                "reference": "38a397bc2582ba9e353e9bacfec4a4599e33fe77"
+                "reference": "b9feeea7d768dc31e6c88fee7af349a6191ea09c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/opendevshop/devshop.platform/zipball/38a397bc2582ba9e353e9bacfec4a4599e33fe77",
-                "reference": "38a397bc2582ba9e353e9bacfec4a4599e33fe77",
+                "url": "https://api.github.com/repos/opendevshop/devshop.platform/zipball/b9feeea7d768dc31e6c88fee7af349a6191ea09c",
+                "reference": "b9feeea7d768dc31e6c88fee7af349a6191ea09c",
                 "shasum": ""
             },
             "default-branch": true,
@@ -1211,7 +1211,7 @@
                 "issues": "https://github.com/opendevshop/devshop.platform/issues",
                 "source": "https://github.com/opendevshop/devshop.platform/tree/main"
             },
-            "time": "2023-06-13T15:22:59+00:00"
+            "time": "2023-06-13T17:55:25+00:00"
         },
         {
             "name": "devshop/power-process",
