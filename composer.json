@@ -30,7 +30,7 @@
         "devshop/git-traits": "1.x-dev",
         "drush/drush": "^10.6",
         "devshop/github-api-cli": "1.x-dev",
-        "devshop/platform": "dev-main"
+        "devshop/platform": "dev-main@dev"
     },
     "replace": {
         "drupal/drupal": "*"

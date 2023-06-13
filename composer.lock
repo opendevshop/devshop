@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f4606b1f25a5782e7f3f707475473528",
+    "content-hash": "012b62c5c87f14b1485e9b82e7f1da09",
     "packages": [
         {
             "name": "chi-teck/drupal-code-generator",
@@ -1183,17 +1183,17 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/opendevshop/devshop.platform.git",
-                "reference": "52c35ee495b36a553bb08eb19319be82084aa6d2"
+                "reference": "38a397bc2582ba9e353e9bacfec4a4599e33fe77"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/opendevshop/devshop.platform/zipball/52c35ee495b36a553bb08eb19319be82084aa6d2",
-                "reference": "52c35ee495b36a553bb08eb19319be82084aa6d2",
+                "url": "https://api.github.com/repos/opendevshop/devshop.platform/zipball/38a397bc2582ba9e353e9bacfec4a4599e33fe77",
+                "reference": "38a397bc2582ba9e353e9bacfec4a4599e33fe77",
                 "shasum": ""
             },
             "default-branch": true,
             "bin": [
-                "scripts/devshop-ansible-playbook.sh"
+                "d"
             ],
             "type": "library",
             "notification-url": "https://packagist.org/downloads/",
@@ -1211,7 +1211,7 @@
                 "issues": "https://github.com/opendevshop/devshop.platform/issues",
                 "source": "https://github.com/opendevshop/devshop.platform/tree/main"
             },
-            "time": "2023-03-18T16:19:34+00:00"
+            "time": "2023-06-13T15:22:59+00:00"
         },
         {
             "name": "devshop/power-process",
@@ -5163,7 +5163,8 @@
         "devshop/power-process": 20,
         "devshop/bin-tools": 20,
         "devshop/git-traits": 20,
-        "devshop/github-api-cli": 20
+        "devshop/github-api-cli": 20,
+        "devshop/platform": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,
