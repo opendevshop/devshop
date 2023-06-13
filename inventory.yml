@@ -28,6 +28,9 @@ apps:
       devshop_app_docker_git_root: "{{ inventory_dir }}"
 
       drupal_install_profile: devmaster
+      devshop_app_command_install: |
+        bin/devshop devmaster:install
+
       devshop_app_command_deploy: ""
 
 
