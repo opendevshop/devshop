@@ -33,7 +33,7 @@ apps:
       devshop_version: feature/devshop-platform
 
       devshop_app_command_install: |
-        bin/devshop d:i --devshop_version={{ devshop_version }} --git_root={{ devshop_app_git_root }} --git_remote={{ devshop_app_git_repository }} --git_docroot={{ devshop_app_git_document_root }} --root=/usr/share/devshop/src/DevShop/Control/web --drush-path=/usr/share/devshop/src/DevShop/Control/bin/drush
+        bin/devshop devmaster:install --yes --devshop_version={{ devshop_version }} --git_root={{ devshop_app_git_root }} --git_remote={{ devshop_app_git_repository }} --git_docroot={{ devshop_app_git_document_root }} --root=/usr/share/devshop/src/DevShop/Control/web --drush-path=/usr/share/devshop/src/DevShop/Control/bin/drush
 
       devshop_app_command_deploy: ""
 
