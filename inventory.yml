@@ -14,7 +14,8 @@ servers:
 apps:
   hosts:
     devshop.local.computer:
-      devshop_app_git_reference: 1.x
+      # Should/Could we autodetect?
+      devshop_app_git_reference: feature/devshop-platform
       devshop_app_git_repository: https://github.com/opendevshop/devshop.git
       devshop_app_git_root: "/usr/share/devshop"
       devshop_app_git_document_root: "src/DevShop/Control/web"
