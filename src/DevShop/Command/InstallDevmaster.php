@@ -629,19 +629,21 @@ PHP;
       $client_email = $this->input->getOption('client_email');
       $options = $this->input->getOption('force-reinstall')? '--force-reinstall --verbose': '--verbose';
       $this->output->writeln("");
-      $this->output->writeln("Running <comment>{$drush_path} @{$name} provision-install --client_email={$client_email} {$options}</comment> ...");
-      $process = $this->getProcess("{$drush_path} --root={$devshop_control_root} @{$name} provision-install --client_email={$client_email} {$options}");
+      $cmd = "{$drush_path} --root={$devshop_control_root} @{$name} provision-install --client_email={$client_email} {$options}";
+      $this->output->writeln("Running <comment>$cmd</comment> ...");
+      $process = $this->getProcess($cmd);
       $process->setTimeout(NULL);
+      $process->setWorkingDirectory($devshop_control_root);
 
       // Ensure process runs sucessfully.
       if ($this->runProcess($process)) {
         $this->output->writeln("");
-        $this->output->writeln("Running <comment>drush @{$name} provision-install</comment>: <info>Done</info>");
+        $this->output->writeln("Running <comment>$cmd</comment>: <info>Done</info>");
         $this->output->writeln("");
       }
       else {
         $this->output->writeln("");
-        $this->output->writeln("<error>Unable to run drush @{$name} provision-install.");
+        $this->output->writeln("<error>Unable to run <comment>$cmd</comment>.");
         $this->output->writeln("");
         exit(1);
       }
