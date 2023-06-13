@@ -437,52 +437,6 @@ class RoboFile extends \Robo\Tasks {
       exit(1);
     }
 
-    // Offer to set git URLs to SSH so developers can push.
-    if ($opts['no-dev'] == FALSE) {
-      foreach ($this->writeRepos as $repo_path => $repo_branch) {
-        $path = realpath($repo_path);
-        if (file_exists($path . '/.git')) {
-          $repo = GitRepository::open($path);
-          if ($this->io()->isVerbose()){
-            $this->say($repo->getRepositoryPath());
-          }
-          $url = $repo->getCurrentRemoteUrl();
-          if (strpos($url, 'drupal') !== FALSE) {
-            $parts = explode('/', $repo->getCurrentRemoteUrl());
-            $project = array_pop($parts);
-            $push_url = "git@git.drupal.org:project/$project";
-          }
-          else {
-            
-            if ($repo->isCurrentRemoteHttp()) {
-              [$pre, $slug] = explode('.com/', $repo->getCurrentRemoteUrl());
-              $push_url = "git@github.com:$slug";  
-            }
-            else {
-              $push_url = $repo->getCurrentRemoteUrl();
-            }
-          }
-          if ($repo->isDetached()) {
-            if ($branch == $this->io()->ask("<comment>$path</comment> git repo is detached. Would you like to check out a different branch?", $repo_branch)) {
-              $repo->callGit('checkout', $repo_branch);
-            }
-          }
-           
-          if ($repo->isCurrentRemoteHttp()){
-            if ($this->io()->confirm("<comment>$path</comment> is using an HTTP remote. Would you like to change it to use $push_url?")) {
-              $repo->callGit('remote', ['set-url', $repo->getCurrentRemoteName(), $push_url]);
-            }
-          }
-          else {
-            $this->io()->text("<comment>$path</comment> remote is SSH: <comment>{$repo->getCurrentRemoteUrl()}</comment>");
-          }
-        }
-        else {
-          $this->io()->text("Path $repo_path does not exist. Might need to wait for composer install.");
-        }
-      }
-    }
-
     // Override the DEVSHOP_DOCKER_COMMAND_RUN if specified.
     if (!empty($docker_command)) {
       # Ensures argument is passed to DEVSHOP_DOCKER_COMMAND_RUN later.
@@ -577,7 +531,7 @@ class RoboFile extends \Robo\Tasks {
         $test_command = "/usr/share/devshop/tests/devshop-tests-upgrade.sh";
       }
       else {
-        $cmd[] = "docker compose up --detach devshop.server";
+        $cmd[] = "docker-compose up --detach devshop.server";
         if (!$opts['no-follow']) {
           $cmd[] = "docker-compose logs -f";
         }
@@ -745,12 +699,6 @@ class RoboFile extends \Robo\Tasks {
       $this->say("The aegir-home directory was retained. It will be  present when 'robo up' is run again.");
     }
 
-    // Uninstall composer vendor code?
-    if (!$this->input()->isInteractive() || $this->confirm("Composer uninstall DevShop Control?", false)) {
-      $this->taskExec("composer uninstall")
-        ->dir("src/DevShop/Control")
-        ->run();
-    }
   }
 
   /**
