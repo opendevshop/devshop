@@ -181,7 +181,8 @@ function devmaster_bootstrap() {
   $node = new stdClass();
   $node->uid = 1;
   $node->type = 'site';
-  $node->title = d()->uri;
+
+  $node->title = d()->uri ?? php_uname('n');
   $node->platform = $platform_id;
   $node->client = $client_id;
   $node->db_name = '';
