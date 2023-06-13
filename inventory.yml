@@ -4,12 +4,12 @@ servers:
       devshop_host_type: docker
       ansible_connection: docker
 
-  children:
-    common:
-      hosts:
-        # Prepare localhost.
-        localhost:
-          ansible_connection: local
+## Prepare localhost
+#  children:
+#    common:
+#      hosts:
+#        localhost:
+#          ansible_connection: local
 
 apps:
   hosts:
