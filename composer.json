@@ -29,7 +29,8 @@
         "php-http/httplug": "^2.3",
         "devshop/git-traits": "1.x-dev",
         "drush/drush": "^10.6",
-        "devshop/github-api-cli": "1.x-dev"
+        "devshop/github-api-cli": "1.x-dev",
+        "devshop/platform": "dev-main"
     },
     "replace": {
         "drupal/drupal": "*"

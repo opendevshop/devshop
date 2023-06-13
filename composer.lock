@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f8cb0da8a38644abbb3fef5db2e70257",
+    "content-hash": "f4606b1f25a5782e7f3f707475473528",
     "packages": [
         {
             "name": "chi-teck/drupal-code-generator",
@@ -1176,6 +1176,42 @@
             "transport-options": {
                 "relative": true
             }
+        },
+        {
+            "name": "devshop/platform",
+            "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/opendevshop/devshop.platform.git",
+                "reference": "52c35ee495b36a553bb08eb19319be82084aa6d2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/opendevshop/devshop.platform/zipball/52c35ee495b36a553bb08eb19319be82084aa6d2",
+                "reference": "52c35ee495b36a553bb08eb19319be82084aa6d2",
+                "shasum": ""
+            },
+            "default-branch": true,
+            "bin": [
+                "scripts/devshop-ansible-playbook.sh"
+            ],
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jon Pugh",
+                    "email": "jon@thinkdrop.net"
+                }
+            ],
+            "description": "Server tools & configura",
+            "support": {
+                "issues": "https://github.com/opendevshop/devshop.platform/issues",
+                "source": "https://github.com/opendevshop/devshop.platform/tree/main"
+            },
+            "time": "2023-03-18T16:19:34+00:00"
         },
         {
             "name": "devshop/power-process",
@@ -5126,7 +5162,8 @@
         "devshop/yaml-tasks": 20,
         "devshop/power-process": 20,
         "devshop/bin-tools": 20,
-        "devshop/git-traits": 20
+        "devshop/git-traits": 20,
+        "devshop/github-api-cli": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,
