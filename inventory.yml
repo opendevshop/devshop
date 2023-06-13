@@ -28,9 +28,8 @@ apps:
       devshop_app_docker_git_root: "{{ inventory_dir }}"
 
       drupal_install_profile: devmaster
-      devshop_app_command_deploy: |
-        cd {{ devshop_app_git_root }}/src/DevShop/Control/
-        bin/drush status
+      devshop_app_command_deploy: ""
+
 
 http:
   hosts:
