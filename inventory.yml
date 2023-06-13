@@ -1,0 +1,35 @@
+servers:
+  hosts:
+    server.local.computer:
+      devshop_host_type: docker
+      ansible_connection: docker
+
+  children:
+    common:
+      hosts:
+        # Prepare localhost.
+        localhost:
+          ansible_connection: local
+
+apps:
+  hosts:
+    devshop.local.computer:
+      devshop_app_git_reference: 1.x
+      devshop_app_git_repository: https://github.com/opendevshop/devshop.git
+      devshop_app_git_root: "/usr/share/devshop"
+      devshop_app_name: devshop
+      devshop_app_host: server.local.computer
+      devshop_app_server_http: server.local.computer
+      devshop_app_server_db: server.local.computer
+
+http:
+  hosts:
+    server.local.computer:
+db:
+  hosts:
+    server.local.computer:
+
+drupal:
+  hosts:
+    devshop.local.computer:
+
