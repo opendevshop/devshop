@@ -30,6 +30,8 @@ apps:
 http:
   hosts:
     server.local.computer:
+      php_version: "8.1"
+
 db:
   hosts:
     server.local.computer:
