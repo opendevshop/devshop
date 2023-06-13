@@ -17,10 +17,14 @@ apps:
       devshop_app_git_reference: 1.x
       devshop_app_git_repository: https://github.com/opendevshop/devshop.git
       devshop_app_git_root: "/usr/share/devshop"
+      devshop_app_git_document_root: "src/DevShop/Control/web"
       devshop_app_name: devshop
       devshop_app_host: server.local.computer
       devshop_app_server_http: server.local.computer
       devshop_app_server_db: server.local.computer
+
+      # This tells devshop.platform what folder to use for a volume mount.
+      devshop_app_docker_git_root: "{{ inventory_dir }}"
 
 http:
   hosts:
