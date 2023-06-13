@@ -27,10 +27,11 @@ apps:
       # This tells devshop.platform what folder to use for a volume mount.
       devshop_app_docker_git_root: "{{ inventory_dir }}"
 
-      devshop_app_install_profile: devmaster
+      drupal_install_profile: devmaster
       devshop_app_command_deploy: |
-        drush cc all
-        drush updatedb -y
+        cd {{ devshop_app_git_root }}/src/DevShop/Control/
+        bin/drush status
+
 http:
   hosts:
     server.local.computer:
