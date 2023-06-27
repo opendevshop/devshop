@@ -1264,7 +1264,7 @@ function devshop_projects_preprocess_page(&$vars){
     }
 
     // Task nodes only have project nid and environment name.
-    if (is_numeric($vars['node']->project)) {
+    if (isset($vars['node']->project) && is_numeric($vars['node']->project)) {
       $project_node = node_load($vars['node']->project);
       $vars['node']->project = $project_node->project;
 
