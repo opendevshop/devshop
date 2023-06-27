@@ -22,6 +22,11 @@
         "type": "path",
         "url": "../../../devmaster"
       },
+      "preserve-paths-fix": {
+        "type": "vcs",
+        "url": "https://github.com/lazysoundsystem/preserve-paths",
+         "only": ["drupal-composer/preserve-paths"]
+      },
       "behat": {
         "type": "vcs",
         "url":  "https://github.com/jonpugh/DrupalDriver.git"
@@ -40,7 +45,7 @@
         "composer/semver": "^1.4",
         "cweagans/composer-patches": "^1.7",
         "devshop/devmaster": "1.x-dev",
-        "drupal-composer/preserve-paths": "^0.1.6",
+        "drupal-composer/preserve-paths": "dev-master",
         "drupal/admin_menu": "@rc",
         "drupal/adminrole": "^1.1",
         "drupal/aegir_config": "@beta",
