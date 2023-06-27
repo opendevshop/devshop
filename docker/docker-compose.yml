@@ -6,7 +6,7 @@ services:
     image: ${DEVSHOP_DOCKER_IMAGE:-devshop/server:php8.1}
     build:
       context: ".."
-      dockerfile: "docker/Dockerfile.${OS:-ubuntu2004}"
+      dockerfile: "docker/Dockerfile.${OS:-ubuntu1804}"
       args:
         # see .env files for defaults.
         # - DEVSHOP_CONTAINER_FROM
