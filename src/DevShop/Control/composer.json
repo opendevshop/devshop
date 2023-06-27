@@ -45,6 +45,7 @@
         "composer/semver": "^1.4",
         "cweagans/composer-patches": "^1.7",
         "devshop/devmaster": "1.x-dev",
+        "devshop/git-traits": "1.x-dev",
         "drupal-composer/preserve-paths": "dev-master",
         "drupal/admin_menu": "@rc",
         "drupal/adminrole": "^1.1",
@@ -56,6 +57,7 @@
         "drupal/cas_attributes": "@rc",
         "drupal/chosen": "^2.1",
         "drupal/composer_autoloader": "^1.0",
+        "drupal/core-composer-scaffold": "^10.1",
         "drupal/ctools": "^1.15",
         "drupal/devel": "^1.7",
         "drupal/devshop_stats": "@dev",
@@ -125,7 +127,8 @@
             "drupal-composer/preserve-paths": true,
             "oomphinc/composer-installers-extender": true,
             "php-http/discovery": true,
-            "pyrech/composer-changelogs": true
+            "pyrech/composer-changelogs": true,
+            "drupal/core-composer-scaffold": true
         },
         "platform": {
             "php": "7.4.0"
