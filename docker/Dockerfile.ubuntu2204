@@ -70,7 +70,7 @@ COPY ./docker/bin/docker-systemd-prepare /tmp/docker-systemd-prepare
 RUN bash /tmp/docker-systemd-prepare
 
 # For ubuntu 22, services fail on build. Use --skip-tags to skip certain services on build.
-ENV DEVSHOP_DOCKER_COMMAND_BUILD "${DEVSHOP_DOCKER_COMMAND_BUILD} --skip-tags=mysql"
+ENV DEVSHOP_DOCKER_COMMAND_BUILD "${DEVSHOP_DOCKER_COMMAND_BUILD} --skip-tags=service"
 
 COPY ./ $DEVSHOP_PATH
 RUN echo "Copied DevShop Source into container."
@@ -82,7 +82,6 @@ ENV OUTPUT err
 RUN mkdir -p ${DEVSHOP_ANSIBLE_PATH}
 RUN rm -rf ${DEVSHOP_ANSIBLE_PATH}/hosts && ln -s ${DEVSHOP_PATH}/roles/devshop.server/inventory ${DEVSHOP_ANSIBLE_PATH}/hosts
 
-RUN ${DEVSHOP_PATH}/scripts/run-quiet ${DEVSHOP_PATH}/docker/bin/docker-systemd-prepare
 RUN ${DEVSHOP_PATH}/scripts/run-quiet ${DEVSHOP_PATH}/install/devshop-install-prerequisites.sh
 
 RUN echo "Running $DEVSHOP_ANSIBLE_INVENTORY_INFO_COMMAND ...\n" && \

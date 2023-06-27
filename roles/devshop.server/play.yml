@@ -98,7 +98,7 @@
     - role: geerlingguy.mysql
       tags:
         - buildtime
-        - mysql
+        - service
 
     - role: opendevshop.users
       tags: [always]
@@ -108,7 +108,9 @@
       tags: [buildtime]
 
     - role: geerlingguy.apache
-      tags: [buildtime]
+      tags:
+      - buildtime
+      - service
 
     - role: geerlingguy.php-versions
       tags: [buildtime]
@@ -127,7 +129,9 @@
       tags: [buildtime]
 
     - role: geerlingguy.supervisor
-      tags: [buildtime]
+      tags:
+        - buildtime
+        - service
 
     - role: opendevshop.apache
       tags: [buildtime]
