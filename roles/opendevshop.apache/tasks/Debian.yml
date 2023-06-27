@@ -1,11 +1,10 @@
 ---
 
-# See if we need this. Proper variables and geerlingguy.php should be all we need.
-#- name: DevShop | Ensure PHP packages are installed.
-#  apt:
-#    name: "{{ php_packages }}"
-#    state: "{{ php_packages_state }}"
-#    install_recommends: "{{ php_install_recommends }}"
-#  register: php_package_install
-#  notify: restart webserver
-#  tags: service
+- name: DevShop | Ensure PHP packages are installed.
+  apt:
+    name: "{{ php_packages }}"
+    state: "{{ php_packages_state }}"
+    install_recommends: "{{ php_install_recommends }}"
+  register: php_package_install
+  notify: restart webserver
+  tags: service
