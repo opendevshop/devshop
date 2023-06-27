@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2ebf3e1574d23e108593316443445751",
+    "content-hash": "407e7e0b84e257c43f2361a62e0bf738",
     "packages": [
         {
             "name": "behat/behat",
@@ -3461,17 +3461,11 @@
         },
         {
             "name": "drupal/provision",
-            "version": "4.0.0-beta7",
+            "version": "dev-4.x",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/provision.git",
-                "reference": "7.x-4.0-beta7"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/provision-7.x-4.0-beta7.zip",
-                "reference": "7.x-4.0-beta7",
-                "shasum": "127db1568cd6613ed44cf19dd9ff39275242d799"
+                "reference": "3a9a742a90c12f09bdc94217da796537065557e5"
             },
             "require": {
                 "devshop/git-traits": "1.x-dev",
@@ -3486,12 +3480,15 @@
             },
             "type": "drupal-drush",
             "extra": {
+                "branch-alias": {
+                    "dev-4.x": "4.x-dev"
+                },
                 "drupal": {
-                    "version": "7.x-4.0-beta7",
-                    "datestamp": "1684958214",
+                    "version": "7.x-4.0-beta7+1-dev",
+                    "datestamp": "1687868429",
                     "security-coverage": {
                         "status": "not-covered",
-                        "message": "Beta releases are not covered by Drupal security advisories."
+                        "message": "Dev releases are not covered by Drupal security advisories."
                     }
                 }
             },
