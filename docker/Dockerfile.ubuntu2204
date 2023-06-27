@@ -70,7 +70,7 @@ COPY ./docker/bin/docker-systemd-prepare /tmp/docker-systemd-prepare
 RUN bash /tmp/docker-systemd-prepare
 
 # For ubuntu 22, services fail on build. Use --skip-tags to skip certain services on build.
-ENV DEVSHOP_DOCKER_COMMAND_BUILD "${DEVSHOP_DOCKER_COMMAND_BUILD} --skip-tags=service"
+ENV DEVSHOP_DOCKER_COMMAND_BUILD "echo 'Skipping playbook on build i ubuntu22.04'"
 
 COPY ./ $DEVSHOP_PATH
 RUN echo "Copied DevShop Source into container."
@@ -110,4 +110,4 @@ WORKDIR /var/aegir
 ENV INIT_COMMAND /lib/systemd/systemd
 ENTRYPOINT [/usr/share/devshop/docker/bin/docker-systemd-entrypoint]
 
-RUN devshop-logo 'DevShop Server build finished.'
+RUN echo 'DevShop Server build finished.'
