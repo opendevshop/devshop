@@ -332,9 +332,9 @@ prepare_centos7() {
 
 ansible_prepare_server() {
   ANSIBLE_HOME=$(dirname "$ANSIBLE_DEFAULT_HOST_LIST")
-  if [[ ! -d "$ANSIBLE_HOME" ]]; then
+  if [[ ! -d "$ANSIBLE_HOME/host_vars/$HOSTNAME_FQDN" ]]; then
     echo "No ansible home directory found at $ANSIBLE_HOME. Preparing..."
-    mkdir --parent "$ANSIBLE_HOME"
+    mkdir --parent "$ANSIBLE_HOME/host_vars/$HOSTNAME_FQDN"
   fi
   if [[ ! -f "$ANSIBLE_DEFAULT_HOST_LIST" ]]; then
     echo "No ansible inventory found at $ANSIBLE_DEFAULT_HOST_LIST. Preparing inventory..."
@@ -359,11 +359,12 @@ ansible_prepare_server_inventory() {
 devshop_server:
   hosts:
     $HOSTNAME_FQDN:
-  vars:" > $ANSIBLE_DEFAULT_HOST_LIST
+    " > $ANSIBLE_DEFAULT_HOST_LIST
 
   # Write all extra vars to the file.
+  ANSIBLE_DEFAULT_HOST_VARS_FILE="/etc/ansible/host_vars/{$HOSTNAME_FQDN}"
   for i in ${ANSIBLE_EXTRA_VARS[@]}; do
-      echo -e "    $i" >> $ANSIBLE_DEFAULT_HOST_LIST
+      echo -e "$i" >> $ANSIBLE_DEFAULT_HOST_VARS_FILE
   done
   echo $LINE
   echo "Wrote static inventory to $ANSIBLE_DEFAULT_HOST_LIST:";
