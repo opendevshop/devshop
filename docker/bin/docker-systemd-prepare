@@ -68,6 +68,7 @@ prepare_ubuntu2204() {
     && rm -Rf /usr/share/doc && rm -Rf /usr/share/man
 
   locale-gen en_US.UTF-8
+  sed -i 's/^\($ModLoad imklog\)/#\1/' /etc/rsyslog.conf
 
    # Install the initctl faker script from @geerlingguy
   initctl_faker_url="https://raw.githubusercontent.com/geerlingguy/docker-ubuntu2204-ansible/master/initctl_faker"
