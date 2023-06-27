@@ -43,7 +43,7 @@ SCRIPT_DEVSHOP_VERSION_REF="${LOAD_SCRIPT_DEVSHOP_VERSION_REF}"
 # The version and git repo to install.
 # Default to 1.x if $SCRIPT_DEVSHOP_VERSION is empty.
 # Used as the `devshop_version` ansible variable, which will change the checked out version.
-DEVSHOP_VERSION="${SCRIPT_DEVSHOP_VERSION_REF:-1.x}"
+DEVSHOP_VERSION="${SCRIPT_DEVSHOP_VERSION_REF}"
 DEVSHOP_SOURCE="${LOAD_DEVSHOP_SOURCE:-http://github.com/opendevshop/devshop.git}"
 
 # Version of Ansible to install
@@ -66,6 +66,9 @@ while [ $# -gt 0 ]; do
     case "$1" in
         --hostname=*)
             HOSTNAME_FQDN="${1#*=}"
+            ;;
+        --version=*)
+            DEVSHOP_VERSION="${1#*=}"
             ;;
         --install-path=*)
             DEVSHOP_INSTALL_PATH="${1#*=}"
@@ -106,6 +109,8 @@ while [ $# -gt 0 ]; do
     esac
     shift $(( $# > 0 ? 1 : 0 ))
 done
+
+DEVSHOP_VERSION=${DEVSHOP_VERSION:-1.x}
 
 # Initial Ansible Variables
 # Generate host specific vars to be injected into inventory.
@@ -604,7 +609,7 @@ ansible_prepare_server
 
 # Run the playbook.
 echo $LINE
-echo " Installing with Ansible..."
+echo " Installing with devshop-ansible-playbook..."
 echo $LINE
 
 # If ansible playbook fails syntax check, report it and exit.
