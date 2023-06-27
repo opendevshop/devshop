@@ -12,7 +12,8 @@ services:
         # - DEVSHOP_CONTAINER_FROM
         - DEVSHOP_DOCKER_COMMAND_BUILD_ARG
         - ANSIBLE_EXTRA_VARS_ARG
-        - ANSIBLE_TAGS_ARG
+# Not if we are using build args.
+#        - ANSIBLE_TAGS_ARG
         - ANSIBLE_PLAYBOOK_COMMAND_OPTIONS_ARG
     hostname: devshop.local.computer
     ports:
