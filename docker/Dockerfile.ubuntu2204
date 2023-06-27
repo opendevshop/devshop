@@ -101,7 +101,7 @@ RUN echo "Running $DEVSHOP_DOCKER_COMMAND_BUILD ...\n" && \
 
 # Set ANSIBLE_TAGS back to runtime so the new container uses it.
 # For ubuntu 22, all build has to happen at runtime.
-# ENV ANSIBLE_TAGS=runtime
+ENV ANSIBLE_TAGS=
 
 # VOLUME ["/sys/fs/cgroup", "/tmp", "/run"]
 
