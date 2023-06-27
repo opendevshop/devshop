@@ -46,6 +46,7 @@
   become_user: "{{ aegir_user_name }}"
   become_method: "{{ ansible_become_method_aegir }}"
   command: "sudo {{ apache_control }} -S"
+  tags: service
 
 - name: Post Install on RedHat
   include: "RedHat-post.yml"
