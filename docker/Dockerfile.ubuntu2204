@@ -22,7 +22,7 @@ RUN locale-gen en_US.UTF-8
 
 RUN sed -i 's/^\($ModLoad imklog\)/#\1/' /etc/rsyslog.conf
 
-COPY initctl_faker .
+COPY ./docker/initctl_faker .
 RUN chmod +x initctl_faker && rm -fr /sbin/initctl && ln -s /initctl_faker /sbin/initctl
 
 # Remove unnecessary getty and udev targets that result in high CPU usage when using
