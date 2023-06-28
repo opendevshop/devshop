@@ -1,7 +1,7 @@
 #
 # DevShop Role Container Dockerfile Template
 #
-FROM ubuntu:22.04
+FROM ubuntu:20.04
 LABEL maintainer="Jon Pugh"
 
 ARG DEBIAN_FRONTEND=noninteractive
@@ -33,4 +33,23 @@ RUN rm -f /lib/systemd/system/systemd*udev* \
 CMD ["/lib/systemd/systemd"]
 
 COPY ./ /usr/share/devshop
+
+# Install Ansible inventory file.
+RUN mkdir -p /etc/ansible
+RUN echo "[devshop_server]\nlocalhost ansible_connection=local" > /etc/ansible/hosts
+
+# The command to run on container build
+ENV DEFAULT_DEVSHOP_DOCKER_COMMAND_BUILD $DEVSHOP_PATH/scripts/devshop-ansible-playbook \
+  $DEVSHOP_ANSIBLE_BUILDTIME_OPTIONS
+
+# Set DEVSHOP_DOCKER_COMMAND_BUILD from the Default so we can unset it later.
+ENV DEVSHOP_DOCKER_COMMAND_BUILD $DEFAULT_DEVSHOP_DOCKER_COMMAND_BUILD
+
+# The command to run when the container starts.
+ENV DEFAULT_DEVSHOP_DOCKER_COMMAND_RUN $DEVSHOP_PATH/scripts/devshop-ansible-playbook \
+  $DEVSHOP_ANSIBLE_RUNTIME_OPTIONS
+
+# Set DEVSHOP_DOCKER_COMMAND_RUN from the Default so we can unset it later.
+ENV DEVSHOP_DOCKER_COMMAND_RUN $DEFAULT_DEVSHOP_DOCKER_COMMAND_RUN
+
 RUN /usr/share/devshop/install/devshop-install-prerequisites.sh
