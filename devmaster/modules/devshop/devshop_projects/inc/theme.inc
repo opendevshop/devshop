@@ -1493,7 +1493,7 @@ function devshop_render_tasks($tasks = NULL, $class = '', $actions = array(), $f
     $url = "node/{$environment->project_nid}/logs/{$environment->name}";
   }
   else {
-    $url = 'hosting/queues/tasks';
+    $url = 'hosting/tasks';
   }
 
   $task_items = array();

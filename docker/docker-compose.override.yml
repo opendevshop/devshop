@@ -11,4 +11,6 @@ services:
       - ../aegir-home:/var/aegir
       - $HOME/.ssh:/var/aegir/.ssh
     environment:
-      - XDEBUG_CONFIG="remote_host=172.17.0.1 idekey=PHPSTORM"
+      - XDEBUG_MODE=debug
+      - XDEBUG_CONFIG="client_host=172.17.0.1 idekey=PHPSTORM remote_autostart=true"
+      - PHP_IDE_CONFIG=serverName=devshop.local.computer
