@@ -1,6 +1,6 @@
 {
-    "name": "devshop/control-project",
-    "description": "Composer project for DevShop Control: the Drupal based front-end for DevShop.",
+    "name": "devshop/control",
+    "description": "DevShop Control: the Drupal based front-end for DevShop.",
     "type": "project",
     "license": "GPL-2.0-or-later",
     "authors": [
