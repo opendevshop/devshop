@@ -4,11 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-<<<<<<< HEAD
-    "content-hash": "cc8cf0dac804d104705c36465d7fa907",
-=======
-    "content-hash": "a9ec5b8b21afdff926166bbd46cb5621",
->>>>>>> 7d528dff9d532ac2f3924dec3553525da7c94408
+    "content-hash": "5f607097426ead0384b8afb3ca617f1b",
     "packages": [
         {
             "name": "behat/behat",
@@ -3515,21 +3511,11 @@
         },
         {
             "name": "drupal/provision",
-            "version": "4.0.0-beta7",
+            "version": "dev-4.x",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/provision.git",
-<<<<<<< HEAD
-                "reference": "7.x-4.0-beta7"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/provision-7.x-4.0-beta7.zip",
-                "reference": "7.x-4.0-beta7",
-                "shasum": "127db1568cd6613ed44cf19dd9ff39275242d799"
-=======
-                "reference": "9bd7376dac1761c94eebbcade10d857c77fb7607"
->>>>>>> 7d528dff9d532ac2f3924dec3553525da7c94408
+                "reference": "53c198232403a5df0f590e82832d5268f6c13fa4"
             },
             "require": {
                 "devshop/git-traits": "1.x-dev",
@@ -3544,17 +3530,15 @@
             },
             "type": "drupal-drush",
             "extra": {
+                "branch-alias": {
+                    "dev-4.x": "4.x-dev"
+                },
                 "drupal": {
-<<<<<<< HEAD
-                    "version": "7.x-4.0-beta7",
-                    "datestamp": "1684958214",
-=======
-                    "version": "7.x-4.0-beta7+2-dev",
-                    "datestamp": "1687879446",
->>>>>>> 7d528dff9d532ac2f3924dec3553525da7c94408
+                    "version": "7.x-4.0-beta7+5-dev",
+                    "datestamp": "1687908112",
                     "security-coverage": {
                         "status": "not-covered",
-                        "message": "Beta releases are not covered by Drupal security advisories."
+                        "message": "Dev releases are not covered by Drupal security advisories."
                     }
                 }
             },
@@ -9465,7 +9449,8 @@
         "drupal/drupal-driver": 20,
         "drupal/hosting": 20,
         "drupal/hosting_filemanager": 20,
-        "drupal/hosting_statsd": 10
+        "drupal/hosting_statsd": 10,
+        "drupal/provision": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,
