@@ -54,4 +54,6 @@ ENV DEFAULT_DEVSHOP_DOCKER_COMMAND_RUN $DEVSHOP_PATH/scripts/devshop-ansible-pla
 # Set DEVSHOP_DOCKER_COMMAND_RUN from the Default so we can unset it later.
 ENV DEVSHOP_DOCKER_COMMAND_RUN $DEFAULT_DEVSHOP_DOCKER_COMMAND_RUN
 
+WORKDIR $DEVSHOP_PATH
+
 RUN /usr/share/devshop/install/devshop-install-prerequisites.sh
