@@ -22,7 +22,7 @@ services:
       - "2222:22"
       - "33066:3306"
     privileged: true
-    entrypoint: /usr/share/devshop/docker/bin/docker-systemd-entrypoint
+#    entrypoint: /usr/share/devshop/docker/bin/docker-systemd-entrypoint
     volumes:
       - /var/lib/mysql
       - /var/aegir

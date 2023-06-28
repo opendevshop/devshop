@@ -33,3 +33,4 @@ RUN rm -f /lib/systemd/system/systemd*udev* \
 CMD ["/lib/systemd/systemd"]
 
 COPY ./ /usr/share/devshop
+RUN /usr/share/devshop/install/devshop-install-prerequisites.sh

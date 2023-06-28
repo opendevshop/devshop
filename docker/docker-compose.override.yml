@@ -5,7 +5,7 @@ services:
   devshop.server:
     # Use the pre-built images for speed.
     image: ${DEVSHOP_DOCKER_IMAGE:-devshop/server:php8.1}
-    command: devshop-ansible-playbook
+    command: /usr/share/devshop/scripts/devshop-ansible-playbook
     volumes:
       - ../:/usr/share/devshop
       - ../aegir-home:/var/aegir
