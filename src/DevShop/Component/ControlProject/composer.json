@@ -171,7 +171,8 @@
             "web/sites/all/themes/contrib/{$name}/": ["type:drupal-theme"]
       },
       "preserve-paths": [
-          "web/sites/default"
+          "web/sites/default",
+          "web/profiles/devmaster"
         ]
     },
     "minimum-stability": "dev",
