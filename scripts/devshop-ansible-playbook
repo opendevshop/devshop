@@ -46,6 +46,7 @@ fi
 
 ON_FAIL=${ON_FAIL:-"systemctl status --no-pager"}
 
+cd $DEVSHOP_PATH
 devshop-logo "Checking Ansible Inventory for group '$DEVSHOP_ANSIBLE_GROUP_NAME' ..."
 echo "> Contents of /etc/ansible/hosts:"
 cat /etc/ansible/hosts
