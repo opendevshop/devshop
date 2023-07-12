@@ -1,6 +1,6 @@
 {
-    "name": "devshop/control-project",
-    "description": "Composer project for DevShop Control: the Drupal based front-end for DevShop.",
+    "name": "devshop/control",
+    "description": "DevShop Control: the Drupal based front-end for DevShop.",
     "type": "project",
     "license": "GPL-2.0-or-later",
     "authors": [
@@ -22,6 +22,11 @@
         "type": "path",
         "url": "../../../devmaster"
       },
+      "preserve-paths-fix": {
+        "type": "vcs",
+        "url": "https://github.com/lazysoundsystem/preserve-paths",
+         "only": ["drupal-composer/preserve-paths"]
+      },
       "behat": {
         "type": "vcs",
         "url":  "https://github.com/jonpugh/DrupalDriver.git"
@@ -40,7 +45,8 @@
         "composer/semver": "^1.4",
         "cweagans/composer-patches": "^1.7",
         "devshop/devmaster": "1.x-dev",
-        "drupal-composer/preserve-paths": "^0.1.6",
+        "devshop/git-traits": "1.x-dev",
+        "drupal-composer/preserve-paths": "dev-master",
         "drupal/admin_menu": "@rc",
         "drupal/adminrole": "^1.1",
         "drupal/aegir_config": "@beta",
@@ -51,6 +57,7 @@
         "drupal/cas_attributes": "@rc",
         "drupal/chosen": "^2.1",
         "drupal/composer_autoloader": "^1.0",
+        "drupal/core-composer-scaffold": "^10.1",
         "drupal/ctools": "^1.15",
         "drupal/devel": "^1.7",
         "drupal/devshop_stats": "@dev",
@@ -120,7 +127,8 @@
             "drupal-composer/preserve-paths": true,
             "oomphinc/composer-installers-extender": true,
             "php-http/discovery": true,
-            "pyrech/composer-changelogs": true
+            "pyrech/composer-changelogs": true,
+            "drupal/core-composer-scaffold": true
         },
         "platform": {
             "php": "7.4.0"

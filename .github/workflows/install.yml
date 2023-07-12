@@ -23,6 +23,7 @@ jobs:
 # @TODO: Put back if it works.
 #          - 'ubuntu1804'
           - 'ubuntu2004'
+          - 'ubuntu2204'
 
     env:
       OS: "${{ matrix.os }}"
@@ -54,6 +55,10 @@ jobs:
 
     - name: Run Install Script
       run: bash .github/workflows/install-sh-test.sh
+
+    - name: "Test DevShop"
+      working-directory: docker
+      run: docker exec --tty --user aegir install-server-test /usr/share/devshop/tests/devshop-tests.sh
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v2

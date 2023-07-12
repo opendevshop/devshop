@@ -64,10 +64,10 @@
     state: present
   when: ansible_os_family == "RedHat"
 
-- name: Install pip packages
-  pip:
-    name: '{{ devshop_pip_packages }}'
-    state: present
+#- name: Install pip packages
+#  pip:
+#    name: '{{ devshop_pip_packages }}'
+#    state: present
 
 # This happens when /usr/share/devshop is in a volume and the container user doesn't work yet.
 - name: Configure Git to set devshop as a safe directory to avoid "dubious ownership" claims.
@@ -292,12 +292,12 @@
 #    dest: '{{ php_cli_ini_path }}'
 #    line: 'date.timezone = America/Chicago'
 #  when: ansible_os_family == "RedHat"
-
-- name: "opendevshop.devmaster"
-  debug:
-    msg:
-      - "Ansible Playbook run complete!"
-      - "  Repo: {{ devshop_cli_repo }}"
-      - "  Path: {{ devshop_cli_path }}"
-      - "  Version: {{ devshop_version }}"
-      - "  CLI Version: {{ devshop_cli_version }}"
+#
+#- name: "opendevshop.devmaster"
+#  debug:
+#    msg:
+#      - "Ansible Playbook run complete!"
+#      - "  Repo: {{ devshop_cli_repo }}"
+#      - "  Path: {{ devshop_cli_path }}"
+#      - "  Version: {{ devshop_version }}"
+#      - "  CLI Version: {{ devshop_cli_version }}"

@@ -9,10 +9,11 @@ services:
       dockerfile: "docker/Dockerfile"
       args:
         # see .env files for defaults.
-        - DEVSHOP_CONTAINER_FROM
+        # - DEVSHOP_CONTAINER_FROM
         - DEVSHOP_DOCKER_COMMAND_BUILD_ARG
         - ANSIBLE_EXTRA_VARS_ARG
-        - ANSIBLE_TAGS_ARG
+# Not if we are using build args.
+#        - ANSIBLE_TAGS_ARG
         - ANSIBLE_PLAYBOOK_COMMAND_OPTIONS_ARG
     hostname: devshop.local.computer
     ports:
@@ -21,7 +22,7 @@ services:
       - "2222:22"
       - "33066:3306"
     privileged: true
-    entrypoint: /usr/share/devshop/docker/bin/docker-systemd-entrypoint
+#    entrypoint: /usr/share/devshop/docker/bin/docker-systemd-entrypoint
     volumes:
       - /var/lib/mysql
       - /var/aegir
@@ -33,7 +34,8 @@ services:
 
     environment:
       - ANSIBLE_EXTRA_VARS
-      - ANSIBLE_TAGS=runtime
+      # This is set in Dockerfile.
+      # - ANSIBLE_TAGS=runtime
       - ANSIBLE_VERBOSITY
       - ANSIBLE_PLAYBOOK_COMMAND_OPTIONS
       - ANSIBLE_PLAYBOOK=/usr/share/devshop/roles/devshop.server/play.yml
