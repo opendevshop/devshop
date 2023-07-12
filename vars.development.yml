@@ -24,3 +24,7 @@ aegir_user_uid: 1000
 aegir_user_gid: 1000
 # devshop_cli_repo: git@github.com:opendevshop/devshop.git
 # devshop_version: 1.x
+
+database_host: database
+mysql_root_username: root
+mysql_root_password: devshopdockerdatabasepassword

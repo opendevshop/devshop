@@ -92,3 +92,11 @@ services:
       - DEVSHOP_TESTS_ARTIFACTS_PATH
       # Setting this ensures the docker containers have this value, regardless if the container is an older image.
       - DEVSHOP_ANSIBLE_GROUP_NAME=devshop_server
+
+
+  database:
+    image: mariadb
+    logging:
+      driver: none
+    environment:
+      MYSQL_ROOT_PASSWORD: devshopdockerdatabasepassword

@@ -54,6 +54,7 @@ devshop_cli_composer_install_command: "install --no-interaction"
 
 aegir_server_webserver: apache
 
+mysql_root_username: root
 database_host: localhost
 database_host_port: 3306
 aegir_client_name: admin
