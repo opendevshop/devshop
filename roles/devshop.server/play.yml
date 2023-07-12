@@ -109,9 +109,9 @@
 
 #    - role: geerlingguy.php-versions
 #      tags: [buildtime]
-
-    - role: geerlingguy.php
-      tags: [buildtime]
+#
+#    - role: geerlingguy.php
+#      tags: [buildtime]
 
 #    - role: geerlingguy.php-xdebug
 #      when: xdebug_enabled | default(false)

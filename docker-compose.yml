@@ -54,7 +54,7 @@ services:
       - "8000:80"
     expose:
       - 80
-    image: ${DEVSHOP_DOCKER_IMAGE:-devshop/server:php8.1}
+    image: "devshop/server:php8.1-apache"
     build:
       context: "."
       dockerfile: "docker/Dockerfile"
@@ -73,7 +73,7 @@ services:
       - ../aegir-home:/var/aegir
       - /var/lib/mysql
       - $HOME/.ssh:/var/aegir/.ssh
-    command: devshop-ansible-playbook
+#    command: /usr/share/devshop/bin/devshop-ansible-playbook
 #    volumes:
       # - /sys/fs/cgroup:/sys/fs/cgroup:ro
       # Attempting tip from https://github.com/geerlingguy/docker-ubuntu2004-ansible/issues/18#issuecomment-1152157965
@@ -86,7 +86,7 @@ services:
       - ANSIBLE_VERBOSITY
       - ANSIBLE_PLAYBOOK_COMMAND_OPTIONS
       - ANSIBLE_PLAYBOOK=/usr/share/devshop/roles/devshop.server/play.yml
-      - DEVSHOP_DOCKER_COMMAND_RUN
+      - DOCKER_COMMAND
       - DOCKER_COMMAND_POST
       - GITHUB_HEAD_REF
       - DEVSHOP_TESTS_ARTIFACTS_PATH

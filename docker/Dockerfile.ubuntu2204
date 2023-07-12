@@ -1,7 +1,7 @@
 #
 # DevShop Role Container Dockerfile Template
 #
-FROM ubuntu:22.04
+FROM drupal:php8.1-apache
 LABEL maintainer="Jon Pugh"
 
 ARG DEBIAN_FRONTEND=noninteractive
