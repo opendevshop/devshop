@@ -6,7 +6,7 @@ FROM $DEVSHOP_CONTAINER_FROM
 ARG DEVSHOP_CONTAINER_FROM
 
 LABEL maintainer="Jon Pugh"
-RUN echo "Building container from Dockerfile.ubuntu1804, from $DEVSHOP_CONTAINER_FROM ..."
+RUN echo "Building container from Dockerfile, from $DEVSHOP_CONTAINER_FROM ..."
 
 ARG DEBIAN_FRONTEND=noninteractive
 

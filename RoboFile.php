@@ -273,7 +273,7 @@ class RoboFile extends \Robo\Tasks {
     // Define docker-image (name for the "image" in docker-compose)
     // Set FROM_IMAGE and DEVSHOP_DOCKER_IMAGE if --os option is used. (and --from was not used)
     if ($opts['scratch']) {
-      $opts['from'] = "devshop/server:latest";
+      $opts['from'] = "ubuntu:20.04";
     }
 
     if ($opts['os'] !== NULL) {
@@ -408,7 +408,7 @@ class RoboFile extends \Robo\Tasks {
     'docker-image' => 'devshop/server:latest',
     // The OS "slug" to use instead of devshop/server:ubuntu1804. If specified, "docker-image" option will be ignored.
     'os' => NULL,
-    'from' => 'devshop/server:latest',
+    'from' => 'ubuntu:18.04',
     'vars' => '',
     'tags' => 'runtime',
     'skip-tags' => '',
