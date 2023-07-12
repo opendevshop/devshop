@@ -44,6 +44,28 @@ get_distribution() {
 	echo "$lsb_dist"
 }
 
+# From https://github.com/geerlingguy/docker-debian12-ansible/blob/master/Dockerfile
+prepare_debian12() {
+  PYTHON_DEFAULT=/usr/bin/python3
+  DEBIAN_FRONTEND=noninteractive
+  pip_packages="ansible cryptography"
+  apt-get update \
+    && apt-get install -y --no-install-recommends \
+       sudo systemd systemd-sysv \
+       build-essential wget libffi-dev libssl-dev procps \
+       python3-pip python3-dev python3-setuptools python3-wheel python3-apt \
+       iproute2 \
+    && rm -rf /var/lib/apt/lists/* \
+    && rm -Rf /usr/share/doc && rm -Rf /usr/share/man \
+    && apt-get clean
+
+  rm -f /usr/lib/python3.11/EXTERNALLY-MANAGED
+  pip3 install --upgrade pip
+  pip3 install $pip_packages
+
+  mkdir -p /etc/ansible
+
+}
 # From https://github.com/geerlingguy/docker-ubuntu2204-ansible/blob/master/Dockerfile
 prepare_ubuntu2204() {
   PYTHON_DEFAULT=/usr/bin/python3
@@ -185,6 +207,12 @@ case "$lsb_dist" in
   debian|raspbian)
     dist_version="$(sed 's/\/.*//' /etc/debian_version | sed 's/\..*//')"
     case "$dist_version" in
+      12)
+        dist_version_name="bookworm"
+      ;;
+      11)
+        dist_version_name="bullseye"
+      ;;
       10)
         dist_version_name="buster"
       ;;
@@ -234,5 +262,8 @@ case "$lsb_dist $dist_version" in
   ;;
   "centos 7")
     prepare_centos7
+  ;;
+  "debian 12")
+    prepare_debian12
   ;;
 esac
