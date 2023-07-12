@@ -105,20 +105,20 @@
       tags: [buildtime]
 
     - role: geerlingguy.php-versions
-      tags: [always]
+      tags: [buildtime]
 
     - role: geerlingguy.php
-      tags: [always]
+      tags: [buildtime]
 
     - role: geerlingguy.php-xdebug
       when: xdebug_enabled | default(false)
-      tags: [always]
+      tags: [buildtime]
 
     - role: geerlingguy.php-mysql
-      tags: [always]
+      tags: [buildtime]
 
     - role: geerlingguy.composer
-      tags: [always]
+      tags: [buildtime]
 
     - role: geerlingguy.supervisor
       tags: [buildtime]
