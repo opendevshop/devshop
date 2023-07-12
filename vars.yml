@@ -4,4 +4,5 @@
 ---
 
 # The default version of PHP to use.
-php_version: "8.1"
+# We are stuck at the moment. PHP versions are no longer installable on ubuntu 18 as of EOL.
+php_version: "8.0"
