@@ -19,6 +19,7 @@ apps:
       devshop_app_git_repository: https://github.com/opendevshop/devshop.git
       devshop_app_git_root: "/usr/share/devshop"
       devshop_app_git_document_root: "src/DevShop/Control/web"
+      devshop_app_git_document_root_path: "{{ devshop_app_git_root }}/{{ devshop_app_git_document_root }}"
       devshop_app_name: devshop
       devshop_app_host: server.local.computer
       devshop_app_server_http: server.local.computer
