@@ -408,7 +408,7 @@ class RoboFile extends \Robo\Tasks {
     'docker-image' => 'devshop/server:latest',
     // The OS "slug" to use instead of devshop/server:ubuntu1804. If specified, "docker-image" option will be ignored.
     'os' => NULL,
-    'from' => 'ubuntu:18.04',
+    'from' => 'ubuntu:22.04',
     'vars' => '',
     'tags' => 'runtime',
     'skip-tags' => '',
