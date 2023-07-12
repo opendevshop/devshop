@@ -41,7 +41,7 @@ RUN echo "[devshop_server]\nlocalhost ansible_connection=local" > /etc/ansible/h
 ENV DEVSHOP_PATH /usr/share/devshop
 
 # The command to run on container build
-ENV DEFAULT_DEVSHOP_DOCKER_COMMAND_BUILD $DEVSHOP_PATH/scripts/devshop-ansible-playbook \
+ENV DEFAULT_DEVSHOP_DOCKER_COMMAND_BUILD $DEVSHOP_PATH/scripts/devshop-ansible-playbook --tags=buildtime \
   $DEVSHOP_ANSIBLE_BUILDTIME_OPTIONS
 
 # Set DEVSHOP_DOCKER_COMMAND_BUILD from the Default so we can unset it later.

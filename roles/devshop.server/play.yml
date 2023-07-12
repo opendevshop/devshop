@@ -97,7 +97,7 @@
 
     - role: geerlingguy.mysql
       tags:
-        - buildtime
+        - runtime
         - service
 
     - role: opendevshop.users
@@ -109,32 +109,32 @@
 
     - role: geerlingguy.apache
       tags:
-      - buildtime
+      - runtime
       - service
 
     - role: geerlingguy.php-versions
-      tags: [buildtime]
+      tags: [always]
 
     - role: geerlingguy.php
-      tags: [buildtime]
+      tags: [always]
 
     - role: geerlingguy.php-xdebug
       when: xdebug_enabled | default(false)
-      tags: [buildtime]
+      tags: [always]
 
     - role: geerlingguy.php-mysql
-      tags: [buildtime]
+      tags: [always]
 
     - role: geerlingguy.composer
       tags: [buildtime]
 
     - role: geerlingguy.supervisor
       tags:
-        - buildtime
+        - runtime
         - service
 
     - role: opendevshop.apache
-      tags: [buildtime]
+      tags: [runtime]
 
     # Always run everything. Tags inside the roles will limit tasks run.
     - role: opendevshop.devmaster
