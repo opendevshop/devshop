@@ -45,8 +45,11 @@ jobs:
           - Build
 #          - Test
         os:
-#           - 'ubuntu1804'
-          - 'ubuntu2004'
+          # I don't know why. Ubuntu18 is the only one that will build without
+          #  "Ensure MySQL is stopped after initial install....
+          #   localhost failed | msg: Service is in unknown state"
+           - 'ubuntu1804'
+#          - 'ubuntu2004'
     env:
       OS: "${{ matrix.os }}"
       DEVSHOP_DOCKER_IMAGE:  "devshop/server:php${{ matrix.php }}"
