@@ -70,61 +70,61 @@
             - "{{ devshop_cli_path }}/roles/geerlingguy.mysql/vars/{{ ansible_os_family }}.yml"
       tags: [always]
 
-    - name: Define mysql_daemon.
-      set_fact:
-        mysql_daemon: "{{ __mysql_daemon }}"
-      when: mysql_daemon is not defined
-      tags: [always]
+#    - name: Define mysql_daemon.
+#      set_fact:
+#        mysql_daemon: "{{ __mysql_daemon }}"
+#      when: mysql_daemon is not defined
+#      tags: [always]
 
-    - name: MySQL Information
-      debug:
-        msg: "MySQL Root password: {{ mysql_root_password }}"
-      tags: [always]
+#    - name: MySQL Information
+#      debug:
+#        msg: "MySQL Root password: {{ mysql_root_password }}"
+#      tags: [always]
 
     # This is here for the devshop/server container, which already has mysql installed. For some reason, it wouldn't start later on.
     # @TODO: This works, but using Service module fails!
-    - name: Start MySQL
-      command: "service {{ mysql_daemon }} start"
-      ignore_errors: true
-      tags: [runtime]
+#    - name: Start MySQL
+#      command: "service {{ mysql_daemon }} start"
+#      ignore_errors: true
+#      tags: [runtime]
 
   roles:
     # Run the opendevshop.users role first at runtime so UIDs are changed ASAP.
     # The playbook will ALSO be run before opendevshop.devmaster below because it is stored as a dependency.
     - role: opendevshop.users
       tags: [always]
-
-    - role: geerlingguy.mysql
-      tags: [buildtime]
+#
+#    - role: geerlingguy.mysql
+#      tags: [buildtime]
 
     - role: geerlingguy.repo-remi
       when: ansible_os_family == 'RedHat'
       tags: [buildtime]
 
-    - role: geerlingguy.apache
-      tags: [buildtime]
+#    - role: geerlingguy.apache
+#      tags: [buildtime]
 
-    - role: geerlingguy.php-versions
-      tags: [buildtime]
+#    - role: geerlingguy.php-versions
+#      tags: [buildtime]
 
     - role: geerlingguy.php
       tags: [buildtime]
 
-    - role: geerlingguy.php-xdebug
-      when: xdebug_enabled | default(false)
-      tags: [buildtime]
+#    - role: geerlingguy.php-xdebug
+#      when: xdebug_enabled | default(false)
+#      tags: [buildtime]
 
-    - role: geerlingguy.php-mysql
-      tags: [buildtime]
+#    - role: geerlingguy.php-mysql
+#      tags: [buildtime]
 
     - role: geerlingguy.composer
       tags: [buildtime]
 
-    - role: geerlingguy.supervisor
-      tags: [buildtime]
+#    - role: geerlingguy.supervisor
+#      tags: [buildtime]
 
-    - role: opendevshop.apache
-      tags: [buildtime]
+#    - role: opendevshop.apache
+#      tags: [buildtime]
 
     # Always run everything. Tags inside the roles will limit tasks run.
     - role: opendevshop.devmaster
