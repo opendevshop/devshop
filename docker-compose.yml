@@ -1,0 +1,94 @@
+# New.
+---
+version: '3'
+services:
+  in:
+    image: "traefik:v2.10"
+    container_name: "traefik"
+    command:
+      #- "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+#      - "--providers.http.endpoint=http://devshop.server/traefik"
+
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "./aegir-home:/var/aegir"
+
+  php8.1:
+    image: "drupal:php8.1-apache"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.devshop.rule=Host(`devshop.local.computer`)"
+      - "traefik.http.routers.php81.rule=Host(`php81.devshop.local.computer`)"
+      - "traefik.http.routers.php81.entrypoints=web"
+    ports:
+      - "81:80"
+    volumes:
+      - ./aegir-home:/var/aegir
+      - .:/usr/share/devshop
+      - "./aegir-home/config/server_master/apache.conf:/etc/apache2/sites-enabled/aegir.conf"
+      - "./logs:/var/log/aegir"
+
+  php8.2:
+    image: "drupal:php8.1-apache"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.php82.rule=Host(`php82.devshop.local.computer`)"
+      - "traefik.http.routers.php82.entrypoints=web"
+    ports:
+      - "82:80"
+    volumes:
+      - ./aegir-home:/var/aegir
+      - .:/usr/share/devshop
+      - "./aegir-home/config/server_master/apache.conf:/etc/apache2/sites-enabled/aegir.conf"
+      - "./logs:/var/log/aegir"
+
+  devshop.server:
+    ports:
+      - "8000:80"
+    expose:
+      - 80
+    image: ${DEVSHOP_DOCKER_IMAGE:-devshop/server:php8.1}
+    build:
+      context: "."
+      dockerfile: "docker/Dockerfile.${OS:-ubuntu2004}"
+      args:
+        # see .env files for defaults.
+        - DEVSHOP_CONTAINER_FROM
+        - DEVSHOP_DOCKER_COMMAND_BUILD_ARG
+        - ANSIBLE_EXTRA_VARS_ARG
+        - ANSIBLE_TAGS_ARG
+        - ANSIBLE_PLAYBOOK_COMMAND_OPTIONS_ARG
+    hostname: devshop.local.computer
+    privileged: true
+    entrypoint: /usr/share/devshop/docker/bin/docker-systemd-entrypoint
+    volumes:
+      - ./:/usr/share/devshop
+      - ../aegir-home:/var/aegir
+      - /var/lib/mysql
+      - $HOME/.ssh:/var/aegir/.ssh
+    command: devshop-ansible-playbook
+#    volumes:
+      # - /sys/fs/cgroup:/sys/fs/cgroup:ro
+      # Attempting tip from https://github.com/geerlingguy/docker-ubuntu2004-ansible/issues/18#issuecomment-1152157965
+      # - /sys/fs/cgroup:/sys/fs/cgroup:rw
+
+    environment:
+      - XDEBUG_CONFIG="remote_host=172.17.0.1 idekey=PHPSTORM"
+      - ANSIBLE_EXTRA_VARS
+      - ANSIBLE_TAGS=runtime
+      - ANSIBLE_VERBOSITY
+      - ANSIBLE_PLAYBOOK_COMMAND_OPTIONS
+      - ANSIBLE_PLAYBOOK=/usr/share/devshop/roles/devshop.server/play.yml
+      - DEVSHOP_DOCKER_COMMAND_RUN
+      - DOCKER_COMMAND_POST
+      - GITHUB_HEAD_REF
+      - DEVSHOP_TESTS_ARTIFACTS_PATH
+      # Setting this ensures the docker containers have this value, regardless if the container is an older image.
+      - DEVSHOP_ANSIBLE_GROUP_NAME=devshop_server

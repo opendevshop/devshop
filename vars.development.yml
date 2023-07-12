@@ -20,7 +20,7 @@ php_xdebug_version: "3.2.1"
 #
 
 # The Robofile overrides the following variables dynamically to match your git clone and wworking environment.
-# aegir_user_uid: 1000
-# aegir_user_gid: 1000
+aegir_user_uid: 1000
+aegir_user_gid: 1000
 # devshop_cli_repo: git@github.com:opendevshop/devshop.git
 # devshop_version: 1.x
