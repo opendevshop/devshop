@@ -2,7 +2,7 @@
 # DevShop Role Container Dockerfile Template
 #
 ARG DEVSHOP_CONTAINER_FROM=ubuntu:20.04
-FROM $DEVSHOP_CONTAINER_FROM
+FROM ${DEVSHOP_CONTAINER_FROM:-ubuntu:20.04}
 ARG DEVSHOP_CONTAINER_FROM
 
 LABEL maintainer="Jon Pugh"
@@ -102,4 +102,5 @@ WORKDIR /var/aegir
 ENV INIT_COMMAND /lib/systemd/systemd
 ENTRYPOINT [/usr/share/devshop/docker/bin/docker-systemd-entrypoint]
 
+EXPOSE 80
 RUN devshop-logo 'DevShop Server build finished.'
