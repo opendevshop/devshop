@@ -38,6 +38,13 @@ MYSQL_ROOT_USER=${MYSQL_ROOT_USER:-root}
 # Set SILENT=1 to tell `wait-for` script not to print the command.
 COMMAND=${COMMAND:-"mysqladmin ping --host=$DATABASE_HOST --user=$MYSQL_ROOT_USER --password=$MYSQL_ROOT_PASSWORD"}
 
+if [ `command -v mysqladmin` ]; then
+  echo ""
+else
+  echo " No mysqladmin command found. Exiting."
+  exit 1
+fi
+
 # Check for required variables
 if [ -z "${DATABASE_HOST}" ]; then
   echo "No DATABASE_HOST variable found. Unable to check for database."
@@ -52,7 +59,8 @@ echo "Waiting for access to database server $MYSQL_ROOT_USER@$DATABASE_HOST ..."
 
 # Set SILENT=1 to tell `wait-for` script not to print the command.
 # DO NOT CHANGE unless you want to expose MYSQL_ROOT_PASSWORD in your echos.
-export SILENT=1
+export SILENT=0
+
 wait-for $COMMAND && \
   echo "Database connected and accessible!" || \
   exit 1
