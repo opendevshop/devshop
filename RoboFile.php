@@ -62,7 +62,7 @@ class RoboFile extends \Robo\Tasks {
     'from' => 'DEVSHOP_CONTAINER_FROM',
     'os' => 'OS_VERSION',
     'dockerfile' => 'DOCKERFILE',
-    'compose-file' => 'COMPOSE_FILE',
+//    'compose-file' => 'COMPOSE_FILE',
   ];
 
   /**
@@ -499,7 +499,7 @@ class RoboFile extends \Robo\Tasks {
         $this->yell('Mounting Docker Volumes... Use --ci to disable volumes.', 40, 'blue');
 
         // Set COMPOSE_FILE to include volumes.
-        $opts['compose-file'] = 'docker/docker-compose.yml:docker/docker-compose.override.yml';
+        # $opts['compose-file'] = 'docker/docker-compose.yml:docker/docker-compose.override.yml';
 
         if (!file_exists('aegir-home') && !$opts['skip-source-prep']) {
           $this->say('<warning>The aegir-home folder not present. Running prepare source code command.</warning>');
@@ -525,7 +525,7 @@ class RoboFile extends \Robo\Tasks {
         $test_command = "/usr/share/devshop/tests/devshop-tests-upgrade.sh";
       }
       else {
-        $cmd[] = "docker compose up --detach devshop.server";
+        $cmd[] = "docker compose up --detach";
         if (!$opts['no-follow']) {
           $cmd[] = "docker-compose logs -f";
         }
@@ -647,7 +647,6 @@ class RoboFile extends \Robo\Tasks {
    */
   public function stop() {
     $this->taskExec("docker-compose stop")
-        ->dir("docker")
         ->run();
   }
 
@@ -700,7 +699,6 @@ class RoboFile extends \Robo\Tasks {
    */
   public function logs() {
     $this->taskExec("docker-compose logs -f")
-        ->dir("docker")
         ->run();
   }
 
@@ -710,7 +708,6 @@ class RoboFile extends \Robo\Tasks {
   public function watchdog() {
     $user = 'aegir';
     $this->taskExec("docker-compose exec --user $user -T devshop.server drush @hostmaster wd-show --tail --extended")
-        ->dir("docker")
         ->run();
   }
 
@@ -719,7 +716,6 @@ class RoboFile extends \Robo\Tasks {
    */
   public function restart() {
       $this->taskExec('docker-compose restart')
-          ->dir("docker")
           ->run()
       ;
       $this->logs();
@@ -738,7 +734,7 @@ class RoboFile extends \Robo\Tasks {
     }
     $process->setTty(TRUE);
     $process->setTimeout(NULL);
-    $process->setEnv(['COMPOSE_FILE' => './docker-compose.yml']);
+//    $process->setEnv(['COMPOSE_FILE' => './docker-compose.yml']);
     $process->run();
     return $process->getExitCode();
   }
@@ -747,7 +743,7 @@ class RoboFile extends \Robo\Tasks {
    * Run all devshop tests on the containers.
    */
   public function test($user = 'aegir', $opts = array(
-    'compose-file' => 'docker-compose.yml:docker-compose.override.yml',
+    'compose-file' => '',
     'reinstall' => FALSE
   )) {
     $is_tty = !empty($_SERVER['XDG_SESSION_TYPE']) && $_SERVER['XDG_SESSION_TYPE'] == 'tty';
@@ -772,10 +768,10 @@ class RoboFile extends \Robo\Tasks {
       $process->setWorkingDirectory('docker');
 
       $process->setTty(!empty($_SERVER['XDG_SESSION_TYPE']) && $_SERVER['XDG_SESSION_TYPE'] == 'tty');
-
-      $process->setEnv([
-        'COMPOSE_FILE' => $opts['compose-file'],
-      ]);
+//
+//      $process->setEnv([
+//        'COMPOSE_FILE' => $opts['compose-file'],
+//      ]);
       $process->setTimeout(NULL);
       $process->disableOutput();
     // @TODO: Figure out why PowerProcess::mustRun() fails so miserably: https://github.com/opendevshop/devshop/pull/541/checks?check_run_id=518074346#step:7:45
@@ -793,7 +789,6 @@ class RoboFile extends \Robo\Tasks {
    */
   public function login($user = 'aegir') {
     $this->taskExec("docker-compose exec --user $user -T devshop.server /usr/share/devshop/bin/drush @hostmaster uli")
-        ->dir("docker")
         ->run();
     ;
   }
