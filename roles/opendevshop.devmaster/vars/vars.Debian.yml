@@ -10,3 +10,4 @@ extra_packages:
   - postfix
   - rsync
   - zip
+  - mariadb-client
