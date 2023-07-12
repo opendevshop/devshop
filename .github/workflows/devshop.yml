@@ -109,7 +109,7 @@ jobs:
           sudo ln -s /etc/apparmor.d/usr.sbin.mysqld /etc/apparmor.d/disable/
           sudo cat /etc/apparmor.d/usr.sbin.mysqld
           sudo apparmor_parser -R /etc/apparmor.d/usr.sbin.mysqld
-        if: ${{ startsWith(matrix.distro, 'debian') }}
+        # if: ${{ startsWith(matrix.distro, 'debian') }}
 
       - name: "vars.ci.yml"
         run: cat vars.ci.yml
