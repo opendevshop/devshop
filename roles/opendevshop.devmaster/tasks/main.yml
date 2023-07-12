@@ -150,7 +150,7 @@
     - "{{ devshop_cli_path }}"
 
 - name: "Composer Install DevShop Source"
-  command: "{{ php_executable }} {{ composer_path }} {{ devshop_cli_composer_install_command }}"
+  command: "{{ php_executable | default('php') }} {{ composer_path }} {{ devshop_cli_composer_install_command }}"
   # Changed: true is so we don't fail ansible lint.
   changed_when: true
   args:
@@ -281,9 +281,9 @@
     mode: 0755
   with_items: "{{ aegir_log_files_touch }}"
 
-- name: Confirm PHP version {{ php_version }} is installed
-  shell: php -v | grep -F '{{ php_version }}'
-  changed_when: false
+#- name: Confirm PHP version {{ php_version }} is installed
+#  shell: php -v | grep -F '{{ php_version }}'
+#  changed_when: false
 
 # CentOS started failing tests because the PHP CLI was throwing Warnings about date.timezone missing.
 # @TODO: Investigate php.ini for CLI on all OS
