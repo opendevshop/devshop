@@ -665,8 +665,8 @@ class RoboFile extends \Robo\Tasks {
       $version = self::DEVSHOP_LOCAL_VERSION;
       $uri = self::DEVSHOP_LOCAL_URI;
       $this->_exec("rm -rf ./src/DevShop/Control/web/sites/{$uri}");
-      $this->_exec('cd docker && docker-compose kill');
-      $this->_exec('cd docker && docker-compose rm -fv');
+      $this->_exec('docker-compose kill');
+      $this->_exec('docker-compose rm -fv');
     }
 
     // Don't run when -n is specified,
