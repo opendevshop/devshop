@@ -9,7 +9,3 @@ devshop_server:
     localhost:
   vars:
     ansible_connection: local
-
-devshop_remote:
-  hosts:
-    devshop.remote:
