@@ -38,9 +38,10 @@ jobs:
       fail-fast: false
       matrix:
         php:
-          - '7.4'
+# @TODO: Container builds are failing due to ubuntu 18 EOL. Once builds on 20 + 22 work, put these tests back in place.
+#          - '7.4'
           - '8.0'
-          - '8.1'
+#          - '8.1'
         action:
 #          - Build
           - Test
