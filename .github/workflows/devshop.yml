@@ -42,8 +42,8 @@ jobs:
           - '8.0'
           - '8.1'
         action:
-          - Build
-#          - Test
+#          - Build
+          - Test
         os:
 #           - 'ubuntu1804'
           - 'ubuntu2004'
