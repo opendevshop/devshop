@@ -16,7 +16,7 @@ env:
   GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}
   GITHUB_PR_SHA: ${{ github.event.pull_request.head.sha  }}
   GITHUB_RUN_LOG_URL: https://github.com/opendevshop/devshop/actions/runs/${{ github.run_id }}
-  DEVSHOP_TESTS_ARTIFACTS_PATH: "/var/aegir/test-artifacts"
+  DEVSHOP_TESTS_ARTIFACTS_PATH: "/usr/share/devshop/.github/test-artifacts"
 
   COMMAND: "echo 'DevShop Server Online, launched by GitHub Actions.'"
   DEVSHOP_DOCKER_COMMAND_RUN: "echo 'Skipping DEVSHOP_DOCKER_COMMAND_RUN (ansible-playbook), so that GitHub Actions can run in a separate step.'"
@@ -38,18 +38,20 @@ jobs:
       fail-fast: false
       matrix:
         php:
-          - '7.4'
+# @TODO: Container builds are failing due to ubuntu 18 EOL. Once builds on 20 + 22 work, put these tests back in place.
+#          - '7.4'
           - '8.0'
-          - '8.1'
+#          - '8.1'
         action:
-          - Build
-#          - Test
+#          - Build
+          - Test
         os:
 #           - 'ubuntu1804'
           - 'ubuntu2004'
     env:
       OS: "${{ matrix.os }}"
-      DEVSHOP_DOCKER_IMAGE:  "devshop/server:php${{ matrix.php }}"
+      #DEVSHOP_DOCKER_IMAGE:  "devshop/server:php${{ matrix.php }}"
+      DEVSHOP_DOCKER_IMAGE:  "devshop/server:latest"
       HOSTNAME: "devshop.${{ github.event.pull_request.number }}.${{ matrix.os }}.actions.github.com"
       ANSIBLE_EXTRA_VARS: "php_version=${{ matrix.php }}"
 
@@ -103,13 +105,13 @@ jobs:
         run: docker-compose build
         if: matrix.action == 'Build'
 
-      - name: "Pull devshop/server:php${{ matrix.php }}"
+      - name: "Pull devshop/server:latest"
         working-directory: docker
         run: docker-compose pull
         if: matrix.action == 'Test'
 
       # Launch Container
-      - name: "Launch a freshly built devshop/server:php${{ matrix.php }} container"
+      - name: "Launch devshop/server:latest container"
         working-directory: docker
         run: |
           docker-compose up --detach devshop.server
@@ -142,9 +144,9 @@ jobs:
         working-directory: docker
         if: always()
         run: |
-          docker ps -a >        ../artifact-docker-ps.log && \
-          $DEBUG_COMMAND >      ../artifact-debug-command-output.log && \
-          docker-compose logs > ../artifact-docker-compose.log
+          docker ps -a >        ../.github/test-artifacts/artifact-docker-ps.log && \
+          $DEBUG_COMMAND >      ../.github/test-artifacts/artifact-debug-command-output.log && \
+          docker-compose logs > ../.github/test-artifacts/artifact-docker-compose.log
 
       - name: Upload Test Artifacts
         uses: actions/upload-artifact@v2
@@ -153,9 +155,9 @@ jobs:
           name: TestFailures
           path: ./.github/test-artifacts
 
-      - name: Upload Log Artifacts
-        uses: actions/upload-artifact@v2
-        if: always()
-        with:
-          name: DockerLogs
-          path: artifact-*
+#      - name: Upload Log Artifacts
+#        uses: actions/upload-artifact@v2
+#        if: always()
+#        with:
+#          name: DockerLogs
+#          path: artifact-*
