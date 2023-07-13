@@ -16,7 +16,7 @@ env:
   GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}
   GITHUB_PR_SHA: ${{ github.event.pull_request.head.sha  }}
   GITHUB_RUN_LOG_URL: https://github.com/opendevshop/devshop/actions/runs/${{ github.run_id }}
-  DEVSHOP_TESTS_ARTIFACTS_PATH: "/var/aegir/test-artifacts"
+  DEVSHOP_TESTS_ARTIFACTS_PATH: "/usr/share/devshop/.github/test-artifacts"
 
   COMMAND: "echo 'DevShop Server Online, launched by GitHub Actions.'"
   DEVSHOP_DOCKER_COMMAND_RUN: "echo 'Skipping DEVSHOP_DOCKER_COMMAND_RUN (ansible-playbook), so that GitHub Actions can run in a separate step.'"
@@ -144,9 +144,9 @@ jobs:
         working-directory: docker
         if: always()
         run: |
-          docker ps -a >        ../artifact-docker-ps.log && \
-          $DEBUG_COMMAND >      ../artifact-debug-command-output.log && \
-          docker-compose logs > ../artifact-docker-compose.log
+          docker ps -a >        ../.github/test-artifacts/artifact-docker-ps.log && \
+          $DEBUG_COMMAND >      ../.github/test-artifacts/artifact-debug-command-output.log && \
+          docker-compose logs > ../.github/test-artifacts/artifact-docker-compose.log
 
       - name: Upload Test Artifacts
         uses: actions/upload-artifact@v2
@@ -155,9 +155,9 @@ jobs:
           name: TestFailures
           path: ./.github/test-artifacts
 
-      - name: Upload Log Artifacts
-        uses: actions/upload-artifact@v2
-        if: always()
-        with:
-          name: DockerLogs
-          path: artifact-*
+#      - name: Upload Log Artifacts
+#        uses: actions/upload-artifact@v2
+#        if: always()
+#        with:
+#          name: DockerLogs
+#          path: artifact-*
