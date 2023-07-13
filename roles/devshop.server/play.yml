@@ -125,7 +125,7 @@
       tags: [always]
 
     - role: geerlingguy.supervisor
-      tags: [always]
+      tags: [runtime]
 
     - role: opendevshop.apache
       tags: [always]
