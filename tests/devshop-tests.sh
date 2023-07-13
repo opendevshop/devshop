@@ -5,6 +5,8 @@ PATH="$DEVSHOP_PATH:$PATH"
 
 devshop-logo "Running DevShop Tests"
 devshop-log echo "Path: $PATH"
+
+cd /usr/share/devshop
 git status
 git show
 devshop status
