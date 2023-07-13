@@ -26,12 +26,12 @@
     group: "{{ aegir_user_name }}"
     force: false
 
-- name: Add aegir to apache group.
-  when: aegir_user_in_web_group == true
-  user:
-    name: "{{ aegir_user_name }}"
-    groups: "{{ apache_user }}"
-    append: true
+#- name: Add aegir to apache group.
+#  when: aegir_user_in_web_group == true
+#  user:
+#    name: "{{ aegir_user_name }}"
+#    groups: "{{ apache_user }}"
+#    append: true
 
 - name: Add aegir user to sudoers to reload apache
   lineinfile:

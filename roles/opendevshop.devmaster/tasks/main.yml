@@ -301,3 +301,9 @@
 #      - "  Path: {{ devshop_cli_path }}"
 #      - "  Version: {{ devshop_version }}"
 #      - "  CLI Version: {{ devshop_cli_version }}"
+
+- name: Add aegir to apache group.
+  user:
+    name: "{{ aegir_user_name }}"
+    groups: "{{ apache_user }}"
+    append: true
