@@ -1,0 +1,16 @@
+#
+# DevShop Remote Server container
+#
+FROM devshop/server:latest
+
+LABEL maintainer="Jon Pugh"
+
+RUN echo "Building container from Dockerfile.remote, from $DEVSHOP_CONTAINER_FROM ..."
+RUN rm -rf ${DEVSHOP_ANSIBLE_PATH}/hosts && ln -s ${DEVSHOP_PATH}/roles/devshop.server/inventory.remote ${DEVSHOP_ANSIBLE_PATH}/hosts
+
+#ENV DEVSHOP_DOCKER_COMMAND_RUN ""
+
+ENTRYPOINT /usr/share/devshop/docker/bin/docker-systemd-entrypoint
+#CMD ""
+
+RUN devshop-logo 'DevShop Remote Server container build finished.'
