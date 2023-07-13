@@ -114,7 +114,7 @@ jobs:
       - name: "Launch devshop/server:latest container"
         working-directory: docker
         run: |
-          docker-compose up --detach devshop.server
+          docker-compose up --detach
           sleep 3
           docker-compose logs
           docker-compose exec -T devshop.server /usr/share/devshop/scripts/devshop-logo "GitHub Actions Container populated with code. Running SHA ${GITHUB_PR_SHA}"
