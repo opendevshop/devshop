@@ -1,0 +1,15 @@
+#
+# DevShop Remote Server container
+#
+FROM devshop/server:latest
+
+LABEL maintainer="Jon Pugh"
+
+RUN echo "Building container from Dockerfile.remote, from $DEVSHOP_CONTAINER_FROM ..."
+RUN apt install openssh-server
+
+ENV DEVSHOP_DOCKER_COMMAND_RUN echo "Remote Container Launched!"
+
+ENV INIT_COMMAND /lib/systemd/systemd
+
+RUN devshop-logo 'DevShop Remote Server container build finished.'
