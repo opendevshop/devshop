@@ -1,7 +1,7 @@
 #
 # DevShop Role Container Dockerfile Template
 #
-FROM ubuntu:20.04
+FROM geerlingguy/docker-ubuntu2004-ansible
 LABEL maintainer="Jon Pugh"
 
 ARG DEBIAN_FRONTEND=noninteractive

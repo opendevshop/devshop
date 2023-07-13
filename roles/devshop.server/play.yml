@@ -96,21 +96,17 @@
     # The playbook will ALSO be run before opendevshop.devmaster below because it is stored as a dependency.
 
     - role: geerlingguy.mysql
-      tags:
-        - runtime
-        - service
+      tags: [always]
 
     - role: opendevshop.users
       tags: [always]
 
     - role: geerlingguy.repo-remi
       when: ansible_os_family == 'RedHat'
-      tags: [buildtime]
+      tags: [always]
 
     - role: geerlingguy.apache
-      tags:
-      - runtime
-      - service
+      tags: [always]
 
     - role: geerlingguy.php-versions
       tags: [always]
@@ -126,15 +122,13 @@
       tags: [always]
 
     - role: geerlingguy.composer
-      tags: [buildtime]
+      tags: [always]
 
     - role: geerlingguy.supervisor
-      tags:
-        - runtime
-        - service
+      tags: [always]
 
     - role: opendevshop.apache
-      tags: [runtime]
+      tags: [always]
 
     # Always run everything. Tags inside the roles will limit tasks run.
     - role: opendevshop.devmaster
