@@ -786,13 +786,13 @@ class RoboFile extends \Robo\Tasks {
   /**
    * Enter a bash shell in the devmaster container.
    */
-  public function shell($user = 'aegir') {
+  public function shell($user = 'aegir', $service = 'devshop.server') {
 
     if ($user) {
-        $process = new \Symfony\Component\Process\Process("docker-compose exec --user $user devshop.server bash");
+        $process = new \Symfony\Component\Process\Process("docker-compose exec --user $user $service bash");
     }
     else {
-        $process = new \Symfony\Component\Process\Process("docker-compose exec devshop.server bash");
+        $process = new \Symfony\Component\Process\Process("docker-compose exec $service bash");
     }
     $process->setTty(TRUE);
     $process->setTimeout(NULL);
