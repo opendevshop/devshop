@@ -65,4 +65,5 @@ services:
     entrypoint: /usr/share/devshop/docker/bin/docker-systemd-entrypoint
     environment:
       DEVSHOP_DOCKER_COMMAND_RUN: "echo 'Welcome to devshop.remote container.'"
+      DEVSHOP_ANSIBLE_GROUP_NAME: devshop_remote
 

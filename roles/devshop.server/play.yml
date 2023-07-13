@@ -129,3 +129,21 @@
     # Always run everything. Tags inside the roles will limit tasks run.
     - role: opendevshop.devmaster
       tags: [always]
+
+- hosts: devshop_remote
+  become: true
+
+  # These vars override everything except command line variables. Set variables per host in the inventory or vars files in /etc/ansible.
+  # See https://docs.ansible.com/ansible/latest/user_guide/playbooks_variables.html#variable-precedence-where-should-i-put-a-variable
+  vars:
+    devshop_server_role: 'devshop.server'
+
+  vars_files:
+    - ../../vars.yml
+
+  tasks:
+      - name: "devshop.remote"
+        debug:
+          msg:
+            - "DevShop Remote Server Playbook begin..."
+        tags: [ always ]
