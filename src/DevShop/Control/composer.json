@@ -1,6 +1,6 @@
 {
-    "name": "devshop/control-project",
-    "description": "Composer project for DevShop Control: the Drupal based front-end for DevShop.",
+    "name": "devshop/control",
+    "description": "DevShop Control: the Drupal based front-end for DevShop.",
     "type": "project",
     "license": "GPL-2.0-or-later",
     "authors": [
@@ -22,6 +22,11 @@
         "type": "path",
         "url": "../../../devmaster"
       },
+      "preserve-paths-fix": {
+        "type": "vcs",
+        "url": "https://github.com/lazysoundsystem/preserve-paths",
+         "only": ["drupal-composer/preserve-paths"]
+      },
       "behat": {
         "type": "vcs",
         "url":  "https://github.com/jonpugh/DrupalDriver.git"
@@ -40,7 +45,8 @@
         "composer/semver": "^1.4",
         "cweagans/composer-patches": "^1.7",
         "devshop/devmaster": "1.x-dev",
-        "drupal-composer/preserve-paths": "^0.1.6",
+        "devshop/git-traits": "1.x-dev",
+        "drupal-composer/preserve-paths": "dev-master",
         "drupal/admin_menu": "@rc",
         "drupal/adminrole": "^1.1",
         "drupal/aegir_config": "@beta",
@@ -51,6 +57,7 @@
         "drupal/cas_attributes": "@rc",
         "drupal/chosen": "^2.1",
         "drupal/composer_autoloader": "^1.0",
+        "drupal/core-composer-scaffold": "^10.1",
         "drupal/ctools": "^1.15",
         "drupal/devel": "^1.7",
         "drupal/devshop_stats": "@dev",
@@ -59,7 +66,7 @@
         "drupal/drupal-extension": "^4.2",
         "drupal/entity": "^1.9",
         "drupal/features": "^2.11",
-        "drupal/hosting": "4.x-dev@dev",
+        "drupal/hosting": "dev-4.x",
         "drupal/hosting_filemanager": "dev-1.x",
         "drupal/hosting_logs": "^3.181",
         "drupal/hosting_site_backup_manager": "^3.180",
@@ -72,7 +79,7 @@
         "drupal/navbar": "^1.7",
         "drupal/openidadmin": "^1.0",
         "drupal/overlay_paths": "^1.3",
-        "drupal/provision": "^4.0@dev",
+        "drupal/provision": "dev-4.x",
         "drupal/r4032login": "^1.8",
         "drupal/sshkey": "^2.0",
         "drupal/statsd": "^1.1",
@@ -120,7 +127,8 @@
             "drupal-composer/preserve-paths": true,
             "oomphinc/composer-installers-extender": true,
             "php-http/discovery": true,
-            "pyrech/composer-changelogs": true
+            "pyrech/composer-changelogs": true,
+            "drupal/core-composer-scaffold": true
         },
         "platform": {
             "php": "7.4.0"
