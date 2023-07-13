@@ -137,12 +137,14 @@
   # See https://docs.ansible.com/ansible/latest/user_guide/playbooks_variables.html#variable-precedence-where-should-i-put-a-variable
   vars:
     devshop_server_role: 'devshop.server'
+    aegir_user_name: aegir
+
+    # Set these in local inventory.
+    aegir_remote_database_user: remote_root
+    aegir_remote_database_password: password
 
   vars_files:
     - ../../vars.yml
-
-  vars:
-    aegir_user_name: aegir
 
   tasks:
       - name: "devshop.remote"
@@ -162,6 +164,14 @@
 
       - name: Ensure MySQL is started and enabled on boot.
         service: "name=mysql state=started enabled=true"
+        tags: [ runtime ]
+
+      - name: Grant mysql user access from any server.
+        mysql_user:
+          name: "{{ aegir_remote_database_user }}"
+          host: "%"
+          password: "{{ aegir_remote_database_password }}"
+          priv: "*.*:ALL,GRANT"
         tags: [ runtime ]
 
       # @TODO Add authorized_keys
