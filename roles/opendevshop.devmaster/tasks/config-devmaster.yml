@@ -96,8 +96,16 @@
 #  become_user: "{{ aegir_user_name }}"
 #  become_method: "{{ ansible_become_method_aegir }}"
 #
-#- name: Clear drush caches
-#  command: "{{ drush_executable_path }} cc drush"
-#  become: true
-#  become_user: "{{ aegir_user_name }}"
-#  become_method: "{{ ansible_become_method_aegir }}"
+# Trying to solve https://github.com/opendevshop/devshop/actions/runs/5546571307/jobs/10127031820?pr=752#step:13:165
+#
+  #Error: nable to load https_apache driver for the http service: Expecting       [error]
+  #      class Provision_Service_http_https_apache
+  #Warning: efined array key "http" server.php:125                              [warning]
+  #Error: rush command terminated abnormally due to an unrecoverable error.       [error]
+  #      Error: Uncaught Error: Call to a member function setContext() on null
+  #      in
+- name: Clear drush caches
+  command: "{{ drush_executable_path }} cc drush"
+  become: true
+  become_user: "{{ aegir_user_name }}"
+  become_method: "{{ ansible_become_method_aegir }}"
