@@ -5,6 +5,8 @@ PATH="$DEVSHOP_PATH:$PATH"
 
 devshop-logo "Running DevShop Tests"
 devshop-log echo "Path: $PATH"
+git status
+git show
 devshop status
 
 # Print the lines and exit if a failure happens.
