@@ -46,7 +46,10 @@ services:
       - DEVSHOP_ANSIBLE_GROUP_NAME=devshop_server
 
   devshop.remote:
-    image: devshop/server:latest
+    image: devshop/remote:latest
+    build:
+      context: ".."
+      dockerfile: "docker/Dockerfile.remote"
     hostname: remote.local.computer
     ports:
       - "8080:80"
