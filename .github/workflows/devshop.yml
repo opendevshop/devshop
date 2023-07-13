@@ -49,7 +49,8 @@ jobs:
           - 'ubuntu2004'
     env:
       OS: "${{ matrix.os }}"
-      DEVSHOP_DOCKER_IMAGE:  "devshop/server:php${{ matrix.php }}"
+      #DEVSHOP_DOCKER_IMAGE:  "devshop/server:php${{ matrix.php }}"
+      DEVSHOP_DOCKER_IMAGE:  "devshop/server:latest"
       HOSTNAME: "devshop.${{ github.event.pull_request.number }}.${{ matrix.os }}.actions.github.com"
       ANSIBLE_EXTRA_VARS: "php_version=${{ matrix.php }}"
 
@@ -103,13 +104,13 @@ jobs:
         run: docker-compose build
         if: matrix.action == 'Build'
 
-      - name: "Pull devshop/server:php${{ matrix.php }}"
+      - name: "Pull devshop/server:latest"
         working-directory: docker
         run: docker-compose pull
         if: matrix.action == 'Test'
 
       # Launch Container
-      - name: "Launch a freshly built devshop/server:php${{ matrix.php }} container"
+      - name: "Launch devshop/server:latest container"
         working-directory: docker
         run: |
           docker-compose up --detach devshop.server
