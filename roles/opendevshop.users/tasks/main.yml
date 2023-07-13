@@ -107,13 +107,14 @@
 
 - name: Allow aegir user to run fix-* scripts
   with_items:
-    - "fix-drupal-site-ownership"
-    - "fix-drupal-site-permissions"
-    - "fix-drupal-platform-ownership"
-    - "fix-drupal-platform-permissions"
+    - "{{ local_bin_path }}/fix-drupal-site-ownership.sh"
+    - "{{ local_bin_path }}/fix-drupal-site-permissions.sh"
+    - "{{ local_bin_path }}/fix-drupal-platform-ownership.sh"
+    - "{{ local_bin_path }}/fix-drupal-platform-permissions.sh"
+    - "{{ apache_control }}"
   lineinfile:
     dest: "{{ sudoers_file_path }}"
-    line: "{{ aegir_user_name }} ALL=NOPASSWD: {{ local_bin_path }}/{{ item }}.sh"
+    line: "{{ aegir_user_name }} ALL=NOPASSWD: {{ item }}"
     state: present
     validate: "visudo -cf %s"
     create: true
