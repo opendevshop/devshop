@@ -46,7 +46,7 @@ services:
       - DEVSHOP_ANSIBLE_GROUP_NAME=devshop_server
 
   devshop.remote:
-    image: devshop/remote:latest
+    image: devshop/server:latest
     hostname: remote.local.computer
     ports:
       - "8080:80"
