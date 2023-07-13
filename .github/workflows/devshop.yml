@@ -135,6 +135,7 @@ jobs:
         # Since the container is launched with a new DEVSHOP_DOCKER_COMMAND_RUN, run the default.
         run: |
           docker-compose exec -T devshop.server bash -c '${DEFAULT_DEVSHOP_DOCKER_COMMAND_RUN}'
+          docker-compose exec -T devshop.remote bash -c '${DEFAULT_DEVSHOP_DOCKER_COMMAND_RUN}'
 
       - name: "Test DevShop"
         working-directory: docker
