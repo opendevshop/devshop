@@ -47,9 +47,6 @@ services:
 
   devshop.remote:
     image: devshop/remote:latest
-    build:
-      context: ".."
-      dockerfile: "docker/Dockerfile.remote"
     hostname: remote.local.computer
     ports:
       - "8080:80"
@@ -66,4 +63,6 @@ services:
     environment:
       DEVSHOP_DOCKER_COMMAND_RUN: "echo 'Welcome to devshop.remote container.'"
       DEVSHOP_ANSIBLE_GROUP_NAME: devshop_remote
+      ANSIBLE_EXTRA_VARS:
+      ANSIBLE_PLAYBOOK_COMMAND_OPTIONS:
 

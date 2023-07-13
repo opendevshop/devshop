@@ -141,9 +141,35 @@
   vars_files:
     - ../../vars.yml
 
+  vars:
+    aegir_user_name: aegir
+
   tasks:
       - name: "devshop.remote"
         debug:
           msg:
             - "DevShop Remote Server Playbook begin..."
         tags: [ always ]
+
+      - name: Install OpenSSH Server
+        apt:
+          pkg:
+            - "openssh-server"
+          state: present
+          update_cache: true
+        tags: [ always ]
+        when: ansible_os_family == "Debian"
+
+      - name: Ensure MySQL is started and enabled on boot.
+        service: "name=mysql state=started enabled=true"
+        tags: [ runtime ]
+
+      # @TODO Add authorized_keys
+      - name: Ensure authorized_keys for DevShop Server user account is present.
+        authorized_key:
+          user: "{{ aegir_user_name }}"
+          key: "{{ aegir_user_authorized_keys }}"
+          manage_dir: yes
+        tags: [ runtime ]
+
+      # @TODO Add authorized_keys
