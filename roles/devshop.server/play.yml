@@ -142,6 +142,7 @@
     # Set these in local inventory.
     aegir_remote_database_user: remote_root
     aegir_remote_database_password: password
+    aegir_user_authorized_keys: ReplaceAtRuntime
 
   vars_files:
     - ../../vars.yml
