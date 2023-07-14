@@ -80,6 +80,8 @@ jobs:
         run: |
           echo "php_version: '${{ matrix.php }}'" >> vars.ci.yml
           echo "devshop_version: ${{ github.ref_name }}" >> vars.ci.yml
+          echo "aegir_user_uid: 1001" >> vars.ci.yml
+          echo "aegir_user_gid: 1001" >> vars.ci.yml
 
       # github.head_ref is the PR branch name.
       - name: Prepare Pull Request-only environment

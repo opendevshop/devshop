@@ -156,16 +156,11 @@ function devshop_project_load($node) {
           cp.name as platform_context,
           cs.name as site_context,
           cs.settings as hosting_settings,
+          p.*,
           p.publish_path as root,
-          p.publish_path as publish_path,
           p.git_reference as git_ref,
-          p.git_reference as git_reference,
           p.git_remote as git_url,
           p.git_root as repo_path,
-          p.git_refs,
-          p.git_sha,
-          p.git_last,
-          p.git_status,
           http.title as remote_host,
           sn.title as uri,
           http.title as web_server,
@@ -210,6 +205,43 @@ function devshop_project_load($node) {
   $deleted_environments = [];
   foreach ($environment_data as $environment) {
 
+    $environment->git_provider = 'git';
+    $environment->git_repo_url = '';
+
+    // Git Repo Host
+    // @TODO: Allow other github URLs (ie for enterprise)
+    if (isset($environment->git_remote) && strpos($environment->git_remote, 'github.com') !== FALSE) {
+      $environment->git_provider = 'github';
+      $environment->git_repo_url = strtr($environment->git_remote, array(
+        'git@github.com:' => 'http://github.com/',
+        'git://' => 'http://',
+        '.git' => '',
+      ));
+
+      // Set github_owner and github_repo properties for project.
+      $parts = explode('/', parse_url($project->git_repo_url, PHP_URL_PATH));
+      $environment->github_owner = $parts[1];
+      $environment->github_repo = $parts[2];
+
+    }
+    elseif (isset($environment->git_remote) && strpos($environment->git_remote, 'bitbucket.org') !== FALSE) {
+      $environment->git_provider = 'bitbucket';
+      $environment->git_repo_url = strtr($environment->git_remote, array(
+        'git@bitbucket.org:' => 'http://bitbucket.org/',
+        'git://' => 'http://',
+        '.git' => '',
+      ));
+      $parts = explode('/', parse_url($project->git_repo_url, PHP_URL_PATH));
+      if ($parts[1] && $parts[2]) {
+        $environment->bitbucket_owner = $parts[1];
+        $environment->bitbucket_repo = $parts[2];
+      }
+    }
+    else {
+      $environment->git_provider = 'git';
+      $environment->git_repo_url = '';
+    }
+    
     // Site dashboard URL.
     $environment->dashboard_url = url("node/{$environment->site}", array(
       'absolute' => true
