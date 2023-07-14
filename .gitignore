@@ -16,6 +16,8 @@ src/DevShop/Control/web
 .vagrant
 devmaster_id_rsa.pub
 
+vars.local.yml
+
 # Ignore bin dir, except for devshop CLI.
 # @TODO: Move CLI to a component, so we can ignore the entire folder.
 bin/*
