@@ -37,10 +37,10 @@ drush @hostmaster vset hosting_queue_tasks_enabled 0
 #PLATFORM_ALIAS=`drush @hm php-eval "print d()->platform->name"`
 #drush @hostmaster hosting-task $PLATFORM_ALIAS verify --fork=0 --strict=0 --force
 
-devshop-log "Running remaining tasks: drush @hostmaster hosting-tasks --fork=0 --strict=0 --force || true"
-drush @hostmaster hosting-tasks --fork=0 --strict=0 --force || true
+# devshop-log "Running remaining tasks: drush @hostmaster hosting-tasks --fork=0 --strict=0 --force || true"
+# drush @hostmaster hosting-tasks --fork=0 --strict=0 --force || true
 
-devshop-log "Running remaining tasks: Complete!"
+# devshop-log "Running remaining tasks: Complete!"
 
 # Enable watchdog
 drush @hostmaster en dblog -y
@@ -52,6 +52,9 @@ if [ -n "${GITHUB_TOKEN}" ]; then
 else
   devshop-log "WARNING: GITHUB_TOKEN environment variable not found."
 fi
+
+echo "Drush RC Right before devmaster:test"
+cat ~/.drush/drushrc.php
 
 # Run the test suite.
 devshop devmaster:test
