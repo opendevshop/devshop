@@ -22,7 +22,7 @@ if [ -f "${DEVSHOP_PATH}/${ANSIBLE_PLAYBOOK}" ]; then
   ANSIBLE_PLAYBOOK="${DEVSHOP_PATH}/${ANSIBLE_PLAYBOOK}"
 fi
 
-ANSIBLE_PLAYBOOK=${ANSIBLE_PLAYBOOK:-"/etc/ansible/play.yml"}
+ANSIBLE_PLAYBOOK=${ANSIBLE_PLAYBOOK:-"$DEVSHOP_PATH/roles/devshop.server/play.yml"}
 ANSIBLE_CONFIG=${ANSIBLE_CONFIG:-""}
 ANSIBLE_TAGS=${ANSIBLE_TAGS:-""}
 ANSIBLE_SKIP_TAGS=${ANSIBLE_SKIP_TAGS:-""}
@@ -46,6 +46,7 @@ fi
 
 ON_FAIL=${ON_FAIL:-"systemctl status --no-pager"}
 
+cd $DEVSHOP_PATH
 devshop-logo "Checking Ansible Inventory for group '$DEVSHOP_ANSIBLE_GROUP_NAME' ..."
 echo "> Contents of /etc/ansible/hosts:"
 cat /etc/ansible/hosts

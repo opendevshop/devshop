@@ -31,6 +31,7 @@ class Status extends Command
     $error = FALSE;
 
     // Announce ourselves.
+    $devshop_control_path = '/usr/share/devshop/src/DevShop/Control';
     $output->writeln($this->getApplication()->getLogo());
     $this->announce('Status');
     $this->checkCliVersion();
@@ -48,9 +49,9 @@ class Status extends Command
     $output->writeln($version);
 
     // Check for Drush
-    $output->write("<comment>Checking for Drush...  </comment>");
+    $output->write("<comment>Checking for Drush in $devshop_control_path...  </comment>");
 
-    $process = new Process('drush --version');
+    $process = new Process('drush --version', $devshop_control_path);
     $process->run();
     if (!$process->isSuccessful()) {
       $output->writeln("<question>Drush not detected.</question>");
@@ -63,12 +64,12 @@ class Status extends Command
     }
 
     // Check for devmaster
-    $output->write("<comment>Checking for DevMaster...  </comment>");
+    $output->write("<comment>Checking for DevMaster... in $devshop_control_path </comment>");
     if ($this->user == 'aegir') {
-      $process = new Process('drush @hostmaster vget install_profile');
+      $process = new Process('drush @hostmaster vget install_profile', $devshop_control_path);
     }
     else {
-      $process = new Process('sudo su - aegir -c "drush @hostmaster vget install_profile"');
+      $process = new Process('sudo su aegir -c "drush @hostmaster vget install_profile"', $devshop_control_path);
     }
 
     $process->run();
@@ -88,7 +89,7 @@ class Status extends Command
       // Output drush status --fields=drupal-version,uri
       $output->writeln($this->getApplication()->getDevmasterVersion());
 
-      $process = new Process('drush @hostmaster status --fields=drupal-version,uri,database');
+      $process = new Process('drush @hostmaster status --fields=drupal-version,uri,database', $devshop_control_path);
       $process->run();
 
       $output->writeln(preg_replace('!\s+!', ' ', $process->getOutput()));
