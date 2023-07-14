@@ -1,0 +1,10 @@
+---
+# DevShop Ansible Static Inventory File
+# -------------------------------------
+
+devshop_remote:
+  hosts:
+    devshop.remote:
+
+  vars:
+    ansible_connection: local
