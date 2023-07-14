@@ -61,6 +61,9 @@ else
   devshop-log "WARNING: GITHUB_TOKEN environment variable not found."
 fi
 
+devshop-log "Running @hostmaster provision-verify..."
+drush @hostmaster provision-verify
+
 # Run the test suite.
 devshop devmaster:test
 #drush @hostmaster provision-test --behat-folder-path=profiles/devmaster/tests --test-type=behat
