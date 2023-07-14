@@ -13,6 +13,7 @@ Feature: DevShop Servers have LetsEncrypt enabled out of the box.
     Then I select the radio button "LetsEncrypt"
     Then I select the radio button "Staging"
     And I press "Save"
+    When I run drush "cache-clear drush"
     When I run drush "hosting-tasks --force --fork=0 --strict=0"
 
     Then I click "Edit"

@@ -11,7 +11,7 @@
   # See https://docs.ansible.com/ansible/latest/user_guide/playbooks_variables.html#variable-precedence-where-should-i-put-a-variable
   vars:
     devshop_server_role: 'devshop.server'
-    devshop_playbook_message: 
+    devshop_playbook_message:
       - "Repo: {{ devshop_cli_repo }}"
       - "Path: {{ devshop_cli_path }}"
       - "Version: {{ devshop_version }}"
@@ -20,7 +20,7 @@
       - "Tags: {{ ansible_run_tags }}"
       - "ansible_nodename: {{ ansible_nodename }}"
       - "OS: {{ ansible_distribution }} {{ ansible_distribution_version }} / {{ ansible_os_family }}"
-          
+
 
   vars_files:
     - ../../vars.yml
@@ -94,50 +94,105 @@
   roles:
     # Run the opendevshop.users role first at runtime so UIDs are changed ASAP.
     # The playbook will ALSO be run before opendevshop.devmaster below because it is stored as a dependency.
-
-    - role: geerlingguy.mysql
-      tags: [always]
-
     - role: opendevshop.users
       tags: [always]
 
+    - role: geerlingguy.mysql
+      tags: [buildtime]
+
     - role: geerlingguy.repo-remi
       when: ansible_os_family == 'RedHat'
-      tags: [always]
+      tags: [buildtime]
 
     - role: geerlingguy.apache
-      tags: [always]
+      tags: [buildtime]
 
     - role: geerlingguy.php-versions
-      tags: [always]
+      tags: [buildtime]
 
     - role: geerlingguy.php
-      tags: [always]
+      tags: [buildtime]
 
     - role: geerlingguy.php-xdebug
       when: xdebug_enabled | default(false)
-      tags: [always]
+      tags: [buildtime]
 
     - role: geerlingguy.php-mysql
-      tags: [always]
+      tags: [buildtime]
 
     - role: geerlingguy.composer
-      tags: [always]
+      tags: [buildtime]
 
     - role: geerlingguy.supervisor
-      tags: [runtime]
+      tags: [buildtime]
 
     - role: opendevshop.apache
-      tags: [always]
+      tags: [buildtime]
 
     # Always run everything. Tags inside the roles will limit tasks run.
     - role: opendevshop.devmaster
       tags: [always]
 
-
   post_tasks:
-  
+
     - name: "DevShop Playbook Complete!"
       debug:
         msg: "{{ devshop_playbook_message }}"
       tags: [always]
+
+- hosts: devshop_remote
+  become: true
+
+  # These vars override everything except command line variables. Set variables per host in the inventory or vars files in /etc/ansible.
+  # See https://docs.ansible.com/ansible/latest/user_guide/playbooks_variables.html#variable-precedence-where-should-i-put-a-variable
+  vars:
+    devshop_server_role: 'devshop.server'
+    aegir_user_name: aegir
+
+    # Set these in local inventory.
+    aegir_remote_database_user: remote_root
+    aegir_remote_database_password: password
+    aegir_user_authorized_keys: ""
+
+  vars_files:
+    - ../../vars.yml
+
+  tasks:
+      - name: "devshop.remote"
+        debug:
+          msg:
+            - "DevShop Remote Server Playbook begin..."
+        tags: [ always ]
+
+      - name: Install OpenSSH Server
+        apt:
+          pkg:
+            - "openssh-server"
+          state: present
+          update_cache: true
+        tags: [ always ]
+        when: ansible_os_family == "Debian"
+
+      - name: Ensure MySQL is started and enabled on boot.
+        service: "name=mysql state=started enabled=true"
+        tags: [ runtime ]
+
+      - name: Grant mysql user access from any server.
+        mysql_user:
+          name: "{{ aegir_remote_database_user }}"
+          host: "%"
+          password: "{{ aegir_remote_database_password }}"
+          priv: "*.*:ALL,GRANT"
+        tags: [ runtime ]
+
+      # @TODO Add authorized_keys
+      - name: Ensure authorized_keys for DevShop Server user account is present.
+        authorized_key:
+          user: "{{ aegir_user_name }}"
+          key: "{{ aegir_user_authorized_keys }}"
+          manage_dir: yes
+        tags: [ runtime ]
+        when:
+          - aegir_user_authorized_keys | length > 0
+
+      # @TODO Add authorized_keys
