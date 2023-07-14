@@ -16,6 +16,9 @@ devshop-log "Checking versions of devshop, drush, node, npm..."
 devshop-log "DevShop Version: $(devshop --version)"
 devshop-log "Drush Version: $(drush --version)"
 
+echo "Drush RC: "
+cat ~/.drush/drushrc.php
+
 #echo "Node Version:     " && node --version
 #echo "NPM Version:      " && npm --version
 
@@ -34,17 +37,6 @@ drush @hostmaster vset hosting_queue_tasks_enabled 0
 #PLATFORM_ALIAS=`drush @hm php-eval "print d()->platform->name"`
 #drush @hostmaster hosting-task $PLATFORM_ALIAS verify --fork=0 --strict=0 --force
 
-# @TODO: Remove this if possible.
-#
-# Situation: Tests PASS if this happens:
-# Found 1 tasks (max 5) in queue. Running...                                  [ok]
-# Error: stponed: Another task is still running. To force, call: drush     [error]
-#
-#
-# If the verify devshop.local.computer task runs, this happens:
-#   Error: to load https_apache driver for the http service: Expecting       [error]
-#
-
 # devshop-log "Running remaining tasks: drush @hostmaster hosting-tasks --fork=0 --strict=0 --force || true"
 # drush @hostmaster hosting-tasks --fork=0 --strict=0 --force || true
 
@@ -61,8 +53,8 @@ else
   devshop-log "WARNING: GITHUB_TOKEN environment variable not found."
 fi
 
-devshop-log "Running @hostmaster provision-verify..."
-drush @hostmaster provision-verify
+echo "Drush RC Right before devmaster:test"
+cat ~/.drush/drushrc.php
 
 # Run the test suite.
 devshop devmaster:test
