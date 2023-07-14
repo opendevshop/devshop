@@ -45,7 +45,8 @@
   tags: [always]
 
 - name: Ensure /var/aegir has correct permissions.
-  command: chmod {{ aegir_user_home_chmod }} {{ aegir_user_home }}
+  command: chmod 755 {{ aegir_user_home }}
+  when: ansible_os_family == "RedHat"
 
 - name: Create aegir's config folder
   file:

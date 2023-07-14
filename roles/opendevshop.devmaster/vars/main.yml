@@ -17,6 +17,7 @@ supervisor_programs:
       user={{ aegir_user_name }}
       directory={{ devshop_control_git_root }}
       numprocs=1
+      # @TODO: hosting-queue-runner script was supposed to stay running until the site was ready for the drush hosting-task command.
       startretries=100
       stdout_logfile={{ hosting_queue_runner_log_path }}
       redirect_stderr=true
