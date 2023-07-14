@@ -16,6 +16,9 @@ devshop-log "Checking versions of devshop, drush, node, npm..."
 devshop-log "DevShop Version: $(devshop --version)"
 devshop-log "Drush Version: $(drush --version)"
 
+echo "Drush RC: "
+cat ~/.drush/drushrc.php
+
 #echo "Node Version:     " && node --version
 #echo "NPM Version:      " && npm --version
 
