@@ -4,4 +4,7 @@
 ---
 
 # The default version of PHP to use.
-php_version: "8.1"
+# This must be 8.0 for now. Our containers are stuck at 18.04, which as of April 2023, no longer has any php packages available.
+# The current play.yml doesn't run the PHP role on docker run so it doesn't fail.
+# It does use this var to check that the right version of PHP is installed. This has to match the container image version to pass, since it won't install a new version.
+php_version: "8.0"

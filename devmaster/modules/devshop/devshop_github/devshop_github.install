@@ -39,6 +39,33 @@ function devshop_github_schema() {
     ),
     'primary key' => array('site_nid'),
   );
+  $schema['hosting_devshop_github_deployments'] = array(
+    'fields' => array(
+      'task_nid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => "The Task Node NID associated with the deployment.",
+      ),
+      'deployment_id' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'GitHub Deployment ID',
+      ),
+      'deployment_object' => array(
+        'type' => 'text',
+        'not null' => FALSE,
+        'size' => 'big',
+        'description' => 'A serialized array of settings for this environment.',
+      ),
+    ),
+    'primary key' => array(
+        'task_nid'
+    ),
+  );
   return $schema;
 }
 
@@ -61,21 +88,21 @@ function devshop_github_install() {
       if (devshop_github_token_is_valid($token)) {
         variable_set('devshop_github_token', $token);
         drupal_set_message(t('GitHub token was found and saved. Visit !link to check settings.', array(
-            '!link' => l(t('the settings page'), 'admin/hosting'),
+            '!link' => l(t('the settings page'), 'admin/devshop/github'),
         )));
 
         devshop_github_refresh_repositories();
       }
       else {
         drupal_set_message(t('GitHub token was found but invalid. Visit !link to set a new token.', array(
-            '!link' => l(t('the settings page'), 'admin/hosting'),
+            '!link' => l(t('the settings page'), 'admin/devshop/github'),
         )), 'warning');
       }
     }
     else {
       // Display a message about setting a github personal token.
       drupal_set_message(t('DevShop GitHub module has been enabled.  You must add an access token to enable full functionality at !link.', array(
-          '!link' => l(t('the settings page'), 'admin/hosting'),
+          '!link' => l(t('the settings page'), 'admin/devshop/github'),
       )));
     }
 }
@@ -137,6 +164,7 @@ function devshop_github_update_7004() {
 
 /**
  * Delete the hosting_devshop_github_deployments table.
+ * NOTE: This table was put back in.
  */
 function devshop_github_update_7005() {
   db_query('DROP TABLE {hosting_devshop_github_deployments}');

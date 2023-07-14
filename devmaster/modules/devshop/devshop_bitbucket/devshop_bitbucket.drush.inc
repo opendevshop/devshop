@@ -25,7 +25,7 @@ function devshop_bitbucket_hosting_task_update_status($task, $status) {
 
     // Post a build status.
     try {
-      
+
       $client = devshop_bitbucket_client();
       $params = new stdClass();
 
@@ -37,11 +37,11 @@ function devshop_bitbucket_hosting_task_update_status($task, $status) {
         '%ref' => $task->ref->git_reference,
         '%command' => $command,
       ]), 'debug');
-      
+
       $t = [
         '@env' => "{$task->ref->hosting_group}.{$task->ref->hosting_environment}"
       ];
-      
+
       if ($status == HOSTING_TASK_PROCESSING) {
         $params->state = $state = 'INPROGRESS';
         $params->name = t('DevShop Deploy to @env: In Progress', $t);
@@ -63,13 +63,13 @@ function devshop_bitbucket_hosting_task_update_status($task, $status) {
       $params->key = "deploy.{$task->ref->hosting_group}.{$task->ref->hosting_environment}";
       $params->url = $task->ref->url;
       $params->description = url("node/$task->nid", ['absolute' => true]);
-      
+
       $build_status = $client->repositories()->workspaces($environment->bitbucket_owner)->commit($environment->bitbucket_repo)->statuses($sha)->build()->create((array) $params);
-      
+
       if (!empty($build_status)) {
         drush_log("Build status: " . print_r($build_status,1), 'debug');
       }
-      
+
     } catch (\Exception $e) {
       return drush_set_error(DRUSH_APPLICATION_ERROR, 'bitbucket API Error: ' . $e->getMessage());
     }
