@@ -508,7 +508,7 @@ function devshop_projects_update_7102() {
  */
 function devshop_projects_update_7103() {
   variable_set('hosting_queue_tasks_enabled', true);
-  variable_set('hosting_queue_tasks_items', 15);
+  variable_set('hosting_queue_tasks_items', 5);
 }
 
 /**
@@ -525,3 +525,12 @@ function devshop_projects_update_7105() {
     module_disable(['devshop_testing', 'devshop_dothooks']);
     drupal_uninstall_modules(['devshop_testing', 'devshop_dothooks']);
 }
+
+/**
+ * Set the task limit a little lower.
+ */
+function devshop_projects_update_7106()
+{
+  variable_set('hosting_queue_tasks_items', 5);
+}
+
