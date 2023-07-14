@@ -273,7 +273,7 @@ class RoboFile extends \Robo\Tasks {
     // Define docker-image (name for the "image" in docker-compose)
     // Set FROM_IMAGE and DEVSHOP_DOCKER_IMAGE if --os option is used. (and --from was not used)
     if ($opts['scratch']) {
-      $opts['from'] = "ubuntu:20.04";
+      $opts['from'] = "devshop/server:latest";
     }
 
     if ($opts['os'] !== NULL) {
@@ -408,7 +408,7 @@ class RoboFile extends \Robo\Tasks {
     'docker-image' => 'devshop/server:latest',
     // The OS "slug" to use instead of devshop/server:ubuntu1804. If specified, "docker-image" option will be ignored.
     'os' => NULL,
-    'from' => 'ubuntu:22.04',
+    'from' => 'devshop/server:latest',
     'vars' => '',
     'tags' => 'runtime',
     'skip-tags' => '',
@@ -435,6 +435,52 @@ class RoboFile extends \Robo\Tasks {
     } catch (\Exception $e) {
       $this->io()->error("No upstream configured for branch '$branch'. Please set one with the command 'git branch --track $branch' or 'git push -u origin $branch'");
       exit(1);
+    }
+
+    // Offer to set git URLs to SSH so developers can push.
+    if ($opts['no-dev'] == FALSE) {
+      foreach ($this->writeRepos as $repo_path => $repo_branch) {
+        $path = realpath($repo_path);
+        if (file_exists($path . '/.git')) {
+          $repo = GitRepository::open($path);
+          if ($this->io()->isVerbose()){
+            $this->say($repo->getRepositoryPath());
+          }
+          $url = $repo->getCurrentRemoteUrl();
+          if (strpos($url, 'drupal') !== FALSE) {
+            $parts = explode('/', $repo->getCurrentRemoteUrl());
+            $project = array_pop($parts);
+            $push_url = "git@git.drupal.org:project/$project";
+          }
+          else {
+            
+            if ($repo->isCurrentRemoteHttp()) {
+              [$pre, $slug] = explode('.com/', $repo->getCurrentRemoteUrl());
+              $push_url = "git@github.com:$slug";  
+            }
+            else {
+              $push_url = $repo->getCurrentRemoteUrl();
+            }
+          }
+          if ($repo->isDetached()) {
+            if ($branch == $this->io()->ask("<comment>$path</comment> git repo is detached. Would you like to check out a different branch?", $repo_branch)) {
+              $repo->callGit('checkout', $repo_branch);
+            }
+          }
+           
+          if ($repo->isCurrentRemoteHttp()){
+            if ($this->io()->confirm("<comment>$path</comment> is using an HTTP remote. Would you like to change it to use $push_url?")) {
+              $repo->callGit('remote', ['set-url', $repo->getCurrentRemoteName(), $push_url]);
+            }
+          }
+          else {
+            $this->io()->text("<comment>$path</comment> remote is SSH: <comment>{$repo->getCurrentRemoteUrl()}</comment>");
+          }
+        }
+        else {
+          $this->io()->text("Path $repo_path does not exist. Might need to wait for composer install.");
+        }
+      }
     }
 
     // Override the DEVSHOP_DOCKER_COMMAND_RUN if specified.
@@ -705,6 +751,12 @@ class RoboFile extends \Robo\Tasks {
       $this->say("The aegir-home directory was retained. It will be  present when 'robo up' is run again.");
     }
 
+    // Uninstall composer vendor code?
+    if (!$this->input()->isInteractive() || $this->confirm("Composer uninstall DevShop Control?", false)) {
+      $this->taskExec("composer uninstall")
+        ->dir("src/DevShop/Control")
+        ->run();
+    }
   }
 
   /**

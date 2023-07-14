@@ -43,7 +43,7 @@ SCRIPT_DEVSHOP_VERSION_REF="${LOAD_SCRIPT_DEVSHOP_VERSION_REF}"
 # The version and git repo to install.
 # Default to 1.x if $SCRIPT_DEVSHOP_VERSION is empty.
 # Used as the `devshop_version` ansible variable, which will change the checked out version.
-DEVSHOP_VERSION="${SCRIPT_DEVSHOP_VERSION_REF}"
+DEVSHOP_VERSION="${SCRIPT_DEVSHOP_VERSION_REF:-1.x}"
 DEVSHOP_SOURCE="${LOAD_DEVSHOP_SOURCE:-http://github.com/opendevshop/devshop.git}"
 
 # Version of Ansible to install
@@ -66,9 +66,6 @@ while [ $# -gt 0 ]; do
     case "$1" in
         --hostname=*)
             HOSTNAME_FQDN="${1#*=}"
-            ;;
-        --version=*)
-            DEVSHOP_VERSION="${1#*=}"
             ;;
         --install-path=*)
             DEVSHOP_INSTALL_PATH="${1#*=}"
@@ -109,8 +106,6 @@ while [ $# -gt 0 ]; do
     esac
     shift $(( $# > 0 ? 1 : 0 ))
 done
-
-DEVSHOP_VERSION=${DEVSHOP_VERSION:-1.x}
 
 # Initial Ansible Variables
 # Generate host specific vars to be injected into inventory.
@@ -231,38 +226,6 @@ get_distribution_version() {
   echo "$dist_version"
 }
 
-# From https://github.com/geerlingguy/docker-ubuntu2204-ansible/blob/master/Dockerfile
-prepare_ubuntu2204() {
-  PYTHON_DEFAULT=/usr/bin/python3
-  DEBIAN_FRONTEND=noninteractive
-  pip_packages="ansible"
-
-  apt-get update \
-    && apt-get install -y --no-install-recommends \
-       apt-utils \
-       build-essential \
-       git \
-       locales \
-       libffi-dev \
-       libssl-dev \
-       libyaml-dev \
-       python3-dev \
-       python3-setuptools \
-       python3-pip \
-       python3-yaml \
-       python-is-python3 \
-       software-properties-common \
-       rsyslog systemd systemd-cron sudo iproute2 \
-    && apt-get clean \
-    && rm -Rf /var/lib/apt/lists/* \
-    && rm -Rf /usr/share/doc && rm -Rf /usr/share/man
-
-  # Set Python3 to be the default (allow users to call "python" and "pip" instead of "python3" "pip3"
-  update-alternatives --install /usr/bin/python python /usr/bin/python3 1
-
-  pip3 install $pip_packages
-}
-
 # From https://github.com/geerlingguy/docker-ubuntu2004-ansible/blob/master/Dockerfile
 prepare_ubuntu2004() {
   PYTHON_DEFAULT=/usr/bin/python3
@@ -337,9 +300,9 @@ prepare_centos7() {
 
 ansible_prepare_server() {
   ANSIBLE_HOME=$(dirname "$ANSIBLE_DEFAULT_HOST_LIST")
-  if [[ ! -d "$ANSIBLE_HOME/host_vars/$HOSTNAME_FQDN" ]]; then
+  if [[ ! -d "$ANSIBLE_HOME" ]]; then
     echo "No ansible home directory found at $ANSIBLE_HOME. Preparing..."
-    mkdir --parent "$ANSIBLE_HOME/host_vars/$HOSTNAME_FQDN"
+    mkdir --parent "$ANSIBLE_HOME"
   fi
   if [[ ! -f "$ANSIBLE_DEFAULT_HOST_LIST" ]]; then
     echo "No ansible inventory found at $ANSIBLE_DEFAULT_HOST_LIST. Preparing inventory..."
@@ -364,12 +327,11 @@ ansible_prepare_server_inventory() {
 devshop_server:
   hosts:
     $HOSTNAME_FQDN:
-    " > $ANSIBLE_DEFAULT_HOST_LIST
+  vars:" > $ANSIBLE_DEFAULT_HOST_LIST
 
   # Write all extra vars to the file.
-  ANSIBLE_DEFAULT_HOST_VARS_FILE="/etc/ansible/host_vars/{$HOSTNAME_FQDN}"
   for i in ${ANSIBLE_EXTRA_VARS[@]}; do
-      echo -e "$i" >> $ANSIBLE_DEFAULT_HOST_VARS_FILE
+      echo -e "    $i" >> $ANSIBLE_DEFAULT_HOST_LIST
   done
   echo $LINE
   echo "Wrote static inventory to $ANSIBLE_DEFAULT_HOST_LIST:";
@@ -511,9 +473,6 @@ echo $LINE
 echo " Installing prerequisites (ansible, git etc)..."
 
 case "$lsb_dist $dist_version" in
-  "ubuntu 22.04")
-    prepare_ubuntu2204 > /dev/null
-  ;;
   "ubuntu 20.04")
     prepare_ubuntu2004 > /dev/null
   ;;
@@ -609,7 +568,7 @@ ansible_prepare_server
 
 # Run the playbook.
 echo $LINE
-echo " Installing with devshop-ansible-playbook..."
+echo " Installing with Ansible..."
 echo $LINE
 
 # If ansible playbook fails syntax check, report it and exit.

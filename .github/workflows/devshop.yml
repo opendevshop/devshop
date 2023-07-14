@@ -46,14 +46,8 @@ jobs:
 #          - Build
           - Test
         os:
-          # I don't know why. Ubuntu18 is the only one that will build without
-          #  "Ensure MySQL is stopped after initial install....
-          #   localhost failed | msg: Service is in unknown state"
-
-          # But now, ubuntu1804 is no longer supported, so PHP packages for it NO LONGER EXIST :O
-#          - 'ubuntu1804'
-#          - 'ubuntu2004'
-          - 'ubuntu2204'
+#           - 'ubuntu1804'
+          - 'ubuntu2004'
     env:
       OS: "${{ matrix.os }}"
       #DEVSHOP_DOCKER_IMAGE:  "devshop/server:php${{ matrix.php }}"
@@ -101,18 +95,7 @@ jobs:
           echo "GIT_REF=${{ github.head_ref }}" >> $GITHUB_ENV
           git switch --create ${{ github.head_ref }}
           chmod 777 ./.github/test-artifacts
-
-      # I have no idea if this is going to work. Can't get it working locally, syntax error. Maybe catting it here will give me the right file contents?
-      # See: https://github.com/geerlingguy/ansible-role-mysql/issues/422
-      - name: Disable AppArmor on Debian.
-        run: |
-          set -x
-          sudo apt-get install apparmor-profiles
-          sudo ln -s /etc/apparmor.d/usr.sbin.mysqld /etc/apparmor.d/disable/
-          sudo cat /etc/apparmor.d/usr.sbin.mysqld
-          sudo apparmor_parser -R /etc/apparmor.d/usr.sbin.mysqld
-        # if: ${{ startsWith(matrix.distro, 'debian') }}
-
+      
       - name: "vars.ci.yml"
         run: cat vars.ci.yml
         
