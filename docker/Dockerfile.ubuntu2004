@@ -1,44 +1,39 @@
 #
 # DevShop Role Container Dockerfile Template
 #
-FROM ubuntu:20.04
+ARG DEVSHOP_CONTAINER_FROM=ubuntu:20.04
+FROM $DEVSHOP_CONTAINER_FROM
+ARG DEVSHOP_CONTAINER_FROM
+
 LABEL maintainer="Jon Pugh"
+RUN echo "Building container from Dockerfile.ubuntu2004, from $DEVSHOP_CONTAINER_FROM ..."
 
 ARG DEBIAN_FRONTEND=noninteractive
 
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-       apt-utils \
-       build-essential \
-       locales \
-       software-properties-common \
-       rsyslog systemd systemd-cron sudo iproute2 \
-    && apt-get clean \
-    && rm -Rf /var/lib/apt/lists/* \
-    && rm -Rf /usr/share/doc && rm -Rf /usr/share/man
+# Fix for https://github.com/pypa/pip/issues/10219
+ARG LANG="en_US.UTF-8"
+ARG LC_ALL="en_US.UTF-8"
 
-# Fix potential UTF-8 errors with ansible-test.
-RUN locale-gen en_US.UTF-8
+# For "run-quiet".
+ENV OUTPUT all
 
-RUN sed -i 's/^\($ModLoad imklog\)/#\1/' /etc/rsyslog.conf
-
-COPY ./docker/initctl_faker .
-RUN chmod +x initctl_faker && rm -fr /sbin/initctl && ln -s /initctl_faker /sbin/initctl
-
-# Remove unnecessary getty and udev targets that result in high CPU usage when using
-# multiple containers with Molecule (https://github.com/ansible/molecule/issues/1104)
-RUN rm -f /lib/systemd/system/systemd*udev* \
-  && rm -f /lib/systemd/system/getty.target
-
-CMD ["/lib/systemd/systemd"]
-
-COPY ./ /usr/share/devshop
-
-# Install Ansible inventory file.
-RUN mkdir -p /etc/ansible
-RUN echo "[devshop_server]\nlocalhost ansible_connection=local" > /etc/ansible/hosts
-
+# Copy devshop source to DEVSHOP_PATH.
 ENV DEVSHOP_PATH /usr/share/devshop
+ENV PATH="${DEVSHOP_PATH}/bin:${DEVSHOP_PATH}/scripts:${PATH}"
+
+# Prepare server for services and ansible.
+RUN echo "Running docker-systemd-prepare to install ansible and prepare container for services ...\n"
+ENV DEVSHOP_ANSIBLE_PATH /etc/ansible
+
+# Tell devshop-ansible-playbook what playbookfile to use.
+ENV ANSIBLE_PLAYBOOK $DEVSHOP_PATH/roles/devshop.server/play.yml
+ENV ANSIBLE_CONFIG $DEVSHOP_PATH/ansible.cfg
+
+# Options passed to ansible-playbook during docker build.ENV DEVSHOP_ANSIBLE_BUILDTIME_OPTIONS "-vv --skip-tags runtime"
+ENV DEVSHOP_ANSIBLE_BUILDTIME_OPTIONS ""
+
+# Options passed to ansible-playbook during docker run or exec.
+ENV DEVSHOP_ANSIBLE_RUNTIME_OPTIONS ""
 
 # The command to run on container build
 ENV DEFAULT_DEVSHOP_DOCKER_COMMAND_BUILD $DEVSHOP_PATH/scripts/devshop-ansible-playbook \
@@ -54,6 +49,57 @@ ENV DEFAULT_DEVSHOP_DOCKER_COMMAND_RUN $DEVSHOP_PATH/scripts/devshop-ansible-pla
 # Set DEVSHOP_DOCKER_COMMAND_RUN from the Default so we can unset it later.
 ENV DEVSHOP_DOCKER_COMMAND_RUN $DEFAULT_DEVSHOP_DOCKER_COMMAND_RUN
 
-WORKDIR $DEVSHOP_PATH
+# Run ansible-playbook again with build-time options.
+ARG ANSIBLE_TAGS_ARG
+ENV ANSIBLE_TAGS ${ANSIBLE_TAGS_ARG:-buildtime}
 
-RUN /usr/share/devshop/install/devshop-install-prerequisites.sh
+# Run ansible-playbook again with build-time options.
+ARG ANSIBLE_EXTRA_VARS_ARG
+ENV ANSIBLE_EXTRA_VARS ${ANSIBLE_EXTRA_VARS_ARG}
+
+# Run ansible-playbook again with build-time options.
+ARG ANSIBLE_PLAYBOOK_COMMAND_OPTIONS_ARG
+ENV ANSIBLE_PLAYBOOK_COMMAND_OPTIONS ${ANSIBLE_PLAYBOOK_COMMAND_OPTIONS_ARG:-$ANSIBLE_PLAYBOOK_COMMAND_OPTIONS}
+
+ARG DEVSHOP_DOCKER_COMMAND_BUILD_ARG
+ENV DEVSHOP_DOCKER_COMMAND_BUILD ${DEVSHOP_DOCKER_COMMAND_BUILD_ARG:-$DEVSHOP_DOCKER_COMMAND_BUILD}
+
+RUN rm -rf $DEVSHOP_PATH
+COPY ./ $DEVSHOP_PATH
+RUN echo "Copied DevShop Source into container."
+
+ENV OUTPUT err
+
+# Replace ansible inventory with symlink to devshop.server inventory.
+RUN mkdir -p ${DEVSHOP_ANSIBLE_PATH}
+RUN rm -rf ${DEVSHOP_ANSIBLE_PATH}/hosts && ln -s ${DEVSHOP_PATH}/roles/devshop.server/inventory ${DEVSHOP_ANSIBLE_PATH}/hosts
+
+RUN ${DEVSHOP_PATH}/scripts/run-quiet ${DEVSHOP_PATH}/docker/bin/docker-systemd-prepare
+RUN ${DEVSHOP_PATH}/scripts/run-quiet ${DEVSHOP_PATH}/install/devshop-install-prerequisites.sh
+
+RUN echo "Running $DEVSHOP_ANSIBLE_INVENTORY_INFO_COMMAND ...\n" && \
+  $DEVSHOP_ANSIBLE_INVENTORY_INFO_COMMAND
+
+RUN \
+  echo "Ansible Directory: `ls -la ${DEVSHOP_ANSIBLE_PATH}`" &&\
+  echo "Ansible Inventory: `cat ${DEVSHOP_ANSIBLE_PATH}/hosts`" &&\
+  echo "Ansible Inventory: `ansible-inventory --yaml --list`" &&\
+  echo "Ansible Playbook: `cat ${ANSIBLE_PLAYBOOK}`" &&\
+  echo "Environment: `env`"
+
+
+# Run the docker build command.
+RUN echo "Running $DEVSHOP_DOCKER_COMMAND_BUILD ...\n" && \
+  $DEVSHOP_DOCKER_COMMAND_BUILD
+
+# Set ANSIBLE_TAGS back to runtime so the new container uses it.
+ENV ANSIBLE_TAGS=runtime
+
+# VOLUME ["/sys/fs/cgroup", "/tmp", "/run"]
+
+WORKDIR /var/aegir
+
+ENV INIT_COMMAND /lib/systemd/systemd
+ENTRYPOINT [/usr/share/devshop/docker/bin/docker-systemd-entrypoint]
+
+RUN devshop-logo 'DevShop Server build finished.'

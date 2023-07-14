@@ -7,7 +7,6 @@
     dest: "{{ apache_conf_path }}/conf-enabled/{{ aegir_user_name }}.conf"
     state: link
     force: true
-  tags: service
 
 - name: Set version of PHP CLI to {{ php_version }} [variable 'php_version']
   command: "update-alternatives --set php /usr/bin/php{{ php_version }}"
@@ -18,7 +17,6 @@
     state: absent
   with_items: "{{ apache_mods_disabled }}"
   notify: restart apache
-  tags: service
 
 - name: Enable Apache mods.
   file:
@@ -27,4 +25,3 @@
     state: link
   with_items: "{{ apache_mods_enabled }}"
   notify: restart apache
-  tags: service

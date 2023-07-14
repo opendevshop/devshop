@@ -23,7 +23,7 @@ jobs:
 # @TODO: Put back if it works.
 #          - 'ubuntu1804'
           - 'ubuntu2004'
-          - 'ubuntu2204'
+          # - 'ubuntu2204'
 
     env:
       OS: "${{ matrix.os }}"

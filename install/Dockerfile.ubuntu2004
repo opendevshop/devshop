@@ -1,7 +1,7 @@
 #
 # DevShop Role Container Dockerfile Template
 #
-FROM ubuntu:22.04
+FROM ubuntu:20.04
 LABEL maintainer="Jon Pugh"
 
 ARG DEBIAN_FRONTEND=noninteractive
