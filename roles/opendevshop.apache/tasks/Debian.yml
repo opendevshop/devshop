@@ -7,4 +7,3 @@
     install_recommends: "{{ php_install_recommends }}"
   register: php_package_install
   notify: restart webserver
-  tags: service
