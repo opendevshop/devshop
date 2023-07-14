@@ -66,11 +66,7 @@ function devshop_projects_post_hosting_delete_task($task, $data) {
     foreach ($project->environments as $environment) {
       // If site exists, trigger deletion.
       if ($environment->site) {
-        hosting_add_task($environment->site, 'delete');
-      }
-      // If platform exists, trigger deletion.
-      elseif ($environment->platform) {
-        hosting_add_task($environment->platform, 'delete', array('force' => 1));
+        hosting_add_task($environment->site, 'delete', array('force' => 1));
       }
     }
 
@@ -128,10 +124,6 @@ function devshop_projects_post_hosting_devshop_deploy_task($task, $data) {
 //  else {
 //    return drush_set_error('[DEVSHOP] Environment update failed! Unable to save git ref to hosting_devshop_project_environment table.');
 //  }
-
-  // Queue up a verification of the platform.
-  // @TODO: Find a way to pass github_deployment to this task too.
-  hosting_add_task($task->ref->environment->platform, 'verify');
 
   // Queue up a verification of the site.
   // @TODO: Find a way to pass github_deployment to this task too.

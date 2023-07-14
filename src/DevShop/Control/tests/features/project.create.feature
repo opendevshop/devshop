@@ -8,6 +8,7 @@ Feature: Create a project and check settings
 
     Given I am logged in as a user with the "administrator" role
     And I am on the homepage
+    When I click "Tasks"
     When I click "Projects"
     And I click "Start a new Project"
     Then I should see "Step 1"

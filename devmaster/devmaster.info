@@ -10,6 +10,7 @@ dependencies[] = node
 dependencies[] = system
 dependencies[] = user
 dependencies[] = update
+dependencies[] = dblog
 
 ; Aegir core
 dependencies[] = hosting

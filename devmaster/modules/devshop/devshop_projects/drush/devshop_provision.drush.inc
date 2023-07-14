@@ -95,13 +95,15 @@ function devshop_provision_pre_flight($platform_name = NULL){
 function devshop_provision_provision_drupal_config($uri, $data, $config = NULL) {
 
   $environment = d()->hosting_environment;
-  $project = d()->project;
+  $project = d()->hosting_group;
+  $site_uri = d()->uri;
 
   return <<<PHP
 
   # This site's devshop project name and environment name.
-  \$_SERVER['DEVSHOP_ENVIRONMENT'] = '{$environment}';
-  \$_SERVER['DEVSHOP_PROJECT'] = '{$project}';
+  putenv('DEVSHOP_ENVIRONMENT={$environment}');
+  putenv('DEVSHOP_PROJECT={$project})';
+  putenv('DEVSHOP_URI={$site_uri})';
 
   # Include devshop environment configuration settings, if there is any.
   if (file_exists(__DIR__ . '/../all/settings.devshop.php')) {
