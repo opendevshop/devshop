@@ -1636,11 +1636,6 @@ function devshop_github_webhook($project_node) {
                 hosting_add_task($project->environments[$environment_name]->site, 'delete', array('force' => 1));
                 $message .= "Environment $environment_name (Site Node: {$project->environments[$environment_name]->site}) scheduled for deletion.";
               }
-              // If environment has a platform... trigger it's deletion.
-              elseif ($project->environments[$environment_name]->platform) {
-                hosting_add_task($project->environments[$environment_name]->platform, 'delete');
-                $message .= "Environment $environment_name (Platform Node: {$project->environments[$environment_name]->platform}) scheduled for deletion.";
-              }
             }
           }
         }
