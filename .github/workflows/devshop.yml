@@ -119,6 +119,10 @@ jobs:
           docker-compose logs
           docker-compose exec -T devshop.server /usr/share/devshop/scripts/devshop-logo "GitHub Actions Container populated with code. Running SHA ${GITHUB_PR_SHA}"
 
+      - name: "Git Status"
+        working-directory: docker
+        run: git status
+
       - name: "Review Container Environment"
         working-directory: docker
         run: |
