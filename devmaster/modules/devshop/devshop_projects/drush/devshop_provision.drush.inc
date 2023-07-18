@@ -102,8 +102,8 @@ function devshop_provision_provision_drupal_config($uri, $data, $config = NULL) 
 
   # This site's devshop project name and environment name.
   putenv('DEVSHOP_ENVIRONMENT={$environment}');
-  putenv('DEVSHOP_PROJECT={$project})';
-  putenv('DEVSHOP_URI={$site_uri})';
+  putenv('DEVSHOP_PROJECT={$project}');
+  putenv('DEVSHOP_URI={$site_uri}');
 
   # Include devshop environment configuration settings, if there is any.
   if (file_exists(__DIR__ . '/../all/settings.devshop.php')) {
