@@ -21,7 +21,6 @@
       - "ansible_nodename: {{ ansible_nodename }}"
       - "OS: {{ ansible_distribution }} {{ ansible_distribution_version }} / {{ ansible_os_family }}"
 
-
   vars_files:
     - ../../vars.yml
 
@@ -132,7 +131,6 @@
     # Always run everything. Tags inside the roles will limit tasks run.
     - role: opendevshop.devmaster
       tags: [always]
-
 
   post_tasks:
 
