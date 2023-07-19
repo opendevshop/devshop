@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b8767a470d1604771c1902902d57a319",
+    "content-hash": "952a797415b2850f766e57aa896a2ab6",
     "packages": [
         {
             "name": "behat/behat",
@@ -2665,7 +2665,7 @@
         },
         {
             "name": "drupal/hosting",
-            "version": "dev-4.x",
+            "version": "dev-docker-services",
             "source": {
                 "type": "git",
                 "url": "git@git.drupal.org:project/hosting.git",
