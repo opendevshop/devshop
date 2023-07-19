@@ -10,6 +10,19 @@
         }
     ],
     "repositories": {
+      "temporary-hosting-docker": {
+        "type": "package",
+        "package": {
+          "name": "drupal/hosting",
+          "version": "dev-docker-services",
+          "type": "drupal-module",
+          "source": {
+            "type": "git",
+            "url": "git@git.drupal.org:project/hosting.git",
+            "reference": "docker-services"
+          }
+        }
+      },
       "drupal": {
         "type": "composer",
         "url": "https://packages.drupal.org/7"
@@ -66,7 +79,7 @@
         "drupal/drupal-extension": "^4.2",
         "drupal/entity": "^1.9",
         "drupal/features": "^2.11",
-        "drupal/hosting": "dev-4.x",
+        "drupal/hosting": "dev-docker-services@dev",
         "drupal/hosting_filemanager": "dev-1.x",
         "drupal/hosting_logs": "^3.181",
         "drupal/hosting_site_backup_manager": "^3.180",
