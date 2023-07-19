@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "125a11ff355b8dd1099ce3b213c472c2",
+    "content-hash": "b8767a470d1604771c1902902d57a319",
     "packages": [
         {
             "name": "behat/behat",
@@ -2668,105 +2668,10 @@
             "version": "dev-4.x",
             "source": {
                 "type": "git",
-                "url": "https://git.drupalcode.org/project/hosting.git",
-                "reference": "e52f839cf3b7f57c3e339bc7473f34d6bc2ca392"
+                "url": "git@git.drupal.org:project/hosting.git",
+                "reference": "docker-services"
             },
-            "require": {
-                "drupal/drupal": "~7.0",
-                "drupal/views": "*",
-                "drupal/views_bulk_operations": "*",
-                "gitonomy/gitlib": "^1.3",
-                "sensiolabs/ansi-to-html": "^1.2"
-            },
-            "require-dev": {
-                "drupal/hosting-hosting_certificate": "*",
-                "drupal/hosting-hosting_https": "*",
-                "drupal/hosting_alias": "*",
-                "drupal/hosting_client": "*",
-                "drupal/hosting_migrate": "*",
-                "drupal/hosting_nginx": "*",
-                "drupal/hosting_server": "*",
-                "drupal/hosting_site": "*",
-                "drupal/hosting_ssl": "*",
-                "drupal/hosting_web_server": "*"
-            },
-            "bin": [
-                "bin/git-behind",
-                "bin/wait-for"
-            ],
-            "type": "drupal-module",
-            "extra": {
-                "branch-alias": {
-                    "dev-4.x": "4.x-dev"
-                },
-                "drupal": {
-                    "version": "7.x-4.0-beta5+8-dev",
-                    "datestamp": "1689351659",
-                    "security-coverage": {
-                        "status": "not-covered",
-                        "message": "Dev releases are not covered by Drupal security advisories."
-                    }
-                }
-            },
-            "notification-url": "https://packages.drupal.org/7/downloads",
-            "license": [
-                "GPL-2.0-or-later"
-            ],
-            "authors": [
-                {
-                    "name": "adrian",
-                    "homepage": "https://www.drupal.org/user/1337"
-                },
-                {
-                    "name": "anarcat",
-                    "homepage": "https://www.drupal.org/user/1274"
-                },
-                {
-                    "name": "bgm",
-                    "homepage": "https://www.drupal.org/user/89461"
-                },
-                {
-                    "name": "colan",
-                    "homepage": "https://www.drupal.org/user/58704"
-                },
-                {
-                    "name": "cweagans",
-                    "homepage": "https://www.drupal.org/user/404732"
-                },
-                {
-                    "name": "ergonlogic",
-                    "homepage": "https://www.drupal.org/user/368613"
-                },
-                {
-                    "name": "gboudrias",
-                    "homepage": "https://www.drupal.org/user/918342"
-                },
-                {
-                    "name": "helmo",
-                    "homepage": "https://www.drupal.org/user/449000"
-                },
-                {
-                    "name": "Jon Pugh",
-                    "homepage": "https://www.drupal.org/user/17028"
-                },
-                {
-                    "name": "memtkmcc",
-                    "homepage": "https://www.drupal.org/user/92646"
-                },
-                {
-                    "name": "omega8cc",
-                    "homepage": "https://www.drupal.org/user/539502"
-                },
-                {
-                    "name": "Steven Jones",
-                    "homepage": "https://www.drupal.org/user/99644"
-                }
-            ],
-            "description": "Allow this Drupal site to deploy hosted sites.",
-            "homepage": "https://www.drupal.org/project/hosting",
-            "support": {
-                "source": "https://git.drupalcode.org/project/hosting"
-            }
+            "type": "drupal-module"
         },
         {
             "name": "drupal/hosting_filemanager",
@@ -4539,81 +4444,6 @@
                 "source": "https://github.com/FriendsOfBehat/MinkExtension/tree/v2.7.2"
             },
             "time": "2022-10-17T07:23:22+00:00"
-        },
-        {
-            "name": "gitonomy/gitlib",
-            "version": "v1.3.8",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/gitonomy/gitlib.git",
-                "reference": "9fea656e75ad6e3452feb2cac46a6c1239cd7f74"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/gitonomy/gitlib/zipball/9fea656e75ad6e3452feb2cac46a6c1239cd7f74",
-                "reference": "9fea656e75ad6e3452feb2cac46a6c1239cd7f74",
-                "shasum": ""
-            },
-            "require": {
-                "ext-pcre": "*",
-                "php": "^5.6 || ^7.0 || ^8.0",
-                "symfony/polyfill-mbstring": "^1.7",
-                "symfony/process": "^3.4 || ^4.4 || ^5.0 || ^6.0"
-            },
-            "require-dev": {
-                "ext-fileinfo": "*",
-                "phpspec/prophecy": "^1.10.2",
-                "phpunit/phpunit": "^5.7.27 || ^6.5.14 || ^7.5.20 || ^8.5.20 || ^9.5.9",
-                "psr/log": "^1.0"
-            },
-            "suggest": {
-                "ext-fileinfo": "Required to determine the mimetype of a blob",
-                "psr/log": "Required to use loggers for reporting of execution"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Gitonomy\\Git\\": "src/Gitonomy/Git/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Graham Campbell",
-                    "email": "hello@gjcampbell.co.uk",
-                    "homepage": "https://github.com/GrahamCampbell"
-                },
-                {
-                    "name": "Julien Didier",
-                    "email": "genzo.wm@gmail.com",
-                    "homepage": "https://github.com/juliendidier"
-                },
-                {
-                    "name": "Grégoire Pineau",
-                    "email": "lyrixx@lyrixx.info",
-                    "homepage": "https://github.com/lyrixx"
-                },
-                {
-                    "name": "Alexandre Salomé",
-                    "email": "alexandre.salome@gmail.com",
-                    "homepage": "https://github.com/alexandresalome"
-                }
-            ],
-            "description": "Library for accessing git",
-            "support": {
-                "issues": "https://github.com/gitonomy/gitlib/issues",
-                "source": "https://github.com/gitonomy/gitlib/tree/v1.3.8"
-            },
-            "funding": [
-                {
-                    "url": "https://tidelift.com/funding/github/packagist/gitonomy/gitlib",
-                    "type": "tidelift"
-                }
-            ],
-            "time": "2023-05-11T08:29:06+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",

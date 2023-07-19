@@ -10,6 +10,19 @@
         }
     ],
     "repositories": {
+      "temporary-hosting-docker": {
+        "type": "package",
+        "package": {
+          "name": "drupal/hosting",
+          "version": "dev-4.x",
+          "type": "drupal-module",
+          "source": {
+            "type": "git",
+            "url": "git@git.drupal.org:project/hosting.git",
+            "reference": "docker-services"
+          }
+        }
+      },
       "drupal": {
         "type": "composer",
         "url": "https://packages.drupal.org/7"
