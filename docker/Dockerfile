@@ -1,12 +1,12 @@
 #
 # DevShop Role Container Dockerfile Template
 #
-ARG DEVSHOP_CONTAINER_FROM=ubuntu:18.04
+ARG DEVSHOP_CONTAINER_FROM=ubuntu:22.04
 FROM $DEVSHOP_CONTAINER_FROM
 ARG DEVSHOP_CONTAINER_FROM
 
 LABEL maintainer="Jon Pugh"
-RUN echo "Building container from Dockerfile.ubuntu1804, from $DEVSHOP_CONTAINER_FROM ..."
+RUN echo "Building container from Dockerfile, from $DEVSHOP_CONTAINER_FROM ..."
 
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -19,11 +19,22 @@ ENV OUTPUT all
 
 # Copy devshop source to DEVSHOP_PATH.
 ENV DEVSHOP_PATH /usr/share/devshop
+ENV DEVSHOP_ANSIBLE_PATH /etc/ansible
+
 ENV PATH="${DEVSHOP_PATH}/bin:${DEVSHOP_PATH}/scripts:${PATH}"
 
-# Prepare server for services and ansible.
-RUN echo "Running docker-systemd-prepare to install ansible and prepare container for services ...\n"
-ENV DEVSHOP_ANSIBLE_PATH /etc/ansible
+RUN rm -rf $DEVSHOP_PATH
+COPY ./ $DEVSHOP_PATH
+RUN echo "Copied DevShop Source into container."
+
+ENV OUTPUT all
+
+# Replace ansible inventory with symlink to devshop.server inventory.
+RUN mkdir -p ${DEVSHOP_ANSIBLE_PATH}
+RUN rm -rf ${DEVSHOP_ANSIBLE_PATH}/hosts && ln -s ${DEVSHOP_PATH}/roles/devshop.server/inventory ${DEVSHOP_ANSIBLE_PATH}/hosts
+
+RUN ${DEVSHOP_PATH}/scripts/run-quiet ${DEVSHOP_PATH}/docker/bin/docker-systemd-prepare
+RUN ${DEVSHOP_PATH}/scripts/run-quiet ${DEVSHOP_PATH}/install/devshop-install-prerequisites.sh
 
 # Tell devshop-ansible-playbook what playbookfile to use.
 ENV ANSIBLE_PLAYBOOK $DEVSHOP_PATH/roles/devshop.server/play.yml
@@ -63,19 +74,6 @@ ENV ANSIBLE_PLAYBOOK_COMMAND_OPTIONS ${ANSIBLE_PLAYBOOK_COMMAND_OPTIONS_ARG:-$AN
 
 ARG DEVSHOP_DOCKER_COMMAND_BUILD_ARG
 ENV DEVSHOP_DOCKER_COMMAND_BUILD ${DEVSHOP_DOCKER_COMMAND_BUILD_ARG:-$DEVSHOP_DOCKER_COMMAND_BUILD}
-
-RUN rm -rf $DEVSHOP_PATH
-COPY ./ $DEVSHOP_PATH
-RUN echo "Copied DevShop Source into container."
-
-ENV OUTPUT err
-
-# Replace ansible inventory with symlink to devshop.server inventory.
-RUN mkdir -p ${DEVSHOP_ANSIBLE_PATH}
-RUN rm -rf ${DEVSHOP_ANSIBLE_PATH}/hosts && ln -s ${DEVSHOP_PATH}/roles/devshop.server/inventory ${DEVSHOP_ANSIBLE_PATH}/hosts
-
-RUN ${DEVSHOP_PATH}/scripts/run-quiet ${DEVSHOP_PATH}/docker/bin/docker-systemd-prepare
-RUN ${DEVSHOP_PATH}/scripts/run-quiet ${DEVSHOP_PATH}/install/devshop-install-prerequisites.sh
 
 RUN echo "Running $DEVSHOP_ANSIBLE_INVENTORY_INFO_COMMAND ...\n" && \
   $DEVSHOP_ANSIBLE_INVENTORY_INFO_COMMAND

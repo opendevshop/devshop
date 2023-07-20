@@ -8,7 +8,7 @@ services:
     # Builds Break. We must upgrade to ubuntu 20
     build:
       context: ".."
-      dockerfile: "docker/Dockerfile.${OS:-ubuntu2004}"
+      dockerfile: "docker/Dockerfile"
       args:
         # see .env files for defaults.
         - DEVSHOP_CONTAINER_FROM
