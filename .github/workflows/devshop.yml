@@ -43,7 +43,7 @@ jobs:
           - '8.0'
 #          - '8.1'
         action:
-#          - Build
+          - Build
           - Test
         os:
 #           - 'ubuntu1804'
