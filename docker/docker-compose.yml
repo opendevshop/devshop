@@ -4,17 +4,18 @@ version: '3'
 services:
   devshop.server:
     image: ${DEVSHOP_DOCKER_IMAGE:-devshop/server:php8.1}
-# Builds Break. We must upgrade to ubuntu 20
-#    build:
-#      context: ".."
-#      dockerfile: "docker/Dockerfile.${OS:-ubuntu2004}"
-#      args:
-#        # see .env files for defaults.
-#        - DEVSHOP_CONTAINER_FROM
-#        - DEVSHOP_DOCKER_COMMAND_BUILD_ARG
-#        - ANSIBLE_EXTRA_VARS_ARG
-#        - ANSIBLE_TAGS_ARG
-#        - ANSIBLE_PLAYBOOK_COMMAND_OPTIONS_ARG
+
+    # Builds Break. We must upgrade to ubuntu 20
+    build:
+      context: ".."
+      dockerfile: "docker/Dockerfile.${OS:-ubuntu2004}"
+      args:
+        # see .env files for defaults.
+        - DEVSHOP_CONTAINER_FROM
+        - DEVSHOP_DOCKER_COMMAND_BUILD_ARG
+        - ANSIBLE_EXTRA_VARS_ARG
+        - ANSIBLE_TAGS_ARG
+        - ANSIBLE_PLAYBOOK_COMMAND_OPTIONS_ARG
     hostname: devshop.local.computer
     ports:
       - "80:80"
@@ -26,7 +27,6 @@ services:
     volumes:
       - /var/lib/mysql
       - /var/aegir
-      - /sys/fs/cgroup:/sys/fs/cgroup:rw
 
 #    volumes:
       # - /sys/fs/cgroup:/sys/fs/cgroup:ro
