@@ -23,6 +23,7 @@ services:
       - "33066:3306"
     privileged: true
     entrypoint: /usr/share/devshop/docker/bin/docker-systemd-entrypoint
+    cgroupns_mode: hostname
     volumes:
       - /var/lib/mysql
       - /var/aegir
