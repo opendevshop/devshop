@@ -48,7 +48,7 @@ jobs:
         os:
 #           - 'ubuntu1804'
           - 'ubuntu2004'
-#          - 'ubuntu2204'
+          - 'ubuntu2204'
     env:
       OS: "${{ matrix.os }}"
       #DEVSHOP_DOCKER_IMAGE:  "devshop/server:php${{ matrix.php }}"
