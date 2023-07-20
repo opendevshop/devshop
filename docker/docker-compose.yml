@@ -27,6 +27,7 @@ services:
     volumes:
       - /var/lib/mysql
       - /var/aegir
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
 
 #    volumes:
       # - /sys/fs/cgroup:/sys/fs/cgroup:ro
