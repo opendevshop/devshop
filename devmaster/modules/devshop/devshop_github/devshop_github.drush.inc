@@ -160,7 +160,7 @@ function devshop_github_hosting_task_update_status($task, $status) {
   $deployment_object = DevShopGitHubApi::deploy($environment, $state, $task_reloaded, $description, $sha, $task_url);
 
   if (!$deployment_object){
-    drush_log("@TODO: Unable to set new deployment status: $deployment_object Empty: [$task->nid] $state", 'warning');
+    return;
   }
 //
 //  // React only on certain task types and if project and environment exist.

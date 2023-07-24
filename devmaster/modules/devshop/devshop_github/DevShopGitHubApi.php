@@ -173,23 +173,24 @@ class DevShopGitHubApi {
     // @TODO: Generate a default description?
     $deployment_status->description = $description;
 
-    // @TODO: Use developer preview to get this:
-    // https://developer.github.com/v3/previews/#deployment-statuses
-    // https://developer.github.com/v3/previews/#enhanced-deployments
-    $deployment_status->environment = $deployment_object->environment;
-    $deployment_status->environment_url = $environment->url;
+    if (!empty($deployment_object)) {
+      // @TODO: Use developer preview to get this:
+      // https://developer.github.com/v3/previews/#deployment-statuses
+      // https://developer.github.com/v3/previews/#enhanced-deployments
+      $deployment_status->environment = $deployment_object->environment;
+      $deployment_status->environment_url = $environment->url;
 
-    // Create Deployment Status
-    try {
-      $post_url = "/repos/{$owner}/{$repo}/deployments/{$deployment_object->id}/statuses";
-      $deployment_status_data = json_decode($client->getHttpClient()->post($post_url, array(), json_encode($deployment_status))->getBody(TRUE));
+      // Create Deployment Status
+      try {
+        $post_url = "/repos/{$owner}/{$repo}/deployments/{$deployment_object->id}/statuses";
+        $deployment_status_data = json_decode($client->getHttpClient()->post($post_url, array(), json_encode($deployment_status))->getBody(TRUE));
 
-      watchdog('devshop_github', "Deployment status saved to $state: $deployment_status_data->id");
-      return $deployment_object;
-    }
-    catch (\Exception $e) {
-      watchdog('devshop_github', "Error sending Deployment Status to GitHub: {$e->getMessage()} | Code: {$e->getCode()} | Post URL: $post_url | {$e->getTraceAsString()}");
-      return false;
+        watchdog('devshop_github', "Deployment status saved to $state: $deployment_status_data->id");
+        return $deployment_object;
+      } catch (\Exception $e) {
+        watchdog('devshop_github', "Error sending Deployment Status to GitHub: {$e->getMessage()} | Code: {$e->getCode()} | Post URL: $post_url | {$e->getTraceAsString()}");
+        return false;
+      }
     }
   }
 
