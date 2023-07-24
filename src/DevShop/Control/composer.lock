@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "125a11ff355b8dd1099ce3b213c472c2",
+    "content-hash": "767ec4c603b60239a84502c096a03221",
     "packages": [
         {
             "name": "behat/behat",
@@ -3515,7 +3515,7 @@
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/provision.git",
-                "reference": "1a814ad703b14cc56faa9141d1303b1b44f6cb11"
+                "reference": "13a320a5d2fa204b42d33143d4646a41edaaf9c5"
             },
             "require": {
                 "devshop/git-traits": "1.x-dev",
@@ -3534,8 +3534,8 @@
                     "dev-4.x": "4.x-dev"
                 },
                 "drupal": {
-                    "version": "7.x-4.0-beta7+14-dev",
-                    "datestamp": "1689703915",
+                    "version": "7.x-4.0-beta7+19-dev",
+                    "datestamp": "1690206769",
                     "security-coverage": {
                         "status": "not-covered",
                         "message": "Dev releases are not covered by Drupal security advisories."
