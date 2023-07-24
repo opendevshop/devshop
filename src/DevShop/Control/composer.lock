@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5f607097426ead0384b8afb3ca617f1b",
+    "content-hash": "125a11ff355b8dd1099ce3b213c472c2",
     "packages": [
         {
             "name": "behat/behat",
@@ -2669,7 +2669,7 @@
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/hosting.git",
-                "reference": "891e53f1ca1357aea7e9c4f44c534539192c528b"
+                "reference": "e52f839cf3b7f57c3e339bc7473f34d6bc2ca392"
             },
             "require": {
                 "drupal/drupal": "~7.0",
@@ -2700,8 +2700,8 @@
                     "dev-4.x": "4.x-dev"
                 },
                 "drupal": {
-                    "version": "7.x-4.0-beta5+6-dev",
-                    "datestamp": "1689116853",
+                    "version": "7.x-4.0-beta5+8-dev",
+                    "datestamp": "1689351659",
                     "security-coverage": {
                         "status": "not-covered",
                         "message": "Dev releases are not covered by Drupal security advisories."
@@ -3515,7 +3515,7 @@
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/provision.git",
-                "reference": "12a46246284d73a5a93a1b19d0cfbf34bca2d430"
+                "reference": "1a814ad703b14cc56faa9141d1303b1b44f6cb11"
             },
             "require": {
                 "devshop/git-traits": "1.x-dev",
@@ -3534,8 +3534,8 @@
                     "dev-4.x": "4.x-dev"
                 },
                 "drupal": {
-                    "version": "7.x-4.0-beta7+6-dev",
-                    "datestamp": "1687989630",
+                    "version": "7.x-4.0-beta7+14-dev",
+                    "datestamp": "1689703915",
                     "security-coverage": {
                         "status": "not-covered",
                         "message": "Dev releases are not covered by Drupal security advisories."
@@ -3700,6 +3700,63 @@
             "homepage": "https://www.drupal.org/project/r4032login",
             "support": {
                 "source": "https://git.drupalcode.org/project/r4032login"
+            }
+        },
+        {
+            "name": "drupal/site_audit",
+            "version": "2.0.0-beta1",
+            "source": {
+                "type": "git",
+                "url": "https://git.drupalcode.org/project/site_audit.git",
+                "reference": "7.x-2.0-beta1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://ftp.drupal.org/files/projects/site_audit-7.x-2.0-beta1.zip",
+                "reference": "7.x-2.0-beta1",
+                "shasum": "bc33b6579cc74c879aad8347a9fdf9dab5ecbeea"
+            },
+            "require": {
+                "drupal/drupal": "~7.0"
+            },
+            "type": "drupal-module",
+            "extra": {
+                "drupal": {
+                    "version": "7.x-2.0-beta1",
+                    "datestamp": "1689637032",
+                    "security-coverage": {
+                        "status": "not-covered",
+                        "message": "Beta releases are not covered by Drupal security advisories."
+                    }
+                }
+            },
+            "notification-url": "https://packages.drupal.org/7/downloads",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "Site Audit Maintainers",
+                    "homepage": "https://git.drupalcode.org/project/site_audit/-/graphs/4.0.x"
+                },
+                {
+                    "name": "Jon Pugh",
+                    "homepage": "https://www.drupal.org/user/17028"
+                },
+                {
+                    "name": "jrglasgow",
+                    "homepage": "https://www.drupal.org/user/36590"
+                },
+                {
+                    "name": "leymannx",
+                    "homepage": "https://www.drupal.org/user/2482808"
+                }
+            ],
+            "description": "This extension provides Site Audit commands for The Drupal UI and Drush.",
+            "homepage": "https://www.drupal.org/project/site_audit",
+            "support": {
+                "source": "https://git.drupalcode.org/project/site_audit",
+                "issues": "https://www.drupal.org/project/issues/site_audit"
             }
         },
         {

@@ -570,8 +570,14 @@ class RoboFile extends \Robo\Tasks {
       // Process $extra vars into JSON for ENV var.
       $env_run['ANSIBLE_EXTRA_VARS'] = json_encode($extra_vars);
 
+      // Include an extra local vars file.
+      // Load Public SSH key from user to pass to devshop.remote authorized keys.
+      $vars_file_local = "aegir_user_authorized_keys: " . file_get_contents(getenv('HOME') . "/.ssh/id_rsa.pub");
+
+      file_put_contents('vars.local.yml', $vars_file_local);
+
       // Add vars.development.yml as final command line option.
-      $env_run['ANSIBLE_PLAYBOOK_COMMAND_OPTIONS'] = '--extra-vars=@/usr/share/devshop/vars.development.yml';
+      $env_run['ANSIBLE_PLAYBOOK_COMMAND_OPTIONS'] = '--extra-vars=@/usr/share/devshop/vars.development.yml --extra-vars=@/usr/share/devshop/vars.local.yml';
 
       // Override the DEVSHOP_DOCKER_COMMAND_RUN if specified.
       if (!empty($docker_command)) {
@@ -724,13 +730,13 @@ class RoboFile extends \Robo\Tasks {
   /**
    * Enter a bash shell in the devmaster container.
    */
-  public function shell($user = 'aegir') {
+  public function shell($user = 'aegir', $service = 'devshop.server') {
 
     if ($user) {
-        $process = new \Symfony\Component\Process\Process("docker-compose exec --user $user devshop.server bash");
+        $process = new \Symfony\Component\Process\Process("docker-compose exec --user $user $service bash");
     }
     else {
-        $process = new \Symfony\Component\Process\Process("docker-compose exec devshop.server bash");
+        $process = new \Symfony\Component\Process\Process("docker-compose exec $service bash");
     }
     $process->setTty(TRUE);
     $process->setTimeout(NULL);

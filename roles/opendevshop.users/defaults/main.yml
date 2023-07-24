@@ -8,8 +8,8 @@ aegir_user_force_set_uid: false
 
 aegir_user_name: aegir
 aegir_user_home: /var/aegir
+aegir_user_authorized_keys: ""
 aegir_user_home_chmod: 754
-aegir_user_authorized_keys: ReplaceAtRuntime
 aegir_logs_path: /var/log/aegir
 
 # Populated in prepare-user.yml

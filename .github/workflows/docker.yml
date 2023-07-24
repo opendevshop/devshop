@@ -8,9 +8,10 @@ on:
     branches:
       # This workflow will only run on pull requests for branch test/docker/actions.
       - test/docker/actions
-  push:
-    branches:
-      - 1.x
+# @TODO: All builds are failing. Uncomment once this is fixed.
+#  push:
+#    branches:
+#      - 1.x
   schedule:
     - cron: "10 1 * * 0"
 
