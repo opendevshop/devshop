@@ -766,6 +766,10 @@ function devshop_projects_form_site_node_form_alter(&$form, &$form_state, $form_
   // Add our own submit handler.
   $form['actions']['submit']['#submit'][] = 'devshop_projects_environment_settings_submit';
 
+  if (empty($node->nid)) {
+    unset($form['hosting_settings']['code']);
+  }
+
 }
 
 
