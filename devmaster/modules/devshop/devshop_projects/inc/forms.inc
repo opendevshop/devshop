@@ -1048,7 +1048,7 @@ function devshop_prepare_platform_node($project, $environment_name, $git_ref, $w
   }
 
   $platform_node->git_reference = $git_ref;
-  $platform_node->git_reset = isset($project->git_reset) ? $project->git_reset: 0;
+  $platform_node->git_reset = true;
 
   // Determine which web server to use.
   // If no web server was set and project has a default, make sure we set it.
