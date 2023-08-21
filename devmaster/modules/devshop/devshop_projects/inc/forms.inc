@@ -38,6 +38,7 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
       $site_form['hosting_settings'][$i]['#weight'] = 10;
     }
   }
+  unset($site_form['hosting_settings']['code']);
 
   $form['hosting_settings'] += $site_form['hosting_settings'];
 
@@ -384,6 +385,8 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
       '#weight' => 10,
       '#access' => drupal_valid_path('hosting_confirm/' . $project->nid . '/project_delete'),
     );
+
+
   }
 
   // Create Project Wizard
