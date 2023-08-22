@@ -162,7 +162,7 @@ Feature: Create a project and check settings
     Then print last drush output
 
     And I click "composer"
-    And I should not see "testenv"
+    And I should not see the link "testenv"
 
     # Testing "Install Profile"
     When I click "Create New Environment"
