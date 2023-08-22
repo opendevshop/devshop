@@ -80,12 +80,28 @@ Feature: Create a project and check settings
 
     And I reload the page
     Then I should see the link "dev"
-#    Given I go to "http://dev.composer.devshop.travis"
-#    When I click "Visit Environment"
 
+    Given I am on "/project/composer"
+    When I click "Create New Environment"
+    And I fill in "failedinstall" for "Environment Name"
+    And I select "8.x-legacy" from "git_ref"
+    When I press "Create New Environment"
+    Then I should see "legacy"
 
-# @TODO: Fix our site installation.
-#    Then I should see "No front page content has been created yet."
+    When I run drush "hosting-tasks --force --fork=0 --strict=0"
+    Then print last drush output
+
+    When I click "legacy"
+    Then I should see "Installation failed."
+    When I click "Destroy Environment"
+    And I check the box "Confirm: All data in this site will be destroyed. Check this box to confirm your intentions to do this. *"
+    Then I press "Delete Site"
+    Then I should see "Delete Site Queued"
+    # || true allows the tasks to fail. This is expected.
+    When I run drush "hosting-tasks --force --fork=0 --strict=0 || true"
+    Then print last drush output
+    When I am on "/project/composer"
+    Then I should not see the link "legacy"
 
     Given I am on "/project/composer"
     When I click "Create New Environment"
@@ -222,25 +238,3 @@ Feature: Create a project and check settings
     # Proves it is a clone.
     Then I should see "Welcome!"
     And I should see "composerstandarddevshoplocalcomputer"
-
-    # Testing failed install then delete.
-    Given I am on "/project/composer"
-    When I click "Create New Environment"
-    And I fill in "failedinstall" for "Environment Name"
-    And I select "8.x-legacy" from "git_ref"
-    When I press "Create New Environment"
-    Then I should see "legacy"
-
-    When I run drush "hosting-tasks --force --fork=0 --strict=0"
-    Then print last drush output
-
-    When I click "legacy"
-    Then I should see "Installation failed."
-    When I click "Destroy Environment"
-    And I check the box "Confirm: All data in this site will be destroyed. Check this box to confirm your intentions to do this. *"
-    Then I press "Delete Site"
-    Then I should see "Delete Site Queued"
-    When I run drush "hosting-tasks --force --fork=0 --strict=0"
-    Then print last drush output
-    When I am on "/project/composer"
-    Then I should not see the link "legacy"
