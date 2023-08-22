@@ -49,6 +49,11 @@ Feature: Create a project and check settings
     And I press "Add environment"
     And I fill in "live" for "project[environments][NEW][name]"
     And I select "9.x" from "project[environments][NEW][git_ref]"
+
+    And I press "Add environment"
+    And I fill in "legacy" for "project[environments][NEW][name]"
+    And I select "8.x-legacy" from "project[environments][NEW][git_ref]"
+
     And I press "Add environment"
     
     Then I press "Create Project & Environments"
@@ -82,9 +87,19 @@ Feature: Create a project and check settings
 #    Given I go to "http://dev.composer.devshop.travis"
 #    When I click "Visit Environment"
 
+    When I click "legacy"
+    Then I should see "Installation failed."
+    When I click "Destroy Environment"
+    And I check the box "Confirm: All data in this site will be destroyed. Check this box to confirm your intentions to do this. *"
+    Then I press "Delete Site"
+    Then I should see "Delete Site Queued"
+    When I run drush "hosting-tasks --force --fork=0 --strict=0"
+    Then print last drush output
+
 # @TODO: Fix our site installation.
 #    Then I should see "No front page content has been created yet."
 
+    Given I am on "/project/composer"
     When I click "Create New Environment"
     And I fill in "testenv" for "Environment Name"
     And I select "9.x" from "git_ref"
