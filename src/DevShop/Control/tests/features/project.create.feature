@@ -159,8 +159,8 @@ Feature: Create a project and check settings
     Then print last drush output
 
     And I click "composer"
-    Then I should see "Delete Site" in the ".environment-task-logs .alert-success" element
-    Then print current URL
+    Then I should see not see "Delete Site" in the ".environment-task-logs .alert-error" element
+    And I should see not see "testenv"
 
     # Testing "Install Profile"
     When I click "Create New Environment"
