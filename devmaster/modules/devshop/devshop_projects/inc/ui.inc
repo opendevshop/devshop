@@ -317,12 +317,13 @@ function devshop_environment_menu($environment) {
 
       // Trick hosting_task_menu_access_csrf() into seeing the token.
       $_GET['token'] = drupal_get_token($user->uid);
-      $output_items[] = <<<HTML
+      if (drupal_valid_path($href)) {
+        $output_items[] = <<<HTML
       <a href="$url">
             $icon $title
       </a>
 HTML;
-
+      }
     }
     else {
       $output_items[] = $item;
