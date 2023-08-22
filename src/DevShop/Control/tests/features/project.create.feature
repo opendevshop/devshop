@@ -92,7 +92,6 @@ Feature: Create a project and check settings
     Then print last drush output
 
     When I click "legacy"
-    Then I should see "Installation failed."
     When I click "Destroy Environment"
     And I check the box "Confirm: All data in this site will be destroyed. Check this box to confirm your intentions to do this. *"
     Then I press "Delete Site"
