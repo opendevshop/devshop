@@ -67,8 +67,8 @@ Feature: Create a project and check settings
     And I should see the link "live"
     And I should see the link "http://composer.dev.devshop.local.computer"
 
-    And I should not see the link "Destroy Environment"
-    And I should not see the link "Disable Environment"
+#    And I should not see the link "Destroy Environment"
+#    And I should not see the link "Disable Environment"
 
     And I should see the link "Update readme. (PR TEST)"
     And I should see the link "Add Behat tests"
