@@ -325,7 +325,7 @@ function devmaster_task_finalize() {
   // Enable hosting tasks queue
   variable_set('hosting_queue_tasks_enabled', true);
   variable_set('hosting_queue_git_enabled', true);
-  variable_set('hosting_queue_tasks_items', 15);
+  variable_set('hosting_queue_tasks_items', 5);
   
   variable_set('hosting_require_disable_before_delete', false);
 

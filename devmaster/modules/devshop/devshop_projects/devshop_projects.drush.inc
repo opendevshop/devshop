@@ -77,13 +77,13 @@ function devshop_projects_post_hosting_delete_task($task, $data) {
     $task->ref->environments = NULL;
     node_save($task->ref);
   }
-
-  // When a site is deleted (if it is in a project, delete the platform it is on.
-  // @TODO: Check for another site on this platform?
-  if ($task->ref->type == 'site' && !empty($task->ref->project)) {
-    // We trigger platform deletion here.
-    hosting_add_task($task->ref->platform, 'delete');
-  }
+//
+//  // When a site is deleted (if it is in a project, delete the platform it is on.
+//  // @TODO: Check for another site on this platform?
+//  if ($task->ref->type == 'site' && !empty($task->ref->project)) {
+//    // We trigger platform deletion here.
+//    hosting_add_task($task->ref->platform, 'delete');
+//  }
 
   // When a platform is deleted, if it is the last in the project,
   // and the project has been unpublished, delete the directory.
