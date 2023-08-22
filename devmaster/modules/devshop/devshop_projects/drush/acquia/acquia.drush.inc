@@ -11,7 +11,7 @@
  *
  * Checks for Acquia cloud hooks and runs them.
  */
-function drush_acquia_post_provision_deploy($branch = '') {
+function drush_acquia_post_provision_deploy_code($branch = '') {
 
   if (d()->type == 'site' && d()->environment_settings && d()->project){
 
