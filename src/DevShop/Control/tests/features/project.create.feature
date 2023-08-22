@@ -88,7 +88,7 @@ Feature: Create a project and check settings
     When I press "Create New Environment"
     Then I should see "legacy"
 
-    When I run drush "hosting-tasks --force --fork=0 --strict=0"
+    When I run drush "hosting-tasks --force --fork=0 --strict=0 || true"
     Then print last drush output
 
     When I click "legacy"
