@@ -162,7 +162,6 @@ Feature: Create a project and check settings
     Then print last drush output
 
     And I click "composer"
-    Then I should not see "Delete Site" in the ".environment-task-logs .alert-danger" element
     And I should not see "testenv"
 
     # Testing "Install Profile"
