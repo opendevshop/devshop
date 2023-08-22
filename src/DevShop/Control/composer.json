@@ -27,9 +27,13 @@
         "url": "https://github.com/lazysoundsystem/preserve-paths",
          "only": ["drupal-composer/preserve-paths"]
       },
-      "behat": {
+      "drupaldriver": {
         "type": "vcs",
         "url":  "https://github.com/jonpugh/DrupalDriver.git"
+      },
+      "behat": {
+        "type": "vcs",
+        "url":  "https://github.com/jonpugh/behat.git"
       }
     },
     "require": {
@@ -40,6 +44,7 @@
         "ext-openssl": "*",
         "ext-pdo": "*",
         "ext-xml": "*",
+        "behat/behat": "dev-format-preg-null-string as 3.13.0",
         "bitbucket/client": "^4.1",
         "composer/installers": "^1.9",
         "composer/semver": "^1.4",
