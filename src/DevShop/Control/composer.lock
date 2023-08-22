@@ -1613,17 +1613,17 @@
         },
         {
             "name": "drupal/bootstrap",
-            "version": "3.26.0",
+            "version": "3.27.0",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/bootstrap.git",
-                "reference": "7.x-3.26"
+                "reference": "7.x-3.27"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/bootstrap-7.x-3.26.zip",
-                "reference": "7.x-3.26",
-                "shasum": "eca7ab31335afa6a83899512dd78995e8dc27ef6"
+                "url": "https://ftp.drupal.org/files/projects/bootstrap-7.x-3.27.zip",
+                "reference": "7.x-3.27",
+                "shasum": "1f0b77d89c5b25cf1efea02f26d4660e94d1458d"
             },
             "require": {
                 "drupal/drupal": "~7.0"
@@ -1631,8 +1631,8 @@
             "type": "drupal-theme",
             "extra": {
                 "drupal": {
-                    "version": "7.x-3.26",
-                    "datestamp": "1561051685",
+                    "version": "7.x-3.27",
+                    "datestamp": "1689027017",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -1917,7 +1917,7 @@
         },
         {
             "name": "drupal/core-composer-scaffold",
-            "version": "10.1.0",
+            "version": "10.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/drupal/core-composer-scaffold.git",
@@ -1961,13 +1961,13 @@
                 "drupal"
             ],
             "support": {
-                "source": "https://github.com/drupal/core-composer-scaffold/tree/10.1.0"
+                "source": "https://github.com/drupal/core-composer-scaffold/tree/10.1.2"
             },
             "time": "2023-04-30T16:15:32+00:00"
         },
         {
             "name": "drupal/core-utility",
-            "version": "9.5.9",
+            "version": "9.5.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/drupal/core-utility.git",
@@ -2003,7 +2003,7 @@
                 "drupal"
             ],
             "support": {
-                "source": "https://github.com/drupal/core-utility/tree/9.5.9"
+                "source": "https://github.com/drupal/core-utility/tree/9.5.10"
             },
             "time": "2023-05-02T08:15:56+00:00"
         },
@@ -2296,10 +2296,6 @@
                     "homepage": "https://www.drupal.org/user/2572884"
                 },
                 {
-                    "name": "webchick",
-                    "homepage": "https://www.drupal.org/user/24967"
-                },
-                {
                     "name": "xjm",
                     "homepage": "https://www.drupal.org/user/65776"
                 },
@@ -2577,17 +2573,17 @@
         },
         {
             "name": "drupal/features",
-            "version": "2.14.0",
+            "version": "2.15.0",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/features.git",
-                "reference": "7.x-2.14"
+                "reference": "7.x-2.15"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/features-7.x-2.14.zip",
-                "reference": "7.x-2.14",
-                "shasum": "1318bf7bc70350dbbb28ec887524e346c145c828"
+                "url": "https://ftp.drupal.org/files/projects/features-7.x-2.15.zip",
+                "reference": "7.x-2.15",
+                "shasum": "d136e820a20f71c0797f6254f477897da70708b6"
             },
             "require": {
                 "drupal/drupal": "~7.0"
@@ -2599,8 +2595,8 @@
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "7.x-2.14",
-                    "datestamp": "1645021494",
+                    "version": "7.x-2.15",
+                    "datestamp": "1691595136",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -4297,6 +4293,7 @@
                 "issues": "https://github.com/eloquent/composer-config-reader/issues",
                 "source": "https://github.com/eloquent/composer-config-reader/tree/3.0.0"
             },
+            "abandoned": true,
             "time": "2020-11-16T06:11:04+00:00"
         },
         {
@@ -4350,6 +4347,7 @@
                 "issues": "https://github.com/eloquent/enumeration/issues",
                 "source": "https://github.com/eloquent/enumeration/tree/master"
             },
+            "abandoned": true,
             "time": "2018-11-22T02:45:56+00:00"
         },
         {
@@ -5259,16 +5257,16 @@
         },
         {
             "name": "nikic/php-parser",
-            "version": "v4.16.0",
+            "version": "v4.17.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nikic/PHP-Parser.git",
-                "reference": "19526a33fb561ef417e822e85f08a00db4059c17"
+                "reference": "a6303e50c90c355c7eeee2c4a8b27fe8dc8fef1d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/19526a33fb561ef417e822e85f08a00db4059c17",
-                "reference": "19526a33fb561ef417e822e85f08a00db4059c17",
+                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/a6303e50c90c355c7eeee2c4a8b27fe8dc8fef1d",
+                "reference": "a6303e50c90c355c7eeee2c4a8b27fe8dc8fef1d",
                 "shasum": ""
             },
             "require": {
@@ -5309,9 +5307,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nikic/PHP-Parser/issues",
-                "source": "https://github.com/nikic/PHP-Parser/tree/v4.16.0"
+                "source": "https://github.com/nikic/PHP-Parser/tree/v4.17.1"
             },
-            "time": "2023-06-25T14:52:30+00:00"
+            "time": "2023-08-13T19:53:39+00:00"
         },
         {
             "name": "npm-asset/ansi-regex",
@@ -6953,16 +6951,16 @@
         },
         {
             "name": "psy/psysh",
-            "version": "v0.11.18",
+            "version": "v0.11.20",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bobthecow/psysh.git",
-                "reference": "4f00ee9e236fa6a48f4560d1300b9c961a70a7ec"
+                "reference": "0fa27040553d1d280a67a4393194df5228afea5b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bobthecow/psysh/zipball/4f00ee9e236fa6a48f4560d1300b9c961a70a7ec",
-                "reference": "4f00ee9e236fa6a48f4560d1300b9c961a70a7ec",
+                "url": "https://api.github.com/repos/bobthecow/psysh/zipball/0fa27040553d1d280a67a4393194df5228afea5b",
+                "reference": "0fa27040553d1d280a67a4393194df5228afea5b",
                 "shasum": ""
             },
             "require": {
@@ -7023,9 +7021,9 @@
             ],
             "support": {
                 "issues": "https://github.com/bobthecow/psysh/issues",
-                "source": "https://github.com/bobthecow/psysh/tree/v0.11.18"
+                "source": "https://github.com/bobthecow/psysh/tree/v0.11.20"
             },
-            "time": "2023-05-23T02:31:11+00:00"
+            "time": "2023-07-31T14:32:22+00:00"
         },
         {
             "name": "pyrech/composer-changelogs",
@@ -7424,16 +7422,16 @@
         },
         {
             "name": "symfony/css-selector",
-            "version": "v5.4.21",
+            "version": "v5.4.26",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/css-selector.git",
-                "reference": "95f3c7468db1da8cc360b24fa2a26e7cefcb355d"
+                "reference": "0ad3f7e9a1ab492c5b4214cf22a9dc55dcf8600a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/css-selector/zipball/95f3c7468db1da8cc360b24fa2a26e7cefcb355d",
-                "reference": "95f3c7468db1da8cc360b24fa2a26e7cefcb355d",
+                "url": "https://api.github.com/repos/symfony/css-selector/zipball/0ad3f7e9a1ab492c5b4214cf22a9dc55dcf8600a",
+                "reference": "0ad3f7e9a1ab492c5b4214cf22a9dc55dcf8600a",
                 "shasum": ""
             },
             "require": {
@@ -7470,7 +7468,7 @@
             "description": "Converts CSS selectors to XPath expressions",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/css-selector/tree/v5.4.21"
+                "source": "https://github.com/symfony/css-selector/tree/v5.4.26"
             },
             "funding": [
                 {
@@ -7486,7 +7484,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-02-14T08:03:56+00:00"
+            "time": "2023-07-07T06:10:25+00:00"
         },
         {
             "name": "symfony/dependency-injection",
@@ -9036,16 +9034,16 @@
         },
         {
             "name": "symfony/var-dumper",
-            "version": "v5.4.25",
+            "version": "v5.4.26",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/var-dumper.git",
-                "reference": "82269f73c0f0f9859ab9b6900eebacbe54954ede"
+                "reference": "e706c99b4a6f4d9383b52b80dd8c74880501e314"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/var-dumper/zipball/82269f73c0f0f9859ab9b6900eebacbe54954ede",
-                "reference": "82269f73c0f0f9859ab9b6900eebacbe54954ede",
+                "url": "https://api.github.com/repos/symfony/var-dumper/zipball/e706c99b4a6f4d9383b52b80dd8c74880501e314",
+                "reference": "e706c99b4a6f4d9383b52b80dd8c74880501e314",
                 "shasum": ""
             },
             "require": {
@@ -9059,6 +9057,7 @@
             "require-dev": {
                 "ext-iconv": "*",
                 "symfony/console": "^4.4|^5.0|^6.0",
+                "symfony/http-kernel": "^4.4|^5.0|^6.0",
                 "symfony/process": "^4.4|^5.0|^6.0",
                 "symfony/uid": "^5.1|^6.0",
                 "twig/twig": "^2.13|^3.0.4"
@@ -9104,7 +9103,7 @@
                 "dump"
             ],
             "support": {
-                "source": "https://github.com/symfony/var-dumper/tree/v5.4.25"
+                "source": "https://github.com/symfony/var-dumper/tree/v5.4.26"
             },
             "funding": [
                 {
@@ -9120,7 +9119,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-06-20T20:56:26+00:00"
+            "time": "2023-07-13T07:32:46+00:00"
         },
         {
             "name": "symfony/yaml",
