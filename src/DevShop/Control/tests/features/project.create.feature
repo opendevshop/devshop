@@ -243,3 +243,5 @@ Feature: Create a project and check settings
     Then I should see "Delete Site Queued"
     When I run drush "hosting-tasks --force --fork=0 --strict=0"
     Then print last drush output
+    When I am on "/project/composer"
+    Then I should not see the link "legacy"
