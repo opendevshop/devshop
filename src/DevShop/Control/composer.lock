@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "767ec4c603b60239a84502c096a03221",
+    "content-hash": "c3a07168739485db9114a704a253f842",
     "packages": [
         {
             "name": "behat/behat",
-            "version": "v3.13.0",
+            "version": "dev-format-preg-null-string",
             "source": {
                 "type": "git",
-                "url": "https://github.com/Behat/Behat.git",
-                "reference": "9dd7cdb309e464ddeab095cd1a5151c2dccba4ab"
+                "url": "https://github.com/jonpugh/Behat.git",
+                "reference": "aa0d05cf2c08c5ce7b49683bd6fca0fa6f84011a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Behat/Behat/zipball/9dd7cdb309e464ddeab095cd1a5151c2dccba4ab",
-                "reference": "9dd7cdb309e464ddeab095cd1a5151c2dccba4ab",
+                "url": "https://api.github.com/repos/jonpugh/Behat/zipball/aa0d05cf2c08c5ce7b49683bd6fca0fa6f84011a",
+                "reference": "aa0d05cf2c08c5ce7b49683bd6fca0fa6f84011a",
                 "shasum": ""
             },
             "require": {
@@ -54,13 +54,17 @@
             },
             "autoload": {
                 "psr-4": {
-                    "Behat\\Hook\\": "src/Behat/Hook/",
-                    "Behat\\Step\\": "src/Behat/Step/",
                     "Behat\\Behat\\": "src/Behat/Behat/",
-                    "Behat\\Testwork\\": "src/Behat/Testwork/"
+                    "Behat\\Testwork\\": "src/Behat/Testwork/",
+                    "Behat\\Step\\": "src/Behat/Step/",
+                    "Behat\\Hook\\": "src/Behat/Hook/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "autoload-dev": {
+                "psr-4": {
+                    "Behat\\Tests\\": "tests/"
+                }
+            },
             "license": [
                 "MIT"
             ],
@@ -76,22 +80,21 @@
             "keywords": [
                 "Agile",
                 "BDD",
+                "Examples",
                 "ScenarioBDD",
                 "Scrum",
                 "StoryBDD",
+                "Symfony",
                 "User story",
                 "business",
                 "development",
                 "documentation",
-                "examples",
-                "symfony",
                 "testing"
             ],
             "support": {
-                "issues": "https://github.com/Behat/Behat/issues",
-                "source": "https://github.com/Behat/Behat/tree/v3.13.0"
+                "source": "https://github.com/jonpugh/Behat/tree/format-preg-null-string"
             },
-            "time": "2023-04-18T15:40:53+00:00"
+            "time": "2023-08-22T20:00:19+00:00"
         },
         {
             "name": "behat/gherkin",
@@ -9487,6 +9490,12 @@
     "packages-dev": [],
     "aliases": [
         {
+            "package": "behat/behat",
+            "version": "dev-format-preg-null-string",
+            "alias": "3.13.0",
+            "alias_normalized": "3.13.0.0"
+        },
+        {
             "package": "drupal/drupal-driver",
             "version": "dev-patch-1",
             "alias": "v2.2.2",
@@ -9495,6 +9504,7 @@
     ],
     "minimum-stability": "dev",
     "stability-flags": {
+        "behat/behat": 20,
         "devshop/devmaster": 20,
         "devshop/git-traits": 20,
         "drupal-composer/preserve-paths": 20,
