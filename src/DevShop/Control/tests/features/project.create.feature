@@ -154,9 +154,10 @@ Feature: Create a project and check settings
     Then I should see "Confirm: All data in this site will be destroyed. Check this box to confirm your intentions to do this. field is required."
     When I check the box "Confirm: All data in this site will be destroyed. Check this box to confirm your intentions to do this. *"
     When I press "Delete Site"
-    Then I should see "Delete Site" in the ".environment-task-logs" element
+    Then I should see "Delete Site" in the ".environment-task-logs .alert-queued" element
     When I run drush "hosting-tasks --force --fork=0 --strict=0"
     And I click "composer"
+    Then I should see "Delete Site" in the ".environment-task-logs .alert-success" element
     Then print current URL
 
     # Testing "Install Profile"
