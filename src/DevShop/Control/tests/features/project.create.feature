@@ -220,3 +220,11 @@ Feature: Create a project and check settings
     # Proves it is a clone.
     Then I should see "Welcome!"
     And I should see "composerstandarddevshoplocalcomputer"
+
+    # Testing failed install then delete.
+    Given I am on "/project/composer"
+    When I click "Create New Environment"
+    And I fill in "failedinstall" for "Environment Name"
+    And I select "10.x" from "git_ref"
+    And I select "clone" from "hosting_settings[install][method]"
+    And I select "@composer.standard" from "hosting_settings[install][clone_source]"
