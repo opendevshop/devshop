@@ -100,7 +100,7 @@ Feature: Create a project and check settings
     When I run drush "hosting-tasks --force --fork=0 --strict=0 || true"
     Then print last drush output
     When I am on "/project/composer"
-    Then I should not see the link "legacy"
+    Then I should not see the link "Environment: legacy"
 
     Given I am on "/project/composer"
     When I click "Create New Environment"
