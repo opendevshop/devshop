@@ -95,7 +95,7 @@ Feature: Create a project and check settings
     When I click "Destroy Environment"
     And I check the box "Confirm: All data in this site will be destroyed. Check this box to confirm your intentions to do this. *"
     Then I press "Delete Site"
-    Then I should see "Delete Site Queued"
+    Then I should see "Delete Site" in the ".environment-task-logs .alert-queued" element
     # || true allows the tasks to fail. This is expected.
     When I run drush "hosting-tasks --force --fork=0 --strict=0 || true"
     Then print last drush output
