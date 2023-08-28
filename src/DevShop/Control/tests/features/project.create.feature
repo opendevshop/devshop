@@ -174,7 +174,6 @@ Feature: Create a project and check settings
     When I press "Delete Site"
     Then I should see "Delete Site" in the ".environment-task-logs .alert-queued" element
     When I run drush "hosting-tasks --force --fork=0 --strict=0"
-    Then print last drush output
 
     And I click "composer"
     And I should not see "http://composer.testenv.devshop.local.computer"
