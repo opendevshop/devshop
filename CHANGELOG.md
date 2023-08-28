@@ -2,6 +2,114 @@
 
 ## DevShop 1.x, xxxx-xx-xx (development version)
 
+## DevShop 1.8.0
+### DRAFT
+
+https://github.com/opendevshop/devshop/compare/1.7.0-alpha4...1.x
+
+### @TODO: Release Blockers
+
+- Ensure `devshop/control-project` works.
+- Merge ubuntu 20+ PR.
+- Ensure upgrade path works: DevShop control platform path changed: upgrade probably does not work right now.
+- Ensure Aegir Cloud & Ansible work.
+- Commit Code is broken.
+- Ensure "Drupal update" task, Config Export, and Config import tasks work.
+- Ensure devshop_dothooks still works with new provision deploy stuff.
+- Remove Client form on sites
+
+### Release Notes
+
+- Solved Drush 9+ incompatibility with Aegir. Global drush is now Drush 10, and can be upgraded. DevShop Control is now composer, so it includes drush 8 to remain compatible with hosting/provision.
+- Drush 9+ Yaml alias support.
+- Moved web interface code to main `opendevshop/devshop` repository:  [./src/DevShop/Control](./src/DevShop/Control/). 
+  - No more separate repository for backend & front-end code.
+  - Provision & Hosting are included via composer, improving stability by locking in their versions.
+  - Autoloader brings all code together reducing conflicts.
+  - Behat tests are integrated with the composer codebase.
+- Automatic web path setting! If you use drupal-scaffold, you no longer have to specify the webroot.
+- Various GitHub CI fixes.
+- Fix robofile.
+- PHP 8 support.
+- Added "GitTraits" package: simple PHP package for reading information about it's git repo.
+-  Provision/Hosting improvements
+  - "Parallel" task execution:
+    - Tasks now run one at a time *per context* so that tasks on a site don't collide. 
+    - Hosting queues and cron executions now launch tasks in their own process, running as fast as possible.
+    - The regular, cron-drive Hosting Task Queue is now enabled so that both cron and hosting-queued can launch tasks.
+    - The maxiumum number of parallel tasks is configured by the Aegir Queues settings page.
+    - Git Queue scans every git platform for new upstream commits and creates new Deploy tasks automatically. This provides continuous deployment for users behind a firewall that can't use a webhook. Uses simple shell scripts, `git-ref-type` and `git-behind`.
+- Install Methods: 
+  - Aegir Site forms now natively support the "Install Method" selection widget from DevShop. Choose Install profile, SQL Sync, or Environment clone when creating a site or as the default per project. 
+  - "Allow Reinstall Site" setting allows one click site "reinstall" using the chosen method: profile, sync, etc.
+- Deploy hooks:
+  - Define hooks for composer build, post-code deploy, and testing in composer.
+  - Control what hooks run on each task.
+  - Allow reinstall in deploy task.
+- Fixed GitHub and BitBucket integrations.
+  - Create projects from existing bitbucket repos. Automatic PR environments for bitbucket. Repaired github deployment and commit status integration.
+- DevShop settings UX improvements.
+- DevShop Project Create wizard improvements. No more step 4.
+- Fix weird "last task" stuff.
+- Fixed dynamic task JS.
+- Fixed problematic deletion of environments. Should finally, truly delete everything properly, even if it's a total fail? Please test!
+- Fixed strange site-state display issues when installs went wrong.
+- Fixed interdependency issues with all the components.
+- Add found drush aliases to sync source options.
+- Attempts to improve docker situation.
+- Add version to install scripts using install/Makefile.
+- Aegir: 
+  - Get provision to work inside a composer codebase.
+  - Moved many settings to site nodes. Git info, install method, deploy settings.
+  - Moved all properties to Site Context instead of Platform. No more `d()->platform->root`. Just call `d()->root`.
+  - No more platform nodes. Just create a site node. Set platform path, git repo, in site form.
+  - Install profile is now a string. It was too difficult to work with. If someone wants to, they can create a new module to give users a better interface. 
+  - Added "group" and "environment" site properties to represent "project" and "environment". This was needed to generate drush9 yaml aliases because they require a group (filename) and environment (aliasname).
+  - Move the last deploy stuff out of devshop to provision-deploy-code.
+  - Moved the last install method stuff out of devshop to provision-install.
+
+## DevShop 1.7.0-alpha4
+### Added "Deploy" component.
+#### Nov 12, 2020
+
+- Fixed a number of CI issues.
+- Import Aegir Ansible and Aegir Cloud into main repo.
+- Create aegir user from specified UID/GID, and change existing UID/GID if necessary.
+- Small updates to components and ansible.
+
+## DevShop 1.7.0-alpha3
+### Added "Deploy" component.
+#### Nov 12, 2020
+
+https://github.com/opendevshop/devshop/releases/tag/1.7.0-alpha3
+
+The "Deploy" component was a PHP command that ran commands in "stages"... It was a premature creation.
+
+## DevShop 1.7.0-alpha2
+### First Composer-based web UI
+#### Oct 6, 2020
+
+https://github.com/opendevshop/devshop/releases/tag/1.7.0-alpha2
+
+New composer based Web UI, DevShop Control.
+
+
+## DevShop 1.6.0-alpha1
+### First DevShop Components Release
+
+#### Mar 24, 2020
+
+https://github.com/opendevshop/devshop/releases/edit/1.6.0-alpha1
+
+This is the first alpha release of DevShop that includes "DevShop Components": reusable tools that work independently.
+
+The first two DevShop Components released are composer plugins:
+- [GitSplit](https://github.com/devshop-packages/git-split): Provides a composer command called `git:split` that automatically pushes commits from the main repo to the repositories defined in `composer.json`. Uses the [splitsh-lite]() script that is used by [symfony/symfony]() and [drupal/drupal]() monorepos. This plugin is used on this repo to push to all of the devshop component repos, such as Ansible roles and Composer packages.
+  See the "Git Management" action to see the plugin in use: https://github.com/opendevshop/devshop/runs/522033744?check_suite_focus=true#step:14:1
+- [YamlTasks](https://github.com/devshop-packages/yaml-tasks): Provides a composer command called `yaml-tasks` that runs a list of commands defined in a yaml file. Integrates with GitHub Status API to communicate results to developers and integrate with other CI systems.
+
+## DevShop 1.5.0-rc8, 2019-06-12
+
 **DevShop.Support Alpha Launch!**
 
 You can now connect your DevShop to the https://devshop.support service. 

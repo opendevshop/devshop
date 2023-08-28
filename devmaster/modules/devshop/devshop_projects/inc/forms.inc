@@ -38,6 +38,7 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
       $site_form['hosting_settings'][$i]['#weight'] = 10;
     }
   }
+  unset($site_form['hosting_settings']['code']);
 
   $form['hosting_settings'] += $site_form['hosting_settings'];
 
@@ -384,6 +385,8 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
       '#weight' => 10,
       '#access' => drupal_valid_path('hosting_confirm/' . $project->nid . '/project_delete'),
     );
+
+
   }
 
   // Create Project Wizard
@@ -763,6 +766,10 @@ function devshop_projects_form_site_node_form_alter(&$form, &$form_state, $form_
   // Add our own submit handler.
   $form['actions']['submit']['#submit'][] = 'devshop_projects_environment_settings_submit';
 
+  if (empty($node->nid)) {
+    unset($form['hosting_settings']['code']);
+  }
+
 }
 
 
@@ -1041,7 +1048,7 @@ function devshop_prepare_platform_node($project, $environment_name, $git_ref, $w
   }
 
   $platform_node->git_reference = $git_ref;
-  $platform_node->git_reset = isset($project->git_reset) ? $project->git_reset: 0;
+  $platform_node->git_reset = true;
 
   // Determine which web server to use.
   // If no web server was set and project has a default, make sure we set it.
