@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c3a07168739485db9114a704a253f842",
+    "content-hash": "e7ed943cdec166f3acd35e8144b88f6c",
     "packages": [
         {
             "name": "behat/behat",
@@ -2664,11 +2664,17 @@
         },
         {
             "name": "drupal/hosting",
-            "version": "dev-4.x",
+            "version": "4.0.0-beta8",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/hosting.git",
-                "reference": "099493aeb82a04c5a4375055671f07f5f0ef268f"
+                "reference": "7.x-4.0-beta8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://ftp.drupal.org/files/projects/hosting-7.x-4.0-beta8.zip",
+                "reference": "7.x-4.0-beta8",
+                "shasum": "aceee35ce0816ae99d61773adcefd451d72238bc"
             },
             "require": {
                 "drupal/drupal": "~7.0",
@@ -2695,15 +2701,12 @@
             ],
             "type": "drupal-module",
             "extra": {
-                "branch-alias": {
-                    "dev-4.x": "4.x-dev"
-                },
                 "drupal": {
-                    "version": "7.x-4.0-beta5+27-dev",
-                    "datestamp": "1692732222",
+                    "version": "7.x-4.0-beta8",
+                    "datestamp": "1693239604",
                     "security-coverage": {
                         "status": "not-covered",
-                        "message": "Dev releases are not covered by Drupal security advisories."
+                        "message": "Beta releases are not covered by Drupal security advisories."
                     }
                 }
             },
@@ -3510,11 +3513,17 @@
         },
         {
             "name": "drupal/provision",
-            "version": "dev-4.x",
+            "version": "4.0.0-beta8",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/provision.git",
-                "reference": "7fda0e8708a66f514f1002e765da507957da2b2a"
+                "reference": "7.x-4.0-beta8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://ftp.drupal.org/files/projects/provision-7.x-4.0-beta8.zip",
+                "reference": "7.x-4.0-beta8",
+                "shasum": "b159a02c86533542c362ae2b8af62992ee9fceee"
             },
             "require": {
                 "devshop/git-traits": "1.x-dev",
@@ -3529,15 +3538,12 @@
             },
             "type": "drupal-drush",
             "extra": {
-                "branch-alias": {
-                    "dev-4.x": "4.x-dev"
-                },
                 "drupal": {
-                    "version": "7.x-4.0-beta7+45-dev",
-                    "datestamp": "1692733052",
+                    "version": "7.x-4.0-beta8",
+                    "datestamp": "1693239641",
                     "security-coverage": {
                         "status": "not-covered",
-                        "message": "Dev releases are not covered by Drupal security advisories."
+                        "message": "Beta releases are not covered by Drupal security advisories."
                     }
                 }
             },
@@ -9513,10 +9519,8 @@
         "drupal/cas_attributes": 5,
         "drupal/devshop_stats": 20,
         "drupal/drupal-driver": 20,
-        "drupal/hosting": 20,
         "drupal/hosting_filemanager": 20,
-        "drupal/hosting_statsd": 10,
-        "drupal/provision": 20
+        "drupal/hosting_statsd": 10
     },
     "prefer-stable": true,
     "prefer-lowest": false,
