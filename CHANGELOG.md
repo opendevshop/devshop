@@ -2,8 +2,36 @@
 
 ## DevShop 1.x, xxxx-xx-xx (development version)
 
+## DevShop 1.7.0-alpha4
+### Added "Deploy" component.
+#### Nov 12, 2020
+
+- Fixed a number of CI issues.
+- Import Aegir Ansible and Aegir Cloud into main repo.
+- Create aegir user from specified UID/GID, and change existing UID/GID if necessary.
+- Small updates to components and ansible.
+
+## DevShop 1.7.0-alpha3
+### Added "Deploy" component.
+#### Nov 12, 2020
+
+https://github.com/opendevshop/devshop/releases/tag/1.7.0-alpha3
+
+The "Deploy" component was a PHP command that ran commands in "stages"... It was a premature creation.
+
+## DevShop 1.7.0-alpha2
+### First Composer-based web UI
+#### Oct 6, 2020
+
+https://github.com/opendevshop/devshop/releases/tag/1.7.0-alpha2
+
+New composer based Web UI, DevShop Control.
+
+
 ## DevShop 1.6.0-alpha1
 ### First DevShop Components Release
+
+#### Mar 24, 2020
 
 https://github.com/opendevshop/devshop/releases/edit/1.6.0-alpha1
 
