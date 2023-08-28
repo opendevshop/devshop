@@ -2,6 +2,18 @@
 
 ## DevShop 1.x, xxxx-xx-xx (development version)
 
+## DevShop 1.6.0-alpha1
+### First DevShop Components Release
+
+https://github.com/opendevshop/devshop/releases/edit/1.6.0-alpha1
+
+This is the first alpha release of DevShop that includes "DevShop Components": reusable tools that work independently.
+
+The first two DevShop Components released are composer plugins:
+- [GitSplit](https://github.com/devshop-packages/git-split): Provides a composer command called `git:split` that automatically pushes commits from the main repo to the repositories defined in `composer.json`. Uses the [splitsh-lite]() script that is used by [symfony/symfony]() and [drupal/drupal]() monorepos. This plugin is used on this repo to push to all of the devshop component repos, such as Ansible roles and Composer packages.
+  See the "Git Management" action to see the plugin in use: https://github.com/opendevshop/devshop/runs/522033744?check_suite_focus=true#step:14:1
+- [YamlTasks](https://github.com/devshop-packages/yaml-tasks): Provides a composer command called `yaml-tasks` that runs a list of commands defined in a yaml file. Integrates with GitHub Status API to communicate results to developers and integrate with other CI systems.
+
 ## DevShop 1.5.0-rc8, 2019-06-12
 
 **DevShop.Support Alpha Launch!**
