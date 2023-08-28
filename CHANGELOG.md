@@ -2,6 +2,8 @@
 
 ## DevShop 1.x, xxxx-xx-xx (development version)
 
+## DevShop 1.5.0-rc8, 2019-06-12
+
 **DevShop.Support Alpha Launch!**
 
 You can now connect your DevShop to the https://devshop.support service. 
