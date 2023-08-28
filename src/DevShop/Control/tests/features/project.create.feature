@@ -49,6 +49,7 @@ Feature: Create a project and check settings
     And I press "Add environment"
     And I fill in "live" for "project[environments][NEW][name]"
     And I select "9.x" from "project[environments][NEW][git_ref]"
+
     And I press "Add environment"
     
     Then I press "Create Project & Environments"
@@ -79,12 +80,29 @@ Feature: Create a project and check settings
 
     And I reload the page
     Then I should see the link "dev"
-#    Given I go to "http://dev.composer.devshop.travis"
-#    When I click "Visit Environment"
 
-# @TODO: Fix our site installation.
-#    Then I should see "No front page content has been created yet."
+    Given I am on "/project/composer"
+    When I click "Create New Environment"
+    And I fill in "failedinstall" for "Environment Name"
+    And I select "8.x-legacy" from "git_ref"
+    When I press "Create New Environment"
+    Then I should see "legacy"
 
+    When I run drush "hosting-tasks --force --fork=0 --strict=0 || true"
+    Then print last drush output
+
+    When I click "Environment: failedinstall"
+    When I click "Destroy Environment"
+    And I check the box "Confirm: All data in this site will be destroyed. Check this box to confirm your intentions to do this. *"
+    Then I press "Delete Site"
+    Then I should see "Delete Site" in the ".environment-task-logs .alert-queued" element
+    # || true allows the tasks to fail. This is expected.
+    When I run drush "hosting-tasks --force --fork=0 --strict=0 || true"
+    Then print last drush output
+    When I am on "/project/composer"
+    Then I should not see the link "Environment: legacy"
+
+    Given I am on "/project/composer"
     When I click "Create New Environment"
     And I fill in "testenv" for "Environment Name"
     And I select "9.x" from "git_ref"
@@ -156,11 +174,9 @@ Feature: Create a project and check settings
     When I press "Delete Site"
     Then I should see "Delete Site" in the ".environment-task-logs .alert-queued" element
     When I run drush "hosting-tasks --force --fork=0 --strict=0"
-    Then print last drush output
 
     And I click "composer"
-    Then I should see not see "Delete Site" in the ".environment-task-logs .alert-error" element
-    And I should see not see "testenv"
+    And I should not see "http://composer.testenv.devshop.local.computer"
 
     # Testing "Install Profile"
     When I click "Create New Environment"
