@@ -367,7 +367,7 @@ devshop_server:
     " > $ANSIBLE_DEFAULT_HOST_LIST
 
   # Write all extra vars to the file.
-  ANSIBLE_DEFAULT_HOST_VARS_FILE="/etc/ansible/host_vars/{$HOSTNAME_FQDN}"
+  ANSIBLE_DEFAULT_HOST_VARS_FILE="/etc/ansible/host_vars/${HOSTNAME_FQDN}"
   for i in ${ANSIBLE_EXTRA_VARS[@]}; do
       echo -e "$i" >> $ANSIBLE_DEFAULT_HOST_VARS_FILE
   done
