@@ -26,7 +26,7 @@ These are mostly all regressions. All of the little features I created need to b
 - Remove Client form on sites.
 - Ensure devshop_support widget & connection works.
 
-## DevShop 1.8.0
+## DevShop 1.8.0-beta1
 ### August 29, 2023
 
 ### Release Notes
