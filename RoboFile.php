@@ -898,7 +898,7 @@ class RoboFile extends \Robo\Tasks {
 
     $not_ready = TRUE;
     while ($not_ready) {
-      $not_ready = !$this->confirm("Are you absolutely sure all contrib modules and drupal core are up to date in ./aegir-home/devmaster-1.x/profiles/devmaster/devmaster.make?? Go check. I'll wait.");
+      $not_ready = !$this->confirm("Are you absolutely sure all contrib modules and drupal core are up to date in ./composer.json & ./src/DevShop/Control/composer.json?? Go check. I'll wait.");
     }
 
     $not_ready = TRUE;
@@ -918,13 +918,17 @@ class RoboFile extends \Robo\Tasks {
     if ($this->confirm("Write '$version' to install.sh? ")) {
       $this->_exec("sed -i -e 's/DEVSHOP_VERSION=1.x/DEVSHOP_VERSION=$version/' ./install.sh");
     }
-
-    if ($this->confirm("Write '$drupal_org_version' to build-devmaster.make and remove development repos? ")) {
-      $this->_exec("sed -i -e 's/projects\[devmaster\]\[version\] = 1.x-dev/projects[devmaster][version] = $drupal_org_version/' build-devmaster.make");
-      $this->_exec("sed -i -e 's/projects\[devmaster\]\[download\]\[branch\]/; projects[devmaster][download][branch]' build-devmaster.make");
-      $this->_exec("sed -i -e 's/projects\[devmaster\]\[download\]\[url\]/; projects[devmaster][download][url]' build-devmaster.make");
-      $this->_exec("sed -i -e '/###DEVELOPMENTSTART###/,/###DEVELOPMENTEND###/d' build-devmaster.make");
+    if ($this->confirm("Create install script for version? ")) {
+      $this->_exec("cd install && LOAD_SCRIPT_DEVSHOP_VERSION_REF=$version make");
+      $this->_exec("git add install/build");
     }
+//
+//    if ($this->confirm("Write '$drupal_org_version' to build-devmaster.make and remove development repos? ")) {
+//      $this->_exec("sed -i -e 's/projects\[devmaster\]\[version\] = 1.x-dev/projects[devmaster][version] = $drupal_org_version/' build-devmaster.make");
+//      $this->_exec("sed -i -e 's/projects\[devmaster\]\[download\]\[branch\]/; projects[devmaster][download][branch]' build-devmaster.make");
+//      $this->_exec("sed -i -e 's/projects\[devmaster\]\[download\]\[url\]/; projects[devmaster][download][url]' build-devmaster.make");
+//      $this->_exec("sed -i -e '/###DEVELOPMENTSTART###/,/###DEVELOPMENTEND###/d' build-devmaster.make");
+//    }
 
     if ($this->confirm("Show git diff before committing?")) {
       $this->_exec("git diff -U1");
@@ -938,14 +942,12 @@ class RoboFile extends \Robo\Tasks {
       // Tag devshop and devmaster with $version and drupal_org_tag.
       $this->taskGitStack()
         ->tag($version, "DevShop $version")
-        ->tag($drupal_org_tag, "DevShop Devmaster $version")
         ->run();
     }
 
     if ($this->confirm("Push the new release tags $version and $drupal_org_version?")) {
       if (!$this->taskGitStack()
         ->push("origin", $version)
-        ->push("origin", $drupal_org_tag)
         ->run()
         ->wasSuccessful()
       ) {
@@ -954,12 +956,12 @@ class RoboFile extends \Robo\Tasks {
     }
 
     $this->say("The final steps we still have to do manually:");
-    $this->say("1. Go create a new release of devmaster: https://www.drupal.org/node/add/project-release/1779370 using the tag $drupal_org_tag");
-    $this->say("2. Wait for drupal.org to package up the distribution: https://www.drupal.org/project/devmaster");
-    $this->say("3. Create a new 'release' on GitHub: https://github.com/opendevshop/devshop/releases/new using tag $version.  Copy CHANGELOG from  https://raw.githubusercontent.com/opendevshop/devshop/1.x/CHANGELOG.md");
+//    $this->say("1. Go create a new release of devmaster: https://www.drupal.org/node/add/project-release/1779370 using the tag $drupal_org_tag");
+//    $this->say("2. Wait for drupal.org to package up the distribution: https://www.drupal.org/project/devmaster");
+    $this->say("1. Create a new 'release' on GitHub: https://github.com/opendevshop/devshop/releases/new using tag $version.  Copy CHANGELOG from  https://raw.githubusercontent.com/opendevshop/devshop/1.x/CHANGELOG.md");
     $this->say("  - Copy CHANGELOG from  https://raw.githubusercontent.com/opendevshop/devshop/1.x/CHANGELOG.md");
     $this->say("  - Upload install.sh script to release files.");
-    $this->say("4. Put the new version in gh-pages branch index.html");
+    $this->say("2. Put the new version in gh-pages branch index.html");
 
     if ($this->confirm("Checkout main branch and run `monorepo-builder split` to push current branch and latest tag to all sub-repos?")) {
       $this->_exec("git checkout 1.x");
