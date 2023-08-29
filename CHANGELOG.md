@@ -7,16 +7,24 @@
 
 https://github.com/opendevshop/devshop/compare/1.7.0-alpha4...1.x
 
-### @TODO: Release Blockers
+This will be the very last release of the 1.x branch. It will be the last release with provision & hosting as a backend.
 
-- Ensure `devshop/control-project` works.
+It will be the last release of DevShop until the 2.x version is rebuilt on top of the [Operations project](https://www.drupal.org/project/operations).
+
+NOTE: There is NO AUTOMATED UPGRADE PATH to this release. The last release of DevShop used Makefiles. So if you are still on that, you'll need to upgrade manually. See [docs/upgrade-from-1.7.md](./docs/upgrade-from-1.7.md)
+
+### @TODO: Final 1.8.0 Release Blockers
+
+These are mostly all regressions. All of the little features I created need to be tested. This will be done before we call it a 1.8.0.
+
 - Merge ubuntu 20+ PR.
 - Ensure upgrade path works: DevShop control platform path changed: upgrade probably does not work right now.
-- Ensure Aegir Cloud & Ansible work.
-- Commit Code is broken.
+- Ensure Aegir Cloud, Aegir Docker & Ansible work.
+- Ensure git commit, tag, branch and deploy all work.
 - Ensure "Drupal update" task, Config Export, and Config import tasks work.
 - Ensure devshop_dothooks still works with new provision deploy stuff.
-- Remove Client form on sites
+- Remove Client form on sites.
+- Ensure devshop_support widget & connection works.
 
 ### Release Notes
 
