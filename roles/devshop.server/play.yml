@@ -20,6 +20,7 @@
       - "Tags: {{ ansible_run_tags }}"
       - "ansible_nodename: {{ ansible_nodename }}"
       - "OS: {{ ansible_distribution }} {{ ansible_distribution_version }} / {{ ansible_os_family }}"
+      - "server_hostname: {{ server_hostname }}"
 
 
   vars_files:
