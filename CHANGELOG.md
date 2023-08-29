@@ -26,6 +26,9 @@ These are mostly all regressions. All of the little features I created need to b
 - Remove Client form on sites.
 - Ensure devshop_support widget & connection works.
 
+## DevShop 1.8.0
+### August 29, 2023
+
 ### Release Notes
 
 - Solved Drush 9+ incompatibility with Aegir. Global drush is now Drush 10, and can be upgraded. DevShop Control is now composer, so it includes drush 8 to remain compatible with hosting/provision.
