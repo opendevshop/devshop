@@ -915,9 +915,6 @@ class RoboFile extends \Robo\Tasks {
       file_put_contents('./devmaster/VERSION.txt', $version);
     }
 
-    if ($this->confirm("Write '$version' to install.sh? ")) {
-      $this->_exec("sed -i -e 's/DEVSHOP_VERSION=1.x/DEVSHOP_VERSION=$version/' ./install.sh");
-    }
     if ($this->confirm("Create install script for version? ")) {
       $this->_exec("cd install && LOAD_SCRIPT_DEVSHOP_VERSION_REF=$version make");
       $this->_exec("git add install/build");
