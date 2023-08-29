@@ -110,6 +110,10 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "scripts": {
+        "deploy:update": [
+            "drush updatedb --yes --no-cache-clear",
+            "drush cc all"
+        ],
         "pre-update-cmd": [
         ],
         "uninstall": [
