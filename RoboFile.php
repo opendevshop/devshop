@@ -935,10 +935,8 @@ class RoboFile extends \Robo\Tasks {
     $this->say("  - Copy CHANGELOG from  https://raw.githubusercontent.com/opendevshop/devshop/1.x/CHANGELOG.md");
     $this->say("  - Upload install.sh script to release files.");
     $this->say("2. Put the new version in gh-pages branch index.html");
-
-    if ($this->confirm("Run `composer git:split` to push code to all sub-repos?")) {
-      $this->_exec("composer git:split");
-    }
+    $this->say("");
+    $this->say("That's it! Congrats.");
   }
 
   /**
