@@ -10,3 +10,4 @@
 # The current play.yml doesn't run the PHP role on docker run so it doesn't fail.
 # It does use this var to check that the right version of PHP is installed. This has to match the container image version to pass, since it won't install a new version.
 # php_version: "8.0"
+mysql_enabled_on_startup: false
