@@ -846,7 +846,6 @@ function devshop_projects_preprocess_environment(&$vars) {
       $vars['source_environments'][$source_environment->name] = $source_environment;
     }
   }
-
   // Look for remote aliases
   // @TODO: Move to devshop_remotes.module. I could't get devshop_remotes_preprocess_environment() working.
   if (isset($vars['project']->settings->aliases )) {
@@ -855,6 +854,14 @@ function devshop_projects_preprocess_environment(&$vars) {
       $alias->site = $name;
       $alias->name = $name;
       $alias->url = $alias->uri;
+      $alias->sync_link = url("hosting_confirm/$environment->site/site_sync", [
+        'query' => [
+          'token' => drupal_get_token($user->uid),
+          'source' => 'other',
+          'alias' => $name,
+        ]
+      ]);
+
       $vars['source_environments'][$name] = $alias;
     }
   }

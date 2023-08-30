@@ -519,28 +519,29 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
 
           // If source is empty, ask for an alias.
           if (empty($source)) {
-            $form['parameters']['source'] = array(
-              '#type' => 'textfield',
-              '#title' => t('Drush Alias for Source'),
-              '#description' => t('Enter a full drush alias to use as the source. Make sure to include the "@" character at the beginning.'),
-            );
-            $form['parameters']['destination'] = array(
-              '#type' => 'value',
-              '#value' => $node->environment->system_alias,
-            );
+            $form['parameters']['source']['custom_alias']['text']['#default_value'] = $_GET['alias'] ? '@' . $_GET['alias'] :  '';
+            $form['parameters']['source']['custom_alias']['radio']['#default_value'] = 'custom';
+            // Unset gnarly form stuff.
+            if (!empty($_GET['alias'])) {
+              $form['parameters']['source']['#type'] = 'none';
+              $form['parameters']['source']['#type'] = 'none';
+              $form['parameters']['source']['custom_alias']['#type'] = 'none';
+              $form['parameters']['source']['custom_alias']['radio'] = [];
+              $source_environment = (object) $node->project->settings->aliases[$_GET['alias']];
+              $source_environment->name = $_GET['alias'];
+            }
           }
           // If a source is specified, add help and set it as a value.
           else {
-
             $source_environment = $source->environment;
             $form['parameters']['source'] = array(
               '#type' => 'value',
               '#value' => $source_alias,
             );
-            $form['parameters']['destination'] = array(
-              '#type' => 'value',
-              '#value' => $node->environment->drush_alias,
-            );
+//            $form['parameters']['destination'] = array(
+//              '#type' => 'value',
+//              '#value' => $node->environment->drush_alias,
+//            );
           }
 
           $form['actions']['submit']['#value'] = '<i class="fa fa-arrow-right"></i>' . t('Sync Data');
@@ -557,8 +558,10 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
           $destroyed = t('This environment will be destroyed.');
           $source = t('This environment will be copied.');
 
-          $source_environment_url = $source_environment->url? $source_environment->url: 'http://' . $alias_data['uri'];
-          $source_environment_name = $source_environment->name? $source_environment->name: $alias_name;
+          $alias_data = $project->settings->aliases[$_GET['alias']];
+
+          $source_environment_url = $source_environment->uri;
+          $source_environment_name = $source_environment->name;
           $html = <<<HTML
 
 <div class="container no-wrap">
