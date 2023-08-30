@@ -433,7 +433,7 @@
                             </button>
                             <ul class="dropdown-menu" role="menu">
                                 <?php if (isset($environment->hosting_settings['general']['protected']) && $environment->hosting_settings['general']['protected']): ?>
-                                    <li><label><?php print t('This environment is locked. You cannot deploy data here.'); ?></label></li>
+                                    <li><label><?php print t('This environment is protected. You cannot sync data here.'); ?></label></li>
                                 <?php elseif (count($source_environments) == 0): ?>
                                     <li><label><?php print t('No other environments available.'); ?></label></li>
                                 <?php else: ?>
