@@ -2664,17 +2664,17 @@
         },
         {
             "name": "drupal/hosting",
-            "version": "4.0.0-beta8",
+            "version": "4.0.0-beta9",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/hosting.git",
-                "reference": "7.x-4.0-beta8"
+                "reference": "7.x-4.0-beta9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/hosting-7.x-4.0-beta8.zip",
-                "reference": "7.x-4.0-beta8",
-                "shasum": "aceee35ce0816ae99d61773adcefd451d72238bc"
+                "url": "https://ftp.drupal.org/files/projects/hosting-7.x-4.0-beta9.zip",
+                "reference": "7.x-4.0-beta9",
+                "shasum": "7e7af36337e9e60e13e0b9d15d47b9f37fd5d2f8"
             },
             "require": {
                 "drupal/drupal": "~7.0",
@@ -2702,8 +2702,8 @@
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "7.x-4.0-beta8",
-                    "datestamp": "1693239604",
+                    "version": "7.x-4.0-beta9",
+                    "datestamp": "1693404179",
                     "security-coverage": {
                         "status": "not-covered",
                         "message": "Beta releases are not covered by Drupal security advisories."
@@ -3513,17 +3513,17 @@
         },
         {
             "name": "drupal/provision",
-            "version": "4.0.0-beta8",
+            "version": "4.0.0-beta9",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/provision.git",
-                "reference": "7.x-4.0-beta8"
+                "reference": "7.x-4.0-beta9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/provision-7.x-4.0-beta8.zip",
-                "reference": "7.x-4.0-beta8",
-                "shasum": "b159a02c86533542c362ae2b8af62992ee9fceee"
+                "url": "https://ftp.drupal.org/files/projects/provision-7.x-4.0-beta9.zip",
+                "reference": "7.x-4.0-beta9",
+                "shasum": "7198d40b9114d6a1c1e4439f19e6732731933eb6"
             },
             "require": {
                 "devshop/git-traits": "1.x-dev",
@@ -3539,8 +3539,8 @@
             "type": "drupal-drush",
             "extra": {
                 "drupal": {
-                    "version": "7.x-4.0-beta8",
-                    "datestamp": "1693239641",
+                    "version": "7.x-4.0-beta9",
+                    "datestamp": "1693404129",
                     "security-coverage": {
                         "status": "not-covered",
                         "message": "Beta releases are not covered by Drupal security advisories."
