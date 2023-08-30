@@ -916,7 +916,7 @@ class RoboFile extends \Robo\Tasks {
     }
 
     if ($this->confirm("Create install script for version? ")) {
-      $this->_exec("cd install && LOAD_SCRIPT_DEVSHOP_VERSION_REF=$version make");
+      $this->_exec("cd install && BRANCH=$version make");
       $this->_exec("git add install/build");
     }
 //
