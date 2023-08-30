@@ -936,9 +936,8 @@ class RoboFile extends \Robo\Tasks {
     $this->say("  - Upload install.sh script to release files.");
     $this->say("2. Put the new version in gh-pages branch index.html");
 
-    if ($this->confirm("Checkout main branch and run `monorepo-builder split` to push current branch and latest tag to all sub-repos?")) {
-      $this->_exec("git checkout 1.x");
-      $this->_exec("bin/monorepo-builder split");
+    if ($this->confirm("Run `composer git:split` to push code to all sub-repos?")) {
+      $this->_exec("composer git:split");
     }
   }
 
