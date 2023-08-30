@@ -24,11 +24,24 @@ class DevmasterUpgrade extends Command
         InputArgument::OPTIONAL,
         'The git tag or branch to install.'
       )
-
-      // makefile
       ->addOption(
-        'makefile', NULL, InputOption::VALUE_OPTIONAL,
-        'The makefile to use to build the devmaster platform.'
+        'git_root', NULL, InputOption::VALUE_OPTIONAL,
+        'Path to git repository root.',
+        '/usr/share/devshop'
+      )
+      ->addOption(
+        'git_remote', NULL, InputOption::VALUE_OPTIONAL,
+        'The git remote to use to build the DevShop Control platform. Only needed if you have a custom DevShop web UI. By default, the main devshop repo is used.',
+        'https://github.com/opendevshop/devshop.git'
+      )
+//      ->addOption(
+//        'git_reference', NULL, InputOption::VALUE_OPTIONAL,
+//        'Git reference to use.',
+//      )
+      ->addOption(
+        'git_docroot', NULL, InputOption::VALUE_OPTIONAL,
+        'Path to document root exposed to web server.',
+        'src/DevShop/Control/web'
       )
       // Option to allow ansible runs to tell this command that it is being run as part of the playbooks.
       ->addOption(
@@ -129,35 +142,39 @@ class DevmasterUpgrade extends Command
 
     $this->IO->success("Upgrading DevShop to version $target_version...");
 
-    $devmaster_makefile = $input->getOption('makefile');
-    if (empty($devmaster_makefile)) {
-      $devmaster_makefile = "https://raw.githubusercontent.com/opendevshop/devshop/$target_version/build-devmaster.make";
-    }
+    // Leaving here for posterity. Wow.
+    // $devmaster_makefile = $input->getOption('makefile');
+    // if (empty($devmaster_makefile)) {
+    //  $devmaster_makefile = "https://raw.githubusercontent.com/opendevshop/devshop/$target_version/build-devmaster.make";
+    // }
+    //
 
+//    // Determine the target path.
+//    $target_path = "/var/aegir/devmaster-{$target_version}";
+//
+//    // Check for existing path.  If exists, append the date.
+//    $variant = date('Y-m-d');
+//    if (file_exists($target_path) && $this->targetVersionRef == 'branch') {
+//      $target_path = "/var/aegir/devmaster-{$target_version}-{$variant}";
+//    }
+//    elseif (file_exists($target_path) && $this->targetVersionRef == 'tag') {
+//      $output->writeln("<comment>Version $target_version is already installed and is a tag. Nothing to do.</comment>");
+//      return;
+//    }
+//
+//    // If this path exists, add a number until we find one that doesn't exist.
+//    if (file_exists($target_path)) {
+//      $number = 1;
+//      while (file_exists($target_path . '-' . $number)) {
+//        $output->writeln("File exists at " . $target_path . '-' . $number);
+//        $number++;
+//      }
+//      $output->writeln("File DOES NOT exists at " . $target_path . '-' . $number);
+//      $target_path = $target_path . '-' . $number;
+//    }
 
-    // Determine the target path.
-    $target_path = "/var/aegir/devmaster-{$target_version}";
-
-    // Check for existing path.  If exists, append the date.
-    $variant = date('Y-m-d');
-    if (file_exists($target_path) && $this->targetVersionRef == 'branch') {
-      $target_path = "/var/aegir/devmaster-{$target_version}-{$variant}";
-    }
-    elseif (file_exists($target_path) && $this->targetVersionRef == 'tag') {
-      $output->writeln("<comment>Version $target_version is already installed and is a tag. Nothing to do.</comment>");
-      return;
-    }
-
-    // If this path exists, add a number until we find one that doesn't exist.
-    if (file_exists($target_path)) {
-      $number = 1;
-      while (file_exists($target_path . '-' . $number)) {
-        $output->writeln("File exists at " . $target_path . '-' . $number);
-        $number++;
-      }
-      $output->writeln("File DOES NOT exists at " . $target_path . '-' . $number);
-      $target_path = $target_path . '-' . $number;
-    }
+    $target_path = $this->input->getOption('git_root');
+    $target_repo = $this->input->getOption('git_remote');
 
     $output->writeln('');
 
@@ -169,17 +186,23 @@ class DevmasterUpgrade extends Command
     $output->writeln('');
 
     $output->writeln("<info>Target Version: </info> " . $target_version);
-    $output->writeln("<info>Target DevMaster Path: </info> " . $target_path);
-    $output->writeln("<info>Target DevMaster Makefile: </info> " . $devmaster_makefile);
+    $output->writeln("<info>Target DevShop Control Path: </info> " . $target_path);
+    $output->writeln("<info>Target DevShop Control Git Remote: </info> " . $target_repo);
 
     $output->writeln('');
+    $output->writeln("Hello, dedicated DevShop User!");
+    $output->writeln("Thank you so much for staying with us through all of this.");
+    $output->writeln("This upgrade process was always so tough. Aegir & Hostmaster made it really really difficult.");
+    $output->writeln("If you are seeing this, you have already setup the latest DevShop.");
+    $output->writeln("");
+    $output->writeln("That means you no longer need this command. If you are using stock devshop, the front-end (devmaster) is now the same codebase as the backend.");
+    $output->writeln("To upgrade from now on, just run a deploy task on the hostmaster site node itself.");
+    $output->writeln("");
+    $output->writeln("However... you won't ever need to do that because this is the last version of devshop that will use aegir for a backend.");
 
-    // Check for site in target path
-    if (file_exists($target_path)) {
-      $output->writeln("<fg=red>WARNING:</> There is already a site located at <comment>$target_path</comment>. Please check your version and paths and try again.");
-      $output->writeln('');
-      return;
-    }
+    $output->writeln("So, this is really goodbye. This generation of DevShop is now minimally supported.");
+    $output->writeln("The next version of DevShop, which won't exist for a while, will be built on the Operations project.");
+    $output->writeln("See https://www.drupal.org/project/operations for more information.");
 
     //@TODO: Finalize the upgrade process.
     // Aegir's process is split between 'upgrade.sh.txt' and a drush command "hostmaster-migrate"
@@ -194,60 +217,5 @@ class DevmasterUpgrade extends Command
 
     // 3. Git checkout /usr/share/devshop to get the latest release.
 
-    // Upgrade DevMaster
-    $output->writeln('Running hostmaster-migrate command...');
-    $drush = dirname(dirname(dirname(__DIR__))) . '/bin/drush';
-    $cmd = "$drush hostmaster-migrate $devmaster_uri $target_path --makefile=$devmaster_makefile --root=$devmaster_root -y";
-    $question = new ConfirmationQuestion("Run the command: <comment>$cmd</comment> (y/n) ", false);
-
-    // If they say no, exit.
-    if ($input->isInteractive() && !$helper->ask($input, $output, $question)) {
-      $output->writeln("<fg=red>Upgrade cancelled.</>");
-      $output->writeln('');
-      return;
-    }
-
-    // If they say yes, run the command.
-    $output->writeln('');
-
-    $command = $pwu_data['name'] == 'root'? "su aegir - -c '$cmd'": $cmd;
-    $process = new Process($command);
-    $process->setTimeout(NULL);
-    $process->run(function ($type, $buffer) {
-      echo $buffer;
-    });
-
-    // Only continue on successfull hostmaster-migrate.
-    if (!$process->isSuccessful()) {
-      throw new \Exception("Upgrade failed. The command errored: $cmd");
-    }
-
-    // Announce devmaster upgrade.
-    $output->writeln('');
-    $output->writeln("<info>Devmaster Upgraded to {$target_version}.</info>");
-
-    $output->writeln("<info>Upgrade completed!  You may use the link above to login or run the command 'devshop login'.</info>");
-
-    // Schedule the platform for deletion.
-    $output->writeln('');
-    $cmd = "$drush @hostmaster platform-delete $devmaster_root -y";
-
-    $question = new ConfirmationQuestion("Run the command: <comment>$cmd</comment> (y/N) ");
-
-    // If they say no, exit.
-    if ($input->isInteractive() && !$helper->ask($input, $output, $question)) {
-      $output->writeln("<fg=red>Old devmaster platform was not deleted.</> You should find and delete the platform at {$devmaster_root}");
-      $output->writeln('');
-      return;
-    }
-
-    // If they say yes, run drush @hostmaster platform-delete /var/aegir/devmaster-PATH
-    $this->IO->note("Running $cmd");
-    $command = $pwu_data['name'] == 'root'? "su aegir - -c '$cmd'": $cmd;
-    $process = new Process($command);
-    $process->setTimeout(NULL);
-    $process->run(function ($type, $buffer) {
-      echo $buffer;
-    });
   }
 }

@@ -21,7 +21,7 @@ cd install
 
 make build
 
-cat build/install.sh | grep $LOAD_DEVSHOP_VERSION
+cat build/install-${LOAD_DEVSHOP_VERSION}.sh | grep $LOAD_DEVSHOP_VERSION
 
 # Rebuild a base container to include this PR's systemd scripts.
 docker build . --file Dockerfile.${OS} --tag ubuntu/container
@@ -32,7 +32,7 @@ docker run \
   --detach --privileged --rm \
   --hostname $DEVSHOP_SERVER_HOSTNAME \
   --publish 80:80 \
-  --volume $PWD/build/install.sh:/tmp/devshop-install.sh \
+  --volume $PWD/build/install-${LOAD_DEVSHOP_VERSION}.sh:/tmp/devshop-install.sh \
   --tty \
   ubuntu/container
 

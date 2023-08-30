@@ -6,7 +6,7 @@ devshop_cli_skip_update: true
 devmaster_skip_upgrade: true
 
 # The default for local development.
-php_version: "8.0"
+php_version: "8.1"
 
 xdebug_enabled: true
 php_xdebug_remote_enable: true
