@@ -403,19 +403,21 @@ function devshop_project_load($node) {
         if ($environment->clone_source == '_other') {
           $environment->clone_source = $environment->hosting_settings['install']['clone_source_drush'];
         }
+        else {
+          list($clone_proj, $clone_env) = explode('.', $environment->clone_source);
 
-        list($clone_proj, $clone_env) = explode('.', $environment->clone_source);
-          
-        // Load clone source nid and environment name.
-        $environment->clone_source_node = db_query("SELECT e.site as nid, e.name, p.title FROM 
-            hosting_devshop_project_environment e 
-            LEFT JOIN hosting_site s ON e.site = s.nid 
-            LEFT JOIN node p ON e.project_nid = p.nid 
-                WHERE e.name = :name AND p.title = :project AND s.status = :status", array(
-          ':name' => ltrim($clone_env, '@'),
-          ':project' => ltrim($clone_proj, '@'),
-          ':status' => HOSTING_SITE_ENABLED,
-        ))->fetchObject();
+          // Load clone source nid and environment name.
+          $environment->clone_source_node = db_query("SELECT e.site as nid, e.name, p.title FROM 
+              hosting_devshop_project_environment e 
+              LEFT JOIN hosting_site s ON e.site = s.nid 
+              LEFT JOIN node p ON e.project_nid = p.nid 
+                  WHERE e.name = :name AND p.title = :project AND s.status = :status", array(
+            ':name' => ltrim($clone_env, '@'),
+            ':project' => ltrim($clone_proj, '@'),
+            ':status' => HOSTING_SITE_ENABLED,
+          ))->fetchObject();
+        }
+
         
         // If no site node was found with the selected alias, display the alias.
         if (empty($environment->clone_source_node->name)) {
