@@ -865,7 +865,7 @@ class RoboFile extends \Robo\Tasks {
   /**
    * Create a new release of DevShop.
    */
-  public function release($version = NULL, $drupal_org_version = NULL) {
+  public function release($version = NULL) {
 
     if (empty($version)) {
       // @TODO Verify version string.
@@ -876,23 +876,6 @@ class RoboFile extends \Robo\Tasks {
       $this->release();
       return;
     }
-
-    if (empty($drupal_org_version)) {
-      $drupal_org_version = $this->ask("What should the Drupal.org version be? (Do not include 7.x or the second dot of the semantic version. ie 1.00-rc1 for 1.0.0-rc1)");
-    }
-
-    if (empty($drupal_org_version)) {
-      $this->release($version);
-      return;
-    }
-
-    if (!$this->confirm("Are you sure you want the Drupal.org tag to be 7.x-$drupal_org_version?")) {
-      $this->release();
-      return;
-    }
-
-    $drupal_org_tag = "7.x-$drupal_org_version";
-
     $this->yell("The new version shall be $version!!!");
     $release_branch = "release-{$version}";
 
@@ -919,13 +902,6 @@ class RoboFile extends \Robo\Tasks {
       $this->_exec("cd install && BRANCH=$version make");
       $this->_exec("git add install/build");
     }
-//
-//    if ($this->confirm("Write '$drupal_org_version' to build-devmaster.make and remove development repos? ")) {
-//      $this->_exec("sed -i -e 's/projects\[devmaster\]\[version\] = 1.x-dev/projects[devmaster][version] = $drupal_org_version/' build-devmaster.make");
-//      $this->_exec("sed -i -e 's/projects\[devmaster\]\[download\]\[branch\]/; projects[devmaster][download][branch]' build-devmaster.make");
-//      $this->_exec("sed -i -e 's/projects\[devmaster\]\[download\]\[url\]/; projects[devmaster][download][url]' build-devmaster.make");
-//      $this->_exec("sed -i -e '/###DEVELOPMENTSTART###/,/###DEVELOPMENTEND###/d' build-devmaster.make");
-//    }
 
     if ($this->confirm("Show git diff before committing?")) {
       $this->_exec("git diff -U1");
@@ -942,7 +918,7 @@ class RoboFile extends \Robo\Tasks {
         ->run();
     }
 
-    if ($this->confirm("Push the new release tags $version and $drupal_org_version?")) {
+    if ($this->confirm("Push the new release tags $version?")) {
       if (!$this->taskGitStack()
         ->push("origin", $version)
         ->run()
