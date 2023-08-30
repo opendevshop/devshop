@@ -26,6 +26,16 @@ These are mostly all regressions. All of the little features I created need to b
 - Remove Client form on sites.
 - Ensure devshop_support widget & connection works.
 
+## DevShop 1.8.0-beta2
+### August 30, 2023
+
+- Fix deploy tasks when created by hosting git queue.
+- Fix install script problems.
+- Create script files with version numbers.
+- Add testing for ubuntu 20 and 22.
+- Default to PHP 8.1.
+- Ensure drush alias is entered when "other drush alias" is selected as source.
+
 ## DevShop 1.8.0-beta1
 ### August 29, 2023
 
