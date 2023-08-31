@@ -519,7 +519,7 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
 
           // If source is empty, ask for an alias.
           if (empty($source) && !empty($_GET['alias'])) {
-            $full_alias = $_GET['alias'] ? '@' . $node->project->name .'.' . $_GET['alias'] :  '';
+            $full_alias = $_GET['alias'] ? '@' . $_GET['alias'] :  '';
             $form['parameters']['source']['custom_alias']['text']['#default_value'] = $full_alias;
             $form['parameters']['source']['custom_alias']['radio']['#default_value'] = 'custom';
             // Unset gnarly form stuff.
