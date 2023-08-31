@@ -2664,17 +2664,17 @@
         },
         {
             "name": "drupal/hosting",
-            "version": "4.0.0-beta11",
+            "version": "4.0.0-beta12",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/hosting.git",
-                "reference": "7.x-4.0-beta11"
+                "reference": "7.x-4.0-beta12"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/hosting-7.x-4.0-beta11.zip",
-                "reference": "7.x-4.0-beta11",
-                "shasum": "deed38b23b651b3feb7b7867680ddaf4b5895fe0"
+                "url": "https://ftp.drupal.org/files/projects/hosting-7.x-4.0-beta12.zip",
+                "reference": "7.x-4.0-beta12",
+                "shasum": "a466dcf869c3e7b38f0014083de186bac6de4e1a"
             },
             "require": {
                 "drupal/drupal": "~7.0",
@@ -2702,8 +2702,8 @@
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "7.x-4.0-beta11",
-                    "datestamp": "1693494025",
+                    "version": "7.x-4.0-beta12",
+                    "datestamp": "1693494895",
                     "security-coverage": {
                         "status": "not-covered",
                         "message": "Beta releases are not covered by Drupal security advisories."
