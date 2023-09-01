@@ -26,6 +26,16 @@ These are mostly all regressions. All of the little features I created need to b
 - Remove Client form on sites.
 - Ensure devshop_support widget & connection works.
 
+## DevShop 1.8.0-beta3
+### September 1, 2023
+
+- Fix Sync links in environment and sync form.
+- Fix "Allow reinstall" checkbox.
+- Run database updates immediately after database sync. The drush call to sync files could fail.
+- Reduce default parallel tasks to 3. Fix check for maximum tasks, off by one. Allow --force option to ignore max task limit.
+- Fix running "build" hook in provision verify.
+- Verify codebase after install. Ensures sync'd files and database are working properly.
+
 ## DevShop 1.8.0-beta2
 ### August 30, 2023
 
