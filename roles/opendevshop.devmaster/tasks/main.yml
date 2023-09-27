@@ -76,18 +76,6 @@
     name: safe.directory
     value: "{{ devshop_cli_path }}"
 
-- name: "Retrieve git information"
-  git:
-    repo: "{{ devshop_cli_repo }}"
-    dest: "{{ devshop_cli_path }}"
-    clone: no
-    update: no
-  register: devshop_installed_git_info
-
-- name: Git Information
-  debug:
-    msg: "{{ devshop_installed_git_info }}"
-
 - name: Detect currently installed version of DevShop.
   command: "{{ devshop_cli_path }}/scripts/branch-or-tag"
   register: __devshop_version_installed
