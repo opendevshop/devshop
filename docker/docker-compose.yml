@@ -45,27 +45,28 @@ services:
       # Setting this ensures the docker containers have this value, regardless if the container is an older image.
       - DEVSHOP_ANSIBLE_GROUP_NAME=devshop_server
 
-  devshop.remote:
-    image: devshop/remote:latest
-    build:
-      context: ".."
-      dockerfile: "docker/Dockerfile.remote"
-    hostname: remote.local.computer
-    ports:
-      - "8080:80"
-      - "4433:443"
-      - "2222:22"
-#      - "33066:3306"
-    privileged: true
-    volumes:
-      - /var/lib/mysql
-      - ../:/usr/share/devshop
-    command:
-      - "devshop-ansible-playbook"
-    entrypoint: /usr/share/devshop/docker/bin/docker-systemd-entrypoint
-    environment:
-      DEVSHOP_DOCKER_COMMAND_RUN: "echo 'Welcome to devshop.remote container.'"
-      DEVSHOP_ANSIBLE_GROUP_NAME: devshop_remote
-      ANSIBLE_EXTRA_VARS:
-      ANSIBLE_PLAYBOOK_COMMAND_OPTIONS:
-
+# Uncomment for remote develoment.
+#  devshop.remote:
+#    image: devshop/remote:latest
+#    build:
+#      context: ".."
+#      dockerfile: "docker/Dockerfile.remote"
+#    hostname: remote.local.computer
+#    ports:
+#      - "8080:80"
+#      - "4433:443"
+#      - "2222:22"
+##      - "33066:3306"
+#    privileged: true
+#    volumes:
+#      - /var/lib/mysql
+#      - ../:/usr/share/devshop
+#    command:
+#      - "devshop-ansible-playbook"
+#    entrypoint: /usr/share/devshop/docker/bin/docker-systemd-entrypoint
+#    environment:
+#      DEVSHOP_DOCKER_COMMAND_RUN: "echo 'Welcome to devshop.remote container.'"
+#      DEVSHOP_ANSIBLE_GROUP_NAME: devshop_remote
+#      ANSIBLE_EXTRA_VARS:
+#      ANSIBLE_PLAYBOOK_COMMAND_OPTIONS:
+#
