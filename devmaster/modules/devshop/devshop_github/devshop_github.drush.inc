@@ -75,8 +75,8 @@ function devshop_github_hosting_task_update_status($task, $status) {
   // Only trigger deployments for the specified tasks.
   // Every type of task listed here will have a GitHub "deployment" object
   // created for it, and that deployment will have it's status updated.
-  if (!in_array($task->task_type, variable_get('devshop_github_deployment_tasks', array(
-    'devshop-deploy',
+  if (empty($task->ref->environment) || $task->ref->environment->git_provider != 'github' || !in_array($task->task_type, variable_get('devshop_github_deployment_tasks', array(
+    'deploy',
     'install',
     'test'
   )))) {

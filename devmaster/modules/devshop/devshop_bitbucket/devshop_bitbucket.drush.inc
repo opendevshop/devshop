@@ -14,14 +14,19 @@ function drush_devshop_bitbucket_pre_hosting_task()
  * Implements hook_hosting_task_update_status().
  */
 function devshop_bitbucket_hosting_task_update_status($task, $status) {
+  // Only trigger deployments for the specified tasks.
+  // Every type of task listed here will have a GitHub "deployment" object
+  // created for it, and that deployment will have it's status updated.
+  if (empty($task->ref->environment) || $task->ref->environment->git_provider != 'bitbucket' || !in_array($task->task_type, variable_get('devshop_bitbucket_deployment_tasks', array(
+          'deploy',
+          'install',
+          'test'
+      )))) {
+      return;
+  }
 
-  if (($task->task_type == 'install' || $task->task_type == 'deploy' || $task->task_type == 'test') && !empty($task->ref->environment)) {
     $task->ref = node_load($task->rid);
     $environment = $task->ref->environment;
-
-    if (empty($task->ref->environment) || empty($task->ref->environment->bitbucket_owner)) {
-      return;
-    }
 
     if (!file_exists($task->ref->git_root)) {
       return;
@@ -34,7 +39,7 @@ function devshop_bitbucket_hosting_task_update_status($task, $status) {
       $params = new stdClass();
 
       $command = "git ls-remote origin {$task->ref->git_reference}";
-      list($sha, $null) = explode('	', provision_process($command));
+      list($sha, $null) = explode('	', provision_process($command, $task->ref->git_root));
 
       drush_log(dt('Found remote SHA of %sha for branch %ref with command: %command', [
         '%sha' => $sha,
@@ -77,5 +82,4 @@ function devshop_bitbucket_hosting_task_update_status($task, $status) {
     } catch (\Exception $e) {
       return drush_set_error(DRUSH_APPLICATION_ERROR, 'bitbucket API Error: ' . $e->getMessage());
     }
-  }
 }
