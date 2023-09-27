@@ -12,9 +12,9 @@ services:
       - $HOME/.ssh:/var/aegir/.ssh
     environment:
       - XDEBUG_CONFIG="remote_host=172.17.0.1 idekey=PHPSTORM"
-
-  devshop.remote:
-    volumes:
-      - ../:/usr/share/devshop
-    environment:
-      - XDEBUG_CONFIG="remote_host=172.17.0.1 idekey=PHPSTORM"
+#
+#  devshop.remote:
+#    volumes:
+#      - ../:/usr/share/devshop
+#    environment:
+#      - XDEBUG_CONFIG="remote_host=172.17.0.1 idekey=PHPSTORM"
