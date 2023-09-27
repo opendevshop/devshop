@@ -18,7 +18,7 @@ function devshop_bitbucket_hosting_task_update_status($task, $status) {
   // Every type of task listed here will have a GitHub "deployment" object
   // created for it, and that deployment will have it's status updated.
   if (empty($task->ref->environment) || $task->ref->environment->git_provider != 'bitbucket' || !in_array($task->task_type, variable_get('devshop_bitbucket_deployment_tasks', array(
-          'devshop-deploy',
+          'deploy',
           'install',
           'test'
       )))) {
