@@ -23,13 +23,17 @@ function devshop_bitbucket_hosting_task_update_status($task, $status) {
       return;
     }
 
+    if (!file_exists($task->ref->git_root)) {
+      return;
+    }
+
     // Post a build status.
     try {
 
       $client = devshop_bitbucket_client();
       $params = new stdClass();
 
-      $command = "git ls-remote origin {$task->ref->git_remote}";
+      $command = "git ls-remote origin {$task->ref->git_reference}";
       list($sha, $null) = explode('	', provision_process($command));
 
       drush_log(dt('Found remote SHA of %sha for branch %ref with command: %command', [
