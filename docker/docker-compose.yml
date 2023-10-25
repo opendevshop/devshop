@@ -46,7 +46,7 @@ services:
       - DEVSHOP_ANSIBLE_GROUP_NAME=devshop_server
 
   devshop.remote:
-    image: devshop/remote:latest
+    image: ${DEVSHOP_DOCKER_IMAGE:-devshop/server:php8.1}
     build:
       context: ".."
       dockerfile: "docker/Dockerfile.remote"
