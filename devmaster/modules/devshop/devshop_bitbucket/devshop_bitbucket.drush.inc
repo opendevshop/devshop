@@ -80,6 +80,11 @@ function devshop_bitbucket_hosting_task_update_status($task, $status) {
 
       if (!empty($build_status)) {
         drush_log("Build status: " . print_r($build_status,1), 'debug');
+        drush_log(t("Posted @state build status to BitBucket for commit @commit @url", [
+          '@state' => $build_status['state'],
+          '@commit' => $build_status['commit']['hash'],
+          '@url' => $build_status['commit']['links']['html']['href'],
+        ]), 'p_log');
       }
 
     } catch (\Exception $e) {
