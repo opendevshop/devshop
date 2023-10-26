@@ -59,7 +59,16 @@ function devshop_bitbucket_hosting_task_update_status($task, $status) {
         $params->name = t('@action started: @env', $t);
       }
       elseif ($status == HOSTING_TASK_SUCCESS || $status == HOSTING_TASK_WARNING) {
-        $params->state = $state = 'SUCCESSFUL';
+
+        // If there is a parent task, the build is not done yet.
+        if (!empty($task->task_args['parent_task'])) {
+          $params->state = $state = 'INPROGRESS';
+          $t['@action'] .= ' '. t('Additional tasks pending.');
+        }
+        else {
+          $params->state = $state = 'SUCCESSFUL';
+        }
+
         if ($status == HOSTING_TASK_SUCCESS) {
           $params->name = t('@action Success: @env', $t);
         }
