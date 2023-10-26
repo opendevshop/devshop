@@ -54,36 +54,41 @@ function devshop_bitbucket_hosting_task_update_status($task, $status) {
         '@env' => $task->ref->hosting_environment,
       ];
 
+      $params->key = "deploy.{$task->ref->hosting_group}.{$task->ref->hosting_environment}";
+      $params->url = url("node/$task->nid", ['absolute' => true]);
+      $params->description = $task->ref->url;
+
       if ($status == HOSTING_TASK_PROCESSING) {
         $params->state = $state = 'INPROGRESS';
         $params->name = t('@action started: @env', $t);
       }
       elseif ($status == HOSTING_TASK_SUCCESS || $status == HOSTING_TASK_WARNING) {
-
-        // If there is a parent task, the build is not done yet.
-        if (!empty($task->task_args['parent_task'])) {
-          $params->state = $state = 'INPROGRESS';
-          $t['@action'] .= ' '. t('Additional tasks pending.');
-        }
-        else {
-          $params->state = $state = 'SUCCESSFUL';
-        }
-
         if ($status == HOSTING_TASK_SUCCESS) {
           $params->name = t('@action Success: @env', $t);
         }
         else {
           $params->name = t('@action Success (with warnings): @env', $t);
         }
+
+        // If there is a parent task, the build is not done yet.
+        if (!empty($task->task_args['parent_task'])) {
+          $parent_task = node_load($task->task_args['parent_task']);
+          $parent_task->ref = node_load($parent_task->rid);
+          $params->state = 'INPROGRESS';
+          $t['@action'] = !empty($task->task_args['test'])? t('Test'): t('Deploy');
+          $params->name = t('@action started: @env', $t);
+          $params->url = url("node/$parent_task->nid", ['absolute' => true]);
+          $params->description = $parent_task->ref->url;
+        }
+        else {
+          $params->state = $state = 'SUCCESSFUL';
+        }
+
       }
       else {
         $params->state = $state = 'FAILED';
         $params->name = t('@action Failed: @env', $t);
       }
-
-      $params->key = "deploy.{$task->ref->hosting_group}.{$task->ref->hosting_environment}";
-      $params->url = url("node/$task->nid", ['absolute' => true]);
-      $params->description = $task->ref->url;
 
       $build_status = $client->repositories()->workspaces($environment->bitbucket_owner)->commit($environment->bitbucket_repo)->statuses($sha)->build()->create((array) $params);
 
