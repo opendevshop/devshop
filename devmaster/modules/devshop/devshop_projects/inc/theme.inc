@@ -660,6 +660,13 @@ function devshop_task_get_messages($task_node) {
     }
 
     if (!empty($command)) {
+
+      // Make URLs clickable:
+      $filter = new stdClass();
+      $filter->settings = [
+        'filter_url_length' => 1000,
+      ];
+      $command = _filter_url($command, $filter);
       $header = "<div class='panel-heading'><i class='fa fa-$icon pull-left'></i> $command</div>";
     }
     else {
