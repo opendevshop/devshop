@@ -49,7 +49,8 @@ function devshop_bitbucket_hosting_task_update_status($task, $status) {
 
       $t = [
         '@action' => $task->task_type == 'install'? t('Install'):
-          (!empty($task->task_args['test'])? t('Test'): t('Deploy')),
+          ($task->task_type == 'test'? t('Test'):
+          (!empty($task->task_args['test'])? t('Test'): t('Deploy'))),
         '@env' => $task->ref->hosting_environment,
       ];
 
