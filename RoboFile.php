@@ -3,6 +3,7 @@
 require_once 'vendor/autoload.php';
 
 use DevShop\Component\Common\GitRepository;
+use Symfony\Component\Process\Process;
 use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Exception\RuntimeException;
@@ -311,7 +312,7 @@ class RoboFile extends \Robo\Tasks {
     $docker_compose_build_opts = "";
 
     $provision_io = new \DevShop\Component\PowerProcess\PowerProcessStyle($this->input(), $this->output());
-    $process = new \DevShop\Component\PowerProcess\PowerProcess("docker-compose build $docker_compose_build_opts $service", $provision_io);
+    $process = new Process(["docker-compose", "build", $docker_compose_build_opts, $service], $provision_io);
     $process->setEnv($env_build);
     $process->disableOutput();
     $process->setTimeout(null);
@@ -792,17 +793,18 @@ class RoboFile extends \Robo\Tasks {
   /**
    * Enter a bash shell in the devmaster container.
    */
-  public function shell($user = 'aegir', $service = 'devshop.server') {
-
+  public function shell($user = 'aegir', $service = 'docker-devshop.server-1') {
     if ($user) {
-        $process = new \Symfony\Component\Process\Process("docker-compose exec --user $user $service bash");
+        $process = new Process(["docker", "exec", "-ti", "--user", $user, $service, "bash"]);
     }
     else {
-        $process = new \Symfony\Component\Process\Process("docker-compose exec $service bash");
+      $process = new Process(["docker-compose", "exec", "-ti", $service, "bash"]);
     }
     $process->setTty(TRUE);
     $process->setTimeout(NULL);
     $process->setEnv(['COMPOSE_FILE' => './docker/docker-compose.yml']);
+
+    $this->say("Running: " . $process->getCommandLine());
     $process->run();
     return $process->getExitCode();
   }
