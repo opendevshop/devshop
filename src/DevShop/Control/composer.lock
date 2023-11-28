@@ -3513,7 +3513,7 @@
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/provision.git",
-                "reference": "9bcb40458f5d28a3ee4d6f8e487e46a01cacf7f9"
+                "reference": "a9be1ee1524f61367b6a05c8003dc9bf47ad6337"
             },
             "require": {
                 "devshop/git-traits": "1.x-dev",
@@ -3532,11 +3532,16 @@
                     "dev-4.x": "4.x-dev"
                 },
                 "drupal": {
-                    "version": "7.x-4.0-beta19+6-dev",
-                    "datestamp": "1701108199",
+                    "version": "7.x-4.0-beta19+7-dev",
+                    "datestamp": "1701177344",
                     "security-coverage": {
                         "status": "not-covered",
                         "message": "Dev releases are not covered by Drupal security advisories."
+                    }
+                },
+                "patches": {
+                    "drush/drush": {
+                        "drush-8-symfony-console": "drush-8-console-compatibility.patch"
                     }
                 }
             },
