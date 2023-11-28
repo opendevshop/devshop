@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "52d6347611a0b7958d52465082235adf",
+    "content-hash": "c428fdac7821f1ccff8721622334f3e0",
     "packages": [
         {
             "name": "behat/behat",
@@ -3513,7 +3513,7 @@
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/provision.git",
-                "reference": "a9be1ee1524f61367b6a05c8003dc9bf47ad6337"
+                "reference": "8c33884d1f9f11431f82713030f185ffb645b385"
             },
             "require": {
                 "devshop/git-traits": "1.x-dev",
@@ -3532,16 +3532,11 @@
                     "dev-4.x": "4.x-dev"
                 },
                 "drupal": {
-                    "version": "7.x-4.0-beta19+7-dev",
-                    "datestamp": "1701177344",
+                    "version": "7.x-4.0-beta19+8-dev",
+                    "datestamp": "1701178626",
                     "security-coverage": {
                         "status": "not-covered",
                         "message": "Dev releases are not covered by Drupal security advisories."
-                    }
-                },
-                "patches": {
-                    "drush/drush": {
-                        "drush-8-symfony-console": "drush-8-console-compatibility.patch"
                     }
                 }
             },
