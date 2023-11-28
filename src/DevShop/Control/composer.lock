@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a6f80c84eadeab8ad5213a4b8d98fcd1",
+    "content-hash": "9fd9867137c993228021ff234af98f3e",
     "packages": [
         {
             "name": "behat/behat",
@@ -464,21 +464,21 @@
         },
         {
             "name": "bitbucket/client",
-            "version": "v4.1.0",
+            "version": "v4.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/BitbucketPHP/Client.git",
-                "reference": "c8a6e24ec71e987dde37207d4bd0810989c7a8b8"
+                "reference": "88e0b6f1d4a85297a193e444616f04534b65ed78"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/BitbucketPHP/Client/zipball/c8a6e24ec71e987dde37207d4bd0810989c7a8b8",
-                "reference": "c8a6e24ec71e987dde37207d4bd0810989c7a8b8",
+                "url": "https://api.github.com/repos/BitbucketPHP/Client/zipball/88e0b6f1d4a85297a193e444616f04534b65ed78",
+                "reference": "88e0b6f1d4a85297a193e444616f04534b65ed78",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
-                "php": "^7.2.5 || ^8.0",
+                "php": "^7.4.15 || ^8.0.2",
                 "php-http/cache-plugin": "^1.7.5",
                 "php-http/client-common": "^2.5",
                 "php-http/discovery": "^1.14",
@@ -525,7 +525,7 @@
             ],
             "support": {
                 "issues": "https://github.com/BitbucketPHP/Client/issues",
-                "source": "https://github.com/BitbucketPHP/Client/tree/v4.1.0"
+                "source": "https://github.com/BitbucketPHP/Client/tree/v4.2.0"
             },
             "funding": [
                 {
@@ -537,7 +537,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-01-23T19:14:04+00:00"
+            "time": "2022-01-24T02:53:45+00:00"
         },
         {
             "name": "clue/stream-filter",
@@ -1970,20 +1970,20 @@
         },
         {
             "name": "drupal/core-utility",
-            "version": "9.5.11",
+            "version": "10.1.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/drupal/core-utility.git",
-                "reference": "9793955d939577a2bb1f61f479cf453c0ba15938"
+                "reference": "3412e0fda51dfd027933f5023cd6c021e4ef2db5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/drupal/core-utility/zipball/9793955d939577a2bb1f61f479cf453c0ba15938",
-                "reference": "9793955d939577a2bb1f61f479cf453c0ba15938",
+                "url": "https://api.github.com/repos/drupal/core-utility/zipball/3412e0fda51dfd027933f5023cd6c021e4ef2db5",
+                "reference": "3412e0fda51dfd027933f5023cd6c021e4ef2db5",
                 "shasum": ""
             },
             "require": {
-                "php": ">=7.3.0"
+                "php": ">=8.1.0"
             },
             "type": "library",
             "extra": {
@@ -2006,9 +2006,9 @@
                 "drupal"
             ],
             "support": {
-                "source": "https://github.com/drupal/core-utility/tree/9.5.11"
+                "source": "https://github.com/drupal/core-utility/tree/10.1.6"
             },
-            "time": "2023-05-02T08:15:56+00:00"
+            "time": "2023-08-17T23:12:19+00:00"
         },
         {
             "name": "drupal/ctools",
@@ -3513,7 +3513,7 @@
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/provision.git",
-                "reference": "8c33884d1f9f11431f82713030f185ffb645b385"
+                "reference": "7dd0926ba467be0a9a5a73dbfd4d6fb0662b4904"
             },
             "require": {
                 "devshop/git-traits": "1.x-dev",
@@ -3532,8 +3532,8 @@
                     "dev-4.x": "4.x-dev"
                 },
                 "drupal": {
-                    "version": "7.x-4.0-beta19+8-dev",
-                    "datestamp": "1701178626",
+                    "version": "7.x-4.0-beta19+9-dev",
+                    "datestamp": "1701179990",
                     "security-coverage": {
                         "status": "not-covered",
                         "message": "Dev releases are not covered by Drupal security advisories."
@@ -4413,69 +4413,6 @@
             "time": "2020-11-01T09:30:18+00:00"
         },
         {
-            "name": "facebook/graph-sdk",
-            "version": "5.7.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/facebook/php-graph-sdk.git",
-                "reference": "2d8250638b33d73e7a87add65f47fabf91f8ad9b"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/facebook/php-graph-sdk/zipball/2d8250638b33d73e7a87add65f47fabf91f8ad9b",
-                "reference": "2d8250638b33d73e7a87add65f47fabf91f8ad9b",
-                "shasum": ""
-            },
-            "require": {
-                "php": "^5.4|^7.0"
-            },
-            "require-dev": {
-                "guzzlehttp/guzzle": "~5.0",
-                "mockery/mockery": "~0.8",
-                "phpunit/phpunit": "~4.0"
-            },
-            "suggest": {
-                "guzzlehttp/guzzle": "Allows for implementation of the Guzzle HTTP client",
-                "paragonie/random_compat": "Provides a better CSPRNG option in PHP 5"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "5.x-dev"
-                }
-            },
-            "autoload": {
-                "files": [
-                    "src/Facebook/polyfills.php"
-                ],
-                "psr-4": {
-                    "Facebook\\": "src/Facebook/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "Facebook Platform"
-            ],
-            "authors": [
-                {
-                    "name": "Facebook",
-                    "homepage": "https://github.com/facebook/php-graph-sdk/contributors"
-                }
-            ],
-            "description": "Facebook SDK for PHP",
-            "homepage": "https://github.com/facebook/php-graph-sdk",
-            "keywords": [
-                "facebook",
-                "sdk"
-            ],
-            "support": {
-                "issues": "https://github.com/facebook/php-graph-sdk/issues",
-                "source": "https://github.com/facebook/php-graph-sdk/tree/5.7.0"
-            },
-            "abandoned": true,
-            "time": "2018-12-11T22:56:31+00:00"
-        },
-        {
             "name": "friends-of-behat/mink-extension",
             "version": "v2.7.4",
             "source": {
@@ -4974,26 +4911,21 @@
         },
         {
             "name": "hybridauth/hybridauth",
-            "version": "v2.18.0",
+            "version": "v2.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hybridauth/hybridauth.git",
-                "reference": "a879408ad340b68c79faeea2e7a85b95a1f261ba"
+                "reference": "d4e5bc34008e8c187c302eb4e94200ee4a208c63"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hybridauth/hybridauth/zipball/a879408ad340b68c79faeea2e7a85b95a1f261ba",
-                "reference": "a879408ad340b68c79faeea2e7a85b95a1f261ba",
+                "url": "https://api.github.com/repos/hybridauth/hybridauth/zipball/d4e5bc34008e8c187c302eb4e94200ee4a208c63",
+                "reference": "d4e5bc34008e8c187c302eb4e94200ee4a208c63",
                 "shasum": ""
             },
             "require": {
                 "ext-curl": "*",
-                "facebook/graph-sdk": "^5.4",
-                "paypal/rest-api-sdk-php": "*",
                 "php": ">=5.2.0"
-            },
-            "require-dev": {
-                "squizlabs/php_codesniffer": "2.*"
             },
             "type": "library",
             "autoload": {
@@ -5032,9 +4964,9 @@
                 "forum": "https://groups.google.com/d/forum/hybridauth",
                 "gitter": "https://gitter.im/hybridauth/hybridauth",
                 "issues": "https://github.com/hybridauth/hybridauth/issues",
-                "source": "https://github.com/hybridauth/hybridauth/tree/v2.18.0"
+                "source": "https://github.com/hybridauth/hybridauth/tree/master"
             },
-            "time": "2021-03-08T13:17:31+00:00"
+            "time": "2016-09-05T03:02:22+00:00"
         },
         {
             "name": "instaclick/php-webdriver",
@@ -5973,60 +5905,6 @@
                 "source": "https://github.com/oomphinc/composer-installers-extender/tree/2.0.1"
             },
             "time": "2021-12-15T12:32:42+00:00"
-        },
-        {
-            "name": "paypal/rest-api-sdk-php",
-            "version": "1.14.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/paypal/PayPal-PHP-SDK.git",
-                "reference": "72e2f2466975bf128a31e02b15110180f059fc04"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/paypal/PayPal-PHP-SDK/zipball/72e2f2466975bf128a31e02b15110180f059fc04",
-                "reference": "72e2f2466975bf128a31e02b15110180f059fc04",
-                "shasum": ""
-            },
-            "require": {
-                "ext-curl": "*",
-                "ext-json": "*",
-                "php": ">=5.3.0",
-                "psr/log": "^1.0.0"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "^4.8.35"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "PayPal": "lib/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "Apache-2.0"
-            ],
-            "authors": [
-                {
-                    "name": "PayPal",
-                    "homepage": "https://github.com/paypal/rest-api-sdk-php/contributors"
-                }
-            ],
-            "description": "PayPal's PHP SDK for REST APIs",
-            "homepage": "http://paypal.github.io/PayPal-PHP-SDK/",
-            "keywords": [
-                "payments",
-                "paypal",
-                "rest",
-                "sdk"
-            ],
-            "support": {
-                "issues": "https://github.com/paypal/PayPal-PHP-SDK/issues",
-                "source": "https://github.com/paypal/PayPal-PHP-SDK/tree/master"
-            },
-            "abandoned": true,
-            "time": "2019-01-04T20:04:25+00:00"
         },
         {
             "name": "pear/console_table",
@@ -9528,7 +9406,7 @@
     },
     "platform-dev": [],
     "platform-overrides": {
-        "php": "7.4.0"
+        "php": "8.1"
     },
     "plugin-api-version": "2.3.0"
 }
