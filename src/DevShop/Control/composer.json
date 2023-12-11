@@ -199,7 +199,7 @@
           "https://www.drupal.org/project/provision/issues/3353492#comment-15336648": "https://www.drupal.org/files/issues/2023-11-28/drush-8-symfony-console-compat.patch"
         },
         "symfony/console": {
-          "https://www.drupal.org/project/provision/issues/3353492#comment-15336648": "https://www.drupal.org/files/issues/2023-12-11/3353492-symfony-console-4-update_0.patch"
+          "https://www.drupal.org/project/provision/issues/3353492#comment-15336648": "https://www.drupal.org/files/issues/2023-12-11/3353492-symfony-console-4-update_1.patch"
         }
       }
     },
