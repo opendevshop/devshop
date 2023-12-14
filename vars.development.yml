@@ -1,4 +1,4 @@
----
+ ---
 # This file is included only when using the development command `robo up`.
 
 # This prevents updating your local copy of devshop to a different or running the upgrade command.
@@ -6,7 +6,7 @@ devshop_cli_skip_update: true
 devmaster_skip_upgrade: true
 
 # The default for local development.
-php_version: "8.1"
+php_version: "8.0"
 
 xdebug_enabled: true
 php_xdebug_remote_enable: true
