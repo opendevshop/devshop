@@ -1,9 +1,0 @@
-# Only added in CI.
----
-version: '3'
-services:
-  devshop.server:
-    volumes:
-      - ../.github/test-artifacts:/var/aegir/test-artifacts
-      # Using volumes until builds are fixed.
-      - ../:/usr/share/devshop

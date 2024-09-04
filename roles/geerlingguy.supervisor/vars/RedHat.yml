@@ -1,3 +1,0 @@
----
-supervisor_bin_path: /usr/bin/supervisord
-supervisorctl_bin_path: /usr/bin/supervisorctl

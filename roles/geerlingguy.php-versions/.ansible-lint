@@ -1,5 +1,0 @@
-skip_list:
-  - 'yaml'
-  - 'risky-shell-pipe'
-  - 'no-handler'
-  - 'role-name'

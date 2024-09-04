@@ -1,5 +1,0 @@
-{
-    "require": {
-        "packethost/packet": "dev-master"
-    }
-}
