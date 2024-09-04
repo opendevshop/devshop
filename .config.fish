@@ -4,6 +4,7 @@
 #   source .config.fish
 abbr -a -- c composer
 abbr -a -- d docker
+abbr -a -- dd ddev drush
 abbr -a -- dc docker-compose
 abbr -a -- g git
 abbr -a -- gb git branch
