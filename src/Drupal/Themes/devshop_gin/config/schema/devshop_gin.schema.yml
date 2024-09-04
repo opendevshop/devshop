@@ -1,0 +1,8 @@
+# Schema for the configuration files of the DevShop Gin theme.
+devshop_gin.settings:
+  type: theme_settings
+  label: 'DevShop Gin settings'
+  mapping:
+    example:
+      type: string
+      label: Example

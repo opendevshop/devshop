@@ -1,0 +1,24 @@
+# Main theme library.
+global:
+  js:
+    js/devshop-gin.js: {}
+  css:
+    base:
+      css/base/elements.css: {}
+    component:
+      css/component/block.css: {}
+      css/component/breadcrumb.css: {}
+      css/component/field.css: {}
+      css/component/form.css: {}
+      css/component/header.css: {}
+      css/component/menu.css: {}
+      css/component/messages.css: {}
+      css/component/node.css: {}
+      css/component/sidebar.css: {}
+      css/component/table.css: {}
+      css/component/tabs.css: {}
+      css/component/buttons.css: {}
+    layout:
+      css/layout/layout.css: {}
+    theme:
+      css/theme/print.css: { media: print }

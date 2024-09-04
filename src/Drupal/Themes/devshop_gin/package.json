@@ -1,0 +1,10 @@
+{
+  "name": "devshop_gin",
+  "private": true,
+  "scripts": {
+    "livereload": "livereload --exclusions node_modules/ --exts 'css,js,twig,theme,apng,avif,gif,jpg,jpeg,jfif,pjpeg,pjp,png,svg,webp'"
+  },
+  "devDependencies": {
+    "livereload": "^0.9.3"
+  }
+}
