@@ -31,7 +31,6 @@ distribution:
 # Unlike dependencies, these can be uninstalled later.
 install:
   - breakpoint
-  - color
   - config
   - help
   - options
