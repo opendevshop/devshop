@@ -3,7 +3,6 @@
     "description": "DevShop Control: the Drupal based front-end for DevShop.",
     "type": "project",
     "license": "GPL-2.0-or-later",
-    "type": "project",
     "authors": [
         {
             "name": "Jon Pugh",
