@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a2748890391150b58ad8c1219c2b4b94",
+    "content-hash": "463baaa6537b3eb870d3b5895c3932ec",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -1781,17 +1781,11 @@
         },
         {
             "name": "drupal/site",
-            "version": "2.2.0-rc3",
+            "version": "dev-2.x",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/site.git",
-                "reference": "2.2.0-rc3"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/site-2.2.0-rc3.zip",
-                "reference": "2.2.0-rc3",
-                "shasum": "dc60d121b51f1297b2c7e17e61479f9820de6b39"
+                "reference": "d9f0d9bd245aba0f52a7bc1113b23c9d6a70beac"
             },
             "require": {
                 "drupal/admin_toolbar": "^3.4",
@@ -1802,12 +1796,15 @@
             },
             "type": "drupal-module",
             "extra": {
+                "branch-alias": {
+                    "dev-2.x": "2.x-dev"
+                },
                 "drupal": {
-                    "version": "2.2.0-rc3",
-                    "datestamp": "1709301341",
+                    "version": "2.2.0-rc3+11-dev",
+                    "datestamp": "1724973882",
                     "security-coverage": {
                         "status": "not-covered",
-                        "message": "RC releases are not covered by Drupal security advisories."
+                        "message": "Dev releases are not covered by Drupal security advisories."
                     }
                 },
                 "patches": []
@@ -12473,6 +12470,7 @@
     "minimum-stability": "dev",
     "stability-flags": {
         "drupal/devshop": 20,
+        "drupal/site": 20,
         "drupal/site_manager": 20
     },
     "prefer-stable": true,
