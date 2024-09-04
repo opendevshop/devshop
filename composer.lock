@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6b5dfed78a8570d072e58fa09a37a636",
+    "content-hash": "d3a9975385fa370950ae921ca1356cbd",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -1651,26 +1651,6 @@
                 }
             ],
             "description": "Distribution & Install profile for DevShop.",
-            "transport-options": {
-                "relative": true
-            }
-        },
-        {
-            "name": "drupal/devshop_gin",
-            "version": "2.x-dev",
-            "dist": {
-                "type": "path",
-                "url": "src/Drupal/Themes/devshop_gin",
-                "reference": "9a2c31db96772d84028d299c3e53cf6b083b9f62"
-            },
-            "type": "drupal-theme",
-            "authors": [
-                {
-                    "name": "Jon Pugh",
-                    "email": "jon@thinkdrop.net"
-                }
-            ],
-            "description": "DevShop theme, based on Gin.",
             "transport-options": {
                 "relative": true
             }
@@ -12611,8 +12591,6 @@
     "minimum-stability": "dev",
     "stability-flags": {
         "drupal/devshop": 20,
-        "drupal/gin": 5,
-        "drupal/gin_toolbar": 5,
         "drupal/site": 20,
         "drupal/site_manager": 20
     },
