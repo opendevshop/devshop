@@ -1,0 +1,7 @@
+name: 'DevShop'
+mail: admin@example.com
+slogan: ''
+page:
+  403: ''
+  404: ''
+  front: /projects
