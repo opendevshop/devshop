@@ -31,3 +31,5 @@ vendor
 
 # PHPStorm files
 .idea
+/.editorconfig
+/.gitattributes
