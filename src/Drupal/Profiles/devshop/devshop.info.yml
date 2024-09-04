@@ -21,10 +21,11 @@ distribution:
   #
   # To set your theme as the theme for the distribution installation uncomment the following:
   #
-  # install:
-  #   theme: my_theme
-  #   # To redirect to specific URL after profile installation set your finish_url:
-  #   finish_url: ?welcome=1
+  install:
+    theme: gin
+    # To redirect to specific URL after profile installation set your finish_url:
+    finish_url: ?welcome=1
+
   langcode: en
 
 # Modules to install to support the profile.
@@ -40,9 +41,7 @@ install:
   - toolbar
   - views
   - views_ui
-
-  # Failing to install:
-  # - site_manager
+  - site
 
 # Required modules. These cannot be uninstalled.
 # Note that any dependencies of the modules listed here will be installed automatically.
@@ -53,4 +52,4 @@ dependencies:
 # List any themes that should be installed as part of the profile installation.
 # Note that this will not set any theme as the default theme.
 themes:
-  - claro
+  - gin
