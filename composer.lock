@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d3a9975385fa370950ae921ca1356cbd",
+    "content-hash": "e586e37356b54c738bf5df8b51a024e5",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -1902,11 +1902,11 @@
         },
         {
             "name": "drupal/site",
-            "version": "dev-2.x",
+            "version": "dev-3.x",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/site.git",
-                "reference": "d9f0d9bd245aba0f52a7bc1113b23c9d6a70beac"
+                "reference": "7f83055ec3ab5d3d4102408837733a97a81cb8e5"
             },
             "require": {
                 "drupal/admin_toolbar": "^3.4",
@@ -1918,17 +1918,22 @@
             "type": "drupal-module",
             "extra": {
                 "branch-alias": {
-                    "dev-2.x": "2.x-dev"
+                    "dev-3.x": "3.x-dev"
                 },
                 "drupal": {
-                    "version": "2.2.0-rc3+11-dev",
-                    "datestamp": "1724973882",
+                    "version": "3.x-dev",
+                    "datestamp": "1725474510",
                     "security-coverage": {
                         "status": "not-covered",
                         "message": "Dev releases are not covered by Drupal security advisories."
                     }
                 },
-                "patches": []
+                "enable-patching": true,
+                "patches": {
+                    "drupal/core": {
+                        "Issue 2685749: Add a Machine Name widget to core.": "https://www.drupal.org/files/issues/2024-06-21/machine-name-widget-2685749-140.patch"
+                    }
+                }
             },
             "notification-url": "https://packages.drupal.org/8/downloads",
             "license": [
@@ -1947,56 +1952,6 @@
                 }
             ],
             "description": "Provides a Site entity about your website. Tracks state, metadata, and configuration changes over time using revisions.",
-            "homepage": "https://drupal.org/project/operations",
-            "support": {
-                "source": "https://git.drupalcode.org/project/operations",
-                "chat": "https://drupal.slack.com/archives/C05CM6A9UDN",
-                "issues": "https://www.drupal.org/project/issues/operations?categories=All"
-            }
-        },
-        {
-            "name": "drupal/site_manager",
-            "version": "dev-2.x",
-            "source": {
-                "type": "git",
-                "url": "https://git.drupalcode.org/project/site_manager.git",
-                "reference": "c8e86dc71bc420f9b54f86158eba68d60ded9fa7"
-            },
-            "require": {
-                "drupal/core": "^9 || ^10",
-                "drupal/site": "^2.0"
-            },
-            "type": "drupal-module",
-            "extra": {
-                "branch-alias": {
-                    "dev-2.x": "2.x-dev"
-                },
-                "drupal": {
-                    "version": "2.1.0-beta1+0-dev",
-                    "datestamp": "1712162058",
-                    "security-coverage": {
-                        "status": "not-covered",
-                        "message": "Dev releases are not covered by Drupal security advisories."
-                    }
-                }
-            },
-            "notification-url": "https://packages.drupal.org/8/downloads",
-            "license": [
-                "GPL-2.0-or-later"
-            ],
-            "authors": [
-                {
-                    "name": "Drupal Operations Contributors",
-                    "homepage": "https://git.drupalcode.org/project/operations/-/graphs/1.x?ref_type=heads"
-                },
-                {
-                    "name": "Jon Pugh",
-                    "role": "author",
-                    "email": "jon@thinkdrop.net",
-                    "homepage": "https://thinkdrop.net"
-                }
-            ],
-            "description": "A manager for other sites. Collect Site Entities in a central location.",
             "homepage": "https://drupal.org/project/operations",
             "support": {
                 "source": "https://git.drupalcode.org/project/operations",
@@ -12591,8 +12546,9 @@
     "minimum-stability": "dev",
     "stability-flags": {
         "drupal/devshop": 20,
-        "drupal/site": 20,
-        "drupal/site_manager": 20
+        "drupal/gin": 5,
+        "drupal/gin_toolbar": 5,
+        "drupal/site": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,
