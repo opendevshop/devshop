@@ -41,6 +41,9 @@ install:
   - views
   - views_ui
 
+  # Failing to install:
+  # - site_manager
+
 # Required modules. These cannot be uninstalled.
 # Note that any dependencies of the modules listed here will be installed automatically.
 dependencies:
