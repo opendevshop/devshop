@@ -1,14 +1,14 @@
 ![DevShop Logo](./assets/logo-new-light-bg.png)
 
-[DevShop][1] is an **Open Source DevOps Framework** and a 
-set of reusable **components** designed to improve the web development, testing, and 
+[DevShop][1] is an **Open Source DevOps Framework** and a
+set of reusable **components** designed to improve the web development, testing, and
 server management process, especially for [Drupal](https://drupal.org) websites.
 
 The goal of DevShop is to provide a complete **web development & testing pipeline** out of the
-box, while empowering users to choose their own server infrastructure and systems 
+box, while empowering users to choose their own server infrastructure and systems
 architecture.
- 
-DevShop uses [Ansible & Ansible Galaxy][2] for server configuration, [Symfony 
+
+DevShop uses [Ansible & Ansible Galaxy][2] for server configuration, [Symfony
 Console][3] for command line tools, and [Drupal][3] for the web interface.
 
 ## Core Values
@@ -26,14 +26,14 @@ Console][3] for command line tools, and [Drupal][3] for the web interface.
   - Engage the community to work together towards the common goal of  a complete OpenOps platform and healthy ecosystem of tools.
 
 #### Lower Costs & Barriers
-  - Lower the cost of running sites with a host-agnostic platform, commoditizing servers, and moving maintenance costs of DevOps tools off of organizations and on to the community, 
+  - Lower the cost of running sites with a host-agnostic platform, commoditizing servers, and moving maintenance costs of DevOps tools off of organizations and on to the community,
   - Lower the barriers of entry into the DevOps world for all.
 
 ## DevShop Components
 
 The DevShop Components are small, independently functional tools that are all designed to work together.
 
-These tools are designed to be useful regardless of the hosting or DevOps systems they are being run on. 
+These tools are designed to be useful regardless of the hosting or DevOps systems they are being run on.
 
 ### Composer Packages
 
@@ -41,7 +41,7 @@ These tools are designed to be useful regardless of the hosting or DevOps system
 
 > Drupal CI/CD Dashboard and Ansible Server Manager in a Box
 
-- Web-based front-end for a DevShop server. Drupal 7 based. 
+- Web-based front-end for a DevShop server. Drupal 7 based.
 - Add unlimited Drupal projects and environments per server.
 - Create and configure servers all through the web interface.
 - DevShop Control is built into the devshop codebase. The DevShop Control Project is a composer project template that can be used to deploy a custom devshop control site.
@@ -74,7 +74,7 @@ These tools are designed to be useful regardless of the hosting or DevOps system
 
 > Simple abstract CLI for interacting with the GitHub API.
 
-- Simple CLI wrapper for the GitHub API, where every API resource is a command and options are automatically passed. 
+- Simple CLI wrapper for the GitHub API, where every API resource is a command and options are automatically passed.
 - "Deploy" command provides simple way to interact with GitHub's Deployments API using composer commands and bin scripts.
 
 #### [Git Traits](./src/DevShop/Component/GitTraits)
@@ -89,10 +89,10 @@ These tools are designed to be useful regardless of the hosting or DevOps system
 
 > Split a monorepo with a single command.
 
-- Commands to split the git monorepo into multiple child repos. 
+- Commands to split the git monorepo into multiple child repos.
 - Uses the same [splitsh-lite]() script that Symfony and Drupal uses.
 - Reads list of repositories from `composer.json` config.
-    
+
 ### Ansible Roles
 
 See https://galaxy.ansible.com/opendevshop for all roles.
@@ -107,10 +107,10 @@ See https://galaxy.ansible.com/opendevshop for all roles.
 - [devshop/server](https://hub.docker.com/r/devshop/server) All in one container, uses systemd to run all services.
 
 As we progress forward with the Ansible and Docker system, more common web services will be created and released as Ansible Roles and Docker containers.
- 
+
 # Resources
 
-* [Documentation](http://docs.opendevshop.com) Please Contribute! [github.com/opendevshop/documentation](https://github.com/opendevshop/documentation) 
+* [Documentation](http://docs.opendevshop.com) Please Contribute! [github.com/opendevshop/documentation](https://github.com/opendevshop/documentation)
 * [Chat](http://gitter.im/opendevshop/devshop) on Gitter: [gitter.im/opendevshop/devshop](http://gitter.im/opendevshop/devshop)
 * [Issue Queue](http://github.com/opendevshop/devshop/issues) on GitHub: [github.com/opendevshop/devshop/issues](http://github.com/opendevshop/devshop/issues)
 * [Development Information](http://docs.opendevshop.com/development.html)  Developer documentation will walk you through contributing to DevShop.
@@ -125,7 +125,7 @@ Version | Status | Aegir | Hosts      | Status
 
 
 [![Backers on Open Collective](https://opencollective.com/devshop/backers/badge.svg)](#backers)
- [![Sponsors on Open Collective](https://opencollective.com/devshop/sponsors/badge.svg)](#sponsors) 
+ [![Sponsors on Open Collective](https://opencollective.com/devshop/sponsors/badge.svg)](#sponsors)
 
 DevShop is a "cloud hosting" system for Drupal. DevShop makes it easy to host, develop, test, and update drupal sites.  It provides a front-end built in Drupal ([Devmaster](https://github.com/opendevshop/devmaster)) and a back-end built with Drush, Symfony, and Ansible.
 
@@ -141,7 +141,7 @@ DevShop uses many additional contributed modules that Aegir core does not.
 
 # Aegir Cooperative Founding Member
 
-OpenDevShop Inc is a founding member of the Aegir Cooperative.  Lead DevShop developer Jon Pugh is a core Aegir maintainer.  
+OpenDevShop Inc is a founding member of the Aegir Cooperative.  Lead DevShop developer Jon Pugh is a core Aegir maintainer.
 
 See [aegir.coop](http://aegir.coop) for more information.
 
@@ -156,7 +156,7 @@ See the [Tour](http://docs.opendevshop.com/tour.html) section of the documentati
 
 ## Contributors
 
-This project exists thanks to all the people who contribute. 
+This project exists thanks to all the people who contribute.
 <a href="https://github.com/opendevshop/devshop/graphs/contributors"><img src="https://opencollective.com/devshop/contributors.svg?width=890&button=false" /></a>
 
 
