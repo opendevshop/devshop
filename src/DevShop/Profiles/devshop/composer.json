@@ -1,0 +1,13 @@
+{
+    "name": "drupal/devshop",
+    "description": "Distribution & Install profile for DevShop.",
+    "type": "drupal-profile",
+    "authors": [
+        {
+            "name": "Jon Pugh",
+            "email": "jon@thinkdrop.net"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {}
+}
