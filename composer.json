@@ -29,7 +29,8 @@
         "php-http/httplug": "^2.3",
         "devshop/git-traits": "1.x-dev",
         "drush/drush": "^10.6",
-        "devshop/github-api-cli": "1.x-dev"
+        "devshop/github-api-cli": "1.x-dev",
+        "cweagans/composer-patches": "^1.7"
     },
     "replace": {
         "drupal/drupal": "*"
@@ -81,7 +82,8 @@
         "sort-packages:": "true",
         "allow-plugins": {
             "devshop/git-split": true,
-            "devshop/yaml-tasks": true
+            "devshop/yaml-tasks": true,
+            "cweagans/composer-patches": true
         },
         "platform": {
             "php": "7.4.0"
@@ -104,6 +106,11 @@
                 "src/DevShop/Component/PowerProcess": "https://github.com/devshop-packages/power-process.git",
                 "src/DevShop/Component/YamlTasks": "https://github.com/devshop-packages/yaml-tasks.git",
                 "src/DevShop/Component/ControlProject": "https://github.com/devshop-packages/devshop-control-project.git"
+            }
+        },
+        "patches": {
+            "symfony/console": {
+                "https://www.drupal.org/project/provision/issues/3353492#comment-15336648": "https://www.drupal.org/files/issues/2023-12-11/3353492-symfony-console-4-update_1.patch"
             }
         }
     },

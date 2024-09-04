@@ -137,7 +137,7 @@
             "drupal/core-composer-scaffold": true
         },
         "platform": {
-            "php": "7.4.0"
+            "php": "8.1"
         }
     },
     "autoload": {
@@ -193,7 +193,15 @@
       "preserve-paths": [
           "web/sites",
           "web/profiles/devmaster"
-        ]
+      ],
+      "patches": {
+        "drush/drush": {
+          "https://www.drupal.org/project/provision/issues/3353492#comment-15336648": "https://www.drupal.org/files/issues/2023-11-28/drush-8-symfony-console-compat.patch"
+        },
+        "symfony/console": {
+          "https://www.drupal.org/project/provision/issues/3353492#comment-15336648": "https://www.drupal.org/files/issues/2023-12-11/3353492-symfony-console-4-update_1.patch"
+        }
+      }
     },
     "minimum-stability": "dev",
     "prefer-stable": true
