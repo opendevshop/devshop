@@ -14,6 +14,7 @@
         "cweagans/composer-patches": "^1.7",
         "drupal/core-composer-scaffold": "^10.2.0",
         "drupal/core-recommended": "^10.2.0",
+        "drupal/devshop": "1.x-dev",
         "drupal/site_manager": "2.x-dev",
         "drush/drush": "^12.4.3",
         "oomphinc/composer-installers-extender": "^2.0",
@@ -28,6 +29,10 @@
         "drupal/drupal": "*"
     },
     "repositories": [
+        {
+          "type": "path",
+          "url": "src/DevShop/Profiles/devshop"
+        },
         {
             "type": "composer",
             "url": "https://packages.drupal.org/8"

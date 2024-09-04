@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "fa9e8508e687849f746f3425111b7573",
+    "content-hash": "d1d51bb7372d08a51313b090b7330f8a",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -1634,6 +1634,26 @@
                 "source": "https://github.com/drupal/core-recommended/tree/10.3.2"
             },
             "time": "2024-08-08T09:23:57+00:00"
+        },
+        {
+            "name": "drupal/devshop",
+            "version": "1.x-dev",
+            "dist": {
+                "type": "path",
+                "url": "src/DevShop/Profiles/devshop",
+                "reference": "5bbb4bf62dafe7bdaa2aaeae79eccca7bc269146"
+            },
+            "type": "drupal-profile",
+            "authors": [
+                {
+                    "name": "Jon Pugh",
+                    "email": "jon@thinkdrop.net"
+                }
+            ],
+            "description": "Distribution & Install profile for DevShop.",
+            "transport-options": {
+                "relative": true
+            }
         },
         {
             "name": "drupal/eva",
