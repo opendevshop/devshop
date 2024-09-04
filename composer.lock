@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d1d51bb7372d08a51313b090b7330f8a",
+    "content-hash": "a2748890391150b58ad8c1219c2b4b94",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -1637,10 +1637,10 @@
         },
         {
             "name": "drupal/devshop",
-            "version": "1.x-dev",
+            "version": "dev-feature/refactor-2.x",
             "dist": {
                 "type": "path",
-                "url": "src/DevShop/Profiles/devshop",
+                "url": "src/Drupal/Profiles/devshop",
                 "reference": "5bbb4bf62dafe7bdaa2aaeae79eccca7bc269146"
             },
             "type": "drupal-profile",
@@ -12472,6 +12472,7 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
+        "drupal/devshop": 20,
         "drupal/site_manager": 20
     },
     "prefer-stable": true,

@@ -14,7 +14,7 @@
         "cweagans/composer-patches": "^1.7",
         "drupal/core-composer-scaffold": "^10.2.0",
         "drupal/core-recommended": "^10.2.0",
-        "drupal/devshop": "1.x-dev",
+        "drupal/devshop": "dev-feature/refactor-2.x",
         "drupal/site_manager": "2.x-dev",
         "drush/drush": "^12.4.3",
         "oomphinc/composer-installers-extender": "^2.0",
@@ -31,7 +31,7 @@
     "repositories": [
         {
           "type": "path",
-          "url": "src/DevShop/Profiles/devshop"
+          "url": "src/Drupal/Profiles/devshop"
         },
         {
             "type": "composer",
