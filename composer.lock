@@ -1621,7 +1621,7 @@
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/commands.git",
-                "reference": "fd34d0483396002fe3257879062ffcca370f1ba3"
+                "reference": "6fb792fdf74e3f0f50fad0475fff083d507a2f7a"
             },
             "require": {
                 "drupal/core": "^9 || ^10",
@@ -1634,7 +1634,7 @@
                 },
                 "drupal": {
                     "version": "1.x-dev",
-                    "datestamp": "1726075988",
+                    "datestamp": "1726160425",
                     "security-coverage": {
                         "status": "not-covered",
                         "message": "Project has not opted into security advisory coverage!"
