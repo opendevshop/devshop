@@ -1,0 +1,8 @@
+name: 'Site Hosting'
+type: module
+description: 'Create and manage websites.'
+package: Operations
+core_version_requirement: ^10 || ^11
+dependencies:
+  - commands:commands
+  - site:site
