@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d288f05e10b32fa8c2b12272bce30b10",
+    "content-hash": "8065664a8065d8c8d2a45edc8841366c",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -2345,6 +2345,25 @@
                 "source": "https://git.drupalcode.org/project/operations",
                 "chat": "https://drupal.slack.com/archives/C05CM6A9UDN",
                 "issues": "https://www.drupal.org/project/issues/operations?categories=All"
+            }
+        },
+        {
+            "name": "drupal/site_hosting",
+            "version": "2.x-dev",
+            "dist": {
+                "type": "path",
+                "url": "src/Drupal/Modules/site_hosting",
+                "reference": "444c6ea7c0bf0e0bb74cbe6a4f74fd91bf29a76d"
+            },
+            "type": "drupal-module",
+            "authors": [
+                {
+                    "name": "Jon Pugh",
+                    "email": "jon@thinkdrop.net"
+                }
+            ],
+            "transport-options": {
+                "relative": true
             }
         },
         {
