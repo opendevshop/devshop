@@ -4,7 +4,12 @@ services:
       - docker
     volumes:
       - /home/$USER:/home/$USER
-      - /var/run/docker.sock:/var/run/docker.sock
-      - /usr/bin/docker:/usr/bin/docker
-      - /usr/bin/ddev:/usr/bin/ddev
-      - /usr/bin/dockerd-rootless.sh:/usr/bin/dockerd-rootless.sh
+      - ${DOCKER_SOCK_PATH:-/var/run/docker.sock}:/var/run/docker.sock
+
+      # DOCKER_BIN_PATH must be a linux executable.
+      # If using MacOS, `docker` command wont work.
+      # Set DOCKER_BIN_PATH to something outside of path so it won't use that bin.
+#      - ${DOCKER_BIN_PATH:-/usr/bin/docker}:/usr/bin/docker
+#      - ${DDEV_BIN_PATH:-/usr/bin/ddev}:${DDEV_BIN_PATH:-/usr/bin/ddev}
+
+#      - /usr/bin/dockerd-rootless.sh:/usr/bin/dockerd-rootless.sh

@@ -5,3 +5,26 @@ ARG DOCKER_GID
 ENV DOCKER_GID=${DOCKER_GID:-992}
 USER root
 RUN groupadd docker --gid $DOCKER_GID
+
+# Fix NGINX thing.
+# https://blog.nginx.org/blog/updating-pgp-key-for-nginx-software
+RUN \
+  curl https://nginx.org/keys/nginx_signing.key | gpg --dearmor | sudo tee /usr/share/keyrings/nginx-archive-keyring.gpg >/dev/null
+
+# Install docker
+# https://get.docker.com/
+RUN \
+  curl -fsSL https://get.docker.com -o install-docker.sh && \
+  sh install-docker.sh
+
+RUN touch /var/log/supervisord.log
+RUN chmod 777 /var/log/supervisord.log
+
+# Install DDEV
+# https://ddev.readthedocs.io/en/stable/users/install/ddev-installation/#macos
+USER $username
+RUN \
+  curl -fsSL https://ddev.com/install.sh -o /tmp/install.sh && \
+  bash /tmp/install.sh
+# Back to root
+USER root
