@@ -1,9 +1,8 @@
 services:
   web:
-# Was trying to figure out run docker without sudo on mac.
-#    build:
-#      args:
-#        DOCKER_GID: ${DOCKER_GID:-992}
+    build:
+      args:
+        DOCKER_GID: ${DOCKER_GID:-992}
     group_add:
       - docker
     volumes:
