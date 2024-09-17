@@ -1,5 +1,7 @@
 #
 # INSTALL DOCKER
 #
+ARG DOCKER_GID
+ENV DOCKER_GID=${DOCKER_GID:-992}
 USER root
-RUN groupadd docker --gid 992
+RUN groupadd docker --gid $DOCKER_GID
