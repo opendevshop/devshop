@@ -1,0 +1,10 @@
+services:
+  web:
+    group_add:
+      - docker
+    volumes:
+      - /home/$USER:/home/$USER
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /usr/bin/docker:/usr/bin/docker
+      - /usr/bin/ddev:/usr/bin/ddev
+      - /usr/bin/dockerd-rootless.sh:/usr/bin/dockerd-rootless.sh

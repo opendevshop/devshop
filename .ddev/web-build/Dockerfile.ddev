@@ -1,0 +1,5 @@
+#
+# INSTALL DOCKER
+#
+USER root
+RUN groupadd docker --gid 992
