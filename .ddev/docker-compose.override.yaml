@@ -6,7 +6,8 @@ services:
     group_add:
       - docker
     volumes:
-      - /home/$USER:/home/$USER
+#      - /home/$USER:/home/$USER
+      - ${DOCKER_HOST_SITES_PATH:-/home/jonpugh/Sites}:${DOCKER_HOST_SITES_PATH:-/home/jonpugh/Sites}
       - ${DOCKER_SOCK_PATH:-/var/run/docker.sock}:/var/run/docker.sock
 
       # DOCKER_BIN_PATH must be a linux executable.
