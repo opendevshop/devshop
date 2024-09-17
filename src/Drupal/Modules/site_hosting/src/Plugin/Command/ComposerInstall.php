@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\commands\Plugin\Command;
+namespace Drupal\site_hosting\Plugin\Command;
 
 use Drupal\commands\CommandPluginBase;
 use Drupal\Core\Form\FormStateInterface;
