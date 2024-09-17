@@ -15,7 +15,7 @@ use Drupal\user\Entity\User;
  *   description = @Translation("Clone a git repository and checkout the desired git reference."),
  *   command = {
  *     "git clone [git_remote] [git_root] || echo 'Clone already exists.'",
- *     "cd [git_root] && git fetch && git checkout [git_reference]",
+ *     "cd [git_root] && git fetch && git checkout [git_reference] && git show",
  *   }
  * )
  */
