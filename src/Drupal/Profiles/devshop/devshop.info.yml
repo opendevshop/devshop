@@ -42,7 +42,8 @@ install:
   - views
   - views_ui
   - site
-  - commands
+  - tasks
+  - site_hosting
 
 # Required modules. These cannot be uninstalled.
 # Note that any dependencies of the modules listed here will be installed automatically.
