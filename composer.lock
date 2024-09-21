@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8065664a8065d8c8d2a45edc8841366c",
+    "content-hash": "4c9a6286bc60f3ec564f571de383240c",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -1621,7 +1621,7 @@
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/commands.git",
-                "reference": "260604b2fbcfc1b7ad634a29cac2b709d70b8228"
+                "reference": "967229e28b3ed2ef23eee2acb2c1452c4b0def5d"
             },
             "require": {
                 "drupal/core": "^9 || ^10",
@@ -1634,7 +1634,7 @@
                 },
                 "drupal": {
                     "version": "1.x-dev",
-                    "datestamp": "1726600936",
+                    "datestamp": "1726686605",
                     "security-coverage": {
                         "status": "not-covered",
                         "message": "Project has not opted into security advisory coverage!"
@@ -13010,8 +13010,7 @@
         "drupal/devshop": 20,
         "drupal/gin": 5,
         "drupal/gin_toolbar": 5,
-        "drupal/site": 20,
-        "drupal/site_hosting": 20
+        "drupal/site": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,

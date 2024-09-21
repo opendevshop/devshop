@@ -20,7 +20,7 @@
         "drupal/gin": "^3.0@RC",
         "drupal/gin_toolbar": "^1.0@RC",
         "drupal/site": "3.x-dev",
-        "drupal/site_hosting": "2.x-dev",
+         "drupal/site_hosting": "*",
         "drush/drush": "^12.4.3",
         "oomphinc/composer-installers-extender": "^2.0",
         "vlucas/phpdotenv": "^5.1",
