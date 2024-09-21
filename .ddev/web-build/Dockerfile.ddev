@@ -6,10 +6,11 @@ ENV DOCKER_GID=${DOCKER_GID:-992}
 USER root
 RUN groupadd docker --gid $DOCKER_GID
 
+# @TODO: Removed this because it broke on zen laptop
 # Fix NGINX thing.
 # https://blog.nginx.org/blog/updating-pgp-key-for-nginx-software
-RUN \
-  curl https://nginx.org/keys/nginx_signing.key | gpg --dearmor | sudo tee /usr/share/keyrings/nginx-archive-keyring.gpg >/dev/null
+#RUN \
+#  curl https://nginx.org/keys/nginx_signing.key | gpg --dearmor | sudo tee /usr/share/keyrings/nginx-archive-keyring.gpg >/dev/null
 
 # Install docker
 # https://get.docker.com/
