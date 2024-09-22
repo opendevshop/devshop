@@ -1,0 +1,5 @@
+status: true
+dependencies: {  }
+id: verify_site
+label: 'Verify Site'
+description: 'Prepare code and launch site.'

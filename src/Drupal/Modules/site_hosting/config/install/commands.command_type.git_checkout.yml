@@ -1,0 +1,6 @@
+status: true
+dependencies: {  }
+id: git_checkout
+label: 'Git Checkout'
+description: 'Clone a git repository and checkout the desired git reference.'
+command_plugin: git_checkout

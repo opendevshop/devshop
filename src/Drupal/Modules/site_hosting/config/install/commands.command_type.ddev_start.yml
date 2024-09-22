@@ -1,0 +1,6 @@
+status: true
+dependencies: {  }
+id: ddev_start
+label: 'DDEV Start'
+description: 'Run ddev start.'
+command_plugin: ddev_start
