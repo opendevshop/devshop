@@ -1,4 +1,0 @@
-skip_list:
-  - 'yaml'
-  - 'no-handler'
-  - 'role-name'

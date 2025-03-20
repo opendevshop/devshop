@@ -1,2 +1,0 @@
----
-__php_mysql_package: php{{ php_default_version_debian | default("7.4") }}-mysql

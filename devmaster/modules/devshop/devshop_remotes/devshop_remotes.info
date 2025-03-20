@@ -1,5 +1,0 @@
-name = DevShop Remotes
-description = Manage remote environments with devshop.
-core = 7.x
-package = DevShop
-dependencies[] = devshop_projects
