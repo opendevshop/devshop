@@ -68,5 +68,10 @@
                 "  * Follw the code: https://github.com/opendevshop/devshop/tree/d2/docs"
             ]
         }
+    },
+    "scripts": {
+        "post-install-cmd": [
+            "cd web/profiles && ln -s ../../src/profiles/devshop_installer"
+        ]
     }
 }
