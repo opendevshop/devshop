@@ -20,12 +20,13 @@
         "drupal/core-project-message": "^11.1.4",
         "drupal/core-recommended": "^11.1.4",
         "drupal/recipe_installer_kit": "^1-alpha3@alpha",
+        "drupal/drupal_cms_starter": "~1.0.3",
         "drush/drush": "^13"
     },
     "conflict": {
         "drupal/drupal": "*"
     },
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "prefer-stable": true,
     "config": {
         "allow-plugins": {
