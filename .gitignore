@@ -1,33 +1,9 @@
 
-# devshop repos
-aegir-home/*
-!aegir-home/.ssh/.gitkeep
-aegir-dockerfiles
-aegir-tests
-dockerfiles
-documentation
-hosting
-hostmaster
-provision
-devshop-control
-src/DevShop/Control/web
+/.idea
+/.editorconfig
+/.gitattributes
+/.env
 
-# Local config
-.vagrant
-devmaster_id_rsa.pub
-
-vars.local.yml
-
-# Ignore bin dir, except for devshop CLI.
-# @TODO: Move CLI to a component, so we can ignore the entire folder.
-bin/*
-!bin/devshop
-
-# Symfony code
-vendor
-
-# Development Mode Indicator File
-.development_mode
-
-# PHPStorm files
-.idea
+/web
+/recipes
+/vendor
