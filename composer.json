@@ -71,7 +71,7 @@
     },
     "scripts": {
         "post-install-cmd": [
-            "cd web/profiles && ln -s ../../src/profiles/devshop_installer"
+            "cd web/profiles && ln -sf ../../src/profiles/devshop_installer"
         ]
     }
 }
