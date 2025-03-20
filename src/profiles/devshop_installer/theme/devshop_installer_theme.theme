@@ -1,0 +1,134 @@
+<?php
+
+declare(strict_types=1);
+
+use Drupal\Core\File\FileUrlGeneratorInterface;
+
+/**
+ * Implements template_preprocess_install_page().
+ */
+function drupal_cms_installer_theme_preprocess_install_page(array &$variables): void {
+  $theme_path = \Drupal::theme()->getActiveTheme()->getPath();
+  $variables['theme_path'] = \Drupal::service(FileUrlGeneratorInterface::class)
+    ->generateString($theme_path);
+}
+
+/**
+ * Implements hook_theme().
+ */
+function drupal_cms_installer_theme_theme(): array {
+  return [
+    'step_svg' => [
+      'variables' => [
+        'id' => NULL,
+      ],
+    ],
+  ];
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter() for installer_site_name_form.
+ */
+function drupal_cms_installer_theme_form_installer_site_name_form_alter(array &$form): void {
+  $form['#title'] = t('Give your site a name');
+
+  $form['help'] = [
+    '#prefix' => '<p class="cms-installer__subhead">',
+    '#markup' => t('You can change this later.'),
+    '#suffix' => '</p>',
+    '#weight' => -100,
+  ];
+  $form['site_name'] += [
+    '#prefix' => '<div class="cms-installer__form-group">',
+    '#suffix' => '</div>',
+  ];
+  $form['svg'] = [
+    '#theme' => 'step_svg',
+    '#id' => 'name',
+    '#weight' => 1000,
+  ];
+  $form['actions']['submit']['#attributes']['class'] = ['button--next'];
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter() for installer_recipes_form.
+ */
+function drupal_cms_installer_theme_form_installer_recipes_form_alter(array &$form): void {
+  $form['#title'] = t('Get started');
+
+  $form['help'] = [
+    '#prefix' => '<p class="cms-installer__subhead">',
+    '#markup' => t('You can select pre-configured types of content now, or add them later.'),
+    '#suffix' => '</p>',
+    '#weight' => -100,
+  ];
+  $form['add_ons'] += [
+    '#prefix' => '<div class="cms-installer__form-group">',
+    '#suffix' => '</div>',
+  ];
+  $form['add_ons']['help'] = [
+    '#prefix' => '<p class="cms-installer__info">',
+    '#markup' => t('Don’t see what you’re looking for? You can set up customized content later.'),
+    '#suffix' => '</p>',
+    '#weight' => 100,
+  ];
+  $form['svg'] = [
+    '#theme' => 'step_svg',
+    '#id' => 'recipes',
+    '#weight' => 1000,
+  ];
+  $form['actions']['submit']['#attributes']['class'] = ['button--next'];
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter() for install_settings_form.
+ */
+function drupal_cms_installer_theme_form_install_settings_form_alter(array &$form): void {
+  $form['help'] = [
+    '#prefix' => '<p class="cms-installer__subhead">',
+    '#markup' => t("You don't need to change anything here unless you want to use a different database type."),
+    '#suffix' => '</p>',
+    '#weight' => -50,
+  ];
+  $form['svg'] = [
+    '#theme' => 'step_svg',
+    '#id' => 'settings',
+    '#weight' => 1000,
+  ];
+  $form['driver']['#type'] = 'select';
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter() for install_configure_form.
+ */
+function drupal_cms_installer_theme_form_install_configure_form_alter(array &$form): void {
+  $form['#title'] = t('Create your account');
+
+  $form['help'] = [
+    '#prefix' => '<p class="cms-installer__subhead">',
+    '#markup' => t('Creating an account allows you to log in to your site.'),
+    '#suffix' => '</p>',
+    '#weight' => -40,
+  ];
+
+  // Use isset() to guard against the possibility that core will change the
+  // structure of this form in a minor release.
+  if (isset($form['admin_account']['account']['name'])) {
+    $form['admin_account']['account']['mail'] += [
+      '#prefix' => '<div class="cms-installer__form-group">',
+      '#suffix' => '</div>',
+    ];
+  }
+  if (isset($form['admin_account']['account']['pass'])) {
+    $form['admin_account']['account']['pass'] += [
+      '#prefix' => '<div class="cms-installer__form-group">',
+      '#suffix' => '</div>',
+    ];
+  }
+  $form['svg'] = [
+    '#theme' => 'step_svg',
+    '#id' => 'account',
+    '#weight' => 1000,
+  ];
+  $form['actions']['submit']['#value'] = t('Finish');
+}

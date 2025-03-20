@@ -1,0 +1,13 @@
+maintenance-page:
+  css:
+    theme:
+      css/gin-variables.css: {}
+      css/fonts.css: {}
+      css/installer-styles.css: {}
+      css/add-ons.css: {}
+  dependencies:
+    - core/once
+
+drupal.progress:
+  js:
+    js/progress.js: {}

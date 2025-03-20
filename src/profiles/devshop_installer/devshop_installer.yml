@@ -1,0 +1,31 @@
+name: DevShop Host Management System
+type: profile
+core_version_requirement: '^11.1'
+description: 'Installs DevShop Host Manager.'
+
+# Use the `distribution` key to skip the installer's profile selection step.
+distribution:
+  name: DevShop Host Manager
+  install:
+    finish_url: '/admin/dashboard'
+    theme: devshop_installer_theme
+
+forms:
+  - '\Drupal\RecipeKit\Installer\Form\RecipesForm'
+  - '\Drupal\RecipeKit\Installer\Form\SiteNameForm'
+
+recipes:
+#  required:
+#    - drupal/devshop_starter
+  optional:
+    'Acquia':
+      - drupal/devshop_acquia
+    'Pantheon':
+      - drupal/devshop_pantheon
+    'Self-hosted':
+      - drupal/devshop_hosting
+
+# Explicitly provide an empty list of themes -- this prevents the installer from
+# injecting Stark into it.
+# @see install_profile_info()
+themes: []

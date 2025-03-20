@@ -1,0 +1,10 @@
+name: Drupal CMS Installer Theme
+type: theme
+core_version_requirement: '^11.1'
+description: 'Themes the Drupal CMS installer. Not to be used in production.'
+base theme: claro
+libraries-extend:
+  claro/maintenance-page:
+    - drupal_cms_installer_theme/maintenance-page
+  core/drupal.progress:
+    - drupal_cms_installer_theme/drupal.progress
