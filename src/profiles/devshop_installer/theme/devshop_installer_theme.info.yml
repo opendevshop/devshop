@@ -1,10 +1,10 @@
-name: Drupal CMS Installer Theme
+name: DevShop Installer Theme
 type: theme
 core_version_requirement: '^11.1'
-description: 'Themes the Drupal CMS installer. Not to be used in production.'
+description: 'Themes the DevShop CMS installer. Not to be used in production.'
 base theme: claro
 libraries-extend:
   claro/maintenance-page:
-    - drupal_cms_installer_theme/maintenance-page
+    - devshop_installer_theme/maintenance-page
   core/drupal.progress:
-    - drupal_cms_installer_theme/drupal.progress
+    - devshop_installer_theme/drupal.progress
