@@ -16,6 +16,7 @@
     },
     "require": {
         "composer/installers": "^2.3",
+        "drupal/cms": "~1.0.3",
         "drupal/core-composer-scaffold": "^11.1.4",
         "drupal/core-project-message": "^11.1.4",
         "drupal/core-recommended": "^11.1.4",
