@@ -25,7 +25,14 @@ recipes:
     'Self-hosted':
       - drupal/devshop_hosting
 
+# This doesn't seem to work. Modules do not get installed.
+install:
+  - site
+  - block
+  - toolbar
+
 # Explicitly provide an empty list of themes -- this prevents the installer from
 # injecting Stark into it.
 # @see install_profile_info()
-themes: []
+themes:
+  - gin
