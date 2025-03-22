@@ -1,0 +1,13 @@
+{
+    "name": "drupal/hosting_site",
+    "description": "Create and manage hosted sites.",
+    "type": "drupal-module",
+    "authors": [
+        {
+            "name": "Jon Pugh",
+            "email": "jon@thinkdrop.net"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {}
+}

@@ -1,0 +1,7 @@
+name: 'Hosting Site'
+type: module
+description: 'Create and manage hosted sites.'
+package: Operations
+core_version_requirement: ^10 || ^11
+dependencies:
+  - site:site

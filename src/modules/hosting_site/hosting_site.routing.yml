@@ -1,0 +1,7 @@
+hosting_site.create_site:
+  path: '/create'
+  defaults:
+    _title: 'Create Site'
+    _form: 'Drupal\hosting_site\Form\CreateSiteForm'
+  requirements:
+    _permission: 'create site'

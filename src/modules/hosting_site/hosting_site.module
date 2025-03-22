@@ -1,0 +1,23 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for Hosting Site module.
+ */
+
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Field\BaseFieldDefinition;
+
+/**
+ * Implements hook_entity_bundle_info_alter().
+ */
+function hosting_site_entity_bundle_info_alter(array &$bundles): void {
+
+  if (isset($bundles['site']['hosted_site'])) {
+    $bundles['site']['hosted_site']['class'] = \Drupal\hosting_site\Entity\SiteEntity\HostedSite::class;
+  }
+  if (isset($bundles['site']['hosted_drupal_site'])) {
+    $bundles['site']['hosted_drupal_site']['class'] = \Drupal\hosting_site\Entity\SiteEntity\HostedDrupalSite::class;
+  }
+}
+

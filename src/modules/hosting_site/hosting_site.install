@@ -1,0 +1,36 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the Hosting Site module.
+ */
+
+use Drupal\Core\Field\BaseFieldDefinition;
+
+/**
+ * Install site_root composer_json and drupal_env fields.
+ */
+function hosting_site_install()
+{
+
+  $fields['database_name'] = BaseFieldDefinition::create('string')
+    ->setLabel(t('Database Name'))
+    ->setDescription(t('The database name to create for this site.'))
+    ->setRequired(true)
+    ->setReadOnly(true)
+    ->setDisplayConfigurable('form', TRUE)
+    ->setDisplayOptions('form', [
+      'type' => 'string_textfield',
+    ])
+    ->setDisplayConfigurable('view', TRUE)
+    ->setDisplayOptions('view', [
+      'label' => 'inline',
+      'type' => 'string',
+    ])
+  ;
+
+  foreach ($fields as $name => $field) {
+    Drupal::entityDefinitionUpdateManager()
+      ->installFieldStorageDefinition($name, 'site', 'site', $field);
+  }
+}
