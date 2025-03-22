@@ -1,0 +1,22 @@
+task.task_type.*:
+  type: config_entity
+  label: 'Task type config'
+  mapping:
+    id:
+      type: string
+      label: 'ID'
+    label:
+      type: label
+      label: 'Label'
+    uuid:
+      type: string
+
+    command_template:
+      type: string
+      label: 'Command Template'
+      description: 'The command to run, optionally using tokens to create a command from field data.'
+
+    working_directory_template:
+      type: string
+      label: 'Working Directory template'
+      description: 'The directory to run tasks in, optionally using tokens to set the directory dynamically.'

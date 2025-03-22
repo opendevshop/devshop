@@ -1,0 +1,17 @@
+administer task configuration:
+  title: 'Administer task configuration'
+#  description: 'Optional description.'
+  restrict access: true
+
+administer task types:
+  title: 'Administer task types'
+  description: 'Maintain the types of tasks.'
+  restrict access: true
+delete task:
+  title: Delete task
+create task:
+  title: Create task
+view task:
+  title: View task
+edit task:
+  title: Edit task

@@ -1,0 +1,13 @@
+
+entity.task.collection:
+  title: 'Tasks'
+  description: 'List all site entities.'
+  route_name: entity.task.collection
+  parent: system.admin_content
+  weight: 10
+
+entity.task_type.collection:
+  title: 'Task types'
+  description: 'Manage and CRUD actions on Task type.'
+  parent: system.admin_structure
+  route_name: entity.task_type.collection

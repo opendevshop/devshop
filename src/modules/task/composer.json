@@ -1,0 +1,14 @@
+{
+    "name": "drupal/task",
+    "type": "drupal-module",
+    "extra": {
+        "drush": {
+            "services": {
+                "drush.services.yml": "^11"
+            }
+        }
+    },
+    "require": {
+        "sensiolabs/ansi-to-html": "^1.2"
+    }
+}

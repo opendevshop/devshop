@@ -1,0 +1,10 @@
+entity.task.edit_form:
+  route_name: entity.task.edit_form
+  group: task
+  title: Edit
+
+entity.task.delete_form:
+  route_name: entity.task.delete_form
+  group: task
+  title: Delete
+  weight: 10

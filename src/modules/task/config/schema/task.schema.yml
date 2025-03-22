@@ -1,0 +1,16 @@
+# Schema for the configuration files of the DevShop Tasks module.
+#task.settings:
+#  type: config_object
+#  label: 'Tasks settings'
+#  mapping:
+#    example:
+#      type: string
+#      label: 'Example'
+
+#field.formatter.settings.devshop_task_ansi_output:
+#  type: mapping
+#  label: ANSI Output formatter settings
+#  mapping:
+#    theme:
+#      type: string
+#      label: Theme

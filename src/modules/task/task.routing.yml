@@ -1,0 +1,7 @@
+task.settings_form:
+  path: '/admin/config/system/task'
+  defaults:
+    _title: 'Tasks settings'
+    _form: 'Drupal\task\Form\SettingsForm'
+  requirements:
+    _permission: 'administer task configuration'
