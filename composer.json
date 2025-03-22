@@ -12,6 +12,10 @@
         "drupal": {
             "type": "composer",
             "url": "https://packages.drupal.org/8"
+        },
+        "task": {
+            "type": "path",
+            "url": "src/modules/task"
         }
     },
     "require": {
