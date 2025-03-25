@@ -12,10 +12,6 @@
         "drupal": {
             "type": "composer",
             "url": "https://packages.drupal.org/8"
-        },
-        "task": {
-            "type": "path",
-            "url": "src/modules/task"
         }
     },
     "require": {
@@ -76,7 +72,8 @@
     },
     "scripts": {
         "post-install-cmd": [
-            "cd web/profiles && ln -sf ../../src/profiles/devshop_installer"
+            "cd web/profiles && ln -sf ../../src/profiles/devshop_installer",
+            "cd web/modules && ln -sf ../../src/modules"
         ]
     }
 }
