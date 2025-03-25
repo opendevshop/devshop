@@ -1,5 +1,0 @@
-services:
-  task.commands:
-    class: \Drupal\task\Commands\TaskCommands
-    tags:
-      - { name: drush.command }
