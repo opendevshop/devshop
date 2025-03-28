@@ -12,6 +12,10 @@
         "drupal": {
             "type": "composer",
             "url": "https://packages.drupal.org/8"
+        },
+        "devshop/starter": {
+            "type": "path",
+            "url": "src/recipes/devshop_starter"
         }
     },
     "require": {
@@ -21,6 +25,7 @@
         "drupal/core-composer-scaffold": "^11.1.4",
         "drupal/core-project-message": "^11.1.4",
         "drupal/core-recommended": "^11.1.4",
+        "drupal/devshop_starter": "2.x-dev",
         "drupal/drupal_cms_starter": "~1.0.3",
         "drupal/recipe_installer_kit": "^1-alpha3@alpha",
         "drupal/site": "^2.2@RC",

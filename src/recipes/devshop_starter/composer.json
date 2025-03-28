@@ -1,0 +1,12 @@
+{
+    "name": "drupal/devshop_starter",
+    "description": "Installs base modules and theme for DevShop.",
+    "type": "drupal-recipe",
+    "license": ["GPL-2.0-or-later"],
+    "require": {
+        "drupal/core": ">=10.4",
+        "drupal/dashboard": "^2",
+        "drupal/token": "^1"
+    },
+    "version": "2.x-dev"
+}

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "41769a4d6f5e29e507e0ee54fb9fdfcd",
+    "content-hash": "b4a13d119661bc48b021a364f44ef0f5",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -3544,6 +3544,28 @@
             "homepage": "https://www.drupal.org/project/date_augmenter",
             "support": {
                 "source": "https://git.drupalcode.org/project/date_augmenter"
+            }
+        },
+        {
+            "name": "drupal/devshop_starter",
+            "version": "2.x-dev",
+            "dist": {
+                "type": "path",
+                "url": "src/recipes/devshop_starter",
+                "reference": "dacb6145ac8f521c5d1133ba7cba4556f85f32a2"
+            },
+            "require": {
+                "drupal/core": ">=10.4",
+                "drupal/dashboard": "^2",
+                "drupal/token": "^1"
+            },
+            "type": "drupal-recipe",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "description": "Installs base modules and theme for DevShop.",
+            "transport-options": {
+                "relative": true
             }
         },
         {

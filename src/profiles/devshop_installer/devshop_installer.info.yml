@@ -15,8 +15,8 @@ forms:
   - '\Drupal\RecipeKit\Installer\Form\SiteNameForm'
 
 recipes:
-#  required:
-#    - drupal/devshop_starter
+  required:
+    - drupal/devshop_starter
   optional:
     'Acquia':
       - drupal/devshop_acquia

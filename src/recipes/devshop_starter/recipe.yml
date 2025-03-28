@@ -1,0 +1,49 @@
+name: DevShop
+type: Site
+description: Installs base modules and theme for DevShop.
+recipes: []
+install:
+  - automated_cron
+  - menu_link_content
+  - gin_toolbar
+  - update
+  # The rest of these are in Standard.
+  - inline_form_errors
+  - config
+  - menu_ui
+  - token
+  - views_ui
+  - toolbar
+  - block
+config:
+  # If the config we're importing already exists, we don't really care
+  # what it looks like.
+  strict: false
+  import:
+    user:
+      - views.view.user_admin_people
+  actions:
+    system.site:
+      simpleConfigUpdate:
+        page.front: '/projects'
+    system.theme:
+      simpleConfigUpdate:
+        default: gin
+#    user.role.site_manager:
+#      grantPermissions:
+#        - 'access administration pages'
+#        - 'access contextual links'
+#        - 'access navigation'
+#        # We need this permission because Toolbar is enabled by Gin Toolbar.
+#        - 'access toolbar'
+#        - 'administer url aliases'
+#        - 'create url aliases'
+#        - 'view the administration theme'
+    user.settings:
+      simpleConfigUpdate:
+        verify_mail: true
+        register: admin_only
+        cancel_method: user_cancel_block
+    update.settings:
+      simpleConfigUpdate:
+        check.disabled_extensions: true
