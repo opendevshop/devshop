@@ -14,6 +14,11 @@ composer_version: "2"
 web_environment: []
 corepack_enable: true
 
+web_extra_daemons:
+- name: "commands"
+  command: "drush command:daemon"
+  directory: /var/www/html
+
 # Key features of DDEV's config.yaml:
 
 # name: <projectname> # Name of the project, automatically provides
