@@ -28,6 +28,7 @@
         "drupal/devel": "^5.3",
         "drupal/devshop_starter": "2.x-dev",
         "drupal/drupal_cms_starter": "~1.0.3",
+        "drupal/inline_entity_form": "^3.0@RC",
         "drupal/recipe_installer_kit": "^1-alpha3@alpha",
         "drupal/site": "^2.2@RC",
         "drush/drush": "^13"
